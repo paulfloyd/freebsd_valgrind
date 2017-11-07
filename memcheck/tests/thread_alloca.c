@@ -7,7 +7,9 @@
    Also, a high nr of threads in thr[] is needed to get
    the problem. */
 #include <pthread.h>
+#if defined(__linux__)
 #include <alloca.h>
+#endif
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
