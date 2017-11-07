@@ -243,7 +243,7 @@
 
 /* --- Soname of the standard C library. --- */
 
-#if defined(VGO_linux) || defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
 # if defined(MUSL_LIBC)
 #  define  VG_Z_LIBC_SONAME  libcZdZa              // libc.*
 #else
@@ -271,10 +271,11 @@
 
 #endif
 
-/* --- Soname of the GNU C++ library. --- */
+/* --- Sonames of the GNU C++ library. --- */
 
 // Valid on all platforms(?)
 #define  VG_Z_LIBSTDCXX_SONAME  libstdcZpZpZa           // libstdc++*
+#define  VG_Z_LIBSUPCXX_SONAME  libsupcZpZpZa           // libsupc++*
 
 /* --- Soname of the pthreads library. --- */
 
@@ -284,6 +285,8 @@
 #else
 #  define  VG_Z_LIBPTHREAD_SONAME  libpthreadZdsoZd0     // libpthread.so.0
 #endif
+#elif defined(VGO_freebsd)
+#  define  VG_Z_LIBPTHREAD_SONAME  libthrZdsoZa     // libthr.so*
 #elif defined(VGO_darwin)
 #  define  VG_Z_LIBPTHREAD_SONAME  libSystemZdZaZddylib  // libSystem.*.dylib
 #elif defined(VGO_solaris)
@@ -315,6 +318,18 @@
 
 #define  VG_U_LD_LINUX_AARCH64_SO_1 "ld-linux-aarch64.so.1"
 #define  VG_U_LD_LINUX_ARMHF_SO_3   "ld-linux-armhf.so.3"
+
+#endif
+
+/* --- Sonames for FreeBSD ELF linkers, plus unencoded versions. --- */
+
+#if defined(VGO_freebsd)
+
+#define  VG_Z_LD_ELF_SO_1           ldZhelfZdsoZd1           // ld-elf.so.1
+#define  VG_U_LD_ELF_SO_1           "ld-elf.so.1"
+
+#define  VG_Z_LD_ELF32_SO_1         ldZhelf32ZdsoZd1         // ld-elf32.so.1
+#define  VG_U_LD_ELF32_SO_1         "ld-elf32.so.1"
 
 #endif
 

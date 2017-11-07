@@ -70,6 +70,7 @@ void randBlock ( Block* b )
     __attribute__ ((noinline)) static void test_##_name ( void )   \
     { \
        Block* b = memalign32(sizeof(Block)); \
+       posix_memalign(&b, 32, sizeof(Block)); \
        randBlock(b); \
        printf("%s(reg)\n", #_name); \
        showBlock("before", b); \

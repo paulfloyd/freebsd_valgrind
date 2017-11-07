@@ -210,6 +210,8 @@ void VG_REPLACE_FUNCTION_ZU(libSystemZdZaZddylib, arc4random_addrandom)(unsigned
     // but don't care if it's initialized
 }
 
+#elif defined(VGO_freebsd)
+#   warning "Do something!"
 #elif defined(VGO_solaris)
 
 /* Declare the errno and environ symbols weakly in case the client is not

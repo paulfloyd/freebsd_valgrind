@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
    
    char* a = mmap(0, FN_SIZE * n_fns, 
                      PROT_EXEC|PROT_WRITE|PROT_READ, 
-                     MAP_PRIVATE|MAP_ANONYMOUS, -1,0);
+                     MAP_PRIVATE|MAP_ANON, -1,0);
    assert(a != (char*)MAP_FAILED);
 
    // Make a whole lot of copies of f().  FN_SIZE is much bigger than f()

@@ -1034,7 +1034,11 @@ void main_process_cmd_line_options( void )
 
 /* Number of file descriptors that Valgrind tries to reserve for
    its own use - just a small constant. */
+#if defined(VGO_freebsd)
+#define N_RESERVED_FDS (20)
+#else
 #define N_RESERVED_FDS (12)
+#endif
 
 static void setup_file_descriptors(void)
 {
@@ -1461,7 +1465,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    if (!need_help) {
       VG_(debugLog)(1, "main", "Create initial image\n");
 
-#     if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris)
+#     if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris) || defined(VGO_freebsd)
       the_iicii.argv              = argv;
       the_iicii.envp              = envp;
       the_iicii.toolname          = VG_(clo_toolname);
@@ -1726,7 +1730,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    addr2dihandle = VG_(newXA)( VG_(malloc), "main.vm.2",
                                VG_(free), sizeof(Addr_n_ULong) );
 
-#  if defined(VGO_linux) || defined(VGO_solaris)
+#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
    { Addr* seg_starts;
      Int   n_seg_starts;
      Addr_n_ULong anu;
@@ -2372,6 +2376,7 @@ static void final_tidyup(ThreadId tid)
    VG_(set_default_handler)(VKI_SIGBUS);
    VG_(set_default_handler)(VKI_SIGILL);
    VG_(set_default_handler)(VKI_SIGFPE);
+   VG_(set_default_handler)(VKI_SIGSYS);
 
    // We were exiting, so assert that...
    vg_assert(VG_(is_exiting)(tid));
@@ -2391,7 +2396,7 @@ static void final_tidyup(ThreadId tid)
 /*=== Getting to main() alive: LINUX                               ===*/
 /*====================================================================*/
 
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_freebsd)
 
 /* If linking of the final executables is done with glibc present,
    then Valgrind starts at main() above as usual, and all of the
@@ -2823,6 +2828,44 @@ asm("\n"
     "\tbreak  0x7\n"
     ".previous\n"
 );
+#elif defined(VGP_x86_freebsd)
+asm("\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    /* set up the new stack in %eax */
+    "\tmovl  $vgPlain_interim_stack, %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
+    "\tsubl  $16, %eax\n"
+    "\tandl  $~15, %eax\n"
+    /* install it, and collect the original one */
+    "\txchgl %eax, %esp\n"
+    /* call _start_in_C_linux, passing it the startup %esp */
+    "\tpushl %eax\n"
+    "\tcall  _start_in_C_linux\n"
+    "\thlt\n"
+    ".previous\n"
+);
+#elif defined(VGP_amd64_freebsd)
+asm("\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    /* set up the new stack in %rsi */
+    "\tmovq  $vgPlain_interim_stack, %rsi\n"
+    "\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rsi\n"
+    "\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rsi\n"
+    "\tandq  $~15, %rsi\n"
+    /* install it, and collect the original one */
+    "\txchgq %rsi, %rsp\n"
+    /* call _start_in_C_amd64_freebsd, passing it the startup %rsp */
+    "\tcall  _start_in_C_amd64_freebsd\n"
+    "\thlt\n"
+    ".previous\n"
+);
 #elif defined(VGP_mips64_linux)
 asm(
 ".text\n"
@@ -2863,7 +2906,7 @@ asm(
 ".previous\n"
 );
 #else
-#  error "Unknown linux platform"
+#  error "Unknown platform"
 #endif
 
 /* --- !!! --- EXTERNAL HEADERS start --- !!! --- */
@@ -2873,6 +2916,26 @@ asm(
 #include <elf.h>
 /* --- !!! --- EXTERNAL HEADERS end --- !!! --- */
 
+#if defined(VGP_amd64_freebsd)
+void _start_in_C_amd64_freebsd ( UWord* pArgc, UWord *initial_sp );
+void _start_in_C_amd64_freebsd ( UWord* pArgc, UWord *initial_sp )
+{
+   Int     r;
+   Word    argc = pArgc[0];
+   HChar** argv = (HChar**)&pArgc[1];
+   HChar** envp = (HChar**)&pArgc[1+argc+1];
+
+   VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
+   VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
+
+   the_iicii.sp_at_startup = (Addr)initial_sp;
+
+   r = valgrind_main( (Int)argc, argv, envp );
+   /* NOTREACHED */
+   VG_(exit)(r);
+}
+
+#else
 /* Avoid compiler warnings: this fn _is_ used, but labelling it
    'static' causes gcc to complain it isn't.
    attribute 'used' also ensures the code is not eliminated at link
@@ -2929,6 +2992,7 @@ void _start_in_C_linux ( UWord* pArgc )
    /* NOTREACHED */
    VG_(exit)(r);
 }
+#endif
 
 
 /*====================================================================*/
