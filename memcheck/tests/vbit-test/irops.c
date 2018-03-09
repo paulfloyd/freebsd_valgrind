@@ -38,12 +38,12 @@
 static irop_t irops[] = {
   { DEFOP(Iop_Add8,    UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Add16,   UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_Add32,   UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_Add64,   UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 0, .mips64 = 1 }, // mips asserts
+  { DEFOP(Iop_Add32,   UNDEF_INT_ADD), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
+  { DEFOP(Iop_Add64,   UNDEF_INT_ADD), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 0, .mips64 = 1 }, // mips asserts
   { DEFOP(Iop_Sub8,    UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Sub16,   UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_Sub32,   UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_Sub64,   UNDEF_LEFT), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32, mips assert
+  { DEFOP(Iop_Sub32,   UNDEF_INT_SUB), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
+  { DEFOP(Iop_Sub64,   UNDEF_INT_SUB), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32, mips assert
   { DEFOP(Iop_Mul8,    UNDEF_LEFT), .s390x = 0, .amd64 = 0, .x86 = 0, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
   { DEFOP(Iop_Mul16,   UNDEF_LEFT), .s390x = 0, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
   { DEFOP(Iop_Mul32,   UNDEF_LEFT), .s390x = 0, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
@@ -65,21 +65,21 @@ static irop_t irops[] = {
   { DEFOP(Iop_Shl32,   UNDEF_SHL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Shl64,   UNDEF_SHL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32 asserts
   { DEFOP(Iop_Shr8,    UNDEF_SHR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 }, // ppc32/64 assert
-  { DEFOP(Iop_Shr16,   UNDEF_SHR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 }, // ppc32/64 assert
+  { DEFOP(Iop_Shr16,   UNDEF_SHR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 1, .mips64 = 1 }, // ppc32/64 assert
   { DEFOP(Iop_Shr32,   UNDEF_SHR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Shr64,   UNDEF_SHR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32 asserts
   { DEFOP(Iop_Sar8,    UNDEF_SAR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 }, // ppc32/64 assert
-  { DEFOP(Iop_Sar16,   UNDEF_SAR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 }, // ppc32/64 assert
+  { DEFOP(Iop_Sar16,   UNDEF_SAR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 1, .mips64 = 1 }, // ppc32/64 assert
   { DEFOP(Iop_Sar32,   UNDEF_SAR),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Sar64,   UNDEF_SAR),  .s390x = 1, .amd64 = 1, .x86 = 0, .arm = 1, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32 asserts
-  { DEFOP(Iop_CmpEQ8,  UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
-  { DEFOP(Iop_CmpEQ16, UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_CmpEQ32, UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_CmpEQ64, UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32, mips assert
-  { DEFOP(Iop_CmpNE8,  UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
-  { DEFOP(Iop_CmpNE16, UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
-  { DEFOP(Iop_CmpNE32, UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
-  { DEFOP(Iop_CmpNE64, UNDEF_ALL),  .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32, mips assert
+  { DEFOP(Iop_CmpEQ8,  UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
+  { DEFOP(Iop_CmpEQ16, UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 1, .mips64 = 1 },
+  { DEFOP(Iop_CmpEQ32, UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
+  { DEFOP(Iop_CmpEQ64, UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32, mips assert
+  { DEFOP(Iop_CmpNE8,  UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
+  { DEFOP(Iop_CmpNE16, UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 0, .ppc32 = 0, .mips32 = 0, .mips64 = 0 },
+  { DEFOP(Iop_CmpNE32, UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
+  { DEFOP(Iop_CmpNE64, UNDEF_CMP_EQ_NE), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 0, .mips32 = 0, .mips64 = 1 }, // ppc32, mips assert
   { DEFOP(Iop_Not8,       UNDEF_SAME), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Not16,      UNDEF_SAME), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 0, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
   { DEFOP(Iop_Not32,      UNDEF_SAME), .s390x = 1, .amd64 = 1, .x86 = 1, .arm = 1, .ppc64 = 1, .ppc32 = 1, .mips32 = 1, .mips64 = 1 },
@@ -1001,6 +1001,10 @@ static irop_t irops[] = {
   { DEFOP(Iop_GetElem16x8, UNDEF_UNKNOWN), },
   { DEFOP(Iop_GetElem32x4, UNDEF_UNKNOWN), },
   { DEFOP(Iop_GetElem64x2, UNDEF_UNKNOWN), },
+  { DEFOP(Iop_SetElem8x16, UNDEF_UNKNOWN), },
+  { DEFOP(Iop_SetElem16x8, UNDEF_UNKNOWN), },
+  { DEFOP(Iop_SetElem32x4, UNDEF_UNKNOWN), },
+  { DEFOP(Iop_SetElem64x2, UNDEF_UNKNOWN), },
   { DEFOP(Iop_Dup8x16, UNDEF_UNKNOWN), },
   { DEFOP(Iop_Dup16x8, UNDEF_UNKNOWN), },
   { DEFOP(Iop_Dup32x4, UNDEF_UNKNOWN), },
@@ -1014,6 +1018,7 @@ static irop_t irops[] = {
   { DEFOP(Iop_Reverse1sIn8_x16, UNDEF_UNKNOWN), },
   { DEFOP(Iop_Perm8x16, UNDEF_UNKNOWN), },
   { DEFOP(Iop_Perm32x4, UNDEF_UNKNOWN), },
+  { DEFOP(Iop_Perm8x16x2, UNDEF_UNKNOWN), },
   { DEFOP(Iop_GetMSBs8x16, UNDEF_UNKNOWN), },
   { DEFOP(Iop_RecipEst32Ux4, UNDEF_UNKNOWN), },
   { DEFOP(Iop_RSqrtEst32Ux4, UNDEF_UNKNOWN), },
@@ -1123,6 +1128,8 @@ static irop_t irops[] = {
   { DEFOP(Iop_NCipherLV128, UNDEF_ALL_64x2), .ppc64 = 1, .ppc32 = 1 },
   { DEFOP(Iop_SHA512, UNDEF_SOME), .ppc64 = 1, .ppc32 = 1 },
   { DEFOP(Iop_SHA256, UNDEF_SOME), .ppc64 = 1, .ppc32 = 1 },
+  { DEFOP(Iop_Rotx32, UNDEF_ALL), },
+  { DEFOP(Iop_Rotx64, UNDEF_ALL), },
   { DEFOP(Iop_PwBitMtxXpose64x2, UNDEF_64x2_TRANSPOSE), .ppc64 = 1, .ppc32 = 1 },
 };
 

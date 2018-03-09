@@ -129,6 +129,10 @@ static void usage_NORETURN ( Bool debug_help )
 "    --error-exitcode=<number> exit code to return if errors found [0=disable]\n"
 "    --error-markers=<begin>,<end> add lines with begin/end markers before/after\n"
 "                              each error output in plain text mode [none]\n"
+"    --keep-debuginfo=no|yes   Keep symbols etc for unloaded code [no]\n"
+"                              This allows saved stack traces (e.g. memory leaks)\n"
+"                              to include file/line info for code that has been\n"
+"                              dlclose'd (or similar)\n"
 "    --show-below-main=no|yes  continue stack traces below main() [no]\n"
 "    --default-suppressions=yes|no\n"
 "                              load default suppressions [yes]\n"
@@ -254,6 +258,8 @@ static void usage_NORETURN ( Bool debug_help )
 "                              heap blocks allocated for Valgrind internal use (in bytes) [4]\n"
 "    --wait-for-gdb=yes|no     pause on startup to wait for gdb attach\n"
 "    --sym-offsets=yes|no      show syms in form 'name+offset'? [no]\n"
+"    --progress-interval=<number>  report progress every <number>\n"
+"                                  CPU seconds [0, meaning disabled]\n"
 "    --command-line-only=no|yes  only use command line options [no]\n"
 "\n"
 "  Vex options for all Valgrind tools:\n"
@@ -634,6 +640,7 @@ void main_process_cmd_line_options( void )
       else if VG_BOOL_CLO(arg, "--run-libc-freeres", VG_(clo_run_libc_freeres)) {}
       else if VG_BOOL_CLO(arg, "--run-cxx-freeres",  VG_(clo_run_cxx_freeres)) {}
       else if VG_BOOL_CLO(arg, "--show-below-main",  VG_(clo_show_below_main)) {}
+      else if VG_BOOL_CLO(arg, "--keep-debuginfo",   VG_(clo_keep_debuginfo)) {}
       else if VG_BOOL_CLO(arg, "--time-stamp",       VG_(clo_time_stamp)) {}
       else if VG_BOOL_CLO(arg, "--track-fds",        VG_(clo_track_fds)) {}
       else if VG_BOOL_CLO(arg, "--trace-children",   VG_(clo_trace_children)) {}
@@ -666,6 +673,8 @@ void main_process_cmd_line_options( void )
       else if VG_BOOL_CLO(arg, "--trace-syscalls",   VG_(clo_trace_syscalls)) {}
       else if VG_BOOL_CLO(arg, "--wait-for-gdb",     VG_(clo_wait_for_gdb)) {}
       else if VG_BOOL_CLO(arg, "--sym-offsets",      VG_(clo_sym_offsets)) {}
+      else if VG_BINT_CLO(arg, "--progress-interval",
+                               VG_(clo_progress_interval), 0, 3600) {}
       else if VG_BOOL_CLO(arg, "--read-inline-info", VG_(clo_read_inline_info)) {}
       else if VG_BOOL_CLO(arg, "--read-var-info",    VG_(clo_read_var_info)) {}
 
@@ -2270,7 +2279,8 @@ static void final_tidyup(ThreadId tid)
    }
 
 #  if defined(VGP_ppc64be_linux)
-   Addr r2 = VG_(get_tocptr)(freeres_wrapper);
+   Addr r2 = VG_(get_tocptr)(VG_(current_DiEpoch)(),
+                             freeres_wrapper);
    if (r2 == 0) {
       VG_(message)(Vg_UserMsg, 
                    "Caught __NR_exit, but can't run __gnu_cxx::__freeres()\n");

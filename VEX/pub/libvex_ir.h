@@ -1799,9 +1799,11 @@ typedef
       Iop_CatEvenLanes8x16, Iop_CatEvenLanes16x8, Iop_CatEvenLanes32x4,
 
       /* GET elements of VECTOR
-         GET is binop (V128, I8) -> I<elem_size> */
+         GET is binop (V128, I8) -> I<elem_size>
+         SET is triop (V128, I8, I<elem_size>) -> V128 */
       /* Note: the arm back-end handles only constant second argument. */
       Iop_GetElem8x16, Iop_GetElem16x8, Iop_GetElem32x4, Iop_GetElem64x2,
+      Iop_SetElem8x16, Iop_SetElem16x8, Iop_SetElem32x4, Iop_SetElem64x2,
 
       /* DUPLICATING -- copy value to all lanes */
       Iop_Dup8x16,   Iop_Dup16x8,   Iop_Dup32x4,
@@ -1829,6 +1831,12 @@ typedef
          is undefined. */
       Iop_Perm8x16,
       Iop_Perm32x4, /* ditto, except argR values are restricted to 0 .. 3 */
+
+      /* same, but Triop (argL consists of two 128-bit parts) */
+      /* correct range for argR values is 0..31 */
+      /* (V128, V128, V128) -> V128 */
+      /* (ArgL_first, ArgL_second, ArgR) -> result */
+      Iop_Perm8x16x2,
 
       /* MISC CONVERSION -- get high bits of each byte lane, a la
          x86/amd64 pmovmskb */
@@ -1928,6 +1936,7 @@ typedef
 
       Iop_Max32Fx8, Iop_Min32Fx8,
       Iop_Max64Fx4, Iop_Min64Fx4,
+      Iop_Rotx32, Iop_Rotx64,
       Iop_LAST      /* must be the last enumerator */
    }
    IROp;

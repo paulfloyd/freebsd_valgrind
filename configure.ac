@@ -104,6 +104,11 @@ else
 fi
 rm $tmpfile
 
+# Make sure we can compile in C99 mode.
+AC_PROG_CC_C99
+if test "$ac_cv_prog_cc_c99" == "no"; then
+    AC_MSG_ERROR([Valgrind relies on a C compiler supporting C99])
+fi
 
 # We don't want gcc < 3.0
 AC_MSG_CHECKING([for a supported version of gcc])
@@ -2070,6 +2075,7 @@ AC_GCC_WARNING_SUBST([cast-qual], [FLAG_W_CAST_QUAL])
 AC_GCC_WARNING_SUBST([old-style-declaration], [FLAG_W_OLD_STYLE_DECLARATION])
 AC_GCC_WARNING_SUBST([ignored-qualifiers], [FLAG_W_IGNORED_QUALIFIERS])
 AC_GCC_WARNING_SUBST([missing-parameter-type], [FLAG_W_MISSING_PARAMETER_TYPE])
+AC_GCC_WARNING_SUBST([logical-op], [FLAG_W_LOGICAL_OP])
 
 # Does this compiler support -Wformat-security ?
 # Special handling is needed, because certain GCC versions require -Wformat

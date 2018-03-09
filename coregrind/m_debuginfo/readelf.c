@@ -33,6 +33,7 @@
 
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
+#include "pub_core_vkiscnums.h"
 #include "pub_core_debuginfo.h"
 #include "pub_core_libcbase.h"
 #include "pub_core_libcprint.h"
@@ -40,6 +41,7 @@
 #include "pub_core_machine.h"      /* VG_ELF_CLASS */
 #include "pub_core_options.h"
 #include "pub_core_oset.h"
+#include "pub_core_syscall.h"
 #include "pub_core_tooliface.h"    /* VG_(needs) */
 #include "pub_core_xarray.h"
 #include "priv_misc.h"             /* dinfo_zalloc/free/strdup */
@@ -1327,6 +1329,12 @@ DiImage* find_debug_file( struct _DebugInfo* di,
                      + (extrapath ? VG_(strlen)(extrapath) : 0)
                      + (serverpath ? VG_(strlen)(serverpath) : 0));
 
+      if (debugname[0] == '/') {
+         VG_(sprintf)(debugpath, "%s", debugname);
+         dimg = open_debug_file(debugpath, buildid, crc, rel_ok, NULL);
+         if (dimg != NULL) goto dimg_ok;
+      }
+
       VG_(sprintf)(debugpath, "%s/%s", objdir, debugname);
       dimg = open_debug_file(debugpath, buildid, crc, rel_ok, NULL);
       if (dimg != NULL) goto dimg_ok;
@@ -1529,6 +1537,74 @@ static Bool check_compression(ElfXX_Shdr* h, DiSlice* s) {
        }
     }
     return True;
+}
+
+/* Helper function to get the readlink path. Returns a copy of path if the
+   file wasn't a symbolic link. Returns NULL on error. Unless NULL is
+   returned the result needs to be released with dinfo_free.
+*/
+static HChar* readlink_path (const HChar *path)
+{
+   SizeT bufsiz = VG_(strlen)(path);
+   HChar *buf = ML_(dinfo_strdup)("readlink_path.strdup", path);
+   UInt   tries = 6;
+
+   while (tries > 0) {
+      SysRes res;
+#if defined(VGP_arm64_linux)
+      res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD,
+                                              (UWord)path, (UWord)buf, bufsiz);
+#elif defined(VGO_linux) || defined(VGO_darwin)
+      res = VG_(do_syscall3)(__NR_readlink, (UWord)path, (UWord)buf, bufsiz);
+#elif defined(VGO_solaris)
+      res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD, (UWord)path,
+                             (UWord)buf, bufsiz);
+#else
+#       error Unknown OS
+#endif
+      if (sr_isError(res)) {
+         if (sr_Err(res) == VKI_EINVAL)
+            return buf; // It wasn't a symbolic link, return the strdup result.
+         ML_(dinfo_free)(buf);
+         return NULL;
+      }
+
+      SSizeT r = sr_Res(res);
+      if (r < 0) break;
+      if (r == bufsiz) {  // buffer too small; increase and retry
+         bufsiz *= 2 + 16;
+         buf = ML_(dinfo_realloc)("readlink_path.realloc", buf, bufsiz);
+         tries--;
+         continue;
+      }
+      buf[r] = '\0';
+      break;
+   }
+
+   if (tries == 0) { // We tried, but weird long path?
+      ML_(dinfo_free)(buf);
+      return NULL;
+   }
+
+  if (buf[0] == '/')
+    return buf;
+
+  /* Relative path, add link dir.  */
+  HChar *linkdirptr;
+  SizeT linkdir_len = VG_(strlen)(path);
+  if ((linkdirptr = VG_(strrchr)(path, '/')) != NULL)
+    linkdir_len -= VG_(strlen)(linkdirptr + 1);
+
+  SizeT buflen = VG_(strlen)(buf);
+  SizeT needed = linkdir_len + buflen + 1;
+  if (bufsiz < needed)
+    buf = ML_(dinfo_realloc)("readlink_path.linkdir", buf, needed);
+
+  VG_(memmove)(buf + linkdir_len, buf, buflen);
+  VG_(memcpy)(buf, path, linkdir_len);
+  buf[needed - 1] = '\0';
+
+  return buf;
 }
 
 /* The central function for reading ELF debug info.  For the
@@ -2943,8 +3019,12 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                                 (debugaltlink_escn.szB - buildid_offset)
                                 * 2 + 1);
 
-         /* The altfile might be relative to the debug file or main file. */
+         /* The altfile might be relative to the debug file or main file.
+	    Make sure that we got the real file, not a symlink.  */
          HChar *dbgname = di->fsm.dbgname ? di->fsm.dbgname : di->fsm.filename;
+         HChar* rdbgname = readlink_path (dbgname);
+         if (rdbgname == NULL)
+            rdbgname = ML_(dinfo_strdup)("rdbgname", dbgname);
 
          for (j = 0; j < debugaltlink_escn.szB - buildid_offset; j++)
             VG_(sprintf)(
@@ -2954,8 +3034,10 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                                         + buildid_offset + j));
 
          /* See if we can find a matching debug file */
-         aimg = find_debug_file( di, dbgname, altbuildid,
+         aimg = find_debug_file( di, rdbgname, altbuildid,
                                  altfile_str_m, 0, True );
+
+         ML_(dinfo_free)(rdbgname);
 
          if (altfile_str_m)
             ML_(dinfo_free)(altfile_str_m);

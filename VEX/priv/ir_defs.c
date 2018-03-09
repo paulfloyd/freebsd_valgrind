@@ -1091,6 +1091,11 @@ void ppIROp ( IROp op )
       case Iop_GetElem32x4: vex_printf("GetElem32x4"); return;
       case Iop_GetElem64x2: vex_printf("GetElem64x2"); return;
 
+      case Iop_SetElem8x16: vex_printf("SetElem8x16"); return;
+      case Iop_SetElem16x8: vex_printf("SetElem16x8"); return;
+      case Iop_SetElem32x4: vex_printf("SetElem32x4"); return;
+      case Iop_SetElem64x2: vex_printf("SetElem64x2"); return;
+
       case Iop_GetElem8x8: vex_printf("GetElem8x8"); return;
       case Iop_GetElem16x4: vex_printf("GetElem16x4"); return;
       case Iop_GetElem32x2: vex_printf("GetElem32x2"); return;
@@ -1103,6 +1108,7 @@ void ppIROp ( IROp op )
 
       case Iop_Perm8x16: vex_printf("Perm8x16"); return;
       case Iop_Perm32x4: vex_printf("Perm32x4"); return;
+      case Iop_Perm8x16x2: vex_printf("Perm8x16x2"); return;
       case Iop_Reverse8sIn16_x8: vex_printf("Reverse8sIn16_x8"); return;
       case Iop_Reverse8sIn32_x4: vex_printf("Reverse8sIn32_x4"); return;
       case Iop_Reverse16sIn32_x4: vex_printf("Reverse16sIn32_x4"); return;
@@ -1291,6 +1297,8 @@ void ppIROp ( IROp op )
       case Iop_BCDSub:  vex_printf("BCDSub"); return;
       case Iop_I128StoBCD128:  vex_printf("bcdcfsq."); return;
       case Iop_BCD128toI128S:  vex_printf("bcdctsq."); return;
+      case Iop_Rotx32:  vex_printf("bitswap"); return;
+      case Iop_Rotx64:  vex_printf("dbitswap"); return;
 
       case Iop_PwBitMtxXpose64x2: vex_printf("BitMatrixTranspose64x2"); return;
 
@@ -3119,6 +3127,9 @@ void typeOfPrimop ( IROp op,
       case Iop_MulI128by10ECarry:
          BINARY(Ity_V128,Ity_V128, Ity_V128);
 
+      case Iop_Perm8x16x2:
+         TERNARY(Ity_V128, Ity_V128, Ity_V128, Ity_V128);
+
       case Iop_PolynomialMull8x8:
       case Iop_Mull8Ux8: case Iop_Mull8Sx8:
       case Iop_Mull16Ux4: case Iop_Mull16Sx4:
@@ -3214,6 +3225,14 @@ void typeOfPrimop ( IROp op,
          BINARY(Ity_V128, Ity_I8, Ity_I32);
       case Iop_GetElem64x2:
          BINARY(Ity_V128, Ity_I8, Ity_I64);
+      case Iop_SetElem8x16:
+         TERNARY(Ity_V128, Ity_I8, Ity_I8, Ity_V128);
+      case Iop_SetElem16x8:
+         TERNARY(Ity_V128, Ity_I8, Ity_I16, Ity_V128);
+      case Iop_SetElem32x4:
+         TERNARY(Ity_V128, Ity_I8, Ity_I32, Ity_V128);
+      case Iop_SetElem64x2:
+         TERNARY(Ity_V128, Ity_I8, Ity_I64, Ity_V128);
       case Iop_GetElem8x8:
          BINARY(Ity_I64, Ity_I8, Ity_I8);
       case Iop_GetElem16x4:
@@ -3561,6 +3580,10 @@ void typeOfPrimop ( IROp op,
       case Iop_ShrN64x4:
       case Iop_SarN16x16: case Iop_SarN32x8:
          BINARY(Ity_V256,Ity_I8, Ity_V256);
+      case Iop_Rotx32:
+         QUATERNARY(Ity_I32, Ity_I8, Ity_I8, Ity_I8, Ity_I32);
+      case Iop_Rotx64:
+         QUATERNARY(Ity_I64, Ity_I8, Ity_I8, Ity_I8, Ity_I64);
 
       default:
          ppIROp(op);
