@@ -132,7 +132,9 @@ int main()
 	{
 		const struct test tests[] = {
 #define T(n, sig, code, addr) { test##n, sig, code, addr }
+#if !defined(__FreeBSD__) || __FreeBSD__ >= 5
 			T(1, SIGILL,	ILL_ILLOPN,     &test1_ill),
+#endif
 
 			T(2, SIGTRAP,	128,		0), /* TRAP_BRKPT? */
 			T(3, SIGSEGV,	128,		0),

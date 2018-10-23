@@ -87,6 +87,14 @@ extern void VG_(do_atfork_pre)    ( ThreadId tid );
 extern void VG_(do_atfork_parent) ( ThreadId tid );
 extern void VG_(do_atfork_child)  ( ThreadId tid );
 
+#if defined(VGO_freebsd)
+// sysctl, modfind
+//extern Int VG_(sysctl)(Int *oid, UInt oidlen, void *oldp, vki_size_t *oldlenp, void *newp, vki_size_t newlen);
+extern Int VG_(sysctlbyname)(const Char *name, void *oldp, vki_size_t *oldlenp, void *newp, vki_size_t newlen);
+extern Int VG_(getosreldate)(void);
+extern Bool VG_(is32on64)(void);
+#endif
+
 // icache invalidation
 extern void VG_(invalidate_icache) ( void *ptr, SizeT nbytes );
 

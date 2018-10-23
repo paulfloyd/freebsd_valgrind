@@ -500,7 +500,7 @@ void VG_(vg_yield)(void)
    /* 
       Tell the kernel we're yielding.
     */
-#  if defined(VGO_linux) || defined(VGO_darwin)
+#  if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
    VG_(do_syscall0)(__NR_sched_yield);
 #  elif defined(VGO_solaris)
    VG_(do_syscall0)(__NR_yield);
@@ -540,6 +540,8 @@ static void os_state_clear(ThreadState *tst)
    tst->os_state.threadgroup = 0;
    tst->os_state.stk_id = NULL_STK_ID;
 #  if defined(VGO_linux)
+   /* no other fields to clear */
+#  elif defined(VGO_freebsd)
    /* no other fields to clear */
 #  elif defined(VGO_darwin)
    tst->os_state.post_mach_trap_fn = NULL;

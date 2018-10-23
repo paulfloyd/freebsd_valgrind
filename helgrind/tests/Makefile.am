@@ -10,7 +10,7 @@ EXTRA_DIST = \
 	annotate_hbefore.vgtest annotate_hbefore.stdout.exp \
 		annotate_hbefore.stderr.exp \
 	annotate_rwlock.vgtest annotate_rwlock.stdout.exp \
-		annotate_rwlock.stderr.exp \
+		annotate_rwlock.stderr.exp annotate_rwlock.stderr.exp-freebsd \
 	annotate_smart_pointer.vgtest annotate_smart_pointer.stdout.exp \
 		annotate_smart_pointer.stderr.exp \
 	bug322621.vgtest bug322621.stderr.exp \
@@ -23,7 +23,7 @@ EXTRA_DIST = \
 		bar_bad.stderr.exp-destroy-hang \
 	bar_trivial.vgtest bar_trivial.stdout.exp bar_trivial.stderr.exp \
 	free_is_write.vgtest free_is_write.stdout.exp \
-		free_is_write.stderr.exp \
+		free_is_write.stderr.exp free_is_write.stderr.exp-freebsd \
 	hg01_all_ok.vgtest hg01_all_ok.stdout.exp hg01_all_ok.stderr.exp \
 	hg02_deadlock.vgtest hg02_deadlock.stdout.exp hg02_deadlock.stderr.exp \
 	hg03_inherit.vgtest hg03_inherit.stdout.exp hg03_inherit.stderr.exp \

@@ -93,7 +93,7 @@ int main ( void )
    pthread_t child;
 
    r = pthread_attr_init(&attr); assert(!r);
-# if !defined(VGO_darwin)
+# if !defined(VGO_darwin) && !defined(VGO_freebsd)
    stack = mmap(NULL, sz, PROT_READ|PROT_WRITE,  MAP_PRIVATE | MAP_ANONYMOUS,
                 -1, 0);
 # else

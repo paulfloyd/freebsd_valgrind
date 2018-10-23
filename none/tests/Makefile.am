@@ -175,6 +175,7 @@ EXTRA_DIST = \
 	require-text-symbol-2.vgtest \
 		require-text-symbol-2.stderr.exp-libcso1 \
 		require-text-symbol-2.stderr.exp-libcso6 \
+		require-text-symbol-2.stderr.exp-freebsd \
 	res_search.stderr.exp res_search.stdout.exp res_search.vgtest \
 	resolv.stderr.exp resolv.stdout.exp resolv.vgtest \
 	rlimit_nofile.stderr.exp rlimit_nofile.stdout.exp rlimit_nofile.vgtest \
@@ -256,7 +257,7 @@ if HAVE_NESTED_FUNCTIONS
 endif
 
 # This doesn't appear to be compilable on Darwin.
-if ! VGCONF_OS_IS_DARWIN
+if VGCONF_OS_IS_LINUX
    check_PROGRAMS += rlimit64_nofile \
         ppoll_alarm
 endif
@@ -318,9 +319,13 @@ pth_rwlock_CFLAGS	= $(AM_CFLAGS)
 pth_stackalign_LDADD	= -lpthread
 pth_2sig_LDADD		= -lpthread
 pth_term_signal_LDADD	= -lpthread
+if VGCONF_OS_IS_FREEBSD
+ res_search_LDADD       = -lpthread
+else
 res_search_LDADD        = -lresolv -lpthread
-resolv_CFLAGS		= $(AM_CFLAGS)
 resolv_LDADD            = -lresolv -lpthread
+endif
+resolv_CFLAGS		= $(AM_CFLAGS)
 if VGCONF_OS_IS_SOLARIS
 resolv_CFLAGS		+= -U_REENTRANT
 endif

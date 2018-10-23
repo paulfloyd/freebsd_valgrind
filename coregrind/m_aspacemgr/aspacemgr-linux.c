@@ -4,7 +4,7 @@
 /*--- The address space manager: segment initialisation and        ---*/
 /*--- tracking, stack operations                                   ---*/
 /*---                                                              ---*/
-/*--- Implementation for Linux (and Darwin!)     aspacemgr-linux.c ---*/
+/*--- Implementation for Linux, FreeBSD and Darwin                 ---*/
 /*--------------------------------------------------------------------*/
 
 /*
@@ -32,7 +32,7 @@
    The GNU General Public License is contained in the file COPYING.
 */
 
-#if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris) || defined(VGO_freebsd)
 
 /* *************************************************************
    DO NOT INCLUDE ANY OTHER FILES HERE.
@@ -317,6 +317,7 @@ Addr VG_(clo_aspacem_minAddr)
 #elif defined(VGO_solaris)
    = (Addr) 0x00100000; // 1MB
 #else
+   = (Addr) 0x04000000; // 64M
 #endif
 
 
@@ -872,7 +873,7 @@ static void sync_check_mapping_callback ( Addr addr, SizeT len, UInt prot,
          cmp_devino = False;
 #endif
 
-#if defined(VGO_darwin)
+#if defined(VGO_darwin) || defined(VGO_freebsd)
       // GrP fixme kernel info doesn't have dev/inode
       cmp_devino = False;
       
@@ -1638,7 +1639,34 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
 
    suggested_clstack_end = -1; // ignored; Mach-O specifies its stack
 
+   // --- Freebsd ------------------------------------------
+   
+#elif defined(VGO_freebsd)
+
+# if VG_WORDSIZE == 4
+   aspacem_maxAddr = VG_PGROUNDDN( sp_at_startup ) - 1;
+# else
+   aspacem_maxAddr = (Addr) (Addr)0x800000000 - 1; // 32G
+#  ifdef ENABLE_INNER
+   { Addr cse = VG_PGROUNDDN( sp_at_startup ) - 1;
+     if (aspacem_maxAddr > cse)
+        aspacem_maxAddr = cse;
+   }
+#    endif
+# endif
+
+   aspacem_cStart = aspacem_minAddr;
+   aspacem_vStart = VG_PGROUNDUP((aspacem_minAddr + aspacem_maxAddr + 1) / 2);
+
+#  ifdef ENABLE_INNER
+   aspacem_vStart -= 0x10000000; // 256M
+#  endif
+
+   suggested_clstack_end = aspacem_maxAddr - 16*1024*1024ULL
+                                           + VKI_PAGE_SIZE;
+
    // --- Solaris ------------------------------------------
+   
 #elif defined(VGO_solaris)
 #  if VG_WORDSIZE == 4
    /*
@@ -1760,7 +1788,7 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    suggested_clstack_end = aspacem_maxAddr - 16*1024*1024ULL
                                            + VKI_PAGE_SIZE;
 
-#endif
+#endif /* #else of 'defined(VGO_solaris)' */
    // --- (end) --------------------------------------------
 
    aspacem_assert(VG_IS_PAGE_ALIGNED(aspacem_minAddr));
@@ -3797,13 +3825,91 @@ Bool VG_(get_changed_segments)(
    return !css_overflowed;
 }
 
-#endif // defined(VGO_darwin)
-
 /*------END-procmaps-parser-for-Darwin---------------------------*/
+
+/*------BEGIN-procmaps-parser-for-Freebsd------------------------*/
+
+#elif defined(VGO_freebsd)
+
+ /* Size of a smallish table used to read /proc/self/map entries. */
+ #define M_PROCMAP_BUF 10485760	/* 10M */
+ 
+ /* static ... to keep it out of the stack frame. */
+ static char procmap_buf[M_PROCMAP_BUF];
+ 
+static void parse_procselfmaps (
+      void (*record_mapping)( Addr addr, SizeT len, UInt prot,
+                              ULong dev, ULong ino, Off64T offset, 
+                              const HChar* filename ),
+      void (*record_gap)( Addr addr, SizeT len )
+   )
+{
+    Int    i;
+    Addr   start, endPlusOne, gapStart;
+    char* filename;
+    char   *p;
+    UInt          prot;
+    ULong  foffset, dev, ino;
+    struct vki_kinfo_vmentry *kve;
+    vki_size_t len;
+    Int    oid[4];
+    SysRes sres;
+ 
+    foffset = ino = 0; /* keep gcc-4.1.0 happy */
+ 
+    oid[0] = VKI_CTL_KERN;
+    oid[1] = VKI_KERN_PROC;
+    oid[2] = VKI_KERN_PROC_VMMAP;
+    oid[3] = sr_Res(VG_(do_syscall0)(__NR_getpid));
+    len = sizeof(procmap_buf);
+ 
+    sres = VG_(do_syscall6)(__NR___sysctl, (UWord)oid, 4, (UWord)procmap_buf,
+       (UWord)&len, 0, 0);
+    if (sr_isError(sres)) {
+       VG_(debugLog)(0, "procselfmaps", "sysctll %ld\n", sr_Err(sres));
+       ML_(am_exit)(1);
+    }
+    gapStart = Addr_MIN;
+    i = 0;
+    p = procmap_buf;
+    while (p < (char *)procmap_buf + len) {
+       kve = (struct vki_kinfo_vmentry *)p;
+       start      = (UWord)kve->kve_start;
+       endPlusOne = (UWord)kve->kve_end;
+       foffset    = kve->kve_offset;
+       filename   = kve->kve_path;
+       dev        = kve->kve_fsid;
+       ino        = kve->kve_fileid;
+       if (filename[0] != '/') {
+         filename = NULL;
+         foffset = 0;
+       }
+ 
+       prot = 0;
+       if (kve->kve_protection & VKI_KVME_PROT_READ)  prot |= VKI_PROT_READ;
+       if (kve->kve_protection & VKI_KVME_PROT_WRITE) prot |= VKI_PROT_WRITE;
+       if (kve->kve_protection & VKI_KVME_PROT_EXEC)  prot |= VKI_PROT_EXEC;
+ 
+       if (record_gap && gapStart < start)
+          (*record_gap) ( gapStart, start-gapStart );
+ 
+       if (record_mapping && start < endPlusOne)
+          (*record_mapping) ( start, endPlusOne-start,
+                              prot, dev, ino,
+                              foffset, filename );
+       gapStart = endPlusOne;
+       p += kve->kve_structsize;
+    }
+ 
+    if (record_gap && gapStart < Addr_MAX)
+       (*record_gap) ( gapStart, Addr_MAX - gapStart + 1 );
+}
+
+/*------END-procmaps-parser-for-Freebsd--------------------------*/
 
 /*------BEGIN-procmaps-parser-for-Solaris------------------------*/
 
-#if defined(VGO_solaris)
+#elif defined(VGO_solaris)
 
 /* Note: /proc/self/xmap contains extended information about already
    materialized mappings whereas /proc/self/rmap contains information about
@@ -4113,7 +4219,7 @@ Bool VG_(am_search_for_new_segment)(Addr *addr, SizeT *size, UInt *prot)
 
 /*------END-procmaps-parser-for-Solaris--------------------------*/
 
-#endif // defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris)
+#endif // defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris) || defined(VGO_freebsd)
 
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/

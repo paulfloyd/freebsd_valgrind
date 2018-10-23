@@ -423,8 +423,11 @@ endif
 
 if HAVE_BUILTIN_ATOMIC_CXX
 check_PROGRAMS +=        \
-  annotate_smart_pointer \
-  tsan_unittest
+  annotate_smart_pointer
+endif
+
+if !VGCONF_OS_IS_FREEBSD
+check_PROGRAMS += tsan_unittest
 endif
 
 # clang 3.3 will generate errors about libstdc++ headers from 
@@ -477,7 +480,11 @@ LDADD = -lpthread
 
 bug322621_SOURCES           = bug322621.cpp
 concurrent_close_SOURCES    = concurrent_close.cpp
+
+if !VGCONF_OS_IS_FREEBSD
 dlopen_main_LDADD           = -ldl
+endif
+
 dlopen_lib_so_SOURCES       = dlopen_lib.c
 dlopen_lib_so_CFLAGS        = -fPIC
 dlopen_lib_so_LDFLAGS       = -shared -fPIC

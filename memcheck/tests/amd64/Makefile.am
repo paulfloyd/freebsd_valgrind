@@ -33,7 +33,7 @@ EXTRA_DIST = \
 	shr_edx.stderr.exp shr_edx.stdout.exp shr_edx.vgtest \
 	sse_memory.stderr.exp sse_memory.stdout.exp sse_memory.vgtest \
 	xor-undef-amd64.stderr.exp xor-undef-amd64.stdout.exp \
-	xor-undef-amd64.vgtest \
+	xor-undef-amd64.stderr.exp-freebsd xor-undef-amd64.vgtest \
 	xsave-avx.vgtest xsave-avx.stdout.exp xsave-avx.stderr.exp
 
 check_PROGRAMS = \
