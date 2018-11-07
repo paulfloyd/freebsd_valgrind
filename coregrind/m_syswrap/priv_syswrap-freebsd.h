@@ -59,6 +59,7 @@ DECL_TEMPLATE(freebsd, sys_getsockname);
 DECL_TEMPLATE(freebsd, sys_chflags);
 DECL_TEMPLATE(freebsd, sys_fchflags);
 DECL_TEMPLATE(freebsd, sys_pipe);
+DECL_TEMPLATE(freebsd, sys_pipe2);
 DECL_TEMPLATE(freebsd, sys_ktrace);
 DECL_TEMPLATE(freebsd, sys_getlogin);
 DECL_TEMPLATE(freebsd, sys_setlogin);
@@ -269,6 +270,8 @@ DECL_TEMPLATE(freebsd, sys_thr_kill);
 DECL_TEMPLATE(freebsd, sys_thr_kill2);
 DECL_TEMPLATE(freebsd, sys_fcntl);
 DECL_TEMPLATE(freebsd, sys_ioctl);
+DECL_TEMPLATE(freebsd, sys_mq_open);
+DECL_TEMPLATE(freebsd, sys_mq_unlink);
 #endif   // __PRIV_SYSWRAP_FREEBSD_H
 
 /*--------------------------------------------------------------------*/

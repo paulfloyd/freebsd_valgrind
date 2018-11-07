@@ -1483,6 +1483,7 @@ PRE(sys_inotify_rm_watch)
    PRINT( "sys_inotify_rm_watch ( %ld, %lx )", ARG1,ARG2);
    PRE_REG_READ2(long, "inotify_rm_watch", int, fd, int, wd);
 }
+#endif
 
 /* ---------------------------------------------------------------------
    mq_* wrappers
@@ -1523,6 +1524,7 @@ PRE(sys_mq_unlink)
    PRE_MEM_RASCIIZ( "mq_unlink(name)", ARG1 );
 }
 
+#if 0
 PRE(sys_mq_timedsend)
 {
    *flags |= SfMayBlock;
@@ -3717,6 +3719,71 @@ POST(sys_cpuset_getaffinity)
         POST_MEM_WRITE( ARG5, ARG4 );
 }
 
+struct pselect_sized_sigset {
+    const vki_sigset_t *ss;
+    vki_size_t ss_len;
+};
+struct pselect_adjusted_sigset {
+    struct pselect_sized_sigset ss; /* The actual syscall arg */
+    vki_sigset_t adjusted_ss;
+};
+
+PRE(sys_pselect)
+{
+   *flags |= SfMayBlock | SfPostOnFail;
+   PRINT("sys_pselect ( %ld, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#"
+         FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1, ARG2, ARG3, ARG4, ARG5, ARG6);
+   PRE_REG_READ6(long, "pselect",
+                 int, n, vki_fd_set *, readfds, vki_fd_set *, writefds,
+                 vki_fd_set *, exceptfds, struct vki_timeval *, timeout,
+                 void *, sig);
+   // XXX: this possibly understates how much memory is read.
+   if (ARG2 != 0)
+      PRE_MEM_READ( "pselect(readfds)",   
+		     ARG2, ARG1/8 /* __FD_SETSIZE/8 */ );
+   if (ARG3 != 0)
+      PRE_MEM_READ( "pselect(writefds)",  
+		     ARG3, ARG1/8 /* __FD_SETSIZE/8 */ );
+   if (ARG4 != 0)
+      PRE_MEM_READ( "pselect(exceptfds)", 
+		     ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
+   if (ARG5 != 0)
+      PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
+   if (ARG6 != 0) {
+      const struct pselect_sized_sigset *pss =
+          (struct pselect_sized_sigset *)(Addr)ARG6;
+      PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(*pss) );
+      if (!ML_(safe_to_deref)(pss, sizeof(*pss))) {
+         ARG6 = 1; /* Something recognisable to POST() hook. */
+      } else {
+         struct pselect_adjusted_sigset *pas;
+         pas = VG_(malloc)("syswrap.pselect.1", sizeof(*pas));
+         ARG6 = (Addr)pas;
+         pas->ss.ss = (void *)1;
+         pas->ss.ss_len = pss->ss_len;
+         if (pss->ss_len == sizeof(*pss->ss)) {
+            if (pss->ss == NULL) {
+               pas->ss.ss = NULL;
+            } else {
+               PRE_MEM_READ("pselect(sig->ss)", (Addr)pss->ss, pss->ss_len);
+               if (ML_(safe_to_deref)(pss->ss, sizeof(*pss->ss))) {
+                  pas->adjusted_ss = *pss->ss;
+                  pas->ss.ss = &pas->adjusted_ss;
+                  VG_(sanitize_client_sigmask)(&pas->adjusted_ss);
+               }
+            }
+         }
+      }
+   }
+}
+POST(sys_pselect)
+{
+   if (ARG6 != 0 && ARG6 != 1) {
+       VG_(free)((struct pselect_adjusted_sigset *)(Addr)ARG6);
+   }
+}
+
 #undef PRE
 #undef POST
 
@@ -3967,7 +4034,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENX_(__NR_setrlimit,		sys_setrlimit),			// 195
 
    BSDXY(__NR_getdirentries,		sys_getdirentries),		// 196
-   BSDX_(__NR_mmap,			sys_mmap7),			// 197
+   BSDX_(__NR_mmap6,			sys_mmap7),			// 197
    // __syscall (handled specially)					// 198
    BSDX_(__NR_lseek6,			sys_lseek),			// 199
 
@@ -4291,13 +4358,13 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_thr_new,			sys_thr_new),			// 455
 
    // sigqueue								   456
-   // kmq_open								   457
+   BSDXY(__NR_kmq_open,          sys_mq_open),			// 457
    // kmq_setattr							   458
    // kmq_timedreceive							   459
 
    // kmq_timedsend							   460
    // kmq_notify							   461
-   // kmq_unlink							   462
+   BSDX_(__NR_kmq_unlink,        sys_mq_unlink),			// 462
    // abort2								   463
 
    BSDX_(__NR_thr_set_name,		sys_thr_set_name),		// 464
@@ -4354,7 +4421,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    BSDXY(__NR___semctl,			sys___semctl),			// 510
    BSDXY(__NR_shmctl,			sys_shmctl),			// 512
-
+   BSDXY(__NR_pselect,          sys_pselect),			// 522
    BSDXY(__NR_pipe2,			sys_pipe2),			// 542
 
    BSDX_(__NR_fake_sigreturn,		sys_fake_sigreturn),		// 1000, fake sigreturn

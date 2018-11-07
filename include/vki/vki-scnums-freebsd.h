@@ -407,6 +407,7 @@
 #define	__NR_posix_openpt	504
 #define	__NR___semctl		510
 #define	__NR_shmctl		512
+#define __NR_pselect    522
 #define	__NR_pipe2		542
 
 #define __NR_fake_sigreturn	1000
