@@ -1889,7 +1889,7 @@ struct vki_ptrace_vm_entry {
 #define VKI_I386_SET_FSBASE     8
 #define VKI_I386_GET_GSBASE     9
 #define VKI_I386_SET_GSBASE     10
-#define VKI_I386_SET_XFPUSTATE	11
+#define VKI_I386_GET_XFPUSTATE  11
 
 #define VKI_AMD64_GET_FSBASE    128
 #define VKI_AMD64_SET_FSBASE    129
