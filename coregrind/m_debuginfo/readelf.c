@@ -453,11 +453,7 @@ Bool get_elf_symbol_info (
    if (sym_name_ioff == DiOffT_INVALID
        || /* VG_(strlen)(sym_name) == 0 */
           /* equivalent but cheaper ... */
-#if !defined(VGO_freebsd)
-          sym_name[0] == 0) {
-#else
           ML_(img_get_UChar)(escn_strtab->img, sym_name_ioff) == '\0') {
-#endif
       if (TRACE_SYMTAB_ENABLED) {
          HChar* sym_name = ML_(img_strdup)(escn_strtab->img,
                                            "di.gesi.1", sym_name_ioff);
