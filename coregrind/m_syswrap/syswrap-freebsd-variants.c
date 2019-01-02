@@ -44,6 +44,7 @@
    contain all constants/types needed for said wrappers.  The vki*.h
    headers should not be polluted with non-vanilla info. */
 
+#if defined(VGO_freebsd)
 
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
@@ -89,6 +90,7 @@ void ML_(linux_variant_POST_sys_bproc)( UWord arg1, UWord arg2,
 }
 #endif
 
+#endif // defined(VGO_freebsd)
 
 /*--------------------------------------------------------------------*/
 /*--- end                                 syswrap-linux-variants.c ---*/
