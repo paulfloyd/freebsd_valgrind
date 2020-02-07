@@ -2100,14 +2100,12 @@ ML_(generic_PRE_sys_shmctl) ( ThreadId tid,
    switch (arg1 /* cmd */) {
 #if defined(VKI_IPC_INFO)
    case VKI_IPC_INFO:
-#   if defined(VGO_linux)
+#   if !defined(VGO_freebsd)
       PRE_MEM_WRITE( "shmctl(IPC_INFO, buf)",
                      arg2, sizeof(struct vki_shminfo) );
-#   elif defined(VGO_freebsd)
+#   else
       PRE_MEM_WRITE( "shmctl(IPC_INFO, buf)",
                      arg2, sizeof(struct vki_shmid_ds) );
-#   else
-#     error "Unknown OS!"
 #   endif
       break;
 #if defined(VKI_IPC_64)
@@ -2491,7 +2489,7 @@ PRE(sys_ni_syscall)
    SET_STATUS_Failure( VKI_ENOSYS );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_iopl)
 {
    PRINT("sys_iopl ( %lu )", ARG1);
@@ -2522,7 +2520,7 @@ PRE(sys_msync)
    PRE_MEM_READ( "msync(start)", ARG1, ARG2 );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 // Nb: getpmsg() and putpmsg() are special additional syscalls used in early
 // versions of LiS (Linux Streams).  They are not part of the kernel.
 // Therefore, we have to provide this type ourself, rather than getting it
@@ -2679,7 +2677,7 @@ PRE(sys_mremap)
 }
 #endif /* HAVE_MREMAP */
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_nice)
 {
    PRINT("sys_nice ( %ld )", SARG1);
@@ -2720,7 +2718,7 @@ PRE(sys_getpriority)
    PRE_REG_READ2(long, "getpriority", int, which, int, who);
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_pwrite64)
 {
    *flags |= SfMayBlock;
@@ -2764,7 +2762,7 @@ POST(sys_fstatfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_fstatfs64)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -2785,7 +2783,7 @@ PRE(sys_getsid)
    PRE_REG_READ1(long, "getsid", vki_pid_t, pid);
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_pread64)
 {
    *flags |= SfMayBlock;
@@ -3310,7 +3308,7 @@ PRE(sys_fchmod)
    PRE_REG_READ2(long, "fchmod", unsigned int, fildes, vki_mode_t, mode);
 }
 
-#if defined (VGO_linux)
+#if !defined (VGO_freebsd)
 PRE(sys_newfstat)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -3397,7 +3395,7 @@ PRE(sys_truncate)
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_ftruncate64)
 {
    *flags |= SfMayBlock;
@@ -3447,7 +3445,7 @@ POST(sys_getdents)
       POST_MEM_WRITE( ARG2, RES );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_getdents64)
 {
    *flags |= SfMayBlock;
@@ -3569,7 +3567,7 @@ static void common_post_getrlimit(ThreadId tid, UWord a1, UWord a2)
    }
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_old_getrlimit)
 {
    PRINT("sys_old_getrlimit ( %lu, %#lx )", ARG1, ARG2);
@@ -3824,7 +3822,7 @@ PRE(sys_link)
    PRE_MEM_RASCIIZ( "link(newpath)", ARG2);
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_newlstat)
 {
    PRINT("sys_newlstat ( %#lx(%s), %#lx )", ARG1,(char*)ARG1,ARG2);
@@ -4409,7 +4407,7 @@ PRE(sys_setuid)
    PRE_REG_READ1(long, "setuid", vki_uid_t, uid);
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_newstat)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -4438,7 +4436,7 @@ POST(sys_statfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_statfs64)
 {
    PRINT("sys_statfs64 ( %#lx(%s), %llu, %#lx )",ARG1,(char*)ARG1,(ULong)ARG2,ARG3);
@@ -4509,7 +4507,7 @@ PRE(sys_unlink)
    PRE_MEM_RASCIIZ( "unlink(pathname)", ARG1 );
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_newuname)
 {
    PRINT("sys_newuname ( %#lx )", ARG1);

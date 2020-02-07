@@ -453,11 +453,7 @@ Bool get_elf_symbol_info (
    if (sym_name_ioff == DiOffT_INVALID
        || /* VG_(strlen)(sym_name) == 0 */
           /* equivalent but cheaper ... */
-#if !defined(VGO_freebsd)
-          sym_name[0] == 0) {
-#else
           ML_(img_get_UChar)(escn_strtab->img, sym_name_ioff) == '\0') {
-#endif
       if (TRACE_SYMTAB_ENABLED) {
          HChar* sym_name = ML_(img_strdup)(escn_strtab->img,
                                            "di.gesi.1", sym_name_ioff);
@@ -1554,7 +1550,7 @@ static HChar* readlink_path (const HChar *path)
 #if defined(VGP_arm64_linux)
       res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD,
                                               (UWord)path, (UWord)buf, bufsiz);
-#elif defined(VGO_linux) || defined(VGO_darwin)
+#elif defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
       res = VG_(do_syscall3)(__NR_readlink, (UWord)path, (UWord)buf, bufsiz);
 #elif defined(VGO_solaris)
       res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD, (UWord)path,
@@ -1881,6 +1877,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                Bool loaded = False;
                for (j = 0; j < VG_(sizeXA)(di->fsm.maps); j++) {
                   const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, j);
+
                   if (   (map->rx || map->rw)
                       && map->size > 0 /* stay sane */
                       && a_phdr.p_offset >= map->foff
@@ -2021,7 +2018,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rx)
-         TRACE_SYMTAB("rx: at %#lx are mapped foffsets %ld .. %lu\n",
+         TRACE_SYMTAB("rx: at %#lx are mapped foffsets %lld .. %llu\n",
                       map->avma, map->foff, map->foff + map->size - 1 );
    }
    TRACE_SYMTAB("rx: contains these svma regions:\n");
@@ -2034,7 +2031,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rw)
-         TRACE_SYMTAB("rw: at %#lx are mapped foffsets %ld .. %lu\n",
+         TRACE_SYMTAB("rw: at %#lx are mapped foffsets %lld .. %llu\n",
                       map->avma, map->foff, map->foff + map->size - 1 );
    }
    TRACE_SYMTAB("rw: contains these svma regions:\n");
@@ -2077,7 +2074,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
          }
       }
 
-      TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6ld .. %6lu  "
+      TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6lld .. %6llu  "
                    "  svma %p  name \"%s\"\n", 
                    i, inrx ? "rx" : "  ", inrw ? "rw" : "  ", alyn,
                    foff, (size == 0) ? foff : foff+size-1, (void *) svma, name);

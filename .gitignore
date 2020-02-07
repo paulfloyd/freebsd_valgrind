@@ -35,6 +35,13 @@
 /valt_load_address*.lds
 /vg_annotate
 /vg_cachegen
+/vfg.cflags
+/vfg.config
+/vfg.creator
+/vfg.creator.user
+/vfg.cxxflags
+/vfg.files
+/vfg.includes
 
 # /auxprogs/
 /auxprogs/.deps
@@ -50,6 +57,7 @@
 /auxprogs/getoff-mips64-linux
 /auxprogs/getoff-amd64-solaris
 /auxprogs/getoff-x86-solaris
+/auxprogs/getoff-*-freebsd
 /auxprogs/libmpiwrap-PPC32_LINUX.so
 /auxprogs/libmpiwrap-PPC64_LINUX.so
 /auxprogs/libmpiwrap-x86-darwin.so
@@ -65,6 +73,7 @@
 /cachegrind/cachegrind-*-darwin
 /cachegrind/cachegrind-*-linux
 /cachegrind/cachegrind-*-solaris
+/cachegrind/cachegrind-*-freebsd
 /cachegrind/cg_annotate
 /cachegrind/cg_diff
 /cachegrind/cg_merge
@@ -111,6 +120,7 @@
 /callgrind/callgrind-*-darwin
 /callgrind/callgrind-*-linux
 /callgrind/callgrind-*-solaris
+/callgrind/callgrind-*-freebsd
 /callgrind/callgrind_annotate
 /callgrind/callgrind_control
 /callgrind/Makefile
@@ -273,6 +283,7 @@
 /drd/drd-*-darwin
 /drd/drd-*-linux
 /drd/drd-*-solaris
+/drd/drd-*-freebsd
 /drd/Makefile
 /drd/Makefile.in
 /drd/splash2
@@ -623,6 +634,7 @@
 /helgrind/helgrind-*-darwin
 /helgrind/helgrind-*-linux
 /helgrind/helgrind-*-solaris
+/helgrind/helgrind-*-freebsd
 /helgrind/Makefile
 /helgrind/Makefile.in
 /helgrind/vgpreload_helgrind-*-linux.so
@@ -708,6 +720,7 @@
 /lackey/lackey-*-darwin
 /lackey/lackey-*-linux
 /lackey/lackey-*-solaris
+/lackey/lackey-*-freebsd
 /lackey/Makefile
 /lackey/Makefile.in
 
@@ -732,6 +745,7 @@
 /massif/massif-*-darwin
 /massif/massif-*-linux
 /massif/massif-*-solaris
+/massif/massif-*-freebsd
 /massif/ms_print
 
 # /massif/docs/
@@ -789,6 +803,7 @@
 /memcheck/memcheck-*-darwin
 /memcheck/memcheck-*-linux
 /memcheck/memcheck-*-solaris
+/memcheck/memcheck-*-freebsd
 
 # /memcheck/docs/
 /memcheck/docs/Makefile.in
@@ -1294,6 +1309,7 @@
 /none/none-*-darwin
 /none/none-*-linux
 /none/none-*-solaris
+/none/none-*-freebsd
 
 # /none/docs/
 /none/docs/Makefile.in

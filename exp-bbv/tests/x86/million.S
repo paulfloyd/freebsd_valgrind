@@ -22,7 +22,7 @@ test_loop:
 exit:
 	xor	%eax,%eax
 	inc	%eax	 		# put exit syscall number (1) in eax
-#if defined(VGO_darwin)
+#if defined(VGO_darwin) || defined(VGO_freebsd)
 	pushl	$0			# we return 0
 	int     $0x80			# and exit
 #elif defined(VGO_linux)

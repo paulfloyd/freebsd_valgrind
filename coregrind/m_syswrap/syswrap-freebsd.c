@@ -28,6 +28,8 @@
    The GNU General Public License is contained in the file COPYING.
 */
 
+#if defined(VGO_freebsd)
+
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
 #include "pub_core_vkiscnums.h"
@@ -375,9 +377,6 @@ SysRes ML_(do_fork) ( ThreadId tid )
 
 #define PRE(name)       DEFN_PRE_TEMPLATE(freebsd, name)
 #define POST(name)      DEFN_POST_TEMPLATE(freebsd, name)
-
-// Combine two 32-bit values into a 64-bit value
-#define LOHI64(lo,hi)   ( (lo) | ((ULong)(hi) << 32) )
 
 PRE(sys_fork)
 {
@@ -1648,6 +1647,15 @@ POST(sys_clock_getres)
       POST_MEM_WRITE( ARG2, sizeof(struct vki_timespec) );
 }
 
+PRE(sys_minherit)
+{
+   PRINT("sys_minherit( %#lx, %zu, %ld )" , ARG1,ARG2,ARG3);
+}
+
+POST(sys_minherit)
+{
+}
+
 #if 0
 PRE(sys_clock_nanosleep)
 {
@@ -2831,6 +2839,15 @@ PRE(sys_shmctl)
    }
 }
 
+PRE(sys_posix_fadvise)
+{
+   PRINT("sys_posic_fadvise ( %ld, %llu, %lu, %ld )",
+         SARG1, MERGE64(ARG2,ARG3), ARG4, SARG5);
+  // PRE_REG_READ5(long, "fadvise64",
+  //               int, fd, vki_u32, MERGE64_FIRST(offset), vki_u32, MERGE64_SECOND(offset),
+  //               vki_size_t, len, int, advice);
+}
+
 PRE(sys_shmctl7)
 {
    PRINT("sys_shmctl7 ( %ld, %ld, %#lx )",ARG1,ARG2,ARG3);
@@ -3420,8 +3437,8 @@ PRE(sys_ioctl)
                  unsigned int, fd, unsigned int, request, unsigned long, arg);
 
 /* On FreeBSD, ALL ioctl's are IOR/IOW encoded.  Just use the default decoder */
-   if (VG_(strstr)(VG_(clo_sim_hints), "lax-ioctls") != NULL) {
-      /* 
+   if (SimHintiS(SimHint_lax_ioctls, VG_(clo_sim_hints))) {
+      /*
       * Be very lax about ioctl handling; the only
       * assumption is that the size is correct. Doesn't
       * require the full buffer to be initialized when
@@ -3690,7 +3707,7 @@ POST(sys_ptrace)
 PRE(sys_cpuset_setaffinity)
 {
 
-    PRINT("sys_cpuset_setaffinity ( %ld, %ld, %lld, %llu, %#lx )", ARG1, ARG2,
+    PRINT("sys_cpuset_setaffinity ( %ld, %ld, %lu, %lu, %#lx )", ARG1, ARG2,
         ARG3, ARG4, ARG5);
     PRE_REG_READ5(int, "cpuset_setaffinity",
         int, level, int, which, long, id,
@@ -3701,7 +3718,7 @@ PRE(sys_cpuset_setaffinity)
 PRE(sys_cpuset_getaffinity)
 {
 
-    PRINT("sys_cpuset_getaffinity ( %ld, %ld, %lld, %llu, %#lx )", ARG1, ARG2,
+    PRINT("sys_cpuset_getaffinity ( %ld, %ld, %lu, %lu, %#lx )", ARG1, ARG2,
         ARG3, ARG4, ARG5);
     PRE_REG_READ5(int, "cpuset_getaffinity",
         int, level, int, which, long, id,
@@ -3714,6 +3731,19 @@ POST(sys_cpuset_getaffinity)
     vg_assert(SUCCESS);
     if (RES == 0)
         POST_MEM_WRITE( ARG5, ARG4 );
+}
+
+PRE(sys_getrandom)
+{
+   PRINT("sys_getrandom ( %#lx, %lu, %lu )" , ARG1, ARG2, ARG3);
+   PRE_REG_READ3(int, "getrandom",
+                 char *, buf, vki_size_t, count, unsigned int, flags);
+   PRE_MEM_WRITE( "getrandom(cpu)", ARG1, ARG2 );
+}
+
+POST(sys_getrandom)
+{
+   POST_MEM_WRITE( ARG1, ARG2 );
 }
 
 #undef PRE
@@ -3955,9 +3985,14 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl lfs_segclean						   186
    // unimpl lfs_segwait						   187
 
-   BSDXY(__NR_stat,			sys_stat),			// 188
-   BSDXY(__NR_fstat,			sys_fstat),			// 189
-   BSDXY(__NR_lstat,			sys_lstat),			// 190
+    // @todo PJF conditional
+
+   //BSDXY(__NR_stat,			sys_stat),			// 188
+   //BSDXY(__NR_fstat,			sys_fstat),			// 189
+   //BSDXY(__NR_lstat,			sys_lstat),			// 190
+   BSDXY(__NR_freebsd11_stat,			sys_stat),			// 188
+   BSDXY(__NR_freebsd11_fstat,			sys_fstat),			// 189
+   BSDXY(__NR_freebsd11_lstat,			sys_lstat),			// 190
    BSDX_(__NR_pathconf,			sys_pathconf),			// 191
 
    BSDX_(__NR_fpathconf,		sys_fpathconf),			// 192
@@ -4032,7 +4067,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
 // BSDXY(__NR_ntp_gettime,		sys_ntp_gettime),		// 248
    // nosys								   249
-// BSDXY(__NR_minherit,			sys_minherit),			// 250
+   BSDXY(__NR_minherit,			sys_minherit),			// 250
    BSDX_(__NR_rfork,			sys_rfork),			// 251
 
    GENXY(__NR_openbsd_poll,		sys_poll),			// 252
@@ -4215,9 +4250,14 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // mac_syscall							   394
    BSDXY(__NR_getfsstat,		sys_getfsstat),			// 395
 
-   BSDXY(__NR_statfs6,			sys_statfs6),			// 396
-   BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
-   BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
+    // @todo PJF condiitonal
+//   BSDXY(__NR_statfs6,			sys_statfs6),			// 396
+//   BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
+//   BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
+    BSDXY(__NR_freebsd11_statfs6,			sys_statfs6),			// 396
+    BSDXY(__NR_freebsd11_fstatfs6,			sys_fstatfs6),			// 397
+    BSDXY(__NR_freebsd11_fhstatfs6,		sys_fhstatfs6),			// 398
+
    // nosys								   399
 
    // ksem_close							   400
@@ -4349,13 +4389,69 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_symlinkat,		sys_symlinkat),			// 502
    BSDX_(__NR_unlinkat,			sys_unlinkat),			// 503
 
-   // posix_openpt							   504
-
+   // posix_openpt                              504
+   // gssd_syscall                              505
+   // jail_get                                  506
+   // jail_set                                  507
+   // jail_remove                           	508
+   // closefrom                             	509
    BSDXY(__NR___semctl,			sys___semctl),			// 510
+   // msgctl                                	511
    BSDXY(__NR_shmctl,			sys_shmctl),			// 512
-
+    // lpathconf                                513
+    /* 514 is obsolete cap_new */
+    // __cap_rights_get                         515
+    // cap_enter                                516
+    // cap_getmode                              517
+    // pdfork                                   518
+    // pdkill                                   519
+    // pdgetpid                                 520
+    // pselect                                  522
+    // getloginclass                            523
+    // setloginclass                            524
+    // rctl_get_racct                           525
+    // rctl_get_rules                           526
+    // rctl_get_limits                          527
+    // rctl_add_rule                            528
+    // rctl_remove_rule                         529
+    // posix_fallocate                          530
+    BSDX_(__NR_posix_fadvise,   sys_posix_fadvise), // 531
+    // wait6                                    532
+    // cap_rights_limit                         533
+    // cap_ioctls_limit                         534
+    // cap_ioctls_get                           535
+    // SYS_cap_fcntls_limit                     536
+    // cap_fcntls_get                           537
+    // bindat                                   538
+    // connectat                                539
+    // chflagsat                                540
+    // accept4                                  541
    BSDXY(__NR_pipe2,			sys_pipe2),			// 542
-
+    // aio_mlock                            	543
+    // procctl                                  544
+    // ppoll                                    545
+    // futimens                                 546
+    // utimensat                                547
+    /* 548 is obsolete numa_getaffinity */
+    /* 549 is obsolete numa_setaffinity */
+    // fdatasync                                550
+   BSDXY(__NR_fstat,			sys_fstat),			// 551
+    // fstatat                                  552
+    // fhstat                                   553
+    // getdirentries                            554
+    // statfs                                   555
+    // fstatfs                                  556
+    // getfsstat                            	557
+    // fhstatfs                                 558
+    // mknodat                                  559
+    // kevent                                   560
+    // cpuset_getdomain                         561
+    // cpuset_setdomain                         562
+   BSDXY(__NR_getrandom,			sys_getrandom),			// 563
+    // getfhat                                  564
+    // fhlink                                   565
+    // fhlinkat                                 566
+    // fhreadlink                               567
    BSDX_(__NR_fake_sigreturn,		sys_fake_sigreturn),		// 1000, fake sigreturn
 
 };
@@ -4366,3 +4462,6 @@ const UInt ML_(syscall_table_size) =
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/
 /*--------------------------------------------------------------------*/
+
+#endif
+

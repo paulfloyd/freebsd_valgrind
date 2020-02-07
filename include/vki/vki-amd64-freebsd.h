@@ -41,6 +41,9 @@
 #define	_VKI_NSIG_WORDS		4
 #define	_VKI_NSIG_BPW		((_VKI_NSIG) / (_VKI_NSIG_WORDS))
 
+//#include "vki-freebsd.h"
+#include "vki-machine-types-amd64-freebsd.h"
+
 typedef struct {
 	vki_uint32_t	sig[_VKI_NSIG_WORDS];
 } vki_sigset_t;
@@ -77,9 +80,13 @@ struct vki_sigcontext {
 	long    r13;
 	long    r14;
 	long    r15;
-	long    trapno;
+    long    trapno;
+    short   fs;
+    short   gs;
 	long    addr;
 	long    flags;
+    short   es;
+    short   ds;
 	long    err;
 	long    rip;
 	long    cs;
@@ -90,7 +97,13 @@ struct vki_sigcontext {
 	long	fpformat;
 	long	ownedfp;
 	struct _vki_fpstate fpstate;
-	long	spare2[8];
+
+    long    fsbase;
+    long    gsbase;
+    long    xfpustate;
+    long    xfpustate_len;
+
+    long    spare[4];
 };
 
 /*
@@ -190,8 +203,10 @@ struct vki_mcontext {
 	vki_register_t	r14;
 	vki_register_t	r15;
 	vki_register_t	trapno;
+    // @todo PJF missing fs and gs
 	vki_register_t	addr;
 	vki_register_t	flags;
+    // @todo PJF missing es and ds
 	vki_register_t	err;
 	vki_register_t	rip;
 	vki_register_t	cs;
@@ -203,7 +218,13 @@ struct vki_mcontext {
 	long		fpformat;
 	long		ownedfp;
 	struct _vki_fpstate	fpstate;
-	long		spare2[8];
+    vki_register_t	fsbase;
+    vki_register_t	gsbase;
+
+    vki_register_t	xfpustate;
+    vki_register_t	xfpustate_len;
+
+    long	spare2[4];
 };
 
 #define VKI_FPFMT_NODEV		0x10000

@@ -31,7 +31,7 @@
 #ifndef __PRIV_SYSWRAP_FREEBSD_H
 #define __PRIV_SYSWRAP_FREEBSD_H
 
-/* requires #include "priv_types_n_macros.h" */
+#include "priv_types_n_macros.h"
 
 // Clone-related functions
 extern Word ML_(start_thread_NORETURN) ( void* arg );
@@ -120,7 +120,9 @@ DECL_TEMPLATE(freebsd, sys_msgsnd);
 DECL_TEMPLATE(freebsd, sys_msgrcv);
 DECL_TEMPLATE(freebsd, sys_shmat);
 DECL_TEMPLATE(freebsd, sys_shmctl);
+DECL_TEMPLATE(freebsd, sys_pipe2);
 DECL_TEMPLATE(freebsd, sys_shmctl7);
+DECL_TEMPLATE(freebsd, sys_posix_fadvise);
 DECL_TEMPLATE(freebsd, sys_shmdt);
 DECL_TEMPLATE(freebsd, sys_shmget);
 DECL_TEMPLATE(freebsd, sys_clock_gettime);
@@ -269,6 +271,7 @@ DECL_TEMPLATE(freebsd, sys_thr_kill);
 DECL_TEMPLATE(freebsd, sys_thr_kill2);
 DECL_TEMPLATE(freebsd, sys_fcntl);
 DECL_TEMPLATE(freebsd, sys_ioctl);
+DECL_TEMPLATE(freebsd, sys_getrandom);
 #endif   // __PRIV_SYSWRAP_FREEBSD_H
 
 /*--------------------------------------------------------------------*/

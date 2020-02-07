@@ -291,6 +291,7 @@ static Addr build_sigframe(ThreadState *tst,
 
 /* EXPORTED */
 void VG_(sigframe_create)( ThreadId tid, 
+			   Bool on_altstack,
                            Addr esp_top_of_frame,
                            const vki_siginfo_t *siginfo,
                            const struct vki_ucontext *siguc,

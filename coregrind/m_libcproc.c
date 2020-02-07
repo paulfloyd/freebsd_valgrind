@@ -998,6 +998,16 @@ UInt VG_(get_user_milliseconds)(void)
       }
    }
 
+#  elif defined(VGO_freebsd)
+   {
+      struct vki_rusage ru;
+      VG_(memset)(&ru, 0, sizeof(ru));
+      SysRes sr = VG_(do_syscall2)(__NR_getrusage, VKI_RUSAGE_SELF, (UWord)&ru);
+      if (!sr_isError(sr)) {
+         res = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000;
+      }
+   }
+
 #  elif defined(VGO_darwin)
    res = 0;
 

@@ -242,11 +242,11 @@ SyscallTableEntry* ML_(get_solaris_syscall_entry)( UInt sysno );
 
 #define DEFN_PRE_TEMPLATE(auxstr, name)                          \
    void vgSysWrap_##auxstr##_##name##_before                     \
-                                 ( ThreadId tid,                 \
-                                   SyscallArgLayout* layout,     \
+                                 ( __attribute__((unused))ThreadId tid,                 \
+                                   __attribute__((unused))SyscallArgLayout* layout,     \
                                    /*MOD*/SyscallArgs* arrghs,   \
-                                   /*OUT*/SyscallStatus* status, \
-                                   /*OUT*/UWord* flags           \
+                                   /*OUT*/ __attribute__((unused))SyscallStatus* status, \
+                                   /*OUT*/ __attribute__((unused))UWord* flags           \
                                  )
 
 #define DEFN_POST_TEMPLATE(auxstr, name)                         \
@@ -301,8 +301,8 @@ SyscallTableEntry* ML_(get_solaris_syscall_entry)( UInt sysno );
 #  define GENX_(sysno, name)  WRAPPER_ENTRY_X_(generic, sysno, name)
 #  define GENXY(sysno, name)  WRAPPER_ENTRY_XY(generic, sysno, name)
 #elif defined(VGO_darwin)
-#  define GENX_(sysno, name)  WRAPPER_ENTRY_X_(generic, sysno, name)
-#  define GENXY(sysno, name)  WRAPPER_ENTRY_XY(generic, sysno, name)
+#  define GENX_(sysno, name)  WRAPPER_ENTRY_X_(generic, VG_DARWIN_SYSNO_INDEX(sysno), name)
+#  define GENXY(sysno, name)  WRAPPER_ENTRY_XY(generic, VG_DARWIN_SYSNO_INDEX(sysno), name)
 #else
 #  error Unknown OS
 #endif

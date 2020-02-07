@@ -138,9 +138,11 @@
 #define	__NR_setsid		147
 #define	__NR_quotactl		148
 #define	__NR_nfssvc		155
-#define	__NR_statfs		157
-#define	__NR_fstatfs		158
-#define	__NR_lgetfh		160
+
+// @todo PJF old FreeBSD 4 !!!
+//#define	__NR_statfs		157
+//#define	__NR_fstatfs		158
+//#define	__NR_lgetfh		160
 #define	__NR_getfh		161
 #define	__NR_getdomainname	162
 #define	__NR_setdomainname	163
@@ -156,14 +158,29 @@
 #define	__NR_setgid		181
 #define	__NR_setegid		182
 #define	__NR_seteuid		183
-#define	__NR_stat		188
-#define	__NR_fstat		189
-#define	__NR_lstat		190
+
+// @todo PJF need some conditional compilation here
+
+// pre FreeBSD 12
+//#define	__NR_stat		188
+//#define	__NR_fstat		189
+//#define	__NR_lstat		190
+
+
+#define	__NR_freebsd11_stat		188
+#define	__NR_freebsd11_fstat		189
+#define	__NR_freebsd11_lstat		190
+
 #define	__NR_pathconf		191
 #define	__NR_fpathconf		192
 #define	__NR_getrlimit		194
 #define	__NR_setrlimit		195
-#define	__NR_getdirentries	196
+
+// @todo PJF conditional
+//#define	__NR_getdirentries	196
+
+#define	__NR_freebsd11_getdirentries	196
+
 #define	__NR_mmap6		197
 #define	__NR___syscall		198
 #define	__NR_lseek6		199
@@ -214,9 +231,16 @@
 #define	__NR_nstat		278
 #define	__NR_nfstat		279
 #define	__NR_nlstat		280
-#define	__NR_fhstatfs		297
+
+// @todo PJF FreeBSD 4 !!!
+//#define	__NR_fhstatfs		297
 #define	__NR_fhopen		298
-#define	__NR_fhstat		299
+
+// @todo conditional
+//#define	__NR_fhstat		299
+
+#define	__NR_freeebsd11_fhstat		299
+
 #define	__NR_modnext		300
 #define	__NR_modstat		301
 #define	__NR_modfnext		302
@@ -275,7 +299,11 @@
 #define	__NR_getresuid		360
 #define	__NR_getresgid		361
 #define	__NR_kqueue		362
-#define	__NR_kevent		363
+
+// @todo PJF conditional
+//#define	__NR_kevent		363
+#define	__NR_freebsd11_kevent		363
+
 #define	__NR_extattr_set_fd	371
 #define	__NR_extattr_get_fd	372
 #define	__NR_extattr_delete_fd	373
@@ -299,10 +327,19 @@
 #define	__NR_uuidgen		392
 #define	__NR_sendfile		393
 #define	__NR_mac_syscall	394
-#define	__NR_getfsstat		395
-#define	__NR_statfs6		396
-#define	__NR_fstatfs6		397
-#define	__NR_fhstatfs6		398
+
+// @todo PJF conditional
+//#define	__NR_getfsstat		395
+//#define	__NR_statfs6		396
+//#define	__NR_fstatfs6		397
+//#define	__NR_fhstatfs6		398
+
+#define	__NR_freebsd11_getfsstat		395
+#define	__NR_freebsd11_statfs6		396
+#define	__NR_freebsd11_fstatfs6		397
+#define	__NR_freebsd11_fhstatfs6		398
+
+
 #define	__NR_ksem_close		400
 #define	__NR_ksem_post		401
 #define	__NR_ksem_wait		402
@@ -393,12 +430,22 @@
 #define	__NR_fchmodat		490
 #define	__NR_fchownat		491
 #define	__NR_fexecve		492
-#define	__NR_fstatat		493
+
+// @todo PJF conditional
+//#define	__NR_fstatat		493
+
+#define	__NR_freebsd11_fstatat		493
+
 #define	__NR_futimesat		494
-#define	__NR_linkat		495
+#define	__NR_linkat         495
 #define	__NR_mkdirat		496
 #define	__NR_mkfifoat		497
-#define	__NR_mknodat		498
+
+// @todo PJF conditional
+//#define	__NR_mknodat		498
+
+#define	__NR_freebsd11_mknodat		498
+
 #define	__NR_openat		499
 #define	__NR_readlinkat		500
 #define	__NR_renameat		501
@@ -406,8 +453,59 @@
 #define	__NR_unlinkat		503
 #define	__NR_posix_openpt	504
 #define	__NR___semctl		510
-#define	__NR_shmctl		512
-#define	__NR_pipe2		542
+#define	__NR_shmctl         512
+#define	__NR__lpathconf     513
+/* 514 is obsolete cap_new */
+#define	__NR__cap_rights_get    515
+#define	__NR_cap_enter  	516
+#define	__NR_cap_getmode	517
+#define	__NR_pdfork         518
+#define	__NR_pdkill         519
+#define	__NR_pdgetpid       520
+#define	__NR_pselect    	522
+#define	__NR_getloginclass	523
+#define	_NR_setloginclass	524
+#define	__NR_rctl_get_racct	525
+#define	__NR_rctl_get_rules	526
+#define	__NR_rctl_get_limits	527
+#define	__NR_rctl_add_rule	528
+#define	__NR_rctl_remove_rule	529
+#define	__NR_posix_fallocate	530
+#define	__NR_posix_fadvise	531
+#define	__NR_wait6          532
+#define	__NR_cap_rights_limit	533
+#define	__NR_cap_ioctls_limit	534
+#define	__NR_cap_ioctls_get	535
+#define	__NR_cap_fcntls_limit	536
+#define	__NR_cap_fcntls_get	537
+#define	__NR_bindat         538
+#define	__NR_connectat  	539
+#define	__NR_chflagsat  	540
+#define	__NR_accept4    	541
+#define	__NR_pipe2          542
+#define __NR_aio_mlock   543
+#define __NR_procctl     544
+#define __NR_ppoll       545
+#define __NR_futimens    546
+#define __NR_utimensat   547
+#define __NR_fdatasync   550
+#define __NR_fstat       551
+#define __NR_fstatat     552
+#define __NR_fhstat      553
+#define __NR_getdirentries       554
+#define __NR_statfs      555
+#define __NR_fstatfs     556
+#define __NR_getfsstat   557
+#define __NR_fhstatfs    558
+#define __NR_mknodat     559
+#define __NR_kevent      560
+#define __NR_cpuset_getdomain    561
+#define __NR_cpuset_setdomain    562
+#define __NR_getrandom   563
+#define __NR_getfhat     564
+#define __NR_fhlink      565
+#define __NR_fhlinkat    566
+#define __NR_fhreadlink  567
 
 #define __NR_fake_sigreturn	1000
 

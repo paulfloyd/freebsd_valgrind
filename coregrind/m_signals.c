@@ -1067,7 +1067,7 @@ static void handle_SCSS_change ( Bool force_update )
       ksa.sa_flags    = skss.skss_per_sig[sig].skss_flags;
 #     if !defined(VGP_ppc32_linux) && \
          !defined(VGP_x86_darwin) && !defined(VGP_amd64_darwin) && \
-         !defined(VGP_mips32_linux) && !defined(VGO_solaris) && !defined(VGP_amd64_freebsd)
+         !defined(VGP_mips32_linux) && !defined(VGO_solaris) && !defined(VGO_freebsd)
       ksa.sa_restorer = my_sigreturn;
 #     endif
       /* Re above ifdef (also the assertion below), PaulM says:

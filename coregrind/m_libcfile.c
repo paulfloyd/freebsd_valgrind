@@ -416,10 +416,12 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
    }
 #  endif /* defined(__NR_stat64) */
    /* This is the fallback ("vanilla version"). */
-   { struct vki_stat buf;
+   { struct vki_stat11 buf;
 #    if defined(VGP_arm64_linux)
      res = VG_(do_syscall3)(__NR3264_fstatat, VKI_AT_FDCWD,
                                               (UWord)file_name, (UWord)&buf);
+#    elif defined(VGO_freebsd)
+     res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
 #    else
      res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
 #    endif

@@ -276,6 +276,8 @@
 // Valid on all platforms(?)
 #define  VG_Z_LIBSTDCXX_SONAME  libstdcZpZpZa           // libstdc++*
 #define  VG_Z_LIBSUPCXX_SONAME  libsupcZpZpZa           // libsupc++*
+#define  VG_Z_LIBCXX_SONAME     libcZpZpZa              // libc++*
+
 
 /* --- Soname of the pthreads library. --- */
 
