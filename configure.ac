@@ -45,6 +45,8 @@ AC_PROG_CXX
 #         AC_SUBST([OBJCFLAGS])
 #        ])
 AC_PROG_RANLIB
+AC_PROG_EGREP
+
 # Set LTO_RANLIB variable to an lto enabled ranlib
 if test "x$LTO_RANLIB" = "x"; then
   AC_PATH_PROGS([LTO_RANLIB], [gcc-ranlib])
@@ -224,7 +226,7 @@ case "${host_cpu}" in
         ARCH_MAX="x86"
         ;;
 
-     x86_64) 
+     x86_64|amd64) 
         AC_MSG_RESULT([ok (${host_cpu})])
         ARCH_MAX="amd64"
         ;;
@@ -358,6 +360,12 @@ case "${host_os}" in
                     ;;
         esac
 
+        ;;
+
+     *freebsd*)
+        AC_MSG_RESULT([ok (${host_os})])
+        VGCONF_OS="freebsd"
+	DEFAULT_SUPP="freebsd.supp ${DEFAULT_SUPP}"
         ;;
 
      *darwin*)
@@ -660,6 +668,41 @@ case "$ARCH_MAX-$VGCONF_OS" in
         valt_load_address_pri_inner="0x38000000"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
        ;;
+     x86-freebsd)
+        VGCONF_ARCH_PRI="x86"
+        VGCONF_ARCH_SEC=""
+	VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
+	VGCONF_PLATFORM_SEC_CAPS=""
+        valt_load_address_pri_norml="0x38000000"
+        valt_load_address_pri_inner="0x28000000"
+        valt_load_address_sec_norml="0xUNSET"
+        valt_load_address_sec_inner="0xUNSET"
+        AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
+	;;
+     amd64-freebsd)
+	if test x$vg_cv_only64bit = xyes; then
+           VGCONF_ARCH_PRI="amd64"
+           VGCONF_ARCH_SEC=""
+	   VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
+	   VGCONF_PLATFORM_SEC_CAPS=""
+	elif test x$vg_cv_only32bit = xyes; then
+	   VGCONF_ARCH_PRI="x86"
+           VGCONF_ARCH_SEC=""
+	   VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
+	   VGCONF_PLATFORM_SEC_CAPS=""
+	else
+           VGCONF_ARCH_PRI="amd64"
+           VGCONF_ARCH_SEC="x86"
+	   VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
+	   VGCONF_PLATFORM_SEC_CAPS="X86_FREEBSD"
+	fi
+        FLAG_32ON64="-B/usr/lib32"
+        valt_load_address_pri_norml="0x38000000"
+        valt_load_address_pri_inner="0x28000000"
+        valt_load_address_sec_norml="0x38000000"
+        valt_load_address_sec_inner="0x28000000"
+        AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
+	;;
      # Darwin gets identified as 32-bit even when it supports 64-bit.
      # (Not sure why, possibly because 'uname' returns "i386"?)  Just about
      # all Macs support both 32-bit and 64-bit, so we just build both.  If
@@ -860,12 +903,15 @@ esac
 AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_X86,   
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_LINUX \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_LINUX \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_FREEBSD \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_SOLARIS \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_SOLARIS )
 AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_AMD64, 
                test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_LINUX \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_SOLARIS )
 AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_PPC32, 
@@ -918,6 +964,11 @@ AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_MIPS64_LINUX,
                test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX)
 AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_NANOMIPS_LINUX,
                test x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)
+AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_FREEBSD,   
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_FREEBSD)
+AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_AMD64_FREEBSD, 
+               test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD)
 AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_DARWIN,   
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN)
@@ -943,8 +994,13 @@ AM_CONDITIONAL(VGCONF_OS_IS_LINUX,
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xARM64_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xS390X_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
-                 -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
-                 -o x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX)
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)                 
+ AM_CONDITIONAL(VGCONF_OS_IS_FREEBSD,
+                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
+                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD \
+                  -o x$VGCONF_PLATFORM_PRI_CAPS = xPPC32_FREEBSD \
+                  -o x$VGCONF_PLATFORM_PRI_CAPS = xPPC64_FREEBSD)
 AM_CONDITIONAL(VGCONF_OS_IS_DARWIN,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
@@ -1068,6 +1124,14 @@ AC_EGREP_CPP([DARWIN_LIBC], [
 ],
 GLIBC_VERSION="darwin")
 
+AC_EGREP_CPP([FREEBSD_LIBC], [
+#include <sys/cdefs.h>
+#if defined(__FreeBSD__)
+  FREEBSD_LIBC
+#endif
+],
+GLIBC_VERSION="freebsd")
+
 # not really a version check
 AC_EGREP_CPP([BIONIC_LIBC], [
 #if defined(__ANDROID__)
@@ -1132,6 +1196,11 @@ case "${GLIBC_VERSION}" in
      darwin)
 	AC_MSG_RESULT(Darwin)
 	AC_DEFINE([DARWIN_LIBC], 1, [Define to 1 if you're using Darwin])
+	# DEFAULT_SUPP set by kernel version check above.
+	;;
+     freebsd)
+	AC_MSG_RESULT(FreeBSD)
+	AC_DEFINE([FREEBSD_LIBC], 1, [Define to 1 if you're using FreeBSD])
 	# DEFAULT_SUPP set by kernel version check above.
 	;;
      bionic)
@@ -1841,12 +1910,12 @@ case "${host_cpu}" in
         AC_MSG_CHECKING([if gcc accepts -m32])
 
         safe_CFLAGS=$CFLAGS
-        CFLAGS="-m32 -Werror"
+        CFLAGS="${FLAG_32ON64} -m32 -Werror"
 
         AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
           return 0;
         ]])], [
-        FLAG_M32="-m32"
+        FLAG_M32="${FLAG_32ON64} -m32"
         AC_MSG_RESULT([yes])
         ], [
         FLAG_M32=""
@@ -4248,6 +4317,8 @@ AC_FUNC_MMAP
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([rt], [clock_gettime])
 
+safe_CFLAGS=$CFLAGS
+CFLAGS="${CFLAGS} -pthread"
 AC_CHECK_FUNCS([     \
         clock_gettime\
         epoll_create \
@@ -4286,6 +4357,7 @@ AC_CHECK_FUNCS([     \
         preadv2 \
         pwritev2 \
         ])
+CFLAGS=$safe_CFLAGS
 
 # AC_CHECK_LIB adds any library found to the variable LIBS, and links these
 # libraries with any shared object and/or executable. This is NOT what we
@@ -4327,6 +4399,7 @@ AC_PATH_PROG([MPI_CC], [mpicc], [mpicc],
 
 mflag_primary=
 if test x$VGCONF_PLATFORM_PRI_CAPS = xX86_LINUX \
+     -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xPPC32_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xARM_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
@@ -4334,6 +4407,7 @@ if test x$VGCONF_PLATFORM_PRI_CAPS = xX86_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_SOLARIS ; then
   mflag_primary=$FLAG_M32
 elif test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_LINUX \
+       -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD \
        -o x$VGCONF_PLATFORM_PRI_CAPS = xPPC64_LINUX \
        -o x$VGCONF_PLATFORM_PRI_CAPS = xARM64_LINUX \
        -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
@@ -4349,7 +4423,8 @@ mflag_secondary=
 if test x$VGCONF_PLATFORM_SEC_CAPS = xX86_LINUX \
      -o x$VGCONF_PLATFORM_SEC_CAPS = xPPC32_LINUX \
      -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_SOLARIS \
-     -o x$VGCONF_PLATFORM_SEC_CAPS = xMIPS32_LINUX ; then
+     -o x$VGCONF_PLATFORM_SEC_CAPS = xMIPS32_LINUX \
+     -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_FREEBSD ; then
   mflag_secondary=$FLAG_M32
 elif test x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN ; then
   mflag_secondary="$FLAG_M32 -arch i386"
@@ -4368,6 +4443,9 @@ AC_SUBST(MPI_CC)
 ## We leave the MPI_FLAG_M3264_ logic in mpi/Makefile.am and assume that
 ## mflag_primary/mflag_secondary are sufficient approximations of that behavior
 AM_COND_IF([VGCONF_OS_IS_LINUX],
+           [CFLAGS_MPI="-g -O -fno-omit-frame-pointer -Wall -fpic"
+            LDFLAGS_MPI="-fpic -shared"])
+AM_COND_IF([VGCONF_OS_IS_FREEBSD],
            [CFLAGS_MPI="-g -O -fno-omit-frame-pointer -Wall -fpic"
             LDFLAGS_MPI="-fpic -shared"])
 AM_COND_IF([VGCONF_OS_IS_DARWIN],
@@ -4867,6 +4945,8 @@ AC_CONFIG_FILES([
 ])
 AC_CONFIG_FILES([coregrind/link_tool_exe_linux],
                 [chmod +x coregrind/link_tool_exe_linux])
+AC_CONFIG_FILES([coregrind/link_tool_exe_freebsd],
+                [chmod +x coregrind/link_tool_exe_freebsd])
 AC_CONFIG_FILES([coregrind/link_tool_exe_darwin],
                 [chmod +x coregrind/link_tool_exe_darwin])
 AC_CONFIG_FILES([coregrind/link_tool_exe_solaris],

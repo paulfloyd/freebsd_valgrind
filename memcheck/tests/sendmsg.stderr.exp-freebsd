@@ -1,0 +1,19 @@
+Syscall param socketcall.connect(serv_addr..sa_len) points to uninitialised byte(s)
+   ...
+   by 0x........: main (sendmsg.c:29)
+ Address 0x........ is on thread 1's stack
+ in frame #1, created by main (sendmsg.c:13)
+
+Syscall param sendmsg(sendmsg) points to uninitialised byte(s)
+   at 0x........: __sys_sendmsg (in /...libc...)
+   by 0x........: main (sendmsg.c:46)
+ Address 0x........ is on thread 1's stack
+ in frame #1, created by main (sendmsg.c:13)
+
+Syscall param socketcall.connect(serv_addr..sa_len) points to uninitialised byte(s)
+   ...
+   by 0x........: main (sendmsg.c:59)
+ Address 0x........ is on thread 1's stack
+ in frame #1, created by main (sendmsg.c:13)
+
+sendmsg: 6
