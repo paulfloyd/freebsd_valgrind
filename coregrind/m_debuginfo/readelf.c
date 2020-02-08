@@ -1880,7 +1880,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                for (j = 0; j < VG_(sizeXA)(di->fsm.maps); j++) {
                   const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, j);
 
-                  if (   (map->rx || map->rw)
+                  if (   (map->rx || map->rw || map->ro)
                       && map->size > 0 /* stay sane */
                       && a_phdr.p_offset >= map->foff
                       && a_phdr.p_offset <  map->foff + map->size

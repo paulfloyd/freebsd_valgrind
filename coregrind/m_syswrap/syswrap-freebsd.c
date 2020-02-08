@@ -295,19 +295,6 @@ void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
 
    sp = ML_(allocstack)(tid);
 
-/* QQQ keep for amd64 redzone stuff */
-#if defined(VGP_ppc32_linux)
-   /* make a stack frame */
-   sp -= 16;
-   sp &= ~0xF;
-   *(UWord *)sp = 0;
-#elif defined(VGP_ppc64_linux)
-   /* make a stack frame */
-   sp -= 112;
-   sp &= ~((Addr)0xF);
-   *(UWord *)sp = 0;
-#endif
-
    /* If we can't even allocate the first thread's stack, we're hosed.
       Give up. */
    vg_assert2(sp != 0, "Cannot allocate main thread's stack.");

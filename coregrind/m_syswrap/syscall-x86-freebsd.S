@@ -21,16 +21,15 @@
   General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-  02111-1307, USA.
+  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   The GNU General Public License is contained in the file COPYING.
 */
 
+#include "pub_core_basics_asm.h"
+
 #if defined(VGP_x86_freebsd)
 
-#include "pub_core_basics_asm.h"
 #include "pub_core_vkiscnums_asm.h"
 #include "libvex_guest_offsets.h"
 		
@@ -191,7 +190,10 @@ ML_(blksys_finished):   .long 5b
 .previous
         
 #endif // defined(VGP_x86_freebsd)
- 
+
+ /* Let the linker know we don't need an executable stack */
+MARK_STACK_NO_EXEC
+
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/
 /*--------------------------------------------------------------------*/
