@@ -526,23 +526,7 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
    { struct vki_stat buf;
      res = VG_(do_syscall2)(__NR_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
      if (!sr_isError(res)) {
-        //TRANSLATE_TO_vg_stat(vgbuf, &buf);
-         vgbuf->dev        = (ULong)( buf.st_dev );
-         vgbuf->ino        = (ULong)( buf.st_ino );
-         vgbuf->nlink      = (ULong)( buf.st_nlink );
-         vgbuf->mode       = (UInt) ( buf.st_mode );
-         vgbuf->uid        = (UInt) ( buf.st_uid );
-         vgbuf->gid        = (UInt) ( buf.st_gid );
-         vgbuf->rdev       = (ULong)( buf.st_rdev );
-         vgbuf->size       = (Long) ( buf.st_size );
-         vgbuf->blksize    = (ULong)( buf.st_blksize );
-         vgbuf->blocks     = (ULong)( buf.st_blocks );
-         vgbuf->atime      = (ULong)( buf.st_atime );
-         vgbuf->atime_nsec = (ULong)( buf.st_atime_nsec );
-         vgbuf->mtime      = (ULong)( buf.st_mtime );
-         vgbuf->mtime_nsec = (ULong)( buf.st_mtime_nsec );
-         vgbuf->ctime      = (ULong)( buf.st_ctime );
-         vgbuf->ctime_nsec = (ULong)( buf.st_ctime_nsec );
+        TRANSLATE_TO_vg_stat(vgbuf, &buf);
      }
      return sr_isError(res) ? (-1) : 0;
    }
