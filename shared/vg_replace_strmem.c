@@ -1243,6 +1243,11 @@ static inline void my_exit ( int x )
  STPCPY(VG_Z_LD_ELF32_SO_1, stpcpy)
  STPCPY(VG_Z_LIBC_SONAME,          stpcpy)
 
+#elif defined(VGO_freebsd)
+ STPCPY(VG_Z_LD_ELF_SO_1, stpcpy)
+ STPCPY(VG_Z_LD_ELF32_SO_1, stpcpy)
+ STPCPY(VG_Z_LIBC_SONAME,          stpcpy)
+
 #elif defined(VGO_darwin)
  //STPCPY(VG_Z_LIBC_SONAME,          stpcpy)
  //STPCPY(VG_Z_DYLD,                 stpcpy)

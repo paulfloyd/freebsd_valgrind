@@ -34,6 +34,7 @@
 #include "pub_core_libcassert.h"
 #include "pub_core_syscall.h"
 #include "pub_core_libcsignal.h"    /* self */
+#include "pub_core_libcproc.h"
 
 #if !defined(VGO_solaris)
 #   define _VKI_MAXSIG (_VKI_NSIG - 1)
@@ -317,6 +318,12 @@ Int VG_(sigaction) ( Int signum,
    SysRes res = VG_(do_syscall3)(__NR_sigaction,
                                  signum, (UWord)act, (UWord)oldact);
    return sr_isError(res) ? -1 : 0;
+   
+#  elif defined(VGO_freebsd)
+   SysRes res = VG_(do_syscall3)(__NR_sigaction,
+                                 signum, (UWord)act, (UWord)oldact);
+   return sr_isError(res) ? -1 : 0;
+
 
 #  elif defined(VGO_freebsd)
    SysRes res = VG_(do_syscall3)(__NR_sigaction,

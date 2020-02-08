@@ -93,5 +93,5 @@ void ML_(linux_variant_POST_sys_bproc)( UWord arg1, UWord arg2,
 #endif // defined(VGO_freebsd)
 
 /*--------------------------------------------------------------------*/
-/*--- end                                 syswrap-linux-variants.c ---*/
+/*--- end                               syswrap-freebsd-variants.c ---*/
 /*--------------------------------------------------------------------*/

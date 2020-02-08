@@ -252,18 +252,18 @@ SyscallTableEntry* ML_(get_solaris_syscall_entry)( UInt sysno );
 
 #define DEFN_PRE_TEMPLATE(auxstr, name)                          \
    void vgSysWrap_##auxstr##_##name##_before                     \
-                                 ( ThreadId tid,                 \
-                                   SyscallArgLayout* layout,     \
-                                   /*MOD*/SyscallArgs* arrghs,   \
-                                   /*OUT*/SyscallStatus* status, \
-                                   /*OUT*/UWord* flags           \
+                                 ( __attribute__((unused)) ThreadId tid,                 \
+                                   __attribute__((unused)) SyscallArgLayout* layout,     \
+                                   /*MOD*/ __attribute__((unused)) SyscallArgs* arrghs,   \
+                                   /*OUT*/ __attribute__((unused)) SyscallStatus* status, \
+                                   /*OUT*/ __attribute__((unused)) UWord* flags           \
                                  )
 
 #define DEFN_POST_TEMPLATE(auxstr, name)                         \
    void vgSysWrap_##auxstr##_##name##_after                      \
-                                 ( ThreadId tid,                 \
-                                   SyscallArgs* arrghs,          \
-                                   SyscallStatus* status         \
+                                 ( __attribute__((unused)) ThreadId tid,                 \
+                                   __attribute__((unused)) SyscallArgs* arrghs,          \
+                                   __attribute__((unused)) SyscallStatus* status         \
                                  )
 
 
@@ -346,6 +346,7 @@ SyscallTableEntry* ML_(get_solaris_syscall_entry)( UInt sysno );
 #define ARG6   (arrghs->arg6)
 #define ARG7   (arrghs->arg7)
 #define ARG8   (arrghs->arg8)
+#define RETVAL2 (arrghs->retval2)
 
 /* Provide signed versions of the argument values */
 #define SARG1  ((Word)ARG1)

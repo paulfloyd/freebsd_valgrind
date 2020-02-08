@@ -332,8 +332,8 @@ pth_term_signal_LDADD	= -lpthread
 if VGCONF_OS_IS_FREEBSD
  res_search_LDADD       = -lpthread
 else
-res_search_LDADD        = -lresolv -lpthread
-resolv_LDADD            = -lresolv -lpthread
+ res_search_LDADD       = -lresolv -lpthread
+ resolv_LDADD           = -lresolv -lpthread
 endif
 resolv_CFLAGS		= $(AM_CFLAGS)
 if VGCONF_OS_IS_SOLARIS

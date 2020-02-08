@@ -534,7 +534,6 @@ typedef struct SigQueue {
 #  define VG_UCONTEXT_SYSCALL_SYSRES(uc)                        \
       VG_(mk_SysRes_s390x_linux)((uc)->uc_mcontext.regs.gprs[2])
 #  define VG_UCONTEXT_LINK_REG(uc) ((uc)->uc_mcontext.regs.gprs[14])
-
 #  define VG_UCONTEXT_TO_UnwindStartRegs(srP, uc)        \
       { (srP)->r_pc = (ULong)((uc)->uc_mcontext.regs.psw.addr);    \
         (srP)->r_sp = (ULong)((uc)->uc_mcontext.regs.gprs[15]);    \
@@ -817,6 +816,7 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
       case VKI_SIGFPE:
       case VKI_SIGILL:
       case VKI_SIGTRAP:
+      case VKI_SIGSYS:
 	 /* For these, we always want to catch them and report, even
 	    if the client code doesn't. */
 	 skss_handler = sync_signalhandler;
@@ -884,7 +884,8 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
       /* We don't set a signal stack, so ignore */
 
       /* always ask for SA_SIGINFO */
-      skss_flags |= VKI_SA_SIGINFO;
+      if (skss_handler != VKI_SIG_IGN && skss_handler != VKI_SIG_DFL)
+         skss_flags |= VKI_SA_SIGINFO;
 
 #ifdef VGO_linux
       /* use our own restorer */
@@ -1143,7 +1144,7 @@ static void handle_SCSS_change ( Bool force_update )
             !defined(VGP_x86_darwin) && !defined(VGP_amd64_darwin) && \
             !defined(VGP_mips32_linux) && !defined(VGP_mips64_linux) && \
             !defined(VGP_nanomips_linux) && !defined(VGO_solaris) && \
-            !defined(VGP_x86_freebsd) && !defined(VGP_amd64_freebsd)
+            !defined(VGO_freebsd)
          vg_assert(ksa_old.sa_restorer == my_sigreturn);
 #        endif
          VG_(sigaddset)( &ksa_old.sa_mask, VKI_SIGKILL );
@@ -1478,7 +1479,6 @@ void VG_(clear_out_queued_signals)( ThreadId tid, vki_sigset_t* saved_mask )
    The signal simulation proper.  A simplified version of what the 
    Linux kernel does.
    ------------------------------------------------------------------ */
-
 /* Set up a stack frame (VgSigContext) for the client's signal
    handler. */
 static
@@ -1579,6 +1579,9 @@ const HChar *VG_(signame)(Int sigNo)
 #     endif
 #     if defined(VKI_SIGUNUSED) && (VKI_SIGUNUSED != VKI_SIGSYS)
       case VKI_SIGUNUSED: return "SIGUNUSED";
+#     endif
+#     if defined(VKI_SIGINFO)
+      case VKI_SIGINFO: return "SIGINFO";
 #     endif
 
       /* Solaris-specific signals. */

@@ -83,6 +83,9 @@ fi
 # figure out where perl lives
 AC_PATH_PROG(PERL, perl)
 
+# find sed
+AC_PATH_PROG(SED, sed)
+
 # figure out where gdb lives
 AC_PATH_PROG(GDB, gdb, "/no/gdb/was/found/at/configure/time")
 AC_DEFINE_UNQUOTED(GDB_PATH, "$GDB", [path to GDB])
@@ -994,7 +997,7 @@ AM_CONDITIONAL(VGCONF_OS_IS_LINUX,
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xARM64_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xS390X_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
-                 -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX)
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)                 
  AM_CONDITIONAL(VGCONF_OS_IS_FREEBSD,
                 test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \

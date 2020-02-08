@@ -1790,14 +1790,14 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rx)
-         TRACE_SYMTAB("rx_map:  avma %#lx   size %lu  foff %ld\n",
-                      map->avma, map->size, map->foff);
+         TRACE_SYMTAB("rx_map:  avma %#lx   size %lu  foff %lu\n",
+                      map->avma, (unsigned long)map->size, (unsigned long)map->foff);
    }
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rw)
-         TRACE_SYMTAB("rw_map:  avma %#lx   size %lu  foff %ld\n",
-                      map->avma, map->size, map->foff);
+         TRACE_SYMTAB("rw_map:  avma %#lx   size %lu  foff %lu\n",
+                      map->avma, (unsigned long)map->size, (unsigned long)map->foff);
    }
 
    if (phdr_mnent == 0
@@ -1879,12 +1879,13 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                Bool loaded = False;
                for (j = 0; j < VG_(sizeXA)(di->fsm.maps); j++) {
                   const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, j);
-                  if (   (map->rx || map->rw || map->ro)
+
+                  if (   (map->rx || map->rw)
                       && map->size > 0 /* stay sane */
                       && a_phdr.p_offset >= map->foff
                       && a_phdr.p_offset <  map->foff + map->size
-                      && a_phdr.p_offset + a_phdr.p_filesz 
-                         <= map->foff + map->size) {
+                      && ((a_phdr.p_offset + a_phdr.p_filesz) & ~(VKI_PAGE_SIZE - 1)) <= map->foff
+                                                            + map->size) {
                      RangeAndBias item;
                      item.svma_base  = a_phdr.p_vaddr;
                      item.svma_limit = a_phdr.p_vaddr + a_phdr.p_memsz;
@@ -1947,7 +1948,8 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
             }
          }
 
-         /* Try to get the soname.  If there isn't one, use "NONE".
+         /* Try to get the soname.  If there isn't one, try to use last
+            component of filename instead in DSO case. Otherwise use "NONE".
             The seginfo needs to have some kind of soname in order to
             facilitate writing redirect functions, since all redirect
             specifications require a soname (pattern). */
@@ -2002,8 +2004,19 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
 
    /* TOPLEVEL */
 
-   /* If, after looking at all the program headers, we still didn't 
-      find a soname, add a fake one. */
+   if (di->soname == NULL && ehdr_m.e_type == ET_DYN && di->fsm.filename != NULL) {
+         char *filename = di->fsm.filename;
+         char *p = filename + VG_(strlen)(filename);
+         /* Extract last component. */
+         while (*p != '/' && p > filename)
+            p--;
+         if (*p == '/')
+            p++;
+         if (*p != '\0') {
+            TRACE_SYMTAB("No soname found; using filename instead\n");
+            di->soname = ML_(dinfo_strdup)("di.redi.1", p);
+         }
+   }
    if (di->soname == NULL) {
       TRACE_SYMTAB("No soname found; using (fake) \"NONE\"\n");
       di->soname = ML_(dinfo_strdup)("di.redi.2", "NONE");
@@ -2017,7 +2030,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rx)
-         TRACE_SYMTAB("rx: at %#lx are mapped foffsets %ld .. %lu\n",
+         TRACE_SYMTAB("rx: at %#lx are mapped foffsets %lld .. %llu\n",
                       map->avma, map->foff, map->foff + map->size - 1 );
    }
    TRACE_SYMTAB("rx: contains these svma regions:\n");
@@ -2030,7 +2043,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rw)
-         TRACE_SYMTAB("rw: at %#lx are mapped foffsets %ld .. %lu\n",
+         TRACE_SYMTAB("rw: at %#lx are mapped foffsets %lld .. %llu\n",
                       map->avma, map->foff, map->foff + map->size - 1 );
    }
    TRACE_SYMTAB("rw: contains these svma regions:\n");
@@ -2073,7 +2086,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
          }
       }
 
-      TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6ld .. %6lu  "
+      TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6lld .. %6llu  "
                    "  svma %p  name \"%s\"\n", 
                    i, inrx ? "rx" : "  ", inrw ? "rw" : "  ", alyn,
                    foff, (size == 0) ? foff : foff+size-1, (void *) svma, name);
@@ -2848,8 +2861,8 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                   const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, j);
                   if (   a_phdr.p_offset >= map->foff
                       && a_phdr.p_offset <  map->foff + map->size
-                      && a_phdr.p_offset + a_phdr.p_filesz
-                         < map->foff + map->size) {
+                      && ((a_phdr.p_offset + a_phdr.p_filesz) & ~(VKI_PAGE_SIZE - 1)) < map->foff
+                                                           + map->size) {
                      if (map->rx && rx_dsvma_limit == 0) {
                         rx_dsvma_limit = a_phdr.p_vaddr + a_phdr.p_memsz;
                         rx_dbias = map->avma - map->foff + a_phdr.p_offset

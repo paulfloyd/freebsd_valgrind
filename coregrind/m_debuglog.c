@@ -469,7 +469,7 @@ static UInt local_sys_getpid ( void )
 
 #elif defined(VGP_amd64_freebsd)
 __attribute__((noinline))
-static UInt local_sys_write_stderr ( HChar* buf, Int n )
+static UInt local_sys_write_stderr (const HChar* buf, Int n )
 {
    volatile Long block[2];
    block[0] = (Long)buf;

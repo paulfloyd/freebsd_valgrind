@@ -21,7 +21,7 @@ static const struct test *cur_test;
 
 
 
-static jmp_buf escape;
+static sigjmp_buf escape;
 
 #define BADADDR	((int *)0x1234)
 

@@ -683,7 +683,7 @@ static Bool maybe_merge_nsegments ( NSegment* s1, const NSegment* s2 )
              && s1->hasW == s2->hasW && s1->hasX == s2->hasX
              && s1->dev == s2->dev && s1->ino == s2->ino
              && s2->offset == s1->offset
-                              + ((ULong)s2->start) - ((ULong)s1->start) ) {
+                              + ((Off64T)s2->start) - ((Off64T)s1->start) ) {
             s1->end = s2->end;
             s1->hasT |= s2->hasT;
             ML_(am_dec_refcount)(s1->fnIdx);
@@ -2193,13 +2193,21 @@ VG_(am_notify_client_mmap)( Addr a, SizeT len, UInt prot, UInt flags,
    needDiscard = any_Ts_in_range( a, len );
 
    init_nsegment( &seg );
-   seg.kind   = (flags & VKI_MAP_ANONYMOUS) ? SkAnonC : SkFileC;
+   seg.kind   = (flags & (VKI_MAP_ANONYMOUS
+#if defined(VGO_freebsd)
+ | VKI_MAP_STACK
+#endif
+)) ? SkAnonC : SkFileC;
    seg.start  = a;
    seg.end    = a + len - 1;
    seg.hasR   = toBool(prot & VKI_PROT_READ);
    seg.hasW   = toBool(prot & VKI_PROT_WRITE);
    seg.hasX   = toBool(prot & VKI_PROT_EXEC);
-   if (!(flags & VKI_MAP_ANONYMOUS)) {
+   if (!(flags & (VKI_MAP_ANONYMOUS
+#if defined(VGO_freebsd)
+ | VKI_MAP_STACK
+#endif
+))) {
       // Nb: We ignore offset requests in anonymous mmaps (see bug #126722)
       seg.offset = offset;
       if (ML_(am_get_fd_d_i_m)(fd, &dev, &ino, &mode)) {
@@ -3843,7 +3851,6 @@ static void parse_procselfmaps (
       void (*record_gap)( Addr addr, SizeT len )
    )
 {
-    Int    i;
     Addr   start, endPlusOne, gapStart;
     char* filename;
     char   *p;
@@ -3865,11 +3872,10 @@ static void parse_procselfmaps (
     sres = VG_(do_syscall6)(__NR___sysctl, (UWord)oid, 4, (UWord)procmap_buf,
        (UWord)&len, 0, 0);
     if (sr_isError(sres)) {
-       VG_(debugLog)(0, "procselfmaps", "sysctll %ld\n", sr_Err(sres));
+       VG_(debugLog)(0, "procselfmaps", "sysctll %lu\n", sr_Err(sres));
        ML_(am_exit)(1);
     }
     gapStart = Addr_MIN;
-    i = 0;
     p = procmap_buf;
     while (p < (char *)procmap_buf + len) {
        kve = (struct vki_kinfo_vmentry *)p;

@@ -59,7 +59,6 @@ DECL_TEMPLATE(freebsd, sys_getsockname);
 DECL_TEMPLATE(freebsd, sys_chflags);
 DECL_TEMPLATE(freebsd, sys_fchflags);
 DECL_TEMPLATE(freebsd, sys_pipe);
-DECL_TEMPLATE(freebsd, sys_pipe2);
 DECL_TEMPLATE(freebsd, sys_ktrace);
 DECL_TEMPLATE(freebsd, sys_getlogin);
 DECL_TEMPLATE(freebsd, sys_setlogin);
@@ -121,7 +120,9 @@ DECL_TEMPLATE(freebsd, sys_msgsnd);
 DECL_TEMPLATE(freebsd, sys_msgrcv);
 DECL_TEMPLATE(freebsd, sys_shmat);
 DECL_TEMPLATE(freebsd, sys_shmctl);
+DECL_TEMPLATE(freebsd, sys_pipe2);
 DECL_TEMPLATE(freebsd, sys_shmctl7);
+DECL_TEMPLATE(freebsd, sys_posix_fadvise);
 DECL_TEMPLATE(freebsd, sys_shmdt);
 DECL_TEMPLATE(freebsd, sys_shmget);
 DECL_TEMPLATE(freebsd, sys_clock_gettime);
@@ -247,6 +248,7 @@ DECL_TEMPLATE(freebsd, sys_cpuset_setid);
 DECL_TEMPLATE(freebsd, sys_cpuset_getid);
 DECL_TEMPLATE(freebsd, sys_cpuset_getaffinity);
 DECL_TEMPLATE(freebsd, sys_cpuset_setaffinity);
+DECL_TEMPLATE(freebsd, sys_pselect);
 DECL_TEMPLATE(freebsd, sys_faccessat);
 DECL_TEMPLATE(freebsd, sys_fchmodat);
 DECL_TEMPLATE(freebsd, sys_fchownat);
@@ -272,6 +274,7 @@ DECL_TEMPLATE(freebsd, sys_fcntl);
 DECL_TEMPLATE(freebsd, sys_ioctl);
 DECL_TEMPLATE(freebsd, sys_mq_open);
 DECL_TEMPLATE(freebsd, sys_mq_unlink);
+DECL_TEMPLATE(freebsd, sys_getrandom);
 #endif   // __PRIV_SYSWRAP_FREEBSD_H
 
 /*--------------------------------------------------------------------*/

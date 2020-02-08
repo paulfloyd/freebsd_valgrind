@@ -13,5 +13,5 @@ run ()
 
 run aclocal
 run autoheader
-run automake -a
+run automake -c -a
 run autoconf

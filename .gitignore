@@ -36,6 +36,13 @@
 /valt_load_address*.lds
 /vg_annotate
 /vg_cachegen
+/vg.cflags
+/vg.config
+/vg.creator
+/vg.creator.user
+/vg.cxxflags
+/vg.files
+/vg.includes
 
 # /auxprogs/
 /auxprogs/.deps
@@ -52,6 +59,7 @@
 /auxprogs/getoff-nanomips-linux
 /auxprogs/getoff-amd64-solaris
 /auxprogs/getoff-x86-solaris
+/auxprogs/getoff-*-freebsd
 /auxprogs/libmpiwrap-PPC32_LINUX.so
 /auxprogs/libmpiwrap-PPC64_LINUX.so
 /auxprogs/libmpiwrap-x86-darwin.so
@@ -67,6 +75,7 @@
 /cachegrind/cachegrind-*-darwin
 /cachegrind/cachegrind-*-linux
 /cachegrind/cachegrind-*-solaris
+/cachegrind/cachegrind-*-freebsd
 /cachegrind/cg_annotate
 /cachegrind/cg_diff
 /cachegrind/cg_merge
@@ -113,6 +122,7 @@
 /callgrind/callgrind-*-darwin
 /callgrind/callgrind-*-linux
 /callgrind/callgrind-*-solaris
+/callgrind/callgrind-*-freebsd
 /callgrind/callgrind_annotate
 /callgrind/callgrind_control
 /callgrind/Makefile
@@ -146,6 +156,7 @@
 /coregrind/link_tool_exe_darwin
 /coregrind/link_tool_exe_linux
 /coregrind/link_tool_exe_solaris
+/coregrind/link_tool_exe_freebsd
 /coregrind/Makefile
 /coregrind/Makefile.in
 /coregrind/no_op_client_for_valgrind
@@ -253,11 +264,13 @@
 /dhat/dhat-*-darwin
 /dhat/dhat-*-linux
 /dhat/dhat-*-solaris
+/dhat/dhat-*-freebsd
 /dhat/Makefile
 /dhat/Makefile.in
 /dhat/vgpreload_dhat-*-linux.so
 /dhat/vgpreload_dhat-*-darwin.so
 /dhat/vgpreload_dhat-*-solaris.so
+/dhat/vgpreload_dhat-*-freebsd.so
 
 # /dhat/tests/
 /dhat/tests/Makefile
@@ -304,12 +317,14 @@
 /drd/drd-*-darwin
 /drd/drd-*-linux
 /drd/drd-*-solaris
+/drd/drd-*-freebsd
 /drd/Makefile
 /drd/Makefile.in
 /drd/splash2
 /drd/vgpreload_drd-*-linux.so
 /drd/vgpreload_drd-*-darwin.so
 /drd/vgpreload_drd-*-solaris.so
+/drd/vgpreload_drd-*-freebsd.so
 
 # /drd/docs/
 /drd/docs/.deps
@@ -533,6 +548,7 @@
 /exp-sgcheck/exp-sgcheck-*-darwin
 /exp-sgcheck/exp-sgcheck-*-linux
 /exp-sgcheck/exp-sgcheck-*-solaris
+/exp-sgcheck/exp-sgcheck-*-freebsd
 /exp-sgcheck/Makefile
 /exp-sgcheck/Makefile.in
 /exp-sgcheck/preen_invars
@@ -542,6 +558,7 @@
 /exp-sgcheck/vgpreload_exp-sgcheck-*-darwin.so
 /exp-sgcheck/vgpreload_exp-sgcheck-*-linux.so
 /exp-sgcheck/vgpreload_exp-sgcheck-*-solaris.so
+/exp-sgcheck/vgpreload_exp-sgcheck-*-freebsd.so
 
 # /exp-sgcheck/docs/
 /exp-sgcheck/docs/Makefile
@@ -641,11 +658,13 @@
 /helgrind/helgrind-*-darwin
 /helgrind/helgrind-*-linux
 /helgrind/helgrind-*-solaris
+/helgrind/helgrind-*-freebsd
 /helgrind/Makefile
 /helgrind/Makefile.in
 /helgrind/vgpreload_helgrind-*-linux.so
 /helgrind/vgpreload_helgrind-*-darwin.so
 /helgrind/vgpreload_helgrind-*-solaris.so
+/helgrind/vgpreload_helgrind-*-freebsd.so
 
 # /helgrind/docs/
 /helgrind/docs/Makefile
@@ -727,6 +746,7 @@
 /lackey/lackey-*-darwin
 /lackey/lackey-*-linux
 /lackey/lackey-*-solaris
+/lackey/lackey-*-freebsd
 /lackey/Makefile
 /lackey/Makefile.in
 
@@ -751,6 +771,7 @@
 /massif/massif-*-darwin
 /massif/massif-*-linux
 /massif/massif-*-solaris
+/massif/massif-*-freebsd
 /massif/ms_print
 
 # /massif/docs/
@@ -809,6 +830,7 @@
 /memcheck/memcheck-*-darwin
 /memcheck/memcheck-*-linux
 /memcheck/memcheck-*-solaris
+/memcheck/memcheck-*-freebsd
 
 # /memcheck/docs/
 /memcheck/docs/Makefile.in
@@ -1324,6 +1346,7 @@
 /none/none-*-darwin
 /none/none-*-linux
 /none/none-*-solaris
+/none/none-*-freebsd
 
 # /none/docs/
 /none/docs/Makefile.in

@@ -831,7 +831,7 @@ Int VG_(getgroups)( Int size, UInt* list )
         || defined(VGP_ppc64be_linux) || defined(VGP_ppc64le_linux)  \
         || defined(VGO_darwin) || defined(VGP_s390x_linux)    \
         || defined(VGP_mips32_linux) || defined(VGP_arm64_linux) \
-        || defined(VGO_solaris) || defined(VGP_nanomips_linux)
+        || defined(VGO_solaris) || defined(VGP_nanomips_linux) \
         || defined(VGO_freebsd)
    SysRes sres;
    sres = VG_(do_syscall2)(__NR_getgroups, size, (Addr)list);
@@ -979,7 +979,7 @@ UInt VG_(read_millisecond_timer) ( void )
    return (now - base) / 1000;
 }
 
-#  if defined(VGO_linux) || defined(VGO_solaris)
+#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
 void VG_(clock_gettime) ( struct vki_timespec *ts, vki_clockid_t clk_id )
 {
     SysRes res;
@@ -1031,10 +1031,17 @@ UInt VG_(get_user_milliseconds)(void)
       }
    }
 
-#  elif defined(VGO_darwin)
-   res = 0;
-
 #  elif defined(VGO_freebsd)
+   {
+      struct vki_rusage ru;
+      VG_(memset)(&ru, 0, sizeof(ru));
+      SysRes sr = VG_(do_syscall2)(__NR_getrusage, VKI_RUSAGE_SELF, (UWord)&ru);
+      if (!sr_isError(sr)) {
+         res = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000;
+      }
+   }
+
+#  elif defined(VGO_darwin)
    res = 0;
 
 #  else
@@ -1124,7 +1131,7 @@ Int VG_(sysctlbyname)(const Char *name, void *oldp, vki_size_t *oldlenp, void *n
    oid[0] = 0;		/* magic */
    oid[1] = 3;		/* undocumented */
    oidlen = sizeof(real_oid);
-   error = VG_(sysctl)(oid, 2, real_oid, &oidlen, (void *)name, VG_(strlen)(name));
+   error = VG_(sysctl)(oid, 2, real_oid, &oidlen, (void *)name, VG_(strlen)((const HChar*)name));
    if (error < 0)
       return error;
    oidlen /= sizeof(int);
@@ -1139,7 +1146,7 @@ Int VG_(getosreldate)(void)
 
    if (osreldate == 0) {
       osreldatel = sizeof(osreldate);
-      VG_(sysctlbyname)("kern.osreldate", &osreldate, &osreldatel, 0, 0);
+      VG_(sysctlbyname)((const Char*)"kern.osreldate", &osreldate, &osreldatel, 0, 0);
    }
    return (osreldate);
 }

@@ -10,6 +10,10 @@
 #include <sys/types.h>
 #endif
 
+#if defined(VGO_freebsd)
+#include <sys/types.h>
+#endif
+
 static void* thread_func(void* arg)
 {
   return 0;

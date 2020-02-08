@@ -35,6 +35,7 @@
    ************************************************************* */
 
 #include "priv_aspacemgr.h"
+#include "pub_core_libcassert.h"
 #include "config.h"
 
 
@@ -199,8 +200,7 @@ SysRes VG_(am_do_mmap_NO_NOTIFY)( Addr start, SizeT length, UInt prot,
    return res;
 }
 
-static
-SysRes local_do_mprotect_NO_NOTIFY(Addr start, SizeT length, UInt prot)
+SysRes VG_(am_do_mprotect_NO_NOTIFY)(Addr start, SizeT length, UInt prot)
 {
    return VG_(do_syscall3)(__NR_mprotect, (UWord)start, length, prot );
 }
@@ -315,7 +315,7 @@ Int ML_(am_readlink)(const HChar* path, HChar* buf, UInt bufsiz)
 
 Int ML_(am_fcntl) ( Int fd, Int cmd, Addr arg )
 {
-#  if defined(VGO_linux) || defined(VGO_solaris || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
 #  if defined(VGP_nanomips_linux)
    SysRes res = VG_(do_syscall3)(__NR_fcntl64, fd, cmd, arg);
 #  else
@@ -513,7 +513,7 @@ VgStack* VG_(am_alloc_VgStack)( /*OUT*/Addr* initial_sp )
    aspacem_assert(VG_IS_PAGE_ALIGNED(stack));
 
    /* Protect the guard areas. */
-   sres = local_do_mprotect_NO_NOTIFY( 
+   sres = VG_(am_do_mprotect_NO_NOTIFY)( 
              (Addr) &stack[0], 
              VG_STACK_GUARD_SZB, VKI_PROT_NONE 
           );
@@ -523,7 +523,7 @@ VgStack* VG_(am_alloc_VgStack)( /*OUT*/Addr* initial_sp )
       VG_STACK_GUARD_SZB, VKI_PROT_NONE 
    );
 
-   sres = local_do_mprotect_NO_NOTIFY( 
+   sres = VG_(am_do_mprotect_NO_NOTIFY)( 
              (Addr) &stack->bytes[VG_STACK_GUARD_SZB + VG_(clo_valgrind_stacksize)], 
              VG_STACK_GUARD_SZB, VKI_PROT_NONE 
           );

@@ -2467,6 +2467,7 @@ static void final_tidyup(ThreadId tid)
    VG_(set_default_handler)(VKI_SIGBUS);
    VG_(set_default_handler)(VKI_SIGILL);
    VG_(set_default_handler)(VKI_SIGFPE);
+   VG_(set_default_handler)(VKI_SIGSYS);
 
    // We were exiting, so assert that...
    vg_assert(VG_(is_exiting)(tid));
@@ -2932,9 +2933,9 @@ asm("\n"
     "\tandl  $~15, %eax\n"
     /* install it, and collect the original one */
     "\txchgl %eax, %esp\n"
-    /* call _start_in_C_linux, passing it the startup %esp */
+    /* call _start_in_C_freebsd, passing it the startup %esp */
     "\tpushl %eax\n"
-    "\tcall  _start_in_C_linux\n"
+    "\tcall  _start_in_C_freebsd\n"
     "\thlt\n"
     ".previous\n"
 );

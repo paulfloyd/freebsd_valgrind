@@ -224,6 +224,11 @@ typedef __vki_fd_set		vki_fd_set;
 #define SELFMAG	4		/* magic string size */
 #endif
 
+// see http://bugs.freebsd.org/bugzilla/show_bug.cgi?id=239669
+#if !defined(ELF_NOTE_GNU)
+#define ELF_NOTE_GNU "GNU"
+#endif
+
 //----------------------------------------------------------------------
 // From sys/syslimits.h
 //----------------------------------------------------------------------
@@ -336,7 +341,7 @@ struct vki_tms {
 //----------------------------------------------------------------------
 
 /* QQQ 4.x stat layout */
-struct vki_stat {
+struct vki_stat11 {
 	vki_dev_t	st_dev;
 	vki_ino_t	st_ino;
 	vki_mode_t	st_mode;
@@ -366,6 +371,53 @@ struct vki_stat {
 	unsigned int :(8 / 2) * (16 - (int)sizeof(struct vki_timespec));
 	unsigned int :(8 / 2) * (16 - (int)sizeof(struct vki_timespec));
 };
+
+#if defined(VGP_x86_freebsd)
+#define	VKI_STAT_TIME_T_EXT	1
+#endif
+
+struct vki_stat {
+    vki_dev_t     st_dev;
+    vki_ino_t	  st_ino;
+    vki_nlink_t	  st_nlink;
+    vki_mode_t	  st_mode;
+    vki_int16_t st_padding0;
+    vki_uid_t	  st_uid;
+    vki_gid_t	  st_gid;
+    vki_int32_t st_padding1;
+    vki_dev_t     st_rdev;
+#ifdef	VKI_STAT_TIME_T_EXT
+    vki_int32_t st_atim_ext;
+#endif
+    //struct	vki_timespec st_atim;
+    vki_time_t	st_atime;
+    long		st_atime_nsec;
+#ifdef	VKI_STAT_TIME_T_EXT
+    vki_int32_t st_mtim_ext;
+#endif
+    //struct	vki_timespec st_mtim;
+    vki_time_t	st_mtime;
+    long		st_mtime_nsec;
+#ifdef	VKI_STAT_TIME_T_EXT
+    vki_int32_t st_ctim_ext;
+#endif
+    //struct	vki_timespec st_ctim;
+    vki_time_t	st_ctime;
+    long		st_ctime_nsec;
+#ifdef	VKI_STAT_TIME_T_EXT
+    vki_int32_t st_btim_ext;
+#endif
+    //struct	vki_timespec st_birthtim;
+    vki_time_t	st_btime;
+    long		st_btime_nsec;
+    vki_off_t	  st_size;
+    vki_blkcnt_t st_blocks;
+    vki_blksize_t st_blksize;
+    vki_fflags_t  st_flags;
+    vki_uint64_t st_gen;
+    vki_uint64_t st_spare[10];
+};
+
 
 
 //----------------------------------------------------------------------
@@ -1172,6 +1224,10 @@ struct vki_kevent {
 //----------------------------------------------------------------------
 // From sys/resource.h
 //----------------------------------------------------------------------
+
+#define VKI_RUSAGE_SELF     0
+#define VKI_RUSAGE_CHILDREN -1
+#define VKI_RUSAGE_THREAD   1
 
 struct	vki_rusage {
 	struct vki_timeval ru_utime;	/* user time used */

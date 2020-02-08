@@ -300,7 +300,6 @@ SysRes VG_(mk_SysRes_Success) ( UWord res ) {
    return r;
 }
 
-
 #elif defined(VGO_solaris)
 
 /* Generic constructors. */
@@ -556,7 +555,6 @@ asm(
 "        std  3,8(5)\n"    /* argblock[1] = cr0.s0 & 1 */
 "        blr\n"
 );
-
 #elif defined(VGP_ppc64le_linux)
 /* Due to the need to return 65 bits of result, this is completely
    different from the ppc32 case.  The single arg register points to a
@@ -1323,6 +1321,9 @@ const HChar* VG_(strerror) ( UWord errnum )
    case VKI_EOVERFLOW:   return "Value too large for defined data type";
 #     if defined(VKI_ERESTARTSYS)
       case VKI_ERESTARTSYS: return "ERESTARTSYS";
+#     endif
+#     if defined(VKI_ERESTART)
+      case VKI_ERESTART: return "ERESTART";
 #     endif
    default:              return "VG_(strerror): unknown error";
    }

@@ -53,9 +53,10 @@
 #include "pub_core_ume.h"
 
 
-
+#if !defined(PATH_MAX)
 #define PATH_MAX 4096 /* POSIX refers to this a lot but I dunno
                          where it is defined */
+#endif
 
 #ifndef EM_X86_64
 #define EM_X86_64 62    // elf.h doesn't define this on some older systems
@@ -113,7 +114,7 @@ static const char *find_client(const char *clientname)
 static const char *select_platform(const char *clientname)
 {
    int fd;
-   uint8_t header[4096];
+   char header[4096];
    ssize_t n_bytes;
    const char *platform = NULL;
 
@@ -155,7 +156,7 @@ static const char *select_platform(const char *clientname)
 
    } else if (n_bytes >= SELFMAG && memcmp(header, ELFMAG, SELFMAG) == 0) {
 
-      if (n_bytes >= sizeof(Elf32_Ehdr) && header[EI_CLASS] == ELFCLASS32) {
+      if ((size_t)n_bytes >= sizeof(Elf32_Ehdr) && header[EI_CLASS] == ELFCLASS32) {
          const Elf32_Ehdr *ehdr = (Elf32_Ehdr *)header;
 
          if (header[EI_DATA] == ELFDATA2LSB) {
@@ -164,7 +165,7 @@ static const char *select_platform(const char *clientname)
                platform = "x86-freebsd";
             }
          }
-      } else if (n_bytes >= sizeof(Elf64_Ehdr) && header[EI_CLASS] == ELFCLASS64) {
+      } else if ((size_t)n_bytes >= sizeof(Elf64_Ehdr) && header[EI_CLASS] == ELFCLASS64) {
          const Elf64_Ehdr *ehdr = (Elf64_Ehdr *)header;
 
          if (header[EI_DATA] == ELFDATA2LSB) {

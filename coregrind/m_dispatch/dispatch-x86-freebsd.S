@@ -200,7 +200,7 @@ VG_(disp_cp_xindir):
 	movl	OFFSET_x86_EIP(%ebp), %eax
 
         /* stats only */
-        addl    $1, VG_(stats__n_xindirs_32)
+        addl    $1, VG_(stats__n_xIndirs_32)
         
         /* try a fast lookup in the translation cache */
         movl    %eax, %ebx                      /* next guest addr */
@@ -216,7 +216,7 @@ VG_(disp_cp_xindir):
 
 fast_lookup_failed:
         /* stats only */
-        addl    $1, VG_(stats__n_xindir_misses_32)
+        addl    $1, VG_(stats__n_xIndir_misses_32)
 
 	movl	$VG_TRC_INNER_FASTMISS, %eax
         movl    $0, %edx

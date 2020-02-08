@@ -430,7 +430,7 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
      }
    }
 #  endif
-#  if defined(VGO_linux) || defined(VGO_darwin || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
    /* Try with stat64. This is the second candidate on Linux, and the first
       one on Darwin and FreeBSD.
       If that doesn't work out, fall back to vanilla version.
@@ -446,12 +446,16 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
      }
    }
 #  endif /* defined(__NR_stat64) */
-#  if defined(__NR_stat) || defined(VGP_arm64_linux)
+#  if defined(__NR_stat) || defined(VGP_arm64_linux) || defined(VGO_freebsd)
    /* This is the fallback ("vanilla version"). */
-   { struct vki_stat buf;
+   {
 #    if defined(VGP_arm64_linux)
+     struct vki_stat buf;
      res = VG_(do_syscall3)(__NR3264_fstatat, VKI_AT_FDCWD,
                                               (UWord)file_name, (UWord)&buf);
+#    elif defined(VGO_freebsd)
+     struct vki_stat11 buf;
+     res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
 #    else
      res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
 #    endif
@@ -502,7 +506,7 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
      }
    }
 #endif
-#  if defined(VGO_linux) || defined(VGO_darwin || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
    /* Try with fstat64. This is the second candidate on Linux, and the first
       one on Darwin and FreeBSD.
       If that doesn't work out, fall back to vanilla version.
@@ -521,8 +525,25 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
 #  if defined(__NR_fstat)
    { struct vki_stat buf;
      res = VG_(do_syscall2)(__NR_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
-     if (!sr_isError(res))
-        TRANSLATE_TO_vg_stat(vgbuf, &buf);
+     if (!sr_isError(res)) {
+        //TRANSLATE_TO_vg_stat(vgbuf, &buf);
+         vgbuf->dev        = (ULong)( buf.st_dev );
+         vgbuf->ino        = (ULong)( buf.st_ino );
+         vgbuf->nlink      = (ULong)( buf.st_nlink );
+         vgbuf->mode       = (UInt) ( buf.st_mode );
+         vgbuf->uid        = (UInt) ( buf.st_uid );
+         vgbuf->gid        = (UInt) ( buf.st_gid );
+         vgbuf->rdev       = (ULong)( buf.st_rdev );
+         vgbuf->size       = (Long) ( buf.st_size );
+         vgbuf->blksize    = (ULong)( buf.st_blksize );
+         vgbuf->blocks     = (ULong)( buf.st_blocks );
+         vgbuf->atime      = (ULong)( buf.st_atime );
+         vgbuf->atime_nsec = (ULong)( buf.st_atime_nsec );
+         vgbuf->mtime      = (ULong)( buf.st_mtime );
+         vgbuf->mtime_nsec = (ULong)( buf.st_mtime_nsec );
+         vgbuf->ctime      = (ULong)( buf.st_ctime );
+         vgbuf->ctime_nsec = (ULong)( buf.st_ctime_nsec );
+     }
      return sr_isError(res) ? (-1) : 0;
    }
 #  endif
@@ -612,7 +633,7 @@ SysRes VG_(dup2) ( Int oldfd, Int newfd )
 /* Returns -1 on error. */
 Int VG_(fcntl) ( Int fd, Int cmd, Addr arg )
 {
-#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd
+#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
 #  if defined(VGP_nanomips_linux)
    SysRes res = VG_(do_syscall3)(__NR_fcntl64, fd, cmd, arg);
 #  else
@@ -710,6 +731,7 @@ void VG_(record_startup_wd) ( void )
      startup_wd = VG_(malloc)("startup_wd", need);
      VG_(strcpy)(startup_wd, wd);
    }
+
 #  else
 #    error Unknown OS
 #  endif
@@ -1397,7 +1419,7 @@ Int VG_(getsockname) ( Int sd, struct vki_sockaddr *name, Int *namelen)
 
 #  elif defined(VGP_amd64_linux) || defined(VGP_arm_linux) \
         || defined(VGP_mips64_linux) || defined(VGP_arm64_linux) \
-        || defined(VGP_nanomips_linux) || defined(VGO_freebsd)
+        || defined(VGP_nanomips_linux) || defined(VGO_freebsd) \
         || defined(VGP_mips64_linux) || defined(VGP_arm64_linux)
    SysRes res;
    res = VG_(do_syscall3)( __NR_getsockname,

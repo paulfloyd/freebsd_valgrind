@@ -85,6 +85,7 @@ int main ( void )
 
 #if !defined(__FreeBSD__) || __FreeBSD__ >= 6
    res = PM(&p, -1,100);      assert(EINVAL == res);
+// @todo PJF this was commented out
    res = PM(&p, 0, 100);      assert(EINVAL == res);
    res = PM(&p, 1, 100);      assert(EINVAL == res);
    res = PM(&p, 2, 100);      assert(EINVAL == res);

@@ -190,7 +190,7 @@ static Bool extend ( ThreadState *tst, Addr addr, SizeT size )
    if (stackseg == NULL || !stackseg->hasR || !stackseg->hasW) {
       VG_(message)(
          Vg_UserMsg,
-         "Can't extend stack to %#lx during signal delivery for thread %d:\n",
+         "Can't extend stack to %#lx during signal delivery for thread %u:\n",
          addr, tid);
       if (stackseg == NULL)
          VG_(message)(Vg_UserMsg, "  no stack segment\n");
@@ -336,7 +336,7 @@ Bool restore_vg_sigframe ( ThreadState *tst,
 {
    if (frame->magicPI != 0x31415927 ||
        frame->magicE  != 0x27182818) {
-      VG_(message)(Vg_UserMsg, "Thread %d return signal frame "
+      VG_(message)(Vg_UserMsg, "Thread %u return signal frame "
                                "corrupted.  Killing process.\n",
 		   tst->tid);
       VG_(set_default_handler)(VKI_SIGSEGV);
@@ -419,7 +419,7 @@ void VG_(sigframe_destroy)( ThreadId tid )
    if (VG_(clo_trace_signals))
       VG_(message)(
          Vg_DebugMsg, 
-         "VG_(signal_return) (thread %d): valid magic; RIP=%#llx\n",
+         "VG_(signal_return) (thread %u): valid magic; RIP=%#llx\n",
          tid, tst->arch.vex.guest_RIP);
 
    /* tell the tools */

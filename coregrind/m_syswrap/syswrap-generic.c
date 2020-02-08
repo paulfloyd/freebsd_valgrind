@@ -1809,16 +1809,15 @@ UInt get_sem_count( Int semid )
       return 0;
 
    return buf.sem_nsems;
-
-#  elif defined(__NR___semctl)
+#  elif defined(__NR___semctl) /* FreeBSD */
    struct vki_semid_ds buf;
    arg.buf = &buf;
    res = VG_(do_syscall4)(__NR___semctl, semid, 0, VKI_IPC_STAT, *(UWord *)&arg);
+   
    if (sr_isError(res))
       return 0;
 
    return buf.sem_nsems;
-
 #  elif defined(__NR_semsys) /* Solaris */
    struct vki_semid_ds buf;
    arg.buf = &buf;
@@ -1857,11 +1856,12 @@ ML_(generic_PRE_sys_semctl) ( ThreadId tid,
    case VKI_IPC_INFO|VKI_IPC_64:
    case VKI_SEM_INFO|VKI_IPC_64:
 #endif
-#if !defined(VGO_freebsd)
+      // @todo PJF was sizeof vki_seminfo
+      // but arg->buf is vki_semid_ds
       PRE_MEM_WRITE( "semctl(IPC_INFO, arg.buf)",
-                     (Addr)arg.buf, sizeof(struct vki_seminfo) );
-#endif
+                     (Addr)arg.buf, sizeof(struct vki_semid_ds) );
       break;
+#endif
 
    case VKI_IPC_STAT:
 #if defined(VKI_SEM_STAT)
@@ -1939,9 +1939,8 @@ ML_(generic_POST_sys_semctl) ( ThreadId tid,
    case VKI_IPC_INFO|VKI_IPC_64:
    case VKI_SEM_INFO|VKI_IPC_64:
 #endif
-#if !defined(VGO_freebsd)
-      POST_MEM_WRITE( (Addr)arg.buf, sizeof(struct vki_seminfo) );
-#endif
+      // @todo PJF sizeof as before
+      POST_MEM_WRITE( (Addr)arg.buf, sizeof(struct vki_semid_ds) );
       break;
 #endif
 
@@ -1973,7 +1972,6 @@ ML_(generic_POST_sys_semctl) ( ThreadId tid,
       break;
    }
 }
-#endif
 
 /* ------ */
 
@@ -2510,11 +2508,13 @@ PRE(sys_ni_syscall)
    SET_STATUS_Failure( VKI_ENOSYS );
 }
 
+#if !defined(VGO_freebsd)
 PRE(sys_iopl)
 {
    PRINT("sys_iopl ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "iopl", unsigned long, level);
 }
+#endif
 
 PRE(sys_fsync)
 {
@@ -2540,6 +2540,7 @@ PRE(sys_msync)
    PRE_MEM_READ( "msync(start)", ARG1, ARG2 );
 }
 
+#if !defined(VGO_freebsd)
 // Nb: getpmsg() and putpmsg() are special additional syscalls used in early
 // versions of LiS (Linux Streams).  They are not part of the kernel.
 // Therefore, we have to provide this type ourself, rather than getting it
@@ -2605,6 +2606,7 @@ PRE(sys_putpmsg)
    if (data && data->len > 0)
       PRE_MEM_READ( "putpmsg(data)", (Addr)data->buf, data->len);
 }
+#endif
 
 PRE(sys_getitimer)
 {
@@ -2700,11 +2702,13 @@ PRE(sys_mremap)
 }
 #endif /* HAVE_MREMAP */
 
+#if !defined(VGO_freebsd)
 PRE(sys_nice)
 {
    PRINT("sys_nice ( %ld )", SARG1);
    PRE_REG_READ1(long, "nice", int, inc);
 }
+#endif
 
 PRE(sys_mlock)
 {
@@ -2739,7 +2743,7 @@ PRE(sys_getpriority)
    PRE_REG_READ2(long, "getpriority", int, which, int, who);
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_pwrite64)
 {
    *flags |= SfMayBlock;
@@ -2784,6 +2788,7 @@ POST(sys_fstatfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
+#if !defined(VGO_freebsd)
 PRE(sys_fstatfs64)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -2798,6 +2803,7 @@ POST(sys_fstatfs64)
    POST_MEM_WRITE( ARG3, ARG2 );
 }
 #endif
+#endif
 
 PRE(sys_getsid)
 {
@@ -2805,7 +2811,7 @@ PRE(sys_getsid)
    PRE_REG_READ1(long, "getsid", vki_pid_t, pid);
 }
 
-#if defined(VGO_linux)
+#if !defined(VGO_freebsd)
 PRE(sys_pread64)
 {
    *flags |= SfMayBlock;
@@ -3339,7 +3345,7 @@ PRE(sys_fchmod)
    PRE_REG_READ2(long, "fchmod", unsigned int, fildes, vki_mode_t, mode);
 }
 
-#if !defined(VGP_nanomips_linux)
+#if !defined(VGP_nanomips_linux) && !defined (VGO_freebsd)
 PRE(sys_newfstat)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -3428,6 +3434,7 @@ PRE(sys_truncate)
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
 }
 
+#if !defined(VGO_freebsd)
 PRE(sys_ftruncate64)
 {
    *flags |= SfMayBlock;
@@ -3460,6 +3467,7 @@ PRE(sys_truncate64)
 #endif
    PRE_MEM_RASCIIZ( "truncate64(path)", ARG1 );
 }
+#endif
 
 PRE(sys_getdents)
 {
@@ -3479,6 +3487,7 @@ POST(sys_getdents)
       POST_MEM_WRITE( ARG2, RES );
 }
 
+#if !defined(VGO_freebsd)
 PRE(sys_getdents64)
 {
    *flags |= SfMayBlock;
@@ -3496,6 +3505,7 @@ POST(sys_getdents64)
    if (RES > 0)
       POST_MEM_WRITE( ARG2, RES );
 }
+#endif
 
 PRE(sys_getgroups)
 {
@@ -3600,6 +3610,7 @@ static void common_post_getrlimit(ThreadId tid, UWord a1, UWord a2)
    }
 }
 
+#if !defined(VGO_freebsd)
 PRE(sys_old_getrlimit)
 {
    PRINT("sys_old_getrlimit ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",
@@ -3613,6 +3624,7 @@ POST(sys_old_getrlimit)
 {
    common_post_getrlimit(tid, ARG1, ARG2);
 }
+#endif
 
 PRE(sys_getrlimit)
 {
@@ -3863,7 +3875,7 @@ PRE(sys_link)
    PRE_MEM_RASCIIZ( "link(newpath)", ARG2);
 }
 
-#if !defined(VGP_nanomips_linux)
+#if  !defined(VGP_nanomips_linux) && !defined(VGO_freebsd)
 PRE(sys_newlstat)
 {
    PRINT("sys_newlstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,
@@ -4482,7 +4494,7 @@ PRE(sys_setuid)
    PRE_REG_READ1(long, "setuid", vki_uid_t, uid);
 }
 
-#if !defined(VGP_nanomips_linux)
+#if !defined(VGP_nanomips_linux) && !defined(VGO_freebsd)
 PRE(sys_newstat)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -4497,6 +4509,7 @@ POST(sys_newstat)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
+#endif
 
 PRE(sys_statfs)
 {
@@ -4512,6 +4525,7 @@ POST(sys_statfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
+#if !defined(VGO_freebsd)
 PRE(sys_statfs64)
 {
    PRINT("sys_statfs64 ( %#" FMT_REGWORD "x(%s), %llu, %#" FMT_REGWORD "x )",
