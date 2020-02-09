@@ -353,7 +353,7 @@ static void init(void);
  #if VG_WORDSIZE == 4
   ALLOC_or_BOMB(VG_Z_LIBSTDCXX_SONAME, _Znwj,          __builtin_new);
   ALLOC_or_BOMB(VG_Z_LIBSUPCXX_SONAME, _Znwj,          __builtin_new);
-  ALLOC_or_BOMB(SO_SYN_MALLOC,         _Znwm,          __builtin_new);
+  ALLOC_or_BOMB(SO_SYN_MALLOC,         _Znwj,          __builtin_new);
  #endif
  // operator new(unsigned long), GNU mangling
  #if VG_WORDSIZE == 8
