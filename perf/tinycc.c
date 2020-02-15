@@ -21790,7 +21790,7 @@ int main2(int argc, char **argv)
 // zero here (as required by vg_perf).
 int main(int argc, char **argv)
 {
-   #define REPS   1
+   #define REPS   30
    int i;
    for (i = 0; i < REPS; i++) {
       main2(argc, argv);

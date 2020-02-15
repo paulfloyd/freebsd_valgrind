@@ -109,6 +109,10 @@ without too much problem by following these steps:
     stopping on a SIGSEGV or SIGILL:
 
     (gdb) handle SIGILL SIGSEGV nostop noprint
+ 
+    If you are using lldb, then the equivalent command is
+
+    (lldb) pro hand -p true -s false -n false SIGILL SIGSEGV
 
 (4) Set any breakpoints you want and proceed as normal for gdb. The
     macro VG_(FUNC) is expanded to vgPlain_FUNC, so If you want to set

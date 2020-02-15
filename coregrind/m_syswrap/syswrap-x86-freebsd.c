@@ -1,6 +1,6 @@
 
 /*--------------------------------------------------------------------*/
-/*--- Platform-specific syscalls stuff.        syswrap-x86-linux.c ---*/
+/*--- Platform-specific syscalls stuff.        syswrap-x86-freebsd.c ---*/
 /*--------------------------------------------------------------------*/
 
 /*

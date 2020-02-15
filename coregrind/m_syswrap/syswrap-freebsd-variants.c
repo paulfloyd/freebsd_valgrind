@@ -1,7 +1,7 @@
 
 /*--------------------------------------------------------------------*/
-/*--- Handlers for syscalls on minor variants of Linux kernels.    ---*/
-/*---                                     syswrap-linux-variants.c ---*/
+/*--- Handlers for syscalls on minor variants of FreeBSD kernels.    ---*/
+/*---                                     syswrap-freebsd-variants.c ---*/
 /*--------------------------------------------------------------------*/
 
 /*

@@ -715,7 +715,6 @@ void VG_(record_startup_wd) ( void )
      startup_wd = VG_(malloc)("startup_wd", need);
      VG_(strcpy)(startup_wd, wd);
    }
-
 #  else
 #    error Unknown OS
 #  endif

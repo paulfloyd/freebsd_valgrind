@@ -683,7 +683,7 @@ static Bool maybe_merge_nsegments ( NSegment* s1, const NSegment* s2 )
              && s1->hasW == s2->hasW && s1->hasX == s2->hasX
              && s1->dev == s2->dev && s1->ino == s2->ino
              && s2->offset == s1->offset
-                              + ((Off64T)s2->start) - ((Off64T)s1->start) ) {
+                              + ((ULong)s2->start) - ((ULong)s1->start) ) {
             s1->end = s2->end;
             s1->hasT |= s2->hasT;
             ML_(am_dec_refcount)(s1->fnIdx);
@@ -1665,7 +1665,6 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
                                            + VKI_PAGE_SIZE;
 
    // --- Solaris ------------------------------------------
-   
 #elif defined(VGO_solaris)
 #  if VG_WORDSIZE == 4
    /*
@@ -3832,11 +3831,13 @@ Bool VG_(get_changed_segments)(
    return !css_overflowed;
 }
 
+#endif // defined(VGO_darwin)
+
 /*------END-procmaps-parser-for-Darwin---------------------------*/
 
+#if defined(VGO_freebsd)
 /*------BEGIN-procmaps-parser-for-Freebsd------------------------*/
 
-#elif defined(VGO_freebsd)
 
  /* Size of a smallish table used to read /proc/self/map entries. */
  #define M_PROCMAP_BUF 10485760	/* 10M */
@@ -3911,10 +3912,11 @@ static void parse_procselfmaps (
 }
 
 /*------END-procmaps-parser-for-Freebsd--------------------------*/
+# endif // defined(VGO_freebsd)
 
 /*------BEGIN-procmaps-parser-for-Solaris------------------------*/
 
-#elif defined(VGO_solaris)
+#if defined(VGO_solaris)
 
 /* Note: /proc/self/xmap contains extended information about already
    materialized mappings whereas /proc/self/rmap contains information about

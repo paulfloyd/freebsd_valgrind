@@ -189,7 +189,7 @@ DECL_TEMPLATE(generic, sys_sethostname);
 
 // These ones aren't POSIX, but are in some standard and look reasonably
 // generic,  and are the same for all architectures under Linux.
-#if! defined(VGO_freebsd)
+#if !defined(VGO_freebsd)
 DECL_TEMPLATE(generic, sys_nice);      // SVr4, SVID EXT, AT&T, X/OPEN, BSD 4.3
 #endif
 DECL_TEMPLATE(generic, sys_sync);      // SVr4, SVID, X/OPEN, BSD 4.3

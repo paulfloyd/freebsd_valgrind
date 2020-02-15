@@ -101,7 +101,7 @@ static sem_t* my_sem_init (char* identity, int pshared, unsigned count)
 {
    sem_t* s;
 
-#if defined(VGO_linux) || defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
    s = malloc(sizeof(*s));
    if (s) {
       if (sem_init(s, pshared, count) < 0) {
@@ -110,7 +110,7 @@ static sem_t* my_sem_init (char* identity, int pshared, unsigned count)
 	 s = NULL;
       }
    }
-#elif defined(VGO_darwin) || defined(VGO_freebsd)
+#elif defined(VGO_darwin)
    char name[100];
    sprintf(name, "anonsem_%s_pid%d", identity, (int)getpid());
    name[ sizeof(name)-1 ] = 0;

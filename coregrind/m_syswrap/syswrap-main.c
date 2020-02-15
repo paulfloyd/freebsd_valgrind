@@ -455,6 +455,7 @@ Bool eq_SyscallArgs ( SyscallArgs* a1, SyscallArgs* a2 )
 static
 Bool eq_SyscallStatus ( UInt sysno, SyscallStatus* s1, SyscallStatus* s2 )
 {
+   /* was: return s1->what == s2->what && sr_EQ( s1->sres, s2->sres ); */
    if (s1->what == s2->what && sr_EQ( sysno, s1->sres, s2->sres ))
       return True;
 #  if defined(VGO_darwin)
@@ -1199,6 +1200,11 @@ void getSyscallStatusFromGuestState ( /*OUT*/SyscallStatus*     canonical,
    canonical->sres = VG_(mk_SysRes_arm_linux)( gst->guest_R0 );
    canonical->what = SsComplete;
 
+#  elif defined(VGP_arm64_linux)
+   VexGuestARM64State* gst = (VexGuestARM64State*)gst_vanilla;
+   canonical->sres = VG_(mk_SysRes_arm64_linux)( gst->guest_X0 );
+   canonical->what = SsComplete;
+
 #  elif defined(VGP_mips32_linux)
    VexGuestMIPS32State* gst = (VexGuestMIPS32State*)gst_vanilla;
    UInt                v0 = gst->guest_r2;    // v0
@@ -1388,6 +1394,7 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
              OFFSET_ppc64_GPR3, sizeof(UWord) );
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid, 
              OFFSET_ppc64_CR0_0, sizeof(UChar) );
+
 #  elif defined(VGP_arm_linux)
    VexGuestARMState* gst = (VexGuestARMState*)gst_vanilla;
    vg_assert(canonical->what == SsComplete);

@@ -249,6 +249,7 @@ typedef
 #  error "Unknown OS"
 #endif
 
+
 /* ---- And now some basic accessor functions for it. ---- */
 
 #if defined(VGP_mips32_linux) || defined(VGP_mips64_linux)
