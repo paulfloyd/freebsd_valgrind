@@ -486,6 +486,7 @@ typedef __vki_signalfn_t *__vki_sighandler_t;
 #define	VKI_SA_NODEFER		0x0010
 #define	VKI_SA_NOCLDWAIT	0x0020
 #define	VKI_SA_SIGINFO		0x0040
+#define VKI_SA_RESTORER         0 /* FreeBSD doesn't have this */
 
 #define	VKI_SS_ONSTACK		0x0001
 #define	VKI_SS_DISABLE		0x0004
