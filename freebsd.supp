@@ -20,6 +20,16 @@
    fun:main
 }
 {
+   MEMCHECK-LIBSTDC++-REACHABLE
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/local/lib/gcc9/libstdc++.so.6.0.27
+   obj:/libexec/ld-elf.so.1
+   obj:/libexec/ld-elf.so.1
+   obj:/libexec/ld-elf.so.1
+}
+{
    DRD-1
    drd:ConflictingAccess
    obj:/lib/libthr.so.3
