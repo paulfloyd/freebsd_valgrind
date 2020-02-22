@@ -35,7 +35,14 @@ support for X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * Cachegrind:
 
+  - cg_annotate's --auto and --show-percs options now default to 'yes', because
+    they are usually wanted.
+
 * Callgrind:
+
+  - callgrind_annotate's --auto and --show-percs options now default to 'yes',
+    because they are usually wanted.
+
   - The command option --collect-systime has been enhanced to specify
     the unit used to record the elapsed time spent during system calls.
     The command option now accepts the values no|yes|msec|usec|nsec,
@@ -116,6 +123,10 @@ n-i-bz  Add support for the Linux io_uring system calls
 n-i-bz  sys_statx: don't complain if both |filename| and |buf| are NULL.
 n-i-bz  Fix non-glibc build of test suite with s390x_features
 416667  gcc10 ppc64le impossible constraint in 'asm' in test_isa.
+417427  commit to fix vki_siginfo_t definition created numerous regression
+        errors on ppc64
+417452  s390_insn_store_emit: dst->tag for HRcVec128
+417906  clone with CLONE_VFORK and no CLONE_VM fails
 
 
 Release 3.15.0 (12 April 2019)

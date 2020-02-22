@@ -852,7 +852,7 @@ PRE(sys_clone)
       PRA_CHILD_STACK("clone",  void *, child_stack);
    }
 
-   if (ARG_FLAGS & VKI_CLONE_PARENT_SETTID) {
+   if (ARG_FLAGS & (VKI_CLONE_PARENT_SETTID | VKI_CLONE_PIDFD)) {
       if (VG_(tdict).track_pre_reg_read) {
          PRA3("clone", int *, parent_tidptr);
       }
@@ -915,6 +915,7 @@ PRE(sys_clone)
       break;
 
    case VKI_CLONE_VFORK | VKI_CLONE_VM: /* vfork */
+   case VKI_CLONE_VFORK: /* vfork without memory sharing */
       cloneflags &= ~VKI_CLONE_VM;
       // FALLTHROUGH - assume vfork (somewhat) == fork, see ML_(do_fork_clone).
 
@@ -940,10 +941,20 @@ PRE(sys_clone)
    }
 
    if (SUCCESS) {
-      if (ARG_FLAGS & VKI_CLONE_PARENT_SETTID)
+      if (ARG_FLAGS & (VKI_CLONE_PARENT_SETTID | VKI_CLONE_PIDFD))
          POST_MEM_WRITE(ARG3, sizeof(Int));
       if (ARG_FLAGS & (VKI_CLONE_CHILD_SETTID | VKI_CLONE_CHILD_CLEARTID))
          POST_MEM_WRITE(ARG_CHILD_TIDPTR, sizeof(Int));
+      if (ARG_FLAGS & VKI_CLONE_PIDFD) {
+         Int fd = *(Int*)(Addr)ARG3;
+         if (!ML_(fd_allowed)(fd, "clone", tid, True)) {
+            VG_(close)(fd);
+            SET_STATUS_Failure( VKI_EMFILE );
+         } else {
+            if (VG_(clo_track_fds))
+               ML_(record_fd_open_nameless) (tid, fd);
+         }
+      }
 
       /* Thread creation was successful; let the child have the chance
          to run */
