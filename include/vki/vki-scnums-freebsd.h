@@ -159,27 +159,27 @@
 #define	__NR_setegid		182
 #define	__NR_seteuid		183
 
-// @todo PJF need some conditional compilation here
-
-// pre FreeBSD 12
-//#define	__NR_stat		188
-//#define	__NR_fstat		189
-//#define	__NR_lstat		190
-
-
+#if (FREEBSD_VERS >= FREEBSD_12)
 #define	__NR_freebsd11_stat		188
 #define	__NR_freebsd11_fstat		189
 #define	__NR_freebsd11_lstat		190
+#else
+#define	__NR_stat		188
+#define	__NR_fstat		189
+#define	__NR_lstat		190
+#endif
+
 
 #define	__NR_pathconf		191
 #define	__NR_fpathconf		192
 #define	__NR_getrlimit		194
 #define	__NR_setrlimit		195
 
-// @todo PJF conditional
-//#define	__NR_getdirentries	196
-
+#if (FREEBSD_VERS >= FREEBSD_12)
 #define	__NR_freebsd11_getdirentries	196
+#else
+#define	__NR_getdirentries	196
+#endif
 
 #define	__NR_mmap6		197
 #define	__NR___syscall		198
@@ -300,9 +300,11 @@
 #define	__NR_getresgid		361
 #define	__NR_kqueue		362
 
-// @todo PJF conditional
-//#define	__NR_kevent		363
+#if (FREEBSD_VERS >= FREEBSD_12)
 #define	__NR_freebsd11_kevent		363
+#else
+#define	__NR_kevent		363
+#endif
 
 #define	__NR_extattr_set_fd	371
 #define	__NR_extattr_get_fd	372
@@ -328,17 +330,17 @@
 #define	__NR_sendfile		393
 #define	__NR_mac_syscall	394
 
-// @todo PJF conditional
-//#define	__NR_getfsstat		395
-//#define	__NR_statfs6		396
-//#define	__NR_fstatfs6		397
-//#define	__NR_fhstatfs6		398
-
-#define	__NR_freebsd11_getfsstat		395
+#if (FREEBSD_VERS >= FREEBSD_12)
+#define	__NR_freebsd11_getfsstat	395
 #define	__NR_freebsd11_statfs6		396
 #define	__NR_freebsd11_fstatfs6		397
-#define	__NR_freebsd11_fhstatfs6		398
-
+#define	__NR_freebsd11_fhstatfs6	398
+#else
+#define	__NR_getfsstat		395
+#define	__NR_statfs6		396
+#define	__NR_fstatfs6		397
+#define	__NR_fhstatfs6		398
+#endif
 
 #define	__NR_ksem_close		400
 #define	__NR_ksem_post		401
@@ -431,20 +433,24 @@
 #define	__NR_fchownat		491
 #define	__NR_fexecve		492
 
-// @todo PJF conditional
-//#define	__NR_fstatat		493
-
+#if (FREEBSD_VERS >= FREEBSD_12)
 #define	__NR_freebsd11_fstatat		493
+#else
+#define	__NR_fstatat		493
+#endif
 
 #define	__NR_futimesat		494
 #define	__NR_linkat         495
 #define	__NR_mkdirat		496
 #define	__NR_mkfifoat		497
 
-// @todo PJF conditional
-//#define	__NR_mknodat		498
-
+#if (FREEBSD_VERS >= FREEBSD_12)
 #define	__NR_freebsd11_mknodat		498
+#else
+#define	__NR_mknodat		498
+#endif
+
+// @todo PJF version specifics up here
 
 #define	__NR_openat		499
 #define	__NR_readlinkat		500
