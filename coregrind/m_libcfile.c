@@ -430,10 +430,9 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
      }
    }
 #  endif
-#  if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_darwin)
    /* Try with stat64. This is the second candidate on Linux, and the first
-      one on Darwin and FreeBSD.
-      If that doesn't work out, fall back to vanilla version.
+      one on Darwin. If that doesn't work out, fall back to vanilla version.
     */
 #  if defined(__NR_stat64)
    { struct vki_stat64 buf64;
@@ -446,16 +445,12 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
      }
    }
 #  endif /* defined(__NR_stat64) */
-#  if defined(__NR_stat) || defined(VGP_arm64_linux) || defined(VGO_freebsd)
+#  if defined(__NR_stat) || defined(VGP_arm64_linux)
    /* This is the fallback ("vanilla version"). */
-   {
+   { struct vki_stat buf;
 #    if defined(VGP_arm64_linux)
-     struct vki_stat buf;
      res = VG_(do_syscall3)(__NR3264_fstatat, VKI_AT_FDCWD,
                                               (UWord)file_name, (UWord)&buf);
-#    elif defined(VGO_freebsd)
-     struct vki_stat11 buf;
-     res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
 #    else
      res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
 #    endif
@@ -480,6 +475,18 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
       if (!sr_isError(res))
          TRANSLATE_TO_vg_stat(vgbuf, &buf64);
       return res;
+   }
+#  elif defined(VGO_freebsd)
+   {
+# if (FREEBSD_VER >= FREEBSD12)
+     struct vki_stat11 buf;
+     res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
+#    else
+     res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
+#    endif
+     if (!sr_isError(res))
+        TRANSLATE_TO_vg_stat(vgbuf, &buf);
+     return res;
    }
 #  else
 #    error Unknown OS
@@ -506,10 +513,9 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
      }
    }
 #endif
-#  if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_darwin)
    /* Try with fstat64. This is the second candidate on Linux, and the first
-      one on Darwin and FreeBSD.
-      If that doesn't work out, fall back to vanilla version.
+      one on Darwin. If that doesn't work out, fall back to vanilla version.
     */
 #  if defined(__NR_fstat64)
    { struct vki_stat64 buf64;
@@ -525,9 +531,8 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
 #  if defined(__NR_fstat)
    { struct vki_stat buf;
      res = VG_(do_syscall2)(__NR_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
-     if (!sr_isError(res)) {
+     if (!sr_isError(res))
         TRANSLATE_TO_vg_stat(vgbuf, &buf);
-     }
      return sr_isError(res) ? (-1) : 0;
    }
 #  endif
@@ -545,6 +550,20 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
       if (!sr_isError(res))
          TRANSLATE_TO_vg_stat(vgbuf, &buf64);
       return sr_isError(res) ? (-1) : 0;
+   }
+#  elif defined(VGO_freebsd)
+   {
+#    if (FREEBSD_VERS >= FREEBSD_12)
+     struct vki_stat11 buf;
+     res = VG_(do_syscall2)(__NR_freebsd11_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
+#    else
+       struct vki_stat buf;
+       res = VG_(do_syscall2)(__NR_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
+#    endif
+     if (!sr_isError(res)) {
+        TRANSLATE_TO_vg_stat(vgbuf, &buf);
+     }
+     return sr_isError(res) ? (-1) : 0;
    }
 #  else
 #    error Unknown OS
