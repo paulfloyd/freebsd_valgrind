@@ -341,7 +341,7 @@ struct vki_tms {
 //----------------------------------------------------------------------
 
 /* QQQ 4.x stat layout */
-struct vki_stat11 {
+struct vki_freebsd11_stat {
 	vki_dev_t	st_dev;
 	vki_ino_t	st_ino;
 	vki_mode_t	st_mode;
@@ -375,6 +375,14 @@ struct vki_stat11 {
 #if defined(VGP_x86_freebsd)
 #define	VKI_STAT_TIME_T_EXT	1
 #endif
+
+/*
+ * FreeBSD 12 has two versions of the stat struct
+ * freebsd11_stat, which is the same as vki_stat above
+ * and just stat, which is the same as vki_stat below
+ * Since vki_stat is used by other OSes, it's best not to
+ * use the same naming
+ */
 
 struct vki_stat {
     vki_dev_t     st_dev;
