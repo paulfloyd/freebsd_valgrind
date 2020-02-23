@@ -398,38 +398,22 @@ ESZ(Addr) mapelf(struct elfinfo *e, ESZ(Addr) base)
    Int    i;
    SysRes res;
    ESZ(Addr) elfbrk = 0;
-   ESZ(Word) mapsize;
-   ESZ(Addr) base_offset, base_vaddr, base_vlimit, baseaddr;
-   ESZ(Phdr) *ph0, *phlast;
 
-   if (e->e.e_phnum < 1) {
-      VG_(printf)("valgrind: m_ume.c: too few sections\n");
-      return 1;
-   }
-
-   /* Map the entire address space of the object. */
-   ph0 = NULL;
-   phlast = NULL;
-   for (i = 1; i < e->e.e_phnum; i++) {
+   for (i = 0; i < e->e.e_phnum; i++) {
       ESZ(Phdr) *ph = &e->p[i];
+      ESZ(Addr) addr, brkaddr;
+      ESZ(Word) memsz;
+
       if (ph->p_type != PT_LOAD)
          continue;
-      if (ph0 == NULL)
-         ph0 = ph;
-      if (phlast == NULL || ph->p_vaddr > phlast->p_vaddr)
-         phlast = &e->p[i];
+
+      addr    = ph->p_vaddr+base;
+      memsz   = ph->p_memsz;
+      brkaddr = addr+memsz;
+
+      if (brkaddr > elfbrk)
+         elfbrk = brkaddr;
    }
-   if (ph0 == NULL || phlast == NULL) {
-      VG_(printf)("valgrind: m_ume.c: too few loadable sections\n");
-      return 1;
-   }
-   base_offset = VG_PGROUNDDN(ph0->p_offset);
-   base_vaddr = VG_PGROUNDDN(ph0->p_vaddr);
-   base_vlimit = VG_PGROUNDUP(phlast->p_vaddr + phlast->p_memsz);
-   mapsize = base_vlimit - base_vaddr;
-   baseaddr = VG_PGROUNDDN(ph0->p_vaddr + base);
-   res = VG_(am_mmap_anon_fixed_client)(baseaddr, mapsize, VKI_PROT_NONE);
-   check_mmap(res, baseaddr, mapsize);
 
    for (i = 0; i < e->e.e_phnum; i++) {
       ESZ(Phdr) *ph = &e->p[i];
@@ -453,9 +437,12 @@ ESZ(Addr) mapelf(struct elfinfo *e, ESZ(Addr) base)
       memsz   = ph->p_memsz;
       brkaddr = addr+memsz;
 
-      if (brkaddr > elfbrk)
-         elfbrk = brkaddr;
-
+      // Tom says: In the following, do what the Linux kernel does and only
+      // map the pages that are required instead of rounding everything to
+      // the specified alignment (ph->p_align).  (AMD64 doesn't work if you
+      // use ph->p_align -- part of stage2's memory gets trashed somehow.)
+      //
+      // The condition handles the case of a zero-length segment.
       if (VG_PGROUNDUP(bss)-VG_PGROUNDDN(addr) > 0) {
          if (0) VG_(debugLog)(0,"ume","mmap_file_fixed_client #1\n");
          res = VG_(am_mmap_file_fixed_client)(
@@ -473,38 +460,23 @@ ESZ(Addr) mapelf(struct elfinfo *e, ESZ(Addr) base)
       if (memsz > filesz) {
          UInt bytes;
 
-         bytes = VG_PGROUNDUP(bss) - bss;
+         bytes = VG_PGROUNDUP(brkaddr)-VG_PGROUNDUP(bss);
          if (bytes > 0) {
-            /* Make sure the end of the segment is writable */
-            if ((prot & VKI_PROT_WRITE) == 0) {
-               res = VG_(am_do_mprotect_NO_NOTIFY)((UWord)VG_PGROUNDDN(bss), VKI_PAGE_SIZE,
-                  prot|VKI_PROT_WRITE);
-               if (sr_isError(res)) {
-                  VG_(printf)("valgrind: m_ume.c: mprotect failed\n");
-                  return (1);
-               }
-            }
-            VG_(memset)((char *)bss, 0, bytes);
-            /* Reset the data protection back */
-            if ((prot & VKI_PROT_WRITE) == 0) {
-               res = VG_(am_do_mprotect_NO_NOTIFY)((UWord)VG_PGROUNDDN(bss), VKI_PAGE_SIZE,
-                  prot);
-               if (sr_isError(res)) {
-                  VG_(printf)("valgrind: m_ume.c: mprotect failed\n");
-                  return (1);
-               }
-            }
+            if (0) VG_(debugLog)(0,"ume","mmap_anon_fixed_client #2\n");
+            res = VG_(am_mmap_anon_fixed_client)(
+                     VG_PGROUNDUP(bss), bytes,
+                     prot
+                  );
+            if (0) VG_(am_show_nsegments)(0,"after #2");
+            check_mmap(res, VG_PGROUNDUP(bss), bytes);
          }
 
-         /* Overlay the BSS segment onto the proper region. */
-         if (VG_PGROUNDUP(brkaddr) > VG_PGROUNDUP(bss)) {
-            res = VG_(am_do_mprotect_NO_NOTIFY)((UWord)VG_PGROUNDUP(bss),
-               VG_PGROUNDUP(brkaddr) - VG_PGROUNDUP(bss), prot);
-            if (sr_isError(res)) {
-               VG_(printf)("valgrind: m_ume.c: mprotect failed\n");
-               return (1);
-            }
-            VG_(am_notify_mprotect)((Addr)VG_PGROUNDUP(bss), VG_PGROUNDUP(brkaddr) - VG_PGROUNDUP(bss), prot);
+         bytes = bss & (VKI_PAGE_SIZE - 1);
+
+         // The 'prot' condition allows for a read-only bss
+         if ((prot & VKI_PROT_WRITE) && (bytes > 0)) {
+            bytes = VKI_PAGE_SIZE - bytes;
+            VG_(memset)((void *)bss, 0, bytes);
          }
       }
    }
