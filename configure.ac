@@ -368,6 +368,34 @@ case "${host_os}" in
      *freebsd*)
         AC_MSG_RESULT([ok (${host_os})])
         VGCONF_OS="freebsd"
+        AC_DEFINE([FREEBSD_10], 1000, [FREEBSD_VERS value for FreeBSD 10.x])
+        AC_DEFINE([FREEBSD_11], 1100, [FREEBSD_VERS value for FreeBSD 11.x])
+        AC_DEFINE([FREEBSD_12], 1200, [FREEBSD_VERS value for FreeBSD 12.x])
+        # @todo add .x versions as necessary
+
+        AC_MSG_CHECKING([for the kernel version])
+        kernel=`uname -r`
+
+        # @todo add version-specific suppression files as necessary
+        case "${kernel}" in
+        10.*)
+           AC_MSG_RESULT([FreeBSD 10.x (${kernel})])
+           AC_DEFINE([FREEBSD_VERS], FREEBSD_10, [FreeBSD version])
+           ;;
+        11.*)
+           AC_MSG_RESULT([FreeBSD 11.x (${kernel})])
+           AC_DEFINE([FREEBSD_VERS], FREEBSD_11, [FreeBSD version])
+           ;;
+        12.*)
+           AC_MSG_RESULT([FreeBSD 12.x (${kernel})])
+           AC_DEFINE([FREEBSD_VERS], FREEBSD_12, [FreeBSD version])
+           ;;
+        *)
+           AC_MSG_RESULT([unsupported (${kernel})])
+           AC_MSG_ERROR([Valgrind works on FreeBSD 10.x, 11.x, 12.x])
+           ;;
+        esac
+
 	DEFAULT_SUPP="freebsd.supp ${DEFAULT_SUPP}"
         ;;
 
