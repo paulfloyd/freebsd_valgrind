@@ -2952,8 +2952,8 @@ asm("\n"
     "\tandq  $~15, %rsi\n"
     /* install it, and collect the original one */
     "\txchgq %rsi, %rsp\n"
-    /* call _start_in_C_amd64_freebsd, passing it the startup %rsp */
-    "\tcall  _start_in_C_amd64_freebsd\n"
+    /* call _start_in_C_freebsd, passing it the startup %rsp */
+    "\tcall  _start_in_C_freebsd\n"
     "\thlt\n"
     ".previous\n"
 );
@@ -3030,9 +3030,12 @@ asm(
 #include <elf.h>
 /* --- !!! --- EXTERNAL HEADERS end --- !!! --- */
 
-#if defined(VGP_amd64_freebsd)
-void _start_in_C_amd64_freebsd ( UWord* pArgc, UWord *initial_sp );
-void _start_in_C_amd64_freebsd ( UWord* pArgc, UWord *initial_sp )
+#if defined(VGO_freebsd)
+
+__attribute__ ((used))
+void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp );
+__attribute__ ((used))
+void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp )
 {
    Int     r;
    Word    argc = pArgc[0];
@@ -3042,7 +3045,11 @@ void _start_in_C_amd64_freebsd ( UWord* pArgc, UWord *initial_sp )
    VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
    VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
 
+#if defined(VGP_amd64_freebsd)
    the_iicii.sp_at_startup = (Addr)initial_sp;
+#else
+   the_iicii.sp_at_startup = (Addr)pArgc;
+#endif
 
    r = valgrind_main( (Int)argc, argv, envp );
    /* NOTREACHED */
