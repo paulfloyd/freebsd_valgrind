@@ -364,9 +364,14 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
       return True;
    }
 #  endif
-#  if defined(__NR_fstat)
+#  if defined(__NR_fstat) || defined(__NR_freebsd11_fstat)
+#    if defined(VGP_x86_freebsd)
+   struct vki_freebsd11_stat buf;
+   res = VG_(do_syscall2)(__NR_freebsd11_fstat, fd, (UWord)&buf);
+#    else
    struct vki_stat buf;
    res = VG_(do_syscall2)(__NR_fstat, fd, (UWord)&buf);
+#    endif
    if (!sr_isError(res)) {
       *dev  = (ULong)buf.st_dev;
       *ino  = (ULong)buf.st_ino;
