@@ -555,7 +555,7 @@ PRE(sys_thr_new)
    Int idx = -1;
    Addr stk;
 
-   PRINT("thr_new ( %#lx, %ld )",ARG1,ARG2);
+   PRINT("thr_new ( %#lx, %lu )",ARG1,ARG2);
    PRE_REG_READ2(int, "thr_new",
                  struct thr_param *, param,
                  int, param_size);
@@ -951,7 +951,7 @@ PRE(sys_mmap)
 {
    SysRes r;
 
-   PRINT("sys_mmap ( %#lx, %lu, %ld, %ld, %ld, pad%ld, lo0x%lx hi0x%lx)",
+   PRINT("sys_mmap ( %#lx, %lu, %lu, %lu, %lu, pad%lu, lo0x%lx hi0x%lx)",
          ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7, ARG8 );
    PRE_REG_READ8(long, "mmap",
                  char *, addr, unsigned long, len, int, prot,  int, flags,
@@ -965,7 +965,7 @@ PRE(sys_mmap7)
 {
    SysRes r;
 
-   PRINT("sys_mmap ( %#lx, %lu, %ld, %ld, %ld, lo0x%lx hi0x%lx)",
+   PRINT("sys_mmap ( %#lx, %lu, %lu, %lu, %lu, lo0x%lx hi0x%lx)",
          ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7 );
    PRE_REG_READ7(long, "mmap",
                  char *, addr, unsigned long, len, int, prot,  int, flags,
@@ -977,7 +977,7 @@ PRE(sys_mmap7)
 
 PRE(sys_lseek)
 {
-   PRINT("sys_lseek ( %ld, 0x%lx, 0x%lx, %ld )", ARG1,ARG3,ARG4,ARG5);
+   PRINT("sys_lseek ( %lu, 0x%lx, 0x%lx, %lu )", ARG1,ARG3,ARG4,ARG5);
    PRE_REG_READ5(long, "lseek",
                  unsigned int, fd, int, pad, unsigned int, offset_low,
                  unsigned int, offset_high, unsigned int, whence);
@@ -985,7 +985,7 @@ PRE(sys_lseek)
 
 PRE(sys_lseek7)
 {
-   PRINT("sys_lseek ( %ld, 0x%lx, 0x%lx, %ld )", ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_lseek ( %lu, 0x%lx, 0x%lx, %lu )", ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "lseek",
                  unsigned int, fd, unsigned int, offset_low,
                  unsigned int, offset_high, unsigned int, whence);
@@ -994,7 +994,7 @@ PRE(sys_lseek7)
 PRE(sys_pread)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_read ( %ld, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG5, ARG6);
+   PRINT("sys_read ( %lu, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG5, ARG6);
    PRE_REG_READ6(ssize_t, "read",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  int, pad, unsigned int, off_low, unsigned int, off_high);
@@ -1014,7 +1014,7 @@ POST(sys_pread)
 PRE(sys_pread7)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_read ( %ld, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_read ( %lu, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "read",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  unsigned int, off_low, unsigned int, off_high);
@@ -1035,7 +1035,7 @@ PRE(sys_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %ld, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG5, ARG6);
+   PRINT("sys_write ( %lu, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG5, ARG6);
    PRE_REG_READ6(ssize_t, "write",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  int, pad, unsigned int, off_low, unsigned int, off_high);
@@ -1055,7 +1055,7 @@ PRE(sys_pwrite7)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %ld, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_write ( %lu, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "write",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  unsigned int, off_low, unsigned int, off_high);
@@ -1074,7 +1074,7 @@ PRE(sys_pwrite7)
 PRE(sys_ftruncate)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %ld, %lu, %lu )", ARG1,ARG3,ARG4);
+   PRINT("sys_ftruncate ( %lu, %lu, %lu )", ARG1,ARG3,ARG4);
    PRE_REG_READ4(long, "ftruncate", unsigned int, fd, int, pad,
 		  unsigned int, length_low, unsigned int, length_high);
 }
@@ -1082,7 +1082,7 @@ PRE(sys_ftruncate)
 PRE(sys_ftruncate7)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %ld, %lu, %lu )", ARG1,ARG2,ARG3);
+   PRINT("sys_ftruncate ( %lu, %lu, %lu )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "ftruncate", unsigned int, fd,
 		  unsigned int, length_low, unsigned int, length_high);
 }
@@ -1113,7 +1113,7 @@ PRE(sys_sysarch)
    Int idx;
    void **p;
 
-   PRINT("sys_sysarch ( %ld, %#lx )", ARG1, ARG2);
+   PRINT("sys_sysarch ( %lu, %#lx )", ARG1, ARG2);
    PRE_REG_READ2(int, "sysarch",
 		 int, number, void *, args);
    switch (ARG1) {
@@ -1153,7 +1153,7 @@ PRE(sys_sysarch)
       POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    default:
-      VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %ld", ARG1);
+      VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %lu", ARG1);
       VG_(unimplemented) ("unhandled sysarch cmd");
       break;
    }
