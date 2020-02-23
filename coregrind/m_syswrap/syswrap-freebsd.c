@@ -4041,14 +4041,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl lfs_segclean						   186
    // unimpl lfs_segwait						   187
 
-    // @todo PJF conditional
-
-   //BSDXY(__NR_stat,			sys_stat),			// 188
-   //BSDXY(__NR_fstat,			sys_fstat),			// 189
-   //BSDXY(__NR_lstat,			sys_lstat),			// 190
+ #if (FREEBSD_VERS >= FREEBSD_12)
    BSDXY(__NR_freebsd11_stat,			sys_stat),			// 188
    BSDXY(__NR_freebsd11_fstat,			sys_fstat),			// 189
    BSDXY(__NR_freebsd11_lstat,			sys_lstat),			// 190
+ #else
+   BSDXY(__NR_stat,			sys_stat),			// 188
+   BSDXY(__NR_fstat,			sys_fstat),			// 189
+   BSDXY(__NR_lstat,			sys_lstat),			// 190
+ #endif
    BSDX_(__NR_pathconf,			sys_pathconf),			// 191
 
    BSDX_(__NR_fpathconf,		sys_fpathconf),			// 192
@@ -4306,13 +4307,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // mac_syscall							   394
    BSDXY(__NR_getfsstat,		sys_getfsstat),			// 395
 
-    // @todo PJF condiitonal
-//   BSDXY(__NR_statfs6,			sys_statfs6),			// 396
-//   BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
-//   BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
+#if (FREEBSD_VERS >= FREEBSD_12)
     BSDXY(__NR_freebsd11_statfs6,			sys_statfs6),			// 396
     BSDXY(__NR_freebsd11_fstatfs6,			sys_fstatfs6),			// 397
     BSDXY(__NR_freebsd11_fhstatfs6,		sys_fhstatfs6),			// 398
+#else
+    BSDXY(__NR_statfs6,			sys_statfs6),			// 396
+    BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
+    BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
+#endif
 
    // nosys								   399
 
