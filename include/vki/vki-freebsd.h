@@ -57,8 +57,8 @@
    definitions, which affects some of them.
 */
 
-#ifndef __VKI_FREEBSD_H
-#define __VKI_FREEBSD_H
+#ifndef VKI_FREEBSD_H
+#define VKI_FREEBSD_H
 
 //----------------------------------------------------------------------
 // Arch-specific POSIX types

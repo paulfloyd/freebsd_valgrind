@@ -29,8 +29,8 @@
    The GNU General Public License is contained in the file COPYING.
 */
 
-#ifndef __VKI_MACHINE_TYPES_AMD64_FREEBSD_H
-#define __VKI_MACHINE_TYPES_AMD64_FREEBSD_H
+#ifndef VKI_MACHINE_TYPES_AMD64_FREEBSD_H
+#define VKI_MACHINE_TYPES_AMD64_FREEBSD_H
 
 //----------------------------------------------------------------------
 // From sys/i386/include/_types.h
@@ -70,7 +70,7 @@ typedef	vki_uint64_t	__vki_vm_paddr_t;	/* QQQ int64 for PAE */
 typedef	vki_uint64_t	__vki_vm_pindex_t;
 typedef	vki_uint64_t	__vki_vm_size_t;
 
-#endif // __VKI_MACHINE_TYPES_AMD64_FREEBSD_H
+#endif // VKI_MACHINE_TYPES_AMD64_FREEBSD_H
 
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/

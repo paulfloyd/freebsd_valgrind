@@ -29,8 +29,8 @@
    The GNU General Public License is contained in the file COPYING.
 */
 
-#ifndef __VKI_X86_FREEBSD_H
-#define __VKI_X86_FREEBSD_H
+#ifndef VKI_X86_FREEBSD_H
+#define VKI_X86_FREEBSD_H
 
 //----------------------------------------------------------------------
 // From somewhere
@@ -262,7 +262,7 @@ struct vki_sigaction_base {
 typedef  struct vki_sigaction_base  vki_sigaction_toK_t;
 typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 
-#endif // __VKI_X86_FREEBSD_H
+#endif // VKI_X86_FREEBSD_H
 
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/

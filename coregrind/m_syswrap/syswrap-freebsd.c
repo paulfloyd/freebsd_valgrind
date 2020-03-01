@@ -81,7 +81,7 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
 
    if (0)
       VG_(printf)("thread tid %u started: stack = %p\n",
-		  tid, &tid);
+          tid, (void*)&tid);
 
    /* Make sure error reporting is enabled in the new thread. */
    tst->err_disablement_level = 0;
@@ -116,6 +116,7 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
 
 /* Run a thread all the way to the end, then do appropriate exit actions
    (this is the last-one-out-turn-off-the-lights bit).  */
+__attribute__((noreturn))
 static void run_a_thread_NORETURN ( Word tidW )
 {
    ThreadId          tid = (ThreadId)tidW;
@@ -287,6 +288,7 @@ Addr ML_(allocstack)(ThreadId tid)
    (VG_(interim_stack)) it's better to allocate a new one, so that
    overflow detection works uniformly for all threads.
 */
+__attribute__((noreturn))
 void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
 {
    Addr sp;
@@ -297,7 +299,7 @@ void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
 
    /* If we can't even allocate the first thread's stack, we're hosed.
       Give up. */
-   vg_assert2(sp != 0, "Cannot allocate main thread's stack.");
+   vg_assert2(sp != 0, "%s", "Cannot allocate main thread's stack.");
 
    /* shouldn't be any other threads around yet */
    vg_assert( VG_(count_living_threads)() == 1 );
@@ -368,7 +370,7 @@ SysRes ML_(do_fork) ( ThreadId tid )
 
 PRE(sys_fork)
 {
-   PRINT("sys_fork ()");
+   PRINT("%s", "sys_fork ()");
    PRE_REG_READ0(int, "fork");
 
    SET_STATUS_from_SysRes( ML_(do_fork)(tid) );
@@ -381,7 +383,7 @@ PRE(sys_fork)
 
 PRE(sys_vfork)
 {
-   PRINT("sys_vfork ()");
+   PRINT("%s", "sys_vfork ()");
    PRE_REG_READ0(int, "vfork");
 
    /* Pretend vfork == fork. Not true, but will have to do. */
@@ -877,13 +879,13 @@ PRE(sys_lchmod)
 
 PRE(sys_issetugid)
 {
-   PRINT("sys_issetugid ()");
+   PRINT("%s", "sys_issetugid ()");
    PRE_REG_READ0(long, "issetugid");
 }
 
 PRE(sys_revoke)
 {
-   PRINT("sys_vhangup ( )");
+   PRINT("%s", "sys_vhangup ( )");
    PRE_REG_READ0(long, "vhangup");
 }
 PRE(sys_undelete)
@@ -896,7 +898,7 @@ PRE(sys_undelete)
 PRE(sys_yield)
 {
    *flags |= SfMayBlock;
-   PRINT("yield()");
+   PRINT("%s", "yield()");
    PRE_REG_READ0(long, "yield");
 }
 
@@ -952,7 +954,7 @@ PRE(sys_sendfile)
 {
    *flags |= SfMayBlock;
 #if defined(VGP_x86_freebsd)
-   PRINT("sys_sendfile ( %ld, %ld, %llu, %ld, %#lx, %#lx, %lu )", ARG1,ARG2,LOHI64(ARG3,ARG4),ARG5,ARG6,ARG7,ARG8);
+   PRINT("sys_sendfile ( %lu, %lu, %llu, %lu, %#lx, %#lx, %lu )", ARG1,ARG2,LOHI64(ARG3,ARG4),ARG5,ARG6,ARG7,ARG8);
    PRE_REG_READ8(int, "sendfile",
                  int, fd, int, s, unsigned int, offset_low,
                  unsigned int, offset_high, size_t, nbytes,
@@ -1037,13 +1039,13 @@ PRE(sys_utrace)
 
 PRE(sys_getdtablesize)
 {
-   PRINT("sys_getdtablesize ( )");
+   PRINT("%s", "sys_getdtablesize ( )");
    PRE_REG_READ0(long, "getdtablesize");
 }
 
 PRE(sys_kqueue)
 {
-   PRINT("sys_kqueue ()");
+   PRINT("%s", "sys_kqueue ()");
 }
 POST(sys_kqueue)
 {
@@ -1640,7 +1642,7 @@ POST(sys_clock_getres)
 
 PRE(sys_minherit)
 {
-   PRINT("sys_minherit( %#lx, %zu, %lu )" , ARG1,ARG2,ARG3);
+   PRINT("sys_minherit( %#lx, %lu, %lu )" , ARG1,ARG2,ARG3);
 }
 
 POST(sys_minherit)
@@ -1822,14 +1824,14 @@ POST(sys_sched_getaffinity)
 PRE(sys_munlockall)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_munlockall ( )");
+   PRINT("%s", "sys_munlockall ( )");
    PRE_REG_READ0(long, "munlockall");
 }
 
 // Pipe on freebsd doesn't have args, and uses dual returns!
 PRE(sys_pipe)
 {
-   PRINT("sys_pipe ()");
+   PRINT("%s", "sys_pipe ()");
 }
 POST(sys_pipe)
 {
@@ -2676,55 +2678,55 @@ POST(sys_modstat)
 
 PRE(sys_lkmnosys0)
 {
-   PRINT("sys_lkmnosys0 ()");
+   PRINT("%s", "sys_lkmnosys0 ()");
    PRE_REG_READ0(long, "lkmnosys0");
 }
 
 PRE(sys_lkmnosys1)
 {
-   PRINT("sys_lkmnosys1 ()");
+   PRINT("%s", "sys_lkmnosys1 ()");
    PRE_REG_READ0(long, "lkmnosys1");
 }
 
 PRE(sys_lkmnosys2)
 {
-   PRINT("sys_lkmnosys2 ()");
+   PRINT("%s", "sys_lkmnosys2 ()");
    PRE_REG_READ0(long, "lkmnosys2");
 }
 
 PRE(sys_lkmnosys3)
 {
-   PRINT("sys_lkmnosys3 ()");
+   PRINT("%s", "sys_lkmnosys3 ()");
    PRE_REG_READ0(long, "lkmnosys3");
 }
 
 PRE(sys_lkmnosys4)
 {
-   PRINT("sys_lkmnosys4 ()");
+   PRINT("%s", "sys_lkmnosys4 ()");
    PRE_REG_READ0(long, "lkmnosys4");
 }
 
 PRE(sys_lkmnosys5)
 {
-   PRINT("sys_lkmnosys5 ()");
+   PRINT("%s", "sys_lkmnosys5 ()");
    PRE_REG_READ0(long, "lkmnosys5");
 }
 
 PRE(sys_lkmnosys6)
 {
-   PRINT("sys_lkmnosys6 ()");
+   PRINT("%s", "sys_lkmnosys6 ()");
    PRE_REG_READ0(long, "lkmnosys6");
 }
 
 PRE(sys_lkmnosys7)
 {
-   PRINT("sys_lkmnosys7 ()");
+   PRINT("%s", "sys_lkmnosys7 ()");
    PRE_REG_READ0(long, "lkmnosys7");
 }
 
 PRE(sys_lkmnosys8)
 {
-   PRINT("sys_lkmnosys8 ()");
+   PRINT("%s", "sys_lkmnosys8 ()");
    PRE_REG_READ0(long, "lkmnosys8");
 }
 
@@ -3401,7 +3403,6 @@ PRE(sys_fcntl)
    default:
       PRINT("sys_fcntl[UNKNOWN] ( %lu, %lu, %lu )", ARG1,ARG2,ARG3);
       I_die_here;
-      break;
    }
 }
 

@@ -54,8 +54,6 @@
 #include "pub_core_initimg.h"         /* self */
 
 /* --- !!! --- EXTERNAL HEADERS start --- !!! --- */
-#define _GNU_SOURCE
-#define _FILE_OFFSET_BITS 64
 /* This is for ELF types etc, and also the AT_ constants. */
 #include <elf.h>
 /* --- !!! --- EXTERNAL HEADERS end --- !!! --- */
@@ -287,7 +285,7 @@ static char *copy_str(char **tab, const char *str)
    *cp++ = '\0';
 
    if (0)
-      VG_(printf)("copied %p \"%s\" len %lld\n", orig, orig, (Long)(cp-orig));
+      VG_(printf)("copied %p \"%s\" len %lld\n", (void*)orig, orig, (Long)(cp-orig));
 
    *tab = cp;
 
