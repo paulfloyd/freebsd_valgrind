@@ -6864,6 +6864,96 @@ Bool dis_ARM64_load_store(/*MB_OUT*/DisResult* dres, UInt insn,
       return True;
    }
 
+   /* ------------------ ARMv8.1-LSE: Compare-and-Swap ------------------ */
+   /* 31 29      22 21 20 15 14    9 4
+      sz 0010001 A  1  s  R  11111 n t CAS{,A}{,L}<sz> <Rs>, <Rt>, [<Xn|SP>]
+   */
+   if (INSN(29,23) == BITS7(0,0,1,0,0,0,1)
+       && INSN(21,21) == 1
+       && INSN(14,10) == BITS5(1,1,1,1,1)) {
+      UInt szBlg2 = INSN(31,30);
+      Bool isAcq = INSN(22,22) == 1;
+      Bool isRel = INSN(15,15) == 1;
+      UInt ss  = INSN(20,16);
+      UInt nn  = INSN(9,5);
+      UInt tt  = INSN(4,0);
+
+      const HChar* suffix[4] = { "b", "h", "", "" };
+
+      UInt  szB = 1 << szBlg2; /* 1, 2, 4 or 8 */
+      IRType ty = integerIRTypeOfSize(szB);
+      Bool is64 = szB == 8;
+
+      IRExpr *exp = narrowFrom64(ty, getIReg64orZR(ss));
+      IRExpr *new = narrowFrom64(ty, getIReg64orZR(tt));
+
+      if (isAcq)
+         stmt(IRStmt_MBE(Imbe_Fence));
+
+      // Store the result back if LHS remains unchanged in memory.
+      IRTemp old = newTemp(ty);
+      stmt( IRStmt_CAS(mkIRCAS(/*oldHi*/IRTemp_INVALID, old,
+                               Iend_LE, getIReg64orSP(nn),
+                               /*expdHi*/NULL, exp,
+                               /*dataHi*/NULL, new)) );
+
+      if (isRel)
+         stmt(IRStmt_MBE(Imbe_Fence));
+
+      putIReg64orZR(ss, widenUto64(ty, mkexpr(old)));
+      DIP("cas%s%s%s %s, %s, [%s]\n",
+          isAcq ? "a" : "", isRel ? "l" : "", suffix[szBlg2],
+          nameIRegOrZR(is64, ss), nameIRegOrZR(is64, tt), nameIReg64orSP(nn));
+      return True;
+   }
+
+   /* ---------------- ARMv8.1-LSE: Compare-and-Swap Pair --------------- */
+   /* 31 30 29      22 21 20 15 14    9 4
+      0  sz 0010000 A  1  s  R  11111 n t CASP{,A}{,L} <Rs>, <Rt>, [<Xn|SP>]
+   */
+   if (INSN(31,31) == 0
+       && INSN(29,23) == BITS7(0,0,1,0,0,0,0)
+       && INSN(21,21) == 1
+       && INSN(14,10) == BITS5(1,1,1,1,1)) {
+      UInt is64 = INSN(30,30);
+      Bool isAcq = INSN(22,22) == 1;
+      Bool isRel = INSN(15,15) == 1;
+      UInt ss  = INSN(20,16);
+      UInt nn  = INSN(9,5);
+      UInt tt  = INSN(4,0);
+
+      if ((ss & 0x1) || (tt & 0x1)) {
+         /* undefined; fall through */
+      } else {
+         IRExpr *expLo = getIRegOrZR(is64, ss);
+         IRExpr *expHi = getIRegOrZR(is64, ss + 1);
+         IRExpr *newLo = getIRegOrZR(is64, tt);
+         IRExpr *newHi = getIRegOrZR(is64, tt + 1);
+         IRTemp oldLo = newTemp(is64 ? Ity_I64 : Ity_I32);
+         IRTemp oldHi = newTemp(is64 ? Ity_I64 : Ity_I32);
+
+         if (isAcq)
+            stmt(IRStmt_MBE(Imbe_Fence));
+
+         stmt( IRStmt_CAS(mkIRCAS(oldHi, oldLo,
+                                  Iend_LE, getIReg64orSP(nn),
+                                  expHi, expLo,
+                                  newHi, newLo)) );
+
+         if (isRel)
+            stmt(IRStmt_MBE(Imbe_Fence));
+
+         putIRegOrZR(is64, ss, mkexpr(oldLo));
+         putIRegOrZR(is64, ss+1, mkexpr(oldHi));
+         DIP("casp%s%s %s, %s, %s, %s, [%s]\n",
+             isAcq ? "a" : "", isRel ? "l" : "",
+             nameIRegOrZR(is64, ss), nameIRegOrZR(is64, ss+1),
+             nameIRegOrZR(is64, tt), nameIRegOrZR(is64, tt+1),
+             nameIReg64orSP(nn));
+         return True;
+      }
+   }
+
    if (sigill_diag) {
       vex_printf("ARM64 front end: load_store\n");
    }

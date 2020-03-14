@@ -481,6 +481,7 @@ typedef
       ARM64in_LdrEX,
       ARM64in_StrEX,
       ARM64in_CAS,
+      ARM64in_CASP,
       ARM64in_MFence,
       ARM64in_ClrEX,
       /* ARM64in_V*: scalar ops involving vector registers */
@@ -679,6 +680,7 @@ typedef
             Uses x8 as scratch (but that's not allocatable).
             Hence: RD x3, x5, x7; WR x1
 
+           loop:
             (szB=8)  mov  x8, x5
             (szB=4)  and  x8, x5, #0xFFFFFFFF
             (szB=2)  and  x8, x5, #0xFFFF
@@ -690,15 +692,18 @@ typedef
             bne     after
             -- if branch taken, failure; x1[[8*szB-1 : 0] holds old value
             -- attempt to store
-            stxr    w1, x7, [x3]
+            stxr    w8, x7, [x3]
             -- if store successful, x1==0, so the eor is "x1 := x5"
-            -- if store failed,     x1==1, so the eor makes x1 != x5
-            eor     x1, x5, x1
+            -- if store failed,     branch back and try again.
+            cbne    w8, loop
            after:
          */
          struct {
             Int szB; /* 1, 2, 4 or 8 */
          } CAS;
+         struct {
+            Int szB; /* 4 or 8 */
+         } CASP;
          /* Mem fence.  An insn which fences all loads and stores as
             much as possible before continuing.  On ARM64 we emit the
             sequence "dsb sy ; dmb sy ; isb sy", which is probably
@@ -945,6 +950,7 @@ extern ARM64Instr* ARM64Instr_Mul     ( HReg dst, HReg argL, HReg argR,
 extern ARM64Instr* ARM64Instr_LdrEX   ( Int szB );
 extern ARM64Instr* ARM64Instr_StrEX   ( Int szB );
 extern ARM64Instr* ARM64Instr_CAS     ( Int szB );
+extern ARM64Instr* ARM64Instr_CASP    ( Int szB );
 extern ARM64Instr* ARM64Instr_MFence  ( void );
 extern ARM64Instr* ARM64Instr_ClrEX   ( void );
 extern ARM64Instr* ARM64Instr_VLdStH  ( Bool isLoad, HReg sD, HReg rN,

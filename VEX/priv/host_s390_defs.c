@@ -681,31 +681,26 @@ s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *insn)
       break;
 
    case S390_INSN_ALU:
-      addHRegUse(u, HRmWrite, insn->variant.alu.dst);
-      addHRegUse(u, HRmRead,  insn->variant.alu.dst);  /* op1 */
+      addHRegUse(u, HRmModify, insn->variant.alu.dst); /* op1 */
       s390_opnd_RMI_get_reg_usage(u, insn->variant.alu.op2);
       break;
 
    case S390_INSN_SMUL:
    case S390_INSN_UMUL:
-      addHRegUse(u, HRmRead,  insn->variant.mul.dst_lo);  /* op1 */
-      addHRegUse(u, HRmWrite, insn->variant.mul.dst_lo);
+      addHRegUse(u, HRmModify, insn->variant.mul.dst_lo); /* op1 */
       addHRegUse(u, HRmWrite, insn->variant.mul.dst_hi);
       s390_opnd_RMI_get_reg_usage(u, insn->variant.mul.op2);
       break;
 
    case S390_INSN_SDIV:
    case S390_INSN_UDIV:
-      addHRegUse(u, HRmRead,  insn->variant.div.op1_lo);
-      addHRegUse(u, HRmRead,  insn->variant.div.op1_hi);
-      addHRegUse(u, HRmWrite, insn->variant.div.op1_lo);
-      addHRegUse(u, HRmWrite, insn->variant.div.op1_hi);
+      addHRegUse(u, HRmModify, insn->variant.div.op1_lo);
+      addHRegUse(u, HRmModify, insn->variant.div.op1_hi);
       s390_opnd_RMI_get_reg_usage(u, insn->variant.div.op2);
       break;
 
    case S390_INSN_DIVS:
-      addHRegUse(u, HRmRead,  insn->variant.divs.op1);
-      addHRegUse(u, HRmWrite, insn->variant.divs.op1); /* quotient */
+      addHRegUse(u, HRmModify, insn->variant.divs.op1); /* quotient */
       addHRegUse(u, HRmWrite, insn->variant.divs.rem); /* remainder */
       s390_opnd_RMI_get_reg_usage(u, insn->variant.divs.op2);
       break;
@@ -770,6 +765,11 @@ s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *insn)
          addHRegUse(u, HRmWrite, s390_hreg_fpr(i));
       }
 
+      /* Ditto for all allocatable vector registers. */
+      for (i = 16; i <= 31; ++i) {
+         addHRegUse(u, HRmWrite, s390_hreg_vr(i));
+      }
+
       /* The registers that are used for passing arguments will be read.
          Not all of them may, but in general we need to assume that. */
       for (i = 0; i < insn->variant.helper_call.details->num_args; ++i) {
@@ -783,19 +783,16 @@ s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *insn)
    }
 
    case S390_INSN_BFP_TRIOP:
-      addHRegUse(u, HRmWrite, insn->variant.bfp_triop.dst);
-      addHRegUse(u, HRmRead,  insn->variant.bfp_triop.dst);  /* first */
+      addHRegUse(u, HRmModify, insn->variant.bfp_triop.dst); /* first */
       addHRegUse(u, HRmRead,  insn->variant.bfp_triop.op2);  /* second */
       addHRegUse(u, HRmRead,  insn->variant.bfp_triop.op3);  /* third */
       break;
 
    case S390_INSN_BFP_BINOP:
-      addHRegUse(u, HRmWrite, insn->variant.bfp_binop.dst_hi);
-      addHRegUse(u, HRmRead,  insn->variant.bfp_binop.dst_hi);  /* left */
+      addHRegUse(u, HRmModify, insn->variant.bfp_binop.dst_hi); /* left */
       addHRegUse(u, HRmRead,  insn->variant.bfp_binop.op2_hi);  /* right */
       if (insn->size == 16) {
-         addHRegUse(u, HRmWrite, insn->variant.bfp_binop.dst_lo);
-         addHRegUse(u, HRmRead,  insn->variant.bfp_binop.dst_lo);  /* left */
+         addHRegUse(u, HRmModify, insn->variant.bfp_binop.dst_lo); /* left */
          addHRegUse(u, HRmRead,  insn->variant.bfp_binop.op2_lo);  /* right */
       }
       break;
@@ -952,8 +949,7 @@ s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *insn)
       break;
 
    case S390_INSN_VEC_AMODEINTOP:
-      addHRegUse(u, HRmRead, insn->variant.vec_amodeintop.dst);
-      addHRegUse(u, HRmWrite, insn->variant.vec_amodeintop.dst);
+      addHRegUse(u, HRmModify, insn->variant.vec_amodeintop.dst);
       s390_amode_get_reg_usage(u, insn->variant.vec_amodeintop.op2);
       addHRegUse(u, HRmRead, insn->variant.vec_amodeintop.op3);
       break;
@@ -2073,6 +2069,36 @@ s390_emit_NILL(UChar *p, UChar r1, UShort i2)
       s390_disasm(ENC3(MNM, GPR, UINT), "nill", r1, i2);
 
    return emit_RI(p, 0xa5070000, r1, i2);
+}
+
+
+static UChar *
+s390_emit_TM(UChar *p, UChar i2, UChar b1, UShort d1)
+{
+   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
+      s390_disasm(ENC3(MNM, UDXB, INT), "tm", d1, 0, b1, i2);
+
+   return emit_SI(p, 0x91000000, i2, b1, d1);
+}
+
+
+static UChar *
+s390_emit_TMY(UChar *p, UChar i2, UChar b1, UShort dl1, UChar dh1)
+{
+   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
+      s390_disasm(ENC3(MNM, SDXB, INT), "tmy", dh1, dl1, 0, b1, (Int)(Char)i2);
+
+   return emit_SIY(p, 0xeb0000000051ULL, i2, b1, dl1, dh1);
+}
+
+
+static UChar *
+s390_emit_TMLL(UChar *p, UChar r1, UShort i2)
+{
+   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
+      s390_disasm(ENC3(MNM, GPR, UINT), "tmll", r1, i2);
+
+   return emit_RI(p, 0xa7010000, r1, i2);
 }
 
 
@@ -6485,7 +6511,7 @@ s390_insn_test(UChar size, s390_opnd_RMI src)
 {
    s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
 
-   vassert(size == 4 || size == 8);
+   vassert(size == 1 || size == 2 || size == 4 || size == 8);
 
    insn->tag  = S390_INSN_TEST;
    insn->size = size;
@@ -9295,9 +9321,7 @@ s390_insn_unop_emit(UChar *buf, const s390_insn *insn)
 }
 
 
-/* Only 4-byte and 8-byte operands are handled. 1-byte and 2-byte
-   comparisons will have been converted to 4-byte comparisons in
-   s390_isel_cc and should not occur here. */
+/* Test operand for zero. */
 static UChar *
 s390_insn_test_emit(UChar *buf, const s390_insn *insn)
 {
@@ -9310,6 +9334,12 @@ s390_insn_test_emit(UChar *buf, const s390_insn *insn)
       UInt reg = hregNumber(opnd.variant.reg);
 
       switch (insn->size) {
+      case 1:
+         return s390_emit_TMLL(buf, reg, 0xff);
+
+      case 2:
+         return s390_emit_TMLL(buf, reg, 0xffff);
+
       case 4:
          return s390_emit_LTR(buf, reg, reg);
 
@@ -9328,6 +9358,27 @@ s390_insn_test_emit(UChar *buf, const s390_insn *insn)
       Int   d = am->d;
 
       switch (insn->size) {
+      case 1:
+         switch (am->tag) {
+         case S390_AMODE_B12:
+            return s390_emit_TM(buf, 0xff, b, d);
+         case S390_AMODE_B20:
+            return s390_emit_TMY(buf, 0xff, b, DISP20(d));
+         default:
+            buf = s390_emit_LB(buf, R0, x, b, DISP20(d));
+            return s390_emit_TMLL(buf, R0, 0xff);
+         }
+
+      case 2:
+         switch (am->tag) {
+         case S390_AMODE_B12:
+            buf = s390_emit_LH(buf, R0, x, b, d);
+            return s390_emit_TMLL(buf, R0, 0xffff);
+         default:
+            buf = s390_emit_LHY(buf, R0, x, b, DISP20(d));
+            return s390_emit_TMLL(buf, R0, 0xffff);
+         }
+
       case 4:
          return s390_emit_LTw(buf, R0, x, b, DISP20(d));
 
@@ -9340,20 +9391,10 @@ s390_insn_test_emit(UChar *buf, const s390_insn *insn)
    }
 
    case S390_OPND_IMMEDIATE: {
-      ULong value = opnd.variant.imm;
-
-      switch (insn->size) {
-      case 4:
-         buf = s390_emit_load_32imm(buf, R0, value);
-         return s390_emit_LTR(buf, R0, R0);
-
-      case 8:
-         buf = s390_emit_load_64imm(buf, R0, value);
-         return s390_emit_LTGR(buf, R0, R0);
-
-      default:
-         goto fail;
-      }
+      if (opnd.variant.imm == 0)
+         return s390_emit_CR(buf, R0, R0);
+      else
+         return s390_emit_OILL(buf, R0, 1);
    }
 
    default:
@@ -9371,25 +9412,24 @@ s390_insn_cc2bool_emit(UChar *buf, const s390_insn *insn)
    UChar r1 = hregNumber(insn->variant.cc2bool.dst);
    s390_cc_t cond = insn->variant.cc2bool.cond;
 
-   /* Make the destination register be 1 or 0, depending on whether
+   /* Make the destination register be -1 or 0, depending on whether
       the relevant condition holds. A 64-bit value is computed. */
    if (cond == S390_CC_ALWAYS)
-      return s390_emit_LGHI(buf, r1, 1);  /* r1 = 1 */
+      return s390_emit_LGHI(buf, r1, -1);  /* r1 = -1 */
 
    /* If LOCGHI is available, use it. */
    if (s390_host_has_lsc2) {
-      /* Clear r1, then load immediate 1 on condition. */
+      /* Clear r1, then load immediate -1 on condition. */
       buf = s390_emit_LGHI(buf, r1, 0);
       if (cond != S390_CC_NEVER)
-         buf = s390_emit_LOCGHI(buf, r1, 1, cond);
+         buf = s390_emit_LOCGHI(buf, r1, -1, cond);
       return buf;
    }
 
    buf = s390_emit_load_cc(buf, r1);                 /* r1 = cc */
    buf = s390_emit_LGHI(buf, R0, cond);              /* r0 = mask */
-   buf = s390_emit_SLLG(buf, r1, R0, r1, DISP20(0)); /* r1 = mask << cc */
-   buf = s390_emit_SRLG(buf, r1, r1, 0,  DISP20(3)); /* r1 = r1 >> 3 */
-   buf = s390_emit_NILL(buf, r1, 1);                 /* r1 = r1 & 0x1 */
+   buf = s390_emit_SLLG(buf, r1, R0, r1, DISP20(60)); /* r1 = mask << (cc+60) */
+   buf = s390_emit_SRAG(buf, r1, r1, 0,  DISP20(63)); /* r1 = r1 >> 63 */
 
    return buf;
 }
@@ -10065,7 +10105,7 @@ s390_insn_cond_move_emit(UChar *buf, const s390_insn *insn)
 
    if (s390_host_has_lsc) {
       /* LOCx is not the preferred way to implement an unconditional load. */
-      if (cond != S390_CC_ALWAYS) goto use_branch_insn;
+      if (cond == S390_CC_ALWAYS) goto use_branch_insn;
 
       switch (src.tag) {
       case S390_OPND_REG:

@@ -3988,14 +3988,7 @@ static void iselStmt ( ISelEnv* env, IRStmt* stmt )
          addInstr(env, ARM64Instr_CAS(sz));
          /* Now we have the lowest szB bytes of x1 are either equal to
             the lowest szB bytes of x5, indicating success, or they
-            aren't, indicating failure.  The IR semantics actually
-            require us to return the old value at the location,
-            regardless of success or failure, but in the case of
-            failure it's not clear how to do this, since
-            ARM64Instr_CAS can't provide that.  Instead we'll just
-            return the relevant bit of x1, since that's at least
-            guaranteed to be different from the lowest bits of x5 on
-            failure. */
+            aren't, indicating failure. */
          HReg rResult = hregARM64_X1();
          switch (sz) {
             case 8:  break;
@@ -4008,6 +4001,51 @@ static void iselStmt ( ISelEnv* env, IRStmt* stmt )
          // the previous comment.
          HReg rOld = lookupIRTemp(env, cas->oldLo);
          addInstr(env, ARM64Instr_MovI(rOld, rResult));
+         return;
+      }
+      else {
+         /* Paired register CAS, i.e. CASP */
+         UChar  sz;
+         IRCAS* cas = stmt->Ist.CAS.details;
+         IRType ty  = typeOfIRExpr(env->type_env, cas->dataLo);
+         switch (ty) {
+            case Ity_I64: sz = 8; break;
+            case Ity_I32: sz = 4; break;
+            default: goto unhandled_cas;
+         }
+         HReg rAddr = iselIntExpr_R(env, cas->addr);
+
+         HReg rExpd0 = iselIntExpr_R(env, cas->expdLo);
+         vassert(cas->expdHi != NULL);
+         HReg rExpd1 = iselIntExpr_R(env, cas->expdHi);
+
+         HReg rData0 = iselIntExpr_R(env, cas->dataLo);
+         vassert(cas->dataHi != NULL);
+         HReg rData1 = iselIntExpr_R(env, cas->dataHi);
+
+         addInstr(env, ARM64Instr_MovI(hregARM64_X2(), rAddr));
+
+         addInstr(env, ARM64Instr_MovI(hregARM64_X4(), rExpd0));
+         addInstr(env, ARM64Instr_MovI(hregARM64_X5(), rExpd1));
+
+         addInstr(env, ARM64Instr_MovI(hregARM64_X6(), rData0));
+         addInstr(env, ARM64Instr_MovI(hregARM64_X7(), rData1));
+
+         addInstr(env, ARM64Instr_CASP(sz));
+
+         HReg rResult0 = hregARM64_X0();
+         HReg rResult1 = hregARM64_X1();
+         switch (sz) {
+            case 8:  break;
+            case 4:  rResult0 = widen_z_32_to_64(env, rResult0);
+                     rResult1 = widen_z_32_to_64(env, rResult1);
+                     break;
+            default: vassert(0);
+         }
+         HReg rOldLo = lookupIRTemp(env, cas->oldLo);
+         HReg rOldHi = lookupIRTemp(env, cas->oldHi);
+         addInstr(env, ARM64Instr_MovI(rOldLo, rResult0));
+         addInstr(env, ARM64Instr_MovI(rOldHi, rResult1));
          return;
       }
       unhandled_cas:
