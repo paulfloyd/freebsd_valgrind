@@ -560,8 +560,14 @@ static Bool do_DebugInfos_overlap ( const DebugInfo* di1, const DebugInfo* di2 )
       const DebugInfoMapping* map1 = VG_(indexXA)(di1->fsm.maps, i);
       for (j = 0; j < VG_(sizeXA)(di2->fsm.maps); j++) {
          const DebugInfoMapping* map2 = VG_(indexXA)(di2->fsm.maps, j);
-         if (ranges_overlap(map1->avma, map1->size, map2->avma, map2->size))
+         if (ranges_overlap(map1->avma, map1->size, map2->avma, map2->size)) {
+            // @todo PJF on FreeBSD this was causing DebugInfos to be skipped
+            // On Linux I only ever see RX and RW maps
+            // On FreeBSD there is a 3rd RO map
+            if (map1->ro && map2->ro)
+               continue;
             return True;
+         }
       }
    }
 
