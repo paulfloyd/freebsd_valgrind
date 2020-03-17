@@ -27,6 +27,8 @@
 #ifndef __VKI_UNISTD_FREEBSD_H
 #define __VKI_UNISTD_FREEBSD_H
 
+#include "config.h"
+
 #define VG_FREEBSD_SYSCALL_STD	0
 #define VG_FREEBSD_SYSCALL0	1
 #define VG_FREEBSD_SYSCALL198	2
@@ -140,9 +142,9 @@
 #define	__NR_nfssvc		155
 
 // @todo PJF old FreeBSD 4 !!!
-//#define	__NR_statfs		157
-//#define	__NR_fstatfs		158
-//#define	__NR_lgetfh		160
+#define	__NR_statfs		157
+#define	__NR_fstatfs		158
+#define	__NR_lgetfh		160
 #define	__NR_getfh		161
 #define	__NR_getdomainname	162
 #define	__NR_setdomainname	163
@@ -232,12 +234,12 @@
 #define	__NR_nfstat		279
 #define	__NR_nlstat		280
 
-// @todo PJF FreeBSD 4 !!!
-//#define	__NR_fhstatfs		297
+#define	__NR_fhstatfs		297
 #define	__NR_fhopen		298
 
-// @todo conditional
-//#define	__NR_fhstat		299
+#if (FREEBSD_VERS < FREEBSD_12)
+#define	__NR_fhstat		299
+#endif
 
 #define	__NR_freeebsd11_fhstat		299
 
@@ -495,6 +497,7 @@
 #define __NR_futimens    546
 #define __NR_utimensat   547
 #define __NR_fdatasync   550
+#if (FREEBSD_VER >= FREEBSD_12)
 #define __NR_fstat       551
 #define __NR_fstatat     552
 #define __NR_fhstat      553
@@ -512,6 +515,7 @@
 #define __NR_fhlink      565
 #define __NR_fhlinkat    566
 #define __NR_fhreadlink  567
+#endif
 
 #define __NR_fake_sigreturn	1000
 

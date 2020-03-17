@@ -478,10 +478,11 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
    }
 #  elif defined(VGO_freebsd)
    {
-# if (FREEBSD_VER >= FREEBSD12)
+# if (FREEBSD_VER >= FREEBSD_12)
      struct vki_freebsd11_stat buf;
      res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
 #    else
+    struct vki_stat buf;
      res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
 #    endif
      if (!sr_isError(res))
