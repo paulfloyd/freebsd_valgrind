@@ -4496,7 +4496,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     /* 549 is obsolete numa_setaffinity */
     // fdatasync                                550
 
-#if (FREEBSD_VER >= FREEBSD_12)
+#if (FREEBSD_VERS >= FREEBSD_12)
    BSDXY(__NR_fstat,			sys_fstat),			// 551
     // fstatat                                  552
     // fhstat                                   553
