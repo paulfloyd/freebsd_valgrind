@@ -25,7 +25,11 @@ I don't have a full history of everyone that has worked on this code. Obviously 
 ## Building the code
 
 The following packages shoule be installed
-
+* autoconf
+* automake
+* libtool
+* GNU make
+* GCC (optional, but currently gives the best results)
 
 For best results, use GCC and just follow the instructions in the regular README.  
 After running configure you will need to run GNU make (gmake) rather than FreeBSD make (make).
