@@ -24,7 +24,11 @@ I don't have a full history of everyone that has worked on this code. Obviously 
 
 ## Building the code
 
-For best results, use GCC and just follow the instructions in the regular README.
+The following packages shoule be installed
+
+
+For best results, use GCC and just follow the instructions in the regular README.  
+After running configure you will need to run GNU make (gmake) rather than FreeBSD make (make).
 
 To build with clang,
 
@@ -47,23 +51,23 @@ doutB failures, 2 post failures ==
 
 I haven't been though these in detail. There are some patches that need to be considered and perhaps merged into this work.
 
-[Bug 234631](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234631) - devel/valgrind: Fixes for FreeBSD 12.x support 
+[Bug 234631](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234631) - devel/valgrind: Fixes for FreeBSD 12.x support  
 Several patches in this item.
 
-[Bug 232235](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=232235) - devel/valgrind doesn't find trivial leak on head anymore, works on stable/11 
+[Bug 232235](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=232235) - devel/valgrind doesn't find trivial leak on head anymore, works on stable/11  
 This one has been analyzed and a fix identified.
 
-[Bug 220943](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=220943) - devel/valgrind Segmentation fault
+[Bug 220943](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=220943) - devel/valgrind Segmentation fault  
 I haven't seen this, possibly fixed already in the repo I picked up.
 
-[Bug 209886](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=209886) - devel/valgrind: spurious invalid free() when using aligned_alloc() 
+[Bug 209886](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=209886) - devel/valgrind: spurious invalid free() when using aligned_alloc()  
 Looks easy to fix. I'll create a patch for this in upstream Valgrind.
 
-[Bug 212697](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=212697) - devel/valgrind: Please add syscalls 530 (posix_fallocate) and 531 (posix_fadvise) 
-[Bug 234045](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234045) - devel/valgrind: Add sigwait syscall support
-[Bug 235720](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235720) - devel/valgrind: unimplemented syscall 555 (statfs) 
+[Bug 212697](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=212697) - devel/valgrind: Please add syscalls 530 (posix_fallocate) and 531 (posix_fadvise)  
+[Bug 234045](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234045) - devel/valgrind: Add sigwait syscall support  
+[Bug 235720](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235720) - devel/valgrind: unimplemented syscall 555 (statfs)  
 A few requests for missing syscalls
 
-[Bug 228973](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=228973) - devel/valgrind: 32-bit error on FreeBSD 11.1-RELEASE-p9 #0
-[Bug 224878](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=224878) - devel/valgrind fails on i386 
-Duplicate items for 32bit support
+[Bug 228973](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=228973) - devel/valgrind: 32-bit error on FreeBSD 11.1-RELEASE-p9 #0  
+[Bug 224878](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=224878) - devel/valgrind fails on i386  
+Duplicate items for 32bit support  
