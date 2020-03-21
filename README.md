@@ -30,6 +30,7 @@ The following packages shoule be installed
 * libtool
 * GNU make
 * GCC (optional, but currently gives the best results)
+* GNU sed (optional, but it is used in the regtest scripts)
 
 For best results, use GCC and just follow the instructions in the regular README.  
 After running configure you will need to run GNU make (gmake) rather than FreeBSD make (make).
