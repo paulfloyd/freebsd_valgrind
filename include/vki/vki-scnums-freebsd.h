@@ -17,15 +17,13 @@
    General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-   02111-1307, USA.
+   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
    The GNU General Public License is contained in the file COPYING.
 */
 
-#ifndef __VKI_UNISTD_FREEBSD_H
-#define __VKI_UNISTD_FREEBSD_H
+#ifndef VKI_UNISTD_FREEBSD_H
+#define VKI_UNISTD_FREEBSD_H
 
 #include "config.h"
 
@@ -523,4 +521,4 @@
 
 #define __NR_fake_sigreturn	1000
 
-#endif /* __VKI_UNISTD_FREEBSD_H */
+#endif /* VKI_UNISTD_FREEBSD_H */
