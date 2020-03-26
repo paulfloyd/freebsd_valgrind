@@ -3725,6 +3725,13 @@ struct pselect_adjusted_sigset {
     vki_sigset_t adjusted_ss;
 };
 
+/*
+int
+pselect(int nfds, fd_set * restrict readfds, fd_set * restrict writefds,
+    fd_set * restrict exceptfds,
+    const struct timespec * restrict timeout,
+    const sigset_t * restrict newsigmask);
+*/
 PRE(sys_pselect)
 {
    *flags |= SfMayBlock | SfPostOnFail;
@@ -3733,7 +3740,7 @@ PRE(sys_pselect)
          SARG1, ARG2, ARG3, ARG4, ARG5, ARG6);
    PRE_REG_READ6(long, "pselect",
                  int, n, vki_fd_set *, readfds, vki_fd_set *, writefds,
-                 vki_fd_set *, exceptfds, struct vki_timeval *, timeout,
+                 vki_fd_set *, exceptfds, struct vki_timespec *, timeout,
                  void *, sig);
    // XXX: this possibly understates how much memory is read.
    if (ARG2 != 0)
@@ -3746,7 +3753,7 @@ PRE(sys_pselect)
       PRE_MEM_READ( "pselect(exceptfds)", 
 		     ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG5 != 0)
-      PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
+      PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timespec) );
    if (ARG6 != 0) {
       const struct pselect_sized_sigset *pss =
           (struct pselect_sized_sigset *)(Addr)ARG6;
@@ -3774,6 +3781,7 @@ PRE(sys_pselect)
       }
    }
 }
+
 POST(sys_pselect)
 {
    if (ARG6 != 0 && ARG6 != 1) {
@@ -4529,7 +4537,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // pdfork                                   518
     // pdkill                                   519
     // pdgetpid                                 520
-    // pselect                                  522
+    BSDXY(__NR_pselect, sys_pselect),               // 522
     // getloginclass                            523
     // setloginclass                            524
     // rctl_get_racct                           525
