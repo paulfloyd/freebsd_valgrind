@@ -2830,14 +2830,6 @@ PRE(sys_shmctl)
    }
 }
 
-PRE(sys_posix_fadvise)
-{
-   PRINT("sys_posic_fadvise ( %ld, %llu, %lu, %ld )",
-         SARG1, MERGE64(ARG2,ARG3), ARG4, SARG5);
-  // PRE_REG_READ5(long, "fadvise64",
-  //               int, fd, vki_u32, MERGE64_FIRST(offset), vki_u32, MERGE64_SECOND(offset),
-  //               vki_size_t, len, int, advice);
-}
 
 PRE(sys_shmctl7)
 {
@@ -3788,6 +3780,79 @@ POST(sys_pselect)
        VG_(free)((struct pselect_adjusted_sigset *)(Addr)ARG6);
    }
 }
+
+PRE(sys_cap_enter)
+{
+   PRINT("cap_enter ( )");
+   PRE_REG_READ0(long, "cap_enter");
+}
+
+PRE(sys_posix_fadvise)
+{
+   PRINT("sys_posix_fadvise ( %ld, %llu, %lu, %ld )",
+         SARG1, MERGE64(ARG2,ARG3), ARG4, SARG5);
+  // PRE_REG_READ5(long, "fadvise64",
+  //               int, fd, vki_u32, MERGE64_FIRST(offset), vki_u32, MERGE64_SECOND(offset),
+  //               vki_size_t, len, int, advice);
+}
+
+#define VKI_CAP_RIGHTS_VERSION_00   0
+#define VKI_CAP_RIGHTS_VERSION VKI_CAP_RIGHTS_VERSION_00
+
+struct vki_cap_rights {
+    vki_uint64_t cr_rights[VKI_CAP_RIGHTS_VERSION + 2];
+};
+
+
+//int cap_rights_limit(int fd, const cap_rights_t *rights);
+PRE(sys_cap_rights_limit)
+{
+   PRINT("cap_rights_limit ( %lu, %#lx )", ARG1, ARG2);
+   PRE_REG_READ2(long, "cap_rights_limit",
+                 int, fd, void*, rights);
+   if (ARG2 != 0)
+   {
+       PRE_MEM_WRITE( "cap_rights_limit(fd, rights))", ARG2, sizeof(struct vki_cap_rights) );
+   }
+}
+
+POST(sys_cap_rights_limit)
+{
+   if (ARG2 != 0)
+   {
+      POST_MEM_WRITE( ARG2, sizeof(struct vki_cap_rights) );
+   }
+}
+
+// int cap_ioctls_limit(int fd, const unsigned long *cmds, size_t ncmds);
+PRE(sys_cap_ioctls_limit)
+{
+   PRINT("cap_ioctls_limit ( %lu, %#lx, %lu )", ARG1, ARG2, ARG3);
+   PRE_REG_READ3(long, "cap_ioctls_limit",
+                 int, fd, unsigned long*, rights, vki_size_t, ncmds);
+   if (ARG2 != 0 && ARG3 <= 256 )
+   {
+       PRE_MEM_WRITE( "cap_ioctls_limit(fd, rights))", ARG2, ARG3*sizeof(long) );
+   }
+}
+
+POST(sys_cap_ioctls_limit)
+{
+   if (ARG2 != 0)
+   {
+      POST_MEM_WRITE( ARG2, ARG3*sizeof(unsigned long) );
+   }
+}
+
+//int cap_fcntls_limit(int fd, uint32_t fcntlrights);
+PRE(sys_cap_fcntls_limit)
+{
+   PRINT("cap_fcntls_limit ( %lu, %lu )", ARG1, ARG2);
+   PRE_REG_READ2(long, "cap_fcntls_limit",
+                 int, fd, vki_uint32_t, fcntlrights);
+}
+
+// ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
 {
    PRINT("sys_getrandom ( %#lx, %lu, %lu )" , ARG1, ARG2, ARG3);
@@ -4459,7 +4524,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // lpathconf                                513
     /* 514 is obsolete cap_new */
     // __cap_rights_get                         515
-    // cap_enter                                516
+    BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
     // cap_getmode                              517
     // pdfork                                   518
     // pdkill                                   519
@@ -4475,10 +4540,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // posix_fallocate                          530
     BSDX_(__NR_posix_fadvise,   sys_posix_fadvise), // 531
     // wait6                                    532
-    // cap_rights_limit                         533
-    // cap_ioctls_limit                         534
+    BSDXY(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
+    BSDXY(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
     // cap_ioctls_get                           535
-    // SYS_cap_fcntls_limit                     536
+    BSDX_(__NR_cap_fcntls_limit, sys_cap_fcntls_limit), // 536
     // cap_fcntls_get                           537
     // bindat                                   538
     // connectat                                539
