@@ -22,6 +22,8 @@ The secondary objectives are
 
 I don't have a full history of everyone that has worked on this code. Obviously there is the upstream Valgrind team. When I started working on the code, it was based on the efforts of Phil Longstaff (https://bitbucket.org/plongstaff/valgrind-freebsd-git.git). This stalled for a bit, and then Ed Maste (https://github.com/FreeBSDFoundation/valgrind.git) took the baton. I restarted working on the code in late January 2020.
 
+Patches (from the FreeBSD bugzilla, https://bugs.freebsd.org/bugzilla/) have been merged from Julien Nadeau, Kubilay Kocak
+
 ## Building the code
 
 The following packages shoule be installed
@@ -45,16 +47,22 @@ To build with clang,
 
 The code should build and execute on FreeBSD 12.1 amd64 with 64bit executables. 32bit executables currently fail with a message that valgrind failed to allocate stack space.
 
-The regression suite produces the following results
+The regression suite produces the following results (amd64 only)
 
 ```
 == 641 tests, 186 stderr failures, 17 stdout failures, 8 stderrB failures, 14 st
 doutB failures, 2 post failures ==
 ```
 
+With I full build the results are [2020-03-27]
+```
+== 711 tests, 239 stderr failures, 68 stdout failures, 7 stderrB failures, 14 stdoutB failures, 3 post failures ==
+
+```
+
 ## Bugzilla items
 
-I haven't been though these in detail. There are some patches that need to be considered and perhaps merged into this work.
+All the patches in these itrms have been merged.
 
 [Bug 234631](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234631) - devel/valgrind: Fixes for FreeBSD 12.x support  
 Several patches in this item.
