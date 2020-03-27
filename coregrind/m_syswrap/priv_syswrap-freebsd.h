@@ -196,6 +196,7 @@ DECL_TEMPLATE(freebsd, sys___acl_get_link)
 DECL_TEMPLATE(freebsd, sys___acl_set_link)
 DECL_TEMPLATE(freebsd, sys___acl_delete_link)
 DECL_TEMPLATE(freebsd, sys___acl_aclcheck_link)
+DECL_TEMPLATE(freebsd, sys_sigwait)
 DECL_TEMPLATE(freebsd, sys_extattrctl)
 DECL_TEMPLATE(freebsd, sys_extattr_set_file)
 DECL_TEMPLATE(freebsd, sys_extattr_get_file)
@@ -273,6 +274,10 @@ DECL_TEMPLATE(freebsd, sys_readlinkat)
 DECL_TEMPLATE(freebsd, sys_renameat)
 DECL_TEMPLATE(freebsd, sys_symlinkat)
 DECL_TEMPLATE(freebsd, sys_unlinkat)
+DECL_TEMPLATE(freebsd, sys_jail_get);
+DECL_TEMPLATE(freebsd, sys_jail_set);
+DECL_TEMPLATE(freebsd, sys_jail_attach);
+DECL_TEMPLATE(freebsd, sys_jail_remove);
 DECL_TEMPLATE(freebsd, sys___semctl)
 DECL_TEMPLATE(freebsd, sys_shmctl)
 DECL_TEMPLATE(freebsd, sys_cap_enter)
@@ -280,6 +285,7 @@ DECL_TEMPLATE(freebsd, sys_cap_rights_limit)
 DECL_TEMPLATE(freebsd, sys_cap_ioctls_limit)
 DECL_TEMPLATE(freebsd, sys_cap_fcntls_limit)
 DECL_TEMPLATE(freebsd, sys_posix_fadvise)
+DECL_TEMPLATE(freebsd, sys_accept4)
 DECL_TEMPLATE(freebsd, sys_pipe2)
 // FreeBSD 12 fstat is here
 DECL_TEMPLATE(freebsd, sys_getrandom)

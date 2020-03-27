@@ -462,6 +462,9 @@
 #define	__NR_symlinkat		502
 #define	__NR_unlinkat		503
 #define	__NR_posix_openpt	504
+#define	__NR_jail_get		506
+#define	__NR_jail_set		507
+#define	__NR_jail_remove	508
 #define	__NR___semctl		510
 #define	__NR_shmctl         512
 #define	__NR__lpathconf     513

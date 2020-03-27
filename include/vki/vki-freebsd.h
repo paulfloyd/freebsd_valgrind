@@ -1216,13 +1216,25 @@ struct vki_pollfd {
 //----------------------------------------------------------------------
 // From sys/kevent.h
 //----------------------------------------------------------------------
-struct vki_kevent {
+// @todo PJF conditional code that uses this!
+// I don't have this header ??!?
+struct vki_kevent11 {
 	vki_uintptr_t  ident;
 	vki_int16_t    filter;
 	vki_uint16_t   flags;
 	vki_uint32_t   fflags;
 	vki_intptr_t   data;
 	void           *udata;
+};
+
+struct vki_kevent {
+    vki_uintptr_t  ident;
+    vki_int16_t    filter;
+    vki_uint16_t   flags;
+    vki_uint32_t   fflags;
+    vki_int64_t    data;
+    void           *udata;
+    vki_uint64_t   ext[4];
 };
 
 
@@ -1618,7 +1630,10 @@ struct vki_dirent {
 #define VKI_F_SETLK		12	/* set record locking information */
 #define VKI_F_SETLKW		13	/* F_SETLK; wait if blocked */
 #define VKI_F_SETLK_REMOTE	14	/* debugging support for remote locks */
+#define VKI_F_READAHEAD		15	/* read ahead */
+#define VKI_F_RDAHEAD		16	/* Darwin compatible read ahead */
 #define VKI_F_DUPFD_CLOEXEC	17	/* dup close_on_exec */
+#define VKI_F_DUP2FD_CLOEXEC	18	/* Like F_DUP2FD, but FD_CLOEXEC is set */
 
 /* for F_[GET|SET]FL */
 #define VKI_FD_CLOEXEC	1	/* actually anything with low bit set goes */

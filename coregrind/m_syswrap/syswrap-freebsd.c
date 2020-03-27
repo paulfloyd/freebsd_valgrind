@@ -847,11 +847,13 @@ PRE(sys_fstat)
 {
    PRINT("sys_fstat ( %lu, %#lx )",ARG1,ARG2);
    PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
+   // @todo PJF this needs adapting for FreeBSD 11 and earlier
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_stat) );
 }
 
 POST(sys_fstat)
 {
+   // @todo PJF this needs adapting for FreeBSD 11 and earlier
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
@@ -1273,6 +1275,7 @@ PRE(sys_kldsym)
    struct vki_kld_sym_lookup *kslp = (struct vki_kld_sym_lookup *)ARG3;
    PRE_MEM_RASCIIZ( "kldsym(data.symname)", (Addr)kslp->symname );
 }
+
 POST(sys_kldsym)
 {
    struct vki_kld_sym_lookup *kslp = (struct vki_kld_sym_lookup *)ARG3;
@@ -1493,6 +1496,7 @@ PRE(sys_mq_open)
                      (Addr)&attr->mq_msgsize, sizeof(attr->mq_msgsize) );
    }
 }
+
 POST(sys_mq_open)
 {
    vg_assert(SUCCESS);
@@ -1641,10 +1645,16 @@ POST(sys_clock_getres)
 PRE(sys_minherit)
 {
    PRINT("sys_minherit( %#lx, %lu, %lu )" , ARG1,ARG2,ARG3);
+   PRE_REG_READ3(long, "minherit",
+                 void *, addr, vki_size_t, len, int, inherit);
+   if (ARG2 != 0)
+      PRE_MEM_WRITE( "minherit(addr)", ARG1,ARG2 );
 }
 
 POST(sys_minherit)
 {
+    if (ARG2 != 0)
+       POST_MEM_WRITE( ARG1, ARG2 );
 }
 
 #if 0
@@ -1873,6 +1883,24 @@ POST(sys_pipe2)
       ML_(record_fd_open_nameless)(tid, fildes[0]);
       ML_(record_fd_open_nameless)(tid, fildes[1]);
    }
+}
+
+PRE(sys_accept4)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_accept4 ( %lu, %#lx, %lu, %lu)",ARG1,ARG2,ARG3,ARG4);
+   PRE_REG_READ4(long, "accept4",
+                 int, s, struct sockaddr *, addr, int, *addrlen, int, flags);
+   ML_(generic_PRE_sys_accept)(tid, ARG1,ARG2,ARG3);
+}
+
+POST(sys_accept4)
+{
+    SysRes r;
+   vg_assert(SUCCESS);
+   r = ML_(generic_POST_sys_accept)(tid, VG_(mk_SysRes_Success)(RES),
+                                         ARG1,ARG2,ARG3);
+   SET_STATUS_from_SysRes(r);
 }
 
 #if 0
@@ -3123,6 +3151,41 @@ PRE(sys_unlinkat)
    PRE_MEM_RASCIIZ( "unlinkat(pathname)", ARG2 );
 }
 
+PRE(sys_jail_get)
+{
+
+    PRINT("sys_jail_get ( %#lx, %lu, %lu )", ARG1, ARG2, ARG3);
+    PRE_REG_READ3(int, "jail_get", struct vki_iovec *, iov, unsigned int,
+        niov, int, flags);
+    PRE_MEM_WRITE("jail_get", ARG1, ARG2 * sizeof(struct vki_iovec));
+}
+
+POST(sys_jail_get)
+{
+    vg_assert(SUCCESS);
+    POST_MEM_WRITE(ARG1, ARG2);
+}
+
+PRE(sys_jail_set)
+{
+    PRINT("sys_jail_set ( %#lx, %lu, %lu )", ARG1, ARG2, ARG3);
+    PRE_REG_READ3(int, "jail_set", struct vki_iovec *, iov, unsigned int,
+        niov, int, flags);
+    PRE_MEM_WRITE("jail_set", ARG1, ARG2 * sizeof(struct vki_iovec));
+}
+
+PRE(sys_jail_attach)
+{
+    PRINT("sys_jail_attach ( %lu )", ARG1);
+    PRE_REG_READ1(int, "jail_attach", int, jid);
+}
+
+PRE(sys_jail_remove)
+{
+    PRINT("sys_jail_remove ( %lu )", ARG1);
+    PRE_REG_READ1(int, "jail_remove", int, jid);
+}
+
 PRE(sys_renameat)
 {
    PRINT("sys_renameat ( %lu, %#lx(%s), %lu, %#lx(%s) )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4,(char*)ARG4);
@@ -3323,6 +3386,25 @@ PRE(sys___acl_aclcheck_link)
    PRE_MEM_READ( "__acl_aclcheck_link(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
+PRE(sys_sigwait)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_sigwait ( %#lx, %#lx )",
+         ARG1,ARG2);
+   PRE_REG_READ2(long, "sigwait",
+                 const vki_sigset_t *, set, int *, sig);
+   if (ARG1 != 0)
+      PRE_MEM_READ(  "sigwait(set)",  ARG1, sizeof(vki_sigset_t));
+   if (ARG2 != 0)
+      PRE_MEM_WRITE( "sigwait(sig)", ARG2, sizeof(int*));
+}
+
+POST(sys_sigwait)
+{
+   if (ARG2 != 0)
+      POST_MEM_WRITE( ARG2, sizeof(int*));
+}
+
 POST(sys_getcontext)
 {
    POST_MEM_WRITE( ARG1, sizeof(struct vki_ucontext) );
@@ -3351,6 +3433,8 @@ PRE(sys_fcntl)
    case VKI_F_SETFD:
    case VKI_F_SETFL:
    case VKI_F_SETOWN:
+   case VKI_F_READAHEAD:
+   case VKI_F_RDAHEAD:
       PRINT("sys_fcntl[ARG3=='arg'] ( %lu, %lu, %lu )", ARG1,ARG2,ARG3);
       PRE_REG_READ3(long, "fcntl",
                     unsigned int, fd, unsigned int, cmd, unsigned long, arg);
@@ -3370,6 +3454,7 @@ PRE(sys_fcntl)
 
    // This one uses ARG3 as "oldd" and ARG4 as "newd".
    case VKI_F_DUP2FD:
+   case VKI_F_DUP2FD_CLOEXEC:
       PRINT("sys_fcntl[ARG3=='oldd', ARG4=='newd'] ( %lu, %lu, %lu, %lu )",
          ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "fcntl",
@@ -3401,6 +3486,14 @@ POST(sys_fcntl)
    vg_assert(SUCCESS);
    if (ARG2 == VKI_F_DUPFD) {
       if (!ML_(fd_allowed)(RES, "fcntl(DUPFD)", tid, True)) {
+         VG_(close)(RES);
+         SET_STATUS_Failure( VKI_EMFILE );
+      } else {
+         if (VG_(clo_track_fds))
+            ML_(record_fd_open_named)(tid, RES);
+      }
+   } else if (ARG2 == VKI_F_DUPFD_CLOEXEC) {
+      if (!ML_(fd_allowed)(RES, "fcntl(DUPFD_CLOEXEC)", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
       } else {
@@ -4427,7 +4520,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR___acl_delete_link,	sys___acl_delete_link),		// 427
 
    BSDX_(__NR___acl_aclcheck_link,	sys___acl_aclcheck_link),	// 428
-   //!sigwait								   429
+   BSDXY(__NR_sigwait,          	sys_sigwait),               // 429
    // thr_create							   430
    BSDX_(__NR_thr_exit,			sys_thr_exit),			// 431
 
@@ -4522,9 +4615,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // posix_openpt                              504
    // gssd_syscall                              505
-   // jail_get                                  506
-   // jail_set                                  507
-   // jail_remove                           	508
+   BSDXY(__NR_jail_get,			sys_jail_get),			// 506
+   BSDX_(__NR_jail_set,			sys_jail_set),			// 507
+   BSDX_(__NR_jail_remove,		sys_jail_remove),		// 508
    // closefrom                             	509
    BSDXY(__NR___semctl,			sys___semctl),			// 510
    // msgctl                                	511
@@ -4556,8 +4649,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // bindat                                   538
     // connectat                                539
     // chflagsat                                540
-    // accept4                                  541
-   BSDXY(__NR_pipe2,			sys_pipe2),			// 542
+   BSDXY(__NR_accept4,           sys_accept4),          //541
+   BSDXY(__NR_pipe2,			sys_pipe2),			    // 542
     // aio_mlock                            	543
     // procctl                                  544
     // ppoll                                    545
