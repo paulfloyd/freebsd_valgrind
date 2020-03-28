@@ -54,7 +54,8 @@ The regression suite produces the following results (amd64 only)
 doutB failures, 2 post failures ==
 ```
 
-With I full build the results are [2020-03-27]
+With a full build the results are [2020-03-27]
+
 ```
 == 711 tests, 239 stderr failures, 68 stdout failures, 7 stderrB failures, 14 stdoutB failures, 3 post failures ==
 
@@ -62,7 +63,7 @@ With I full build the results are [2020-03-27]
 
 ## Bugzilla items
 
-All the patches in these itrms have been merged.
+All of the patches in these itrms have been merged.
 
 [Bug 234631](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234631) - devel/valgrind: Fixes for FreeBSD 12.x support  
 Several patches in this item.
