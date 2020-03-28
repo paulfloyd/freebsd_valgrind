@@ -74,7 +74,7 @@ This one has been analyzed and a fix identified.
 I haven't seen this, possibly fixed already in the repo I picked up.
 
 [Bug 209886](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=209886) - devel/valgrind: spurious invalid free() when using aligned_alloc()  
-Looks easy to fix. I'll create a patch for this in upstream Valgrind.
+I created a patch for this in upstream Valgrind and it seems to work on FreeBSD.
 
 [Bug 212697](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=212697) - devel/valgrind: Please add syscalls 530 (posix_fallocate) and 531 (posix_fadvise)  
 [Bug 234045](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234045) - devel/valgrind: Add sigwait syscall support  
