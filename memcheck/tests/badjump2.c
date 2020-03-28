@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Regression test for bug 91162:  if a client had a SEGV signal handler,
 // and jumped to a bogus address, Valgrind would abort.  With the fix,
