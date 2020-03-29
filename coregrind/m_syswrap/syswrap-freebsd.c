@@ -100,8 +100,8 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    vg_assert(VG_(is_running_thread)(tid));
 
    VG_(debugLog)(1, "syswrap-freebsd", 
-                    "thread_wrapper(tid=%llu): exit\n",
-                    (ULong)tidW);
+                    "thread_wrapper(tid=%u): exit, schedreturncode %s\n", 
+                    tid, VG_(name_of_VgSchedReturnCode)(ret));
 
    /* Return to caller, still holding the lock. */
    return ret;
@@ -2078,7 +2078,7 @@ PRE(sys_thr_wake)
 PRE(sys__umtx_op)
 {
 // ThreadState *tst;
-
+    *flags |= SfMayBlock;
    /* 5 args are always passed through.  The last two can vary, but
       they're always pointers.  They may not be used though. */
    switch(ARG2) {
@@ -2279,7 +2279,41 @@ PRE(sys__umtx_op)
       PRE_MEM_READ( "_umtx_op_mutex_wake(mutex)", ARG1, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_mutex_wake(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
+   case VKI_UMTX_OP_SEM2_WAIT:
+      PRINT( "sys__umtx_op ( %#lx, SEM2_WAIT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRE_REG_READ3(long, "_umtx_op_sem2_wake",
+                    struct _usem2 *, obj, int, op, unsigned long, flags);
+      PRE_MEM_READ( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
+      PRE_MEM_WRITE( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
+      break;
+   case VKI_UMTX_OP_SEM2_WAKE:
+      PRINT( "sys__umtx_op ( %#lx, SEM2_WAKE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRE_REG_READ3(long, "_umtx_op_sem2_wake",
+                    struct _usem2 *, obj, int, op, unsigned long, flags);
+      PRE_MEM_READ( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
+      PRE_MEM_WRITE( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
+      break;
+   case VKI_UMTX_OP_SHM:
+       VG_(umsg)("WARNING: _umtc_op not fully supported with ROBUST LISTS.\n");
+      PRINT( "sys__umtx_op ( %#lx, SHM, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRE_REG_READ3(long, "_umtx_op_shm",
+                    struct umutex *, obj, int, op, unsigned long, flags);
+      PRE_MEM_READ( "_umtx_op_shm(mutex)", ARG1, sizeof(struct vki_umutex) );
+      PRE_MEM_WRITE( "_umtx_op_shm(mutex)", ARG1, sizeof(struct vki_umutex) );
+      break;
+   case VKI_UMTX_OP_ROBUST_LISTS:
+       // @todo PJF much to do here
+       // val (ARG2) ought to be the same as sizeof(struct vki_umtx_robust_lists_params)
+       // then the structure contains a pointer to mutex structures
+       VG_(umsg)("WARNING: _umtx_op not fully supported with ROBUST LISTS.\n");
+      PRINT( "sys__umtx_op ( %#lx, ROBUST_LISTS, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRE_REG_READ3(long, "_umtx_op_robust_lists",
+                    struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
+      PRE_MEM_READ( "_umtx_op_robust_lists(mutex)", ARG3, sizeof(struct vki_umtx_robust_lists_params) );
+      //PRE_MEM_WRITE( "_umtx_op_robust_lists(mutex)", ARG1, sizeof(struct vki_umutex) );
+      break;
    default:
+       VG_(umsg)("WARNING: _umtx_op unsupported value.\n");
       PRINT( "sys__umtx_op ( %#lx, %lu(UNKNOWN), %lu, %#lx, %#lx )", ARG1, ARG2, ARG3, ARG4, ARG5);
       break;
    }
@@ -2343,6 +2377,14 @@ POST(sys__umtx_op)
          POST_MEM_WRITE( ARG1, sizeof(struct vki_urwlock) );
       }
       break;
+   case VKI_UMTX_OP_SEM2_WAIT:
+   case VKI_UMTX_OP_SEM2_WAKE:
+       if (SUCCESS) {
+          POST_MEM_WRITE( ARG1, sizeof(struct vki_usem2) );
+       }
+       break;
+   case VKI_UMTX_OP_SHM:
+   case VKI_UMTX_OP_ROBUST_LISTS:
    default:
       break;
    }

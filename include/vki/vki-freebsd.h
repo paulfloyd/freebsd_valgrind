@@ -2056,6 +2056,17 @@ struct vki_umtx_time {
 	vki_uint32_t		clockid;
 };
 
+struct vki_usem2 {
+    vki_uint32_t    count;
+    vki_uint32_t	flags;
+};
+
+struct vki_umtx_robust_lists_params {
+    vki_uintptr_t	robust_list_offset;
+    vki_uintptr_t	robust_priv_list_offset;
+    vki_uintptr_t	robust_inact_offset;
+};
+
 #define	VKI_UMTX_OP_LOCK		0
 #define	VKI_UMTX_OP_UNLOCK		1
 #define	VKI_UMTX_OP_WAIT		2
@@ -2079,7 +2090,11 @@ struct vki_umtx_time {
 #define	VKI_UMTX_OP_SEM_WAKE		20
 #define	VKI_UMTX_OP_NWAKE_PRIVATE	21
 #define	VKI_UMTX_OP_MUTEX_WAKE2		22
-#define	VKI_UMTX_OP_MAX			23
+#define VKI_UMTX_OP_SEM2_WAIT       23
+#define VKI_UMTX_OP_SEM2_WAKE       24
+#define VKI_UMTX_OP_SHM             25
+#define VKI_UMTX_OP_ROBUST_LISTS    26
+#define	VKI_UMTX_OP_MAX			    27
 
 
 //----------------------------------------------------------------------
