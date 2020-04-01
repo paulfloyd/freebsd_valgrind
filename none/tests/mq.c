@@ -6,8 +6,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-/* mq seems non-functional on FreBSD even though the autconf tests pass */
-#if defined(HAVE_MQUEUE_H) && !defined(VGO_freebsd)
+#if defined(HAVE_MQUEUE_H)
 
 #include <mqueue.h>
 

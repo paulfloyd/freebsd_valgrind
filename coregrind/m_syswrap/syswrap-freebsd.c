@@ -924,10 +924,53 @@ POST(sys_sysinfo)
 
 /* int __sysctl(int *name, u_int namelen, void *old, size_t *oldlenp, void *new, size_t newlen); */
 /*               ARG1        ARG2          ARG3         ARG4           ARG5        ARG6 */
-
 PRE(sys___sysctl)
 {
    PRINT("sys_sysctl ( %#lx, %lu, %#lx, %#lx, %#lx, %lu )", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6 );
+   PRINT("\nmib[0]: ");
+   if (ARG2 >= 1U)
+   {
+       switch (((int*)ARG1)[0])
+       {
+       case 0: // CTL_UNSPEC
+           PRINT("unspec");
+           break;
+       case 1: // CTL_KERN
+           PRINT("kern");
+           break;
+       case 2: // CTL_VM
+           PRINT("vm");
+           break;
+       case 3: // CTL_VFS
+           PRINT("vfs");
+           break;
+       case 4: // CTL_NET
+           PRINT("net");
+           break;
+       case 5: // CTL_DEBUG
+           PRINT("debug");
+           break;
+       case 6: // CTL_HW
+           PRINT("hw");
+           break;
+       case 7: // CTL_MACHDEP
+           PRINT("machdep");
+           break;
+       case 8: // CTL _USER
+           PRINT("user");
+           break;
+       case 9: //CTL_P1003_1B
+           PRINT("p1003_b1b");
+           break;
+       default:
+           PRINT("unrecognized (%d)", ((int*)ARG1)[0]);
+           break;
+       }
+   }
+   if (ARG2 >= 2U)
+   {
+       PRINT(" mib[1]: %lu", ((unsigned long int*)ARG1)[1]);
+   }
    PRE_REG_READ6(long, "__sysctl", int *, name, unsigned int, namelen, void *, old,
 		 vki_size_t *, oldlenp, void *, new, vki_size_t, newlen);
    PRE_MEM_READ("sysctl(name)", ARG1, ARG2 * sizeof(int));
@@ -1480,9 +1523,9 @@ PRE(sys_inotify_rm_watch)
    mq_* wrappers
    ------------------------------------------------------------------ */
 
-PRE(sys_mq_open)
+PRE(sys_kmq_open)
 {
-   PRINT("sys_mq_open( %#lx(%s), %lu, %llu, %#lx )",
+   PRINT("sys_kmq_open( %#lx(%s), %lu, %llu, %#lx )",
          ARG1,(char *)ARG1,ARG2,(ULong)ARG3,ARG4);
    PRE_REG_READ4(long, "mq_open",
                  const char *, name, int, oflag, vki_mode_t, mode,
@@ -1497,7 +1540,7 @@ PRE(sys_mq_open)
    }
 }
 
-POST(sys_mq_open)
+POST(sys_kmq_open)
 {
    vg_assert(SUCCESS);
    if (!ML_(fd_allowed)(RES, "mq_open", tid, True)) {
@@ -1509,36 +1552,30 @@ POST(sys_mq_open)
    }
 }
 
-PRE(sys_mq_unlink)
+PRE(sys_kmq_setattr)
 {
-   PRINT("sys_mq_unlink ( %#lx(%s) )", ARG1,(char *)ARG1);
-   PRE_REG_READ1(long, "mq_unlink", const char *, name);
-   PRE_MEM_RASCIIZ( "mq_unlink(name)", ARG1 );
-}
-
-#if 0
-PRE(sys_mq_timedsend)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_mq_timedsend ( %ld, %#lx, %llu, %ld, %#lx )",
-         ARG1,ARG2,(ULong)ARG3,ARG4,ARG5);
-   PRE_REG_READ5(long, "mq_timedsend",
-                 vki_mqd_t, mqdes, const char *, msg_ptr, vki_size_t, msg_len,
-                 unsigned int, msg_prio, const struct timespec *, abs_timeout);
-   if (!ML_(fd_allowed)(ARG1, "mq_timedsend", tid, False)) {
+   PRINT("sys_kmq_getattr( %lu, %#lx, %#lx )", ARG1,ARG2,ARG3 );
+   PRE_REG_READ3(long, "mq_getsetattr",
+                 vki_mqd_t, mqdes, const struct mq_attr *, mqstat,
+                 struct mq_attr *, omqstat);
+   if (!ML_(fd_allowed)(ARG1, "mq_getattr", tid, False)) {
       SET_STATUS_Failure( VKI_EBADF );
    } else {
-      PRE_MEM_READ( "mq_timedsend(msg_ptr)", ARG2, ARG3 );
-      if (ARG5 != 0)
-         PRE_MEM_READ( "mq_timedsend(abs_timeout)", ARG5,
-                        sizeof(struct vki_timespec) );
+      if (ARG2 != 0) {
+         const struct vki_mq_attr *attr = (struct vki_mq_attr *)ARG2;
+         PRE_MEM_READ( "mq_getattr(mqstat->mq_flags)",
+                        (Addr)&attr->mq_flags, sizeof(attr->mq_flags) );
+      }
+      if (ARG3 != 0)
+         PRE_MEM_WRITE( "mq_getattr(omqstat)", ARG3,
+                        sizeof(struct vki_mq_attr) );
    }
 }
 
-PRE(sys_mq_timedreceive)
+PRE(sys_kmq_timedreceive)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_mq_timedreceive( %ld, %#lx, %llu, %#lx, %#lx )",
+   PRINT("sys_kmq_timedreceive( %lu, %#lx, %llu, %#lx, %#lx )",
          ARG1,ARG2,(ULong)ARG3,ARG4,ARG5);
    PRE_REG_READ5(ssize_t, "mq_timedreceive",
                  vki_mqd_t, mqdes, char *, msg_ptr, vki_size_t, msg_len,
@@ -1556,16 +1593,35 @@ PRE(sys_mq_timedreceive)
                         ARG5, sizeof(struct vki_timespec) );
    }
 }
-POST(sys_mq_timedreceive)
+
+POST(sys_kmq_timedreceive)
 {
    POST_MEM_WRITE( ARG2, ARG3 );
    if (ARG4 != 0)
       POST_MEM_WRITE( ARG4, sizeof(unsigned int) );
 }
 
-PRE(sys_mq_notify)
+PRE(sys_kmq_timedsend)
 {
-   PRINT("sys_mq_notify( %ld, %#lx )", ARG1,ARG2 );
+   *flags |= SfMayBlock;
+   PRINT("sys_kmq_timedsend ( %lu, %#lx, %llu, %lu, %#lx )",
+         ARG1,ARG2,(ULong)ARG3,ARG4,ARG5);
+   PRE_REG_READ5(long, "mq_timedsend",
+                 vki_mqd_t, mqdes, const char *, msg_ptr, vki_size_t, msg_len,
+                 unsigned int, msg_prio, const struct timespec *, abs_timeout);
+   if (!ML_(fd_allowed)(ARG1, "mq_timedsend", tid, False)) {
+      SET_STATUS_Failure( VKI_EBADF );
+   } else {
+      PRE_MEM_READ( "mq_timedsend(msg_ptr)", ARG2, ARG3 );
+      if (ARG5 != 0)
+         PRE_MEM_READ( "mq_timedsend(abs_timeout)", ARG5,
+                        sizeof(struct vki_timespec) );
+   }
+}
+
+PRE(sys_kmq_notify)
+{
+   PRINT("sys_kmq_notify( %lu, %#lx )", ARG1,ARG2 );
    PRE_REG_READ2(long, "mq_notify",
                  vki_mqd_t, mqdes, const struct sigevent *, notification);
    if (!ML_(fd_allowed)(ARG1, "mq_notify", tid, False))
@@ -1575,32 +1631,13 @@ PRE(sys_mq_notify)
                     ARG2, sizeof(struct vki_sigevent) );
 }
 
-PRE(sys_mq_getsetattr)
+PRE(sys_mq_unlink)
 {
-   PRINT("sys_mq_getsetattr( %ld, %#lx, %#lx )", ARG1,ARG2,ARG3 );
-   PRE_REG_READ3(long, "mq_getsetattr",
-                 vki_mqd_t, mqdes, const struct mq_attr *, mqstat,
-                 struct mq_attr *, omqstat);
-   if (!ML_(fd_allowed)(ARG1, "mq_getsetattr", tid, False)) {
-      SET_STATUS_Failure( VKI_EBADF );
-   } else {
-      if (ARG2 != 0) {
-         const struct vki_mq_attr *attr = (struct vki_mq_attr *)ARG2;
-         PRE_MEM_READ( "mq_getsetattr(mqstat->mq_flags)",
-                        (Addr)&attr->mq_flags, sizeof(attr->mq_flags) );
-      }
-      if (ARG3 != 0)
-         PRE_MEM_WRITE( "mq_getsetattr(omqstat)", ARG3,
-                        sizeof(struct vki_mq_attr) );
-   }   
-}
-POST(sys_mq_getsetattr)
-{
-   if (ARG3 != 0)
-      POST_MEM_WRITE( ARG3, sizeof(struct vki_mq_attr) );
+   PRINT("sys_mq_unlink ( %#lx(%s) )", ARG1,(char *)ARG1);
+   PRE_REG_READ1(long, "mq_unlink", const char *, name);
+   PRE_MEM_RASCIIZ( "mq_unlink(name)", ARG1 );
 }
 
-#endif
 
 /* ---------------------------------------------------------------------
    clock_* wrappers
@@ -4596,12 +4633,12 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_thr_new,			sys_thr_new),			// 455
 
    // sigqueue								   456
-   BSDXY(__NR_kmq_open,          sys_mq_open),			// 457
-   // kmq_setattr							   458
-   // kmq_timedreceive							   459
+   BSDXY(__NR_kmq_open,         sys_kmq_open),			// 457
+   BSDX_(__NR_kmq_setattr,      sys_kmq_setattr),        // 458
+   BSDXY(__NR_kmq_timedreceive, sys_kmq_timedreceive),  // 459
 
-   // kmq_timedsend							   460
-   // kmq_notify							   461
+   BSDX_(__NR_kmq_timedsend,	sys_kmq_timedsend),     // 460
+   BSDX_(__NR_kmq_notify,       sys_kmq_notify),        // 461
    BSDX_(__NR_kmq_unlink,        sys_mq_unlink),			// 462
    // abort2								   463
 
