@@ -45,7 +45,7 @@ To build with clang,
 
 ## Status
 
-The code should build and execute on FreeBSD 12.1 amd64 with 64bit executables. 32bit executables currently fail with a message that valgrind failed to allocate stack space.
+The code should build and execute on FreeBSD 12.1 amd64 with 64bit executables. 32bit executables currently run but there is a message regarding a wrong value to the hw.pagesize sysctl syscall and no errors are detected.
 
 The regression suite produces the following results (amd64 only)
 
