@@ -4241,6 +4241,8 @@ PRE(sys_poll)
 
 POST(sys_poll)
 {
+    // @todo PJF this can't be false
+    // either > 0 or == 0
    if (RES >= 0) {
       UInt i;
       struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;

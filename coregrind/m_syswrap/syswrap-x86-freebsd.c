@@ -1157,6 +1157,32 @@ PRE(sys_sysarch)
    }
 }
 
+// int posix_fallocate(int fd, off_t offset, off_t len);
+PRE(sys_posix_fallocate)
+{
+   PRINT("sys_posix_fallocate ( %ld, %llu, %llu )",
+         SARG1, MERGE64(ARG2,ARG3), MERGE64(ARG4, ARG5));
+   PRE_REG_READ5(long, "posix_fallocate",
+                 int, fd, vki_uint32_t, MERGE64_FIRST(offset),
+                 vki_uint32_t, MERGE64_SECOND(offset),
+                 vki_uint32_t, MERGE_FIRST(len),
+                 vki_uint32_t, MERGE_SECOND(len));
+}
+
+// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
+PRE(sys_posix_fadvise)
+{
+   PRINT("sys_posix_fadvise ( %ld, %llu, %llu, %ld )",
+         SARG1, MERGE64(ARG2,ARG3), MERGE64(ARG4,ARG5), SARG6);
+   PRE_REG_READ6(long, "posix_fadvise",
+                int, fd, vki_uint32_t, MERGE64_FIRST(offset),
+                vki_uint32_t, MERGE64_SECOND(offset),
+                vki_uint32_t, MERGE64_FIRST(len),
+                vki_uint32_t, MERGE64_SECOND(len),
+                int, advice);
+}
+
+
 #undef PRE
 #undef POST
 

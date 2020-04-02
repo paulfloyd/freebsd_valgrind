@@ -2929,6 +2929,7 @@ asm("\n"
     "\tmovl  $vgPlain_interim_stack, %eax\n"
     "\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
     "\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
+    /* allocate at least 16 bytes on the new stack, and aligned */
     "\tsubl  $16, %eax\n"
     "\tandl  $~15, %eax\n"
     /* install it, and collect the original one */
@@ -3030,6 +3031,8 @@ asm(
 #include <elf.h>
 /* --- !!! --- EXTERNAL HEADERS end --- !!! --- */
 
+
+// @todo PJF these #ifs are a mess
 #if defined(VGO_freebsd)
 
 __attribute__ ((used))
@@ -3041,6 +3044,11 @@ void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp )
    Word    argc = pArgc[0];
    HChar** argv = (HChar**)&pArgc[1];
    HChar** envp = (HChar**)&pArgc[1+argc+1];
+
+   INNER_REQUEST
+      ((void) VALGRIND_STACK_REGISTER
+       (&VG_(interim_stack).bytes[0],
+        &VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
 
    VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
    VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
@@ -3057,6 +3065,7 @@ void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp )
 }
 
 #else
+
 /* Avoid compiler warnings: this fn _is_ used, but labelling it
    'static' causes gcc to complain it isn't.
    attribute 'used' also ensures the code is not eliminated at link

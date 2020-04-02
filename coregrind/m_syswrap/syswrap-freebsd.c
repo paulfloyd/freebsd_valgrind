@@ -848,6 +848,7 @@ PRE(sys_fstat)
    PRINT("sys_fstat ( %lu, %#lx )",ARG1,ARG2);
    PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
    // @todo PJF this needs adapting for FreeBSD 11 and earlier
+   // @todo PJF also is this correct for x86?
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_stat) );
 }
 
@@ -3967,15 +3968,6 @@ PRE(sys_cap_enter)
    PRE_REG_READ0(long, "cap_enter");
 }
 
-PRE(sys_posix_fadvise)
-{
-   PRINT("sys_posix_fadvise ( %ld, %llu, %lu, %ld )",
-         SARG1, MERGE64(ARG2,ARG3), ARG4, SARG5);
-  // PRE_REG_READ5(long, "fadvise64",
-  //               int, fd, vki_u32, MERGE64_FIRST(offset), vki_u32, MERGE64_SECOND(offset),
-  //               vki_size_t, len, int, advice);
-}
-
 #define VKI_CAP_RIGHTS_VERSION_00   0
 #define VKI_CAP_RIGHTS_VERSION VKI_CAP_RIGHTS_VERSION_00
 
@@ -3983,11 +3975,10 @@ struct vki_cap_rights {
     vki_uint64_t cr_rights[VKI_CAP_RIGHTS_VERSION + 2];
 };
 
-
 //int cap_rights_limit(int fd, const cap_rights_t *rights);
 PRE(sys_cap_rights_limit)
 {
-   PRINT("cap_rights_limit ( %lu, %#lx )", ARG1, ARG2);
+   PRINT("cap_rights_limit ( %ld, %#lx )", SARG1, ARG2);
    PRE_REG_READ2(long, "cap_rights_limit",
                  int, fd, void*, rights);
    if (ARG2 != 0)
@@ -4717,7 +4708,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // rctl_get_limits                          527
     // rctl_add_rule                            528
     // rctl_remove_rule                         529
-    // posix_fallocate                          530
+    BSDX_(__NR_posix_fallocate, sys_posix_fallocate), // 530
     BSDX_(__NR_posix_fadvise,   sys_posix_fadvise), // 531
     // wait6                                    532
     BSDXY(__NR_cap_rights_limit, sys_cap_rights_limit), // 533

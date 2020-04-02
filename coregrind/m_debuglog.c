@@ -469,7 +469,7 @@ static UInt local_sys_getpid ( void )
 
 #elif defined(VGP_amd64_freebsd)
 __attribute__((noinline))
-static UInt local_sys_write_stderr (const HChar* buf, Int n )
+static UInt local_sys_write_stderr (HChar* buf, Int n )
 {
    volatile Long block[2];
    block[0] = (Long)buf;
@@ -489,8 +489,16 @@ static UInt local_sys_write_stderr (const HChar* buf, Int n )
       "popq  %%r15\n"           /* restore r15 */
       "addq  $256, %%rsp\n"     /* restore stack ptr */
       : /*wr*/
+               // @todo PJF
+               // "r" means that block is in a register
+               // "g" means register memory or immediate
+               // for the clobbered registers
+               // I did some tracing in GDB
+               // rcx was indeed changed on return from the syscall
+               // but not r11
+               // of course that doesn't mean that r11 is never clobbbered
       : /*rd*/    "r" (block)
-      : /*trash*/ "rax", "rdi", "rsi", "rdx", "memory", "cc", "rcx", "r11"
+      : /*trash*/ "rax", "rdi", "rsi", "rdx", "memory", "cc", "rcx"//, "r11"
    );
    if (block[0] < 0) 
       block[0] = -1;
@@ -506,7 +514,7 @@ static UInt local_sys_getpid ( void )
       "movl %%eax, %0\n"   /* set __res = %eax */
       : "=mr" (__res)
       :
-      : "rax" );
+      : "rax", "rcx");//, "r11" );
    return __res;
 }
 

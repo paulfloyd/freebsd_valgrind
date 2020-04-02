@@ -287,10 +287,11 @@ DECL_TEMPLATE(freebsd, sys_jail_remove);
 DECL_TEMPLATE(freebsd, sys___semctl)
 DECL_TEMPLATE(freebsd, sys_shmctl)
 DECL_TEMPLATE(freebsd, sys_cap_enter)
+DECL_TEMPLATE(freebsd, sys_posix_fallocate)
+DECL_TEMPLATE(freebsd, sys_posix_fadvise)
 DECL_TEMPLATE(freebsd, sys_cap_rights_limit)
 DECL_TEMPLATE(freebsd, sys_cap_ioctls_limit)
 DECL_TEMPLATE(freebsd, sys_cap_fcntls_limit)
-DECL_TEMPLATE(freebsd, sys_posix_fadvise)
 DECL_TEMPLATE(freebsd, sys_accept4)
 DECL_TEMPLATE(freebsd, sys_pipe2)
 // FreeBSD 12 fstat is here

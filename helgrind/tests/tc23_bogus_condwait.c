@@ -68,8 +68,10 @@ int main ( void )
   /* Do stupid things and hope that rescue_me gets us out of
      trouble */
 
+#if !defined(VGO_freebsd)
   /* mx is bogus */
   r= pthread_cond_wait(&cv, (pthread_mutex_t*)(4 + (char*)&mx[0]) );
+#endif
 
   /* mx is not locked */
   r= pthread_cond_wait(&cv, &mx[3]);

@@ -129,7 +129,7 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    Int    v_launcher_len  = VG_(strlen)( v_launcher );
    Bool   ld_preload_done = False;
 #if defined(VGP_x86_freebsd)
-   HChar* ld_32_preload    = "LD_32_PRELOAD=";
+   const HChar* ld_32_preload    = "LD_32_PRELOAD=";
    Int    ld_32_preload_len = VG_(strlen)( ld_32_preload );
    Bool   ld_32_preload_done = False;
 #endif
@@ -252,7 +252,7 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    /* ret[0 .. envc-1] is live now. */
    /* Find and remove a binding for VALGRIND_LAUNCHER. */
    for (i = 0; i < envc; i++)
-      if (0 == VG_(memcmp(ret[i], v_launcher, v_launcher_len)))
+      if (0 == VG_(memcmp)(ret[i], v_launcher, v_launcher_len))
          break;
 
    if (i < envc) {
@@ -273,10 +273,10 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
 /*====================================================================*/
 
 /* Add a string onto the string table, and return its address */
-static char *copy_str(char **tab, const char *str)
+static HChar *copy_str(HChar **tab, const HChar *str)
 {
-   char *cp = *tab;
-   char *orig = cp;
+   HChar *cp = *tab;
+   HChar *orig = cp;
 
    while(*str)
       *cp++ = *str++;
@@ -354,29 +354,22 @@ struct auxv *find_auxv(UWord* sp)
    while (*sp != 0)     // skip env
       sp++;
    sp++;
-   
-#if defined(VGA_ppc32) || defined(VGA_ppc64)
-# if defined AT_IGNOREPPC
-   while (*sp == AT_IGNOREPPC)        // skip AT_IGNOREPPC entries
-      sp += 2;
-# endif
-#endif
 
    return (struct auxv *)sp;
 }
 
 static 
 Addr setup_client_stack( void*  init_sp,
-                         char** orig_envp, 
+                         HChar** orig_envp, 
                          const ExeInfo* info,
                          UInt** client_auxv,
                          Addr   clstack_end,
                          SizeT  clstack_max_size )
 {
    SysRes res;
-   char **cpp;
-   char *strtab;		/* string table */
-   char *stringbase;
+   HChar **cpp;
+   HChar *strtab;		/* string table */
+   HChar *stringbase;
    Addr *ptr;
    struct auxv *auxv;
    const struct auxv *orig_auxv;
@@ -442,22 +435,28 @@ Addr setup_client_stack( void*  init_sp,
    /* OK, now we know how big the client stack is */
    stacksize =
       sizeof(Word) +                          /* argc */
-      (have_exename ? sizeof(char **) : 0) +  /* argc[0] == exename */
-      sizeof(char **)*argc +                  /* argv */
-      sizeof(char **) +	                      /* terminal NULL */
-      sizeof(char **)*envc +                  /* envp */
-      sizeof(char **) +	                      /* terminal NULL */
+      (have_exename ? sizeof(HChar **) : 0) +  /* argc[0] == exename */
+      sizeof(HChar **)*argc +                 /* argv */
+      sizeof(HChar **) +                      /* terminal NULL */
+      sizeof(HChar **)*envc +                 /* envp */
+      sizeof(HChar **) +                      /* terminal NULL */
       auxsize +                               /* auxv */
       VG_ROUNDUP(stringsize, sizeof(Word));   /* strings (aligned) */
 
-   if (0) VG_(printf)("stacksize = %u\n", stacksize);
+   if (0) VG_(printf)("clstack_end = %lx\n", clstack_end);
+
+#if defined(VGP_x86_freebsd)
+   // @todo PJF see comment regarding aspacem_maxAddr in aspacemgr-linux.c
+   // need to find a better way to do this !!!
+   clstack_end -= 0x3FE0000;
+#endif
 
    /* client_SP is the client's stack pointer */
    client_SP = clstack_end - stacksize;
    client_SP = VG_ROUNDDN(client_SP, 16); /* make stack 16 byte aligned */
 
    /* base of the string table (aligned) */
-   stringbase = strtab = (char *)clstack_end 
+   stringbase = strtab = (HChar *)clstack_end 
                          - VG_ROUNDUP(stringsize, sizeof(int));
 
    clstack_start = VG_PGROUNDDN(client_SP);
@@ -473,7 +472,7 @@ Addr setup_client_stack( void*  init_sp,
       VG_(printf)("stringsize=%u auxsize=%u stacksize=%u maxsize=0x%lx\n"
                   "clstack_start %p\n"
                   "clstack_end   %p\n",
-              stringsize, auxsize, stacksize, clstack_max_size,
+                  stringsize, auxsize, stacksize, clstack_max_size,
                   (void*)clstack_start, (void*)clstack_end);
 
    /* ==================== allocate space ==================== */
@@ -541,7 +540,7 @@ Addr setup_client_stack( void*  init_sp,
         VG_(printf)("valgrind: "
                     "This may be the result of a very large --main-stacksize=\n");
         VG_(printf)("valgrind: setting.  Cannot continue.  Sorry.\n\n");
-        VG_(exit)(0);
+        VG_(exit)(1);
      }
 
      vg_assert(ok);
@@ -728,8 +727,14 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
    ExeInfo info;
    HChar** env = NULL;
 
-   IIFinaliseImageInfo iifii;
-   VG_(memset)( &iifii, 0, sizeof(iifii) );
+   IIFinaliseImageInfo iifii = {
+      .clstack_max_size = 0,
+      .initial_client_SP = 0,
+      .initial_client_IP = 0,
+      .initial_client_TOC = 0,
+      .client_auxv = NULL,
+      .arch_elf_state = VKI_INIT_ARCH_ELF_STATE,
+   };
 
    //--------------------------------------------------------------
    // Load client executable, finding in $PATH if necessary
@@ -740,6 +745,8 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
 
    if (VG_(args_the_exename) == NULL)
       VG_(err_missing_prog)();
+
+   VG_(memset)(&info, 0, sizeof(info));
 
    load_client(&info, &iifii.initial_client_IP, &iifii.initial_client_TOC);
 

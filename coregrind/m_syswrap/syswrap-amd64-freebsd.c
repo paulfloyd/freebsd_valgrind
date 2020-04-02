@@ -706,6 +706,31 @@ PRE(sys_sysarch)
    }
 }
 
+// @todo PJF should this be in generic?
+// int posix_fallocate(int fd, off_t offset, off_t len);
+PRE(sys_posix_fallocate)
+{
+   PRINT("sys_posix_fallocate ( %ld, %lu, %lu )",
+         SARG1, ARG2, ARG3);
+   // @todo PJF should I be checking that fd is an opened file?
+   PRE_REG_READ3(long, "posix_fallocate",
+                 int, fd, vki_uint32_t, offset,
+                 vki_uint32_t, len);
+}
+
+// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
+PRE(sys_posix_fadvise)
+{
+   PRINT("sys_posix_fadvise ( %ld, %lu, %lu, %ld )",
+         SARG1, ARG2, ARG3, SARG4);
+   PRE_REG_READ4(long, "posix_fadvise",
+                int, fd, off_t, offset,
+                off_t, len,
+                int, advice);
+   // @todo PJF advice can be 0 to 5 inclusive
+
+}
+
 #undef PRE
 #undef POST
 

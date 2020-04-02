@@ -1643,7 +1643,16 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
 #elif defined(VGO_freebsd)
 
 # if VG_WORDSIZE == 4
+   // starting with FreeBSD 11.1, the stack is created with a zone
+   // that is marked MAP_GUARD. This zone uns reserved but unmapped,
+   // and fills the space up to the end of the segment
+   // see man mmap
+
+   // @todo PJF add conditionals for FreeBSD 11.1 
+   // will mean adding detection of minr version
+
    aspacem_maxAddr = VG_PGROUNDDN( sp_at_startup ) - 1;
+   //aspacem_maxAddr = VG_PGROUNDDN( 0xfffde000 ) - 1;
 # else
    aspacem_maxAddr = (Addr) (Addr)0x800000000 - 1; // 32G
 #  ifdef ENABLE_INNER
