@@ -923,15 +923,16 @@ POST(sys_sysinfo)
 }
 #endif
 
-/* int __sysctl(int *name, u_int namelen, void *old, size_t *oldlenp, void *new, size_t newlen); */
+/* int __sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp, size_t newlen); */
 /*               ARG1        ARG2          ARG3         ARG4           ARG5        ARG6 */
 PRE(sys___sysctl)
 {
-   PRINT("sys_sysctl ( %#lx, %lu, %#lx, %#lx, %#lx, %lu )", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6 );
+   PRINT("sys_sysctl ( %#lx, %ld, %#lx, %#lx, %#lx, %lu )", ARG1,SARG2,ARG3,ARG4,ARG5,ARG6 );
+   int* name = (int*)ARG1;
    PRINT("\nmib[0]: ");
-   if (ARG2 >= 1U)
+   if (SARG2 >= 1)
    {
-       switch (((int*)ARG1)[0])
+       switch (name[0])
        {
        case 0: // CTL_UNSPEC
            PRINT("unspec");
@@ -968,12 +969,29 @@ PRE(sys___sysctl)
            break;
        }
    }
-   if (ARG2 >= 2U)
+   if (SARG2 >= 2)
    {
-       PRINT(" mib[1]: %lu", ((unsigned long int*)ARG1)[1]);
+       PRINT(" mib[1]: %d\n", name[1]);
    }
-   PRE_REG_READ6(long, "__sysctl", int *, name, unsigned int, namelen, void *, old,
-		 vki_size_t *, oldlenp, void *, new, vki_size_t, newlen);
+
+   /*
+    * From https://github.com/freebsd/freebsd/blob/master/sys/kern/syscalls.master
+    *
+   int __sysctl(
+   ARG1    _In_reads_(namelen) int *name,
+   ARG2    u_int namelen,
+   ARG3    _Out_writes_bytes_opt_(*oldlenp) void *oldp,
+   ARG4    _Inout_opt_ size_t *oldlenp,
+   ARG5    _In_reads_bytes_opt_(newlen) const void *newp,
+   ARG6    size_t newlen
+   );
+   */
+   PRE_REG_READ6(long, "__sysctl", int *, name, vki_u_int32_t, namelen, void *, oldp,
+         vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
+
+#define ORIGINAL_CODE 0
+
+#if defined(ORIGINAL_CODE) && ORIGINAL_CODE == 1
    PRE_MEM_READ("sysctl(name)", ARG1, ARG2 * sizeof(int));
    if (ARG5 != (UWord)NULL)
       PRE_MEM_READ("sysctl(new)", (Addr)ARG5, ARG6);
@@ -984,9 +1002,48 @@ PRE(sys___sysctl)
       }
       PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
    }
+#else
+
+   // read 2 ints from mem pointed to by ARG1
+   PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
+
+   // if 'newp' is not NULL can read namelen bytes from that addess
+   if (ARG5 != (UWord)NULL)
+      PRE_MEM_READ("sysctl(newp)", (Addr)ARG5, ARG6);
+
+   // is oldlenp is not NULL, can write
+   if (ARG4 != (UWord)NULL) {
+
+       // @todo PJF I don't know what to do with oldlenp, it it inout
+
+       //PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+      if (ARG3 != (UWord)NULL) {
+         PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+
+         // @todo PJF and this seems to generate false positives ???
+         // to debug one day
+
+         //PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
+      }
+   }
+#endif
+
+#undef ORIGINAL_CODE
 }
+
+// @todo PJF high priority to remove this hack
+static int hack;
 POST(sys___sysctl)
 {
+    int* name = (int*)ARG1;
+    if (ARG2 == 2 && name[0] == 0 && name[1] == 3 && !hack)
+    {
+        // sysctlgetbyname
+        int* newName = (int*)ARG3;
+        PRINT("new mib 0 %d 1 %d\n", newName[0], newName[1]);
+        newName[1] = 7;
+        hack = 1;
+    }
    if (ARG4 != (UWord)NULL) {
       POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
       if (ARG3 != (UWord)NULL)
