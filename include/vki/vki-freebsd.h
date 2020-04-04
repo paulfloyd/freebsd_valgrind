@@ -204,10 +204,6 @@ typedef __vki_fd_set		vki_fd_set;
 #  include "vki-x86-freebsd.h"
 #elif defined(VGA_amd64)
 #  include "vki-amd64-freebsd.h"
-#elif defined(VGA_ppc32)
-#  include "vki-ppc32-freebsd.h"
-#elif defined(VGA_ppc64)
-#  include "vki-ppc64-freebsd.h"
 #else
 #  error Unknown platform
 #endif
