@@ -436,21 +436,29 @@ static UInt local_sys_getpid ( void )
 }
 
 #elif defined(VGP_x86_freebsd)
-static UInt local_sys_write_stderr ( HChar* buf, Int n )
+static UInt local_sys_write_stderr (const HChar* buf, Int n )
 {
    Int result;
 
    __asm__ volatile (
-      "pushl %%ebx\n"
-      "movl  $"VG_STRINGIFY(__NR_write)", %%eax\n" /* %eax = __NR_write */
-      "movl  $2, %%ebx\n"       /* %ebx = stderr */
-      "int   $0x80\n"           /* write(stderr, buf, n) */
-      "popl %%ebx\n"
-      : /*wr*/    "=a" (result)
-      : /*rd*/    "c" (buf), "d" (n)
-      : /*trash*/ "edi", "memory", "cc"
+      "movl  %2, %%eax\n"    /* push n */
+      "movl  %1, %%edx\n"    /* push buf */
+      "pushl %%eax\n"
+      "pushl %%edx\n"
+      "movl  $2, %%eax\n"    /* push stderr */
+      "pushl %%eax\n"
+      "movl  $"VG_STRINGIFY(__NR_write)", %%eax\n"
+      "pushl %%eax\n"        /* push write syscall id */
+      "int   $0x80\n"        /* write(stderr, buf, n) */
+      "jnc   1f\n"           /* jump if no error */
+      "movl  $-1, %%eax\n"   /* return -1 if error */
+      "1: "
+      "movl  %%eax, %0\n"    /* __res = eax */
+      "addl  $16, %%esp\n"   /* pop x4 */
+      : "=mr" (result)
+      : "g" (buf), "g" (n)
+      : "eax", "edx", "cc"
    );
-
    return result >= 0 ? result : -1;
 }
 
@@ -469,7 +477,7 @@ static UInt local_sys_getpid ( void )
 
 #elif defined(VGP_amd64_freebsd)
 __attribute__((noinline))
-static UInt local_sys_write_stderr (HChar* buf, Int n )
+static UInt local_sys_write_stderr (const HChar* buf, Int n )
 {
    volatile Long block[2];
    block[0] = (Long)buf;
