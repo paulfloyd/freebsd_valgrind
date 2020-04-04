@@ -61,6 +61,15 @@ With a full build the results are [2020-03-27]
 
 ```
 
+2020-04-04
+
+Good progress
+
+```
+== 711 tests, 166 stderr failures, 7 stdout failures, 7 stderrB failures, 14 stdoutB failures, 2 post failures ==
+
+```
+
 ## Bugzilla items
 
 All of the patches in these itrms have been merged.
