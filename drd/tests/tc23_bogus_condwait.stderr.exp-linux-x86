@@ -1,7 +1,7 @@
 
 The object at address 0x........ is not a mutex.
    at 0x........: pthread_cond_wait (drd_pthread_intercepts.c:?)
-   by 0x........: main (tc23_bogus_condwait.c:72)
+   by 0x........: main (tc23_bogus_condwait.c:73)
 
 Thread 3:
 Probably a race condition: condition variable 0x........ has been signaled but the associated mutex 0x........ is not locked by the signalling thread.
@@ -15,7 +15,7 @@ cond 0x........ was first observed at:
 Thread 1:
 Mutex not locked: mutex 0x........, recursion count 0, owner 0.
    at 0x........: pthread_cond_wait (drd_pthread_intercepts.c:?)
-   by 0x........: main (tc23_bogus_condwait.c:75)
+   by 0x........: main (tc23_bogus_condwait.c:77)
 mutex 0x........ was first observed at:
    at 0x........: pthread_mutex_init (drd_pthread_intercepts.c:?)
    by 0x........: main (tc23_bogus_condwait.c:57)
@@ -35,7 +35,7 @@ mutex 0x........ was first observed at:
 Thread 1:
 The object at address 0x........ is not a mutex.
    at 0x........: pthread_cond_wait (drd_pthread_intercepts.c:?)
-   by 0x........: main (tc23_bogus_condwait.c:78)
+   by 0x........: main (tc23_bogus_condwait.c:80)
 rwlock 0x........ was first observed at:
    at 0x........: pthread_rwlock_init (drd_pthread_intercepts.c:?)
    by 0x........: main (tc23_bogus_condwait.c:60)
@@ -55,7 +55,7 @@ rwlock 0x........ was first observed at:
 Thread 1:
 Mutex not locked by calling thread: mutex 0x........, recursion count 1, owner 2.
    at 0x........: pthread_cond_wait (drd_pthread_intercepts.c:?)
-   by 0x........: main (tc23_bogus_condwait.c:81)
+   by 0x........: main (tc23_bogus_condwait.c:83)
 mutex 0x........ was first observed at:
    at 0x........: pthread_mutex_init (drd_pthread_intercepts.c:?)
    by 0x........: main (tc23_bogus_condwait.c:56)
@@ -75,7 +75,7 @@ mutex 0x........ was first observed at:
 Thread 1:
 The impossible happened: mutex is locked simultaneously by two threads: mutex 0x........, recursion count 1, owner 2.
    at 0x........: pthread_cond_wait (drd_pthread_intercepts.c:?)
-   by 0x........: main (tc23_bogus_condwait.c:81)
+   by 0x........: main (tc23_bogus_condwait.c:83)
 mutex 0x........ was first observed at:
    at 0x........: pthread_mutex_init (drd_pthread_intercepts.c:?)
    by 0x........: main (tc23_bogus_condwait.c:56)
