@@ -1,7 +1,14 @@
 #! /bin/sh
 
+uname_s=`uname -s`
+
+case $uname_s in
+   FreeBSD) sed=gsed ;;
+   *) sed=sed ;;
+esac
+
 # Get rid of the numbers as these make some tests more scheduling sensitive
 # -- those where there are multiple threads which play interchangeable roles.
 grep -v "^Thread [0-9][0-9]*:$" |
-sed -e "s:hread [0-9][0-9]*:hread x:g" \
+$sed -e "s:hread [0-9][0-9]*:hread x:g" \
     -e "s:of thread [0-9][0-9]*$:of thread x:g"

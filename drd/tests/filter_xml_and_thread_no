@@ -1,5 +1,12 @@
 #! /bin/sh
 
+uname_s=`uname -s`
+
+case $uname_s in
+   FreeBSD) sed=gsed ;;
+   *) sed=sed ;;
+esac
+
 ../../memcheck/tests/filter_xml |
 ./filter_thread_no |
-sed 's/ vc: \[[0-9:, ]*\]/ vc: [ ... ]/g'
+$sed 's/ vc: \[[0-9:, ]*\]/ vc: [ ... ]/g'

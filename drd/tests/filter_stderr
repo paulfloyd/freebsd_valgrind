@@ -2,7 +2,14 @@
 
 dir=`dirname $0`
 
-sed -e "s:_pthread_start (in /usr/lib/libSystem.B.dylib):(within libpthread-?.?.so):" |
+uname_s=`uname -s`
+
+case $uname_s in
+   FreeBSD) sed=gsed ;;
+   *) sed=sed ;;
+esac
+
+$sed -e "s:_pthread_start (in /usr/lib/libSystem.B.dylib):(within libpthread-?.?.so):" |
 
 $dir/../../tests/filter_stderr_basic |
 
@@ -17,7 +24,7 @@ fi |
 # Remove line numbers referring to drd's source code.
 # Remove libpthread's version number.
 # Remove line numbers from stack traces.
-sed \
+$sed \
 -e "/^drd, a thread error detector$/d" \
 -e "s/^Allocation context: stack of thread \([0-9]*\), offset -[0-9]*$/Allocation context: stack of thread \1, offset .../" \
 -e "/^warning: evaluate_Dwarf3_Expr: unhandled DW_OP_.*/d" \
