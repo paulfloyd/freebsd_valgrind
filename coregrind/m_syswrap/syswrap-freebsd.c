@@ -2389,18 +2389,17 @@ PRE(sys__umtx_op)
       PRE_MEM_WRITE( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
       break;
    case VKI_UMTX_OP_SHM:
-       VG_(umsg)("WARNING: _umtc_op not fully supported with ROBUST LISTS.\n");
       PRINT( "sys__umtx_op ( %#lx, SHM, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
-      PRE_REG_READ3(long, "_umtx_op_shm",
-                    struct umutex *, obj, int, op, unsigned long, flags);
-      PRE_MEM_READ( "_umtx_op_shm(mutex)", ARG1, sizeof(struct vki_umutex) );
-      PRE_MEM_WRITE( "_umtx_op_shm(mutex)", ARG1, sizeof(struct vki_umutex) );
+      PRE_REG_READ4(long, "_umtx_op_shm",
+                    void *, obj, int, op, unsigned long, val, void*, uaddr);
       break;
    case VKI_UMTX_OP_ROBUST_LISTS:
        // @todo PJF much to do here
        // val (ARG2) ought to be the same as sizeof(struct vki_umtx_robust_lists_params)
        // then the structure contains a pointer to mutex structures
-       VG_(umsg)("WARNING: _umtx_op not fully supported with ROBUST LISTS.\n");
+      if (ARG1 != sizeof(struct vki_umtx_robust_lists_params))
+          SET_STATUS_Failure( VKI_ENOSYS );
+      VG_(umsg)("WARNING: _umtx_op not fully supported with ROBUST LISTS.\n");
       PRINT( "sys__umtx_op ( %#lx, ROBUST_LISTS, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_robust_lists",
                     struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
@@ -2408,7 +2407,7 @@ PRE(sys__umtx_op)
       //PRE_MEM_WRITE( "_umtx_op_robust_lists(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
    default:
-       VG_(umsg)("WARNING: _umtx_op unsupported value.\n");
+      VG_(umsg)("WARNING: _umtx_op unsupported value.\n");
       PRINT( "sys__umtx_op ( %#lx, %lu(UNKNOWN), %lu, %#lx, %#lx )", ARG1, ARG2, ARG3, ARG4, ARG5);
       break;
    }
