@@ -2486,8 +2486,7 @@ static void final_tidyup(ThreadId tid)
 /*====================================================================*/
 /*=== Getting to main() alive: LINUX                               ===*/
 /*====================================================================*/
-
-#if defined(VGO_linux) || defined(VGO_freebsd)
+#if defined(VGO_linux)
 
 /* If linking of the final executables is done with glibc present,
    then Valgrind starts at main() above as usual, and all of the
@@ -2919,45 +2918,6 @@ asm("\n"
     "\tbreak  0x7\n"
     ".previous\n"
 );
-#elif defined(VGP_x86_freebsd)
-asm("\n"
-    ".text\n"
-    "\t.globl _start\n"
-    "\t.type _start,@function\n"
-    "_start:\n"
-    /* set up the new stack in %eax */
-    "\tmovl  $vgPlain_interim_stack, %eax\n"
-    "\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
-    "\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
-    /* allocate at least 16 bytes on the new stack, and aligned */
-    "\tsubl  $16, %eax\n"
-    "\tandl  $~15, %eax\n"
-    /* install it, and collect the original one */
-    "\txchgl %eax, %esp\n"
-    /* call _start_in_C_freebsd, passing it the startup %esp */
-    "\tpushl %eax\n"
-    "\tcall  _start_in_C_freebsd\n"
-    "\thlt\n"
-    ".previous\n"
-);
-#elif defined(VGP_amd64_freebsd)
-asm("\n"
-    ".text\n"
-    "\t.globl _start\n"
-    "\t.type _start,@function\n"
-    "_start:\n"
-    /* set up the new stack in %rsi */
-    "\tmovq  $vgPlain_interim_stack, %rsi\n"
-    "\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rsi\n"
-    "\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rsi\n"
-    "\tandq  $~15, %rsi\n"
-    /* install it, and collect the original one */
-    "\txchgq %rsi, %rsp\n"
-    /* call _start_in_C_freebsd, passing it the startup %rsp */
-    "\tcall  _start_in_C_freebsd\n"
-    "\thlt\n"
-    ".previous\n"
-);
 #elif defined(VGP_mips64_linux)
 asm(
 ".text\n"
@@ -3032,40 +2992,6 @@ asm(
 /* --- !!! --- EXTERNAL HEADERS end --- !!! --- */
 
 
-// @todo PJF these #ifs are a mess
-#if defined(VGO_freebsd)
-
-__attribute__ ((used))
-void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp );
-__attribute__ ((used))
-void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp )
-{
-   Int     r;
-   Word    argc = pArgc[0];
-   HChar** argv = (HChar**)&pArgc[1];
-   HChar** envp = (HChar**)&pArgc[1+argc+1];
-
-   INNER_REQUEST
-      ((void) VALGRIND_STACK_REGISTER
-       (&VG_(interim_stack).bytes[0],
-        &VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
-
-   VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
-   VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
-
-#if defined(VGP_amd64_freebsd)
-   the_iicii.sp_at_startup = (Addr)initial_sp;
-#else
-   the_iicii.sp_at_startup = (Addr)pArgc;
-#endif
-
-   r = valgrind_main( (Int)argc, argv, envp );
-   /* NOTREACHED */
-   VG_(exit)(r);
-}
-
-#else
-
 /* Avoid compiler warnings: this fn _is_ used, but labelling it
    'static' causes gcc to complain it isn't.
    attribute 'used' also ensures the code is not eliminated at link
@@ -3123,7 +3049,6 @@ void _start_in_C_linux ( UWord* pArgc )
    /* NOTREACHED */
    VG_(exit)(r);
 }
-#endif
 
 
 /*====================================================================*/
@@ -3321,6 +3246,86 @@ void _start_in_C_solaris ( UWord* pArgc )
    the_iicii.sp_at_startup = (Addr)pArgc;
 
    r = valgrind_main((Int)argc, argv, envp);
+   /* NOTREACHED */
+   VG_(exit)(r);
+}
+
+/*====================================================================*/
+/*=== Getting to main() alive: FreeBSD                             ===*/
+/*====================================================================*/
+#elif defined(VGO_freebsd)
+
+#if defined(VGP_x86_freebsd)
+asm("\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    /* set up the new stack in %eax */
+    "\tmovl  $vgPlain_interim_stack, %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
+    /* allocate at least 16 bytes on the new stack, and aligned */
+    "\tsubl  $16, %eax\n"
+    "\tandl  $~15, %eax\n"
+    /* install it, and collect the original one */
+    "\txchgl %eax, %esp\n"
+    /* call _start_in_C_freebsd, passing it the startup %esp */
+    "\tpushl %eax\n"
+    "\tcall  _start_in_C_freebsd\n"
+    "\thlt\n"
+    ".previous\n"
+);
+#elif defined(VGP_amd64_freebsd)
+asm("\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    /* set up the new stack in %rsi */
+    "\tmovq  $vgPlain_interim_stack, %rsi\n"
+    "\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rsi\n"
+    "\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rsi\n"
+    "\tandq  $~15, %rsi\n"
+    /* install it, and collect the original one */
+    "\txchgq %rsi, %rsp\n"
+    /* call _start_in_C_freebsd, passing it the startup %rsp */
+    "\tcall  _start_in_C_freebsd\n"
+    "\thlt\n"
+    ".previous\n"
+);
+#endif
+
+void *memcpy(void *dest, const void *src, size_t n);
+void *memcpy(void *dest, const void *src, size_t n) {
+   return VG_(memcpy)(dest, src, n);
+}
+
+__attribute__ ((used))
+void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp );
+__attribute__ ((used))
+void _start_in_C_freebsd ( UWord* pArgc, UWord *initial_sp )
+{
+   Int     r;
+   Word    argc = pArgc[0];
+   HChar** argv = (HChar**)&pArgc[1];
+   HChar** envp = (HChar**)&pArgc[1+argc+1];
+
+   INNER_REQUEST
+      ((void) VALGRIND_STACK_REGISTER
+       (&VG_(interim_stack).bytes[0],
+        &VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
+
+   VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
+   VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
+
+#if defined(VGP_amd64_freebsd)
+   the_iicii.sp_at_startup = (Addr)initial_sp;
+#else
+   the_iicii.sp_at_startup = (Addr)pArgc;
+#endif
+
+   r = valgrind_main( (Int)argc, argv, envp );
    /* NOTREACHED */
    VG_(exit)(r);
 }
