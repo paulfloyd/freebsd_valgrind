@@ -280,6 +280,7 @@ DECL_TEMPLATE(freebsd, sys_readlinkat)
 DECL_TEMPLATE(freebsd, sys_renameat)
 DECL_TEMPLATE(freebsd, sys_symlinkat)
 DECL_TEMPLATE(freebsd, sys_unlinkat)
+DECL_TEMPLATE(freebsd, sys_posix_openpt)
 DECL_TEMPLATE(freebsd, sys_jail_get);
 DECL_TEMPLATE(freebsd, sys_jail_set);
 DECL_TEMPLATE(freebsd, sys_jail_attach);

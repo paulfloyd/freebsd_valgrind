@@ -2173,7 +2173,6 @@ PRE(sys_thr_wake)
 PRE(sys__umtx_op)
 {
 // ThreadState *tst;
-    *flags |= SfMayBlock;
    /* 5 args are always passed through.  The last two can vary, but
       they're always pointers.  They may not be used though. */
    switch(ARG2) {
@@ -2218,7 +2217,7 @@ PRE(sys__umtx_op)
                     void *, zero, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_mutex_trylock(mutex)", ARG1, sizeof(struct vki_umutex) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_mutex_trylock(timespec)", ARG5, sizeof(struct vki_timespec) );
+         PRE_MEM_READ( "_umtx_op_mutex_trylock(timespec)", ARG5, sizeof(struct vki_timespec) );
       PRE_MEM_WRITE( "_umtx_op_mutex_trylock(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_MUTEX_LOCK:
@@ -2228,7 +2227,7 @@ PRE(sys__umtx_op)
                     void *, zero, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_mutex_lock(mutex)", ARG1, sizeof(struct vki_umutex) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_mutex_lock(timespec)", ARG5, sizeof(struct vki_timespec) );
+         PRE_MEM_READ( "_umtx_op_mutex_lock(timespec)", ARG5, sizeof(struct vki_timespec) );
       PRE_MEM_WRITE( "_umtx_op_mutex_lock(mutex)", ARG1, sizeof(struct vki_umutex) );
       *flags |= SfMayBlock;
       break;
@@ -2259,7 +2258,7 @@ PRE(sys__umtx_op)
       PRE_MEM_READ( "_umtx_op_cv_wait(mutex)", ARG4, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_cv_wait(mutex)", ARG4, sizeof(struct vki_umutex) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_cv_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
+         PRE_MEM_READ( "_umtx_op_cv_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_CV_SIGNAL:
@@ -2283,7 +2282,7 @@ PRE(sys__umtx_op)
                     void *, zero, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_wait(uint)", ARG1, sizeof(int) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
+         PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_RW_RDLOCK:
@@ -2318,7 +2317,7 @@ PRE(sys__umtx_op)
                     void *, zero, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_wait_private(uint)", ARG1, sizeof(int) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_wait_private(umtx_time)", ARG5, sizeof(struct vki_umtx_time) );
+         PRE_MEM_READ( "_umtx_op_wait_private(umtx_time)", ARG5, sizeof(struct vki_umtx_time) );
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_WAKE_PRIVATE:
@@ -2350,7 +2349,7 @@ PRE(sys__umtx_op)
       PRE_MEM_READ( "_umtx_op_sem_wait(usem)", ARG1, sizeof(struct vki_usem) );
       PRE_MEM_WRITE( "_umtx_op_sem_wait(usem)", ARG1, sizeof(struct vki_usem) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_sem_wait(umtx_time)", ARG5, sizeof(struct vki_umtx_time) );
+         PRE_MEM_READ( "_umtx_op_sem_wait(umtx_time)", ARG5, sizeof(struct vki_umtx_time) );
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_SEM_WAKE:
@@ -2380,6 +2379,7 @@ PRE(sys__umtx_op)
                     struct _usem2 *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
       PRE_MEM_WRITE( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
+      *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_SEM2_WAKE:
       PRINT( "sys__umtx_op ( %#lx, SEM2_WAKE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
@@ -2405,6 +2405,7 @@ PRE(sys__umtx_op)
                     struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_robust_lists(mutex)", ARG3, sizeof(struct vki_umtx_robust_lists_params) );
       //PRE_MEM_WRITE( "_umtx_op_robust_lists(mutex)", ARG1, sizeof(struct vki_umutex) );
+      *flags |= SfMayBlock;
       break;
    default:
       VG_(umsg)("WARNING: _umtx_op unsupported value.\n");
@@ -3287,6 +3288,14 @@ PRE(sys_unlinkat)
    PRE_MEM_RASCIIZ( "unlinkat(pathname)", ARG2 );
 }
 
+//int posix_openpt(int oflag);
+PRE(sys_posix_openpt)
+{
+   PRINT("sys_posix_openpt ( %ld )", SARG2);
+   PRE_REG_READ1(long, "posix_openpt", int, oflag);
+
+}
+
 PRE(sys_jail_get)
 {
 
@@ -3312,13 +3321,13 @@ PRE(sys_jail_set)
 
 PRE(sys_jail_attach)
 {
-    PRINT("sys_jail_attach ( %lu )", ARG1);
+    PRINT("sys_jail_attach ( %ld )", SARG1);
     PRE_REG_READ1(int, "jail_attach", int, jid);
 }
 
 PRE(sys_jail_remove)
 {
-    PRINT("sys_jail_remove ( %lu )", ARG1);
+    PRINT("sys_jail_remove ( %ld )", SARG1);
     PRE_REG_READ1(int, "jail_remove", int, jid);
 }
 
@@ -4739,7 +4748,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_symlinkat,		sys_symlinkat),			// 502
    BSDX_(__NR_unlinkat,			sys_unlinkat),			// 503
 
-   // posix_openpt                              504
+   BSDX_(__NR_posix_openpt,     sys_posix_openpt),      // 504
    // gssd_syscall                              505
    BSDXY(__NR_jail_get,			sys_jail_get),			// 506
    BSDX_(__NR_jail_set,			sys_jail_set),			// 507
