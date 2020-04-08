@@ -180,6 +180,13 @@ static int never_true;
    { return implf argl; }
 #endif
 
+#if defined(VGO_freebsd)
+#define LIBC_FUNC(ret_ty, zf, implf, argl_decl, argl)                   \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl;           \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl            \
+   { return implf argl; }
+#endif
+
 /**
  * Macro for generating three Valgrind interception functions: one with the
  * Z-encoded name zf, one with ZAZa ("@*") appended to the name zf and one
@@ -191,6 +198,12 @@ static int never_true;
    PTH_FUNC(ret_ty, zf, implf, argl_decl, argl);                \
    PTH_FUNC(ret_ty, zf ## ZAZa, implf, argl_decl, argl);        \
    PTH_FUNC(ret_ty, zf ## ZDZa, implf, argl_decl, argl);
+
+#if defined(VGO_freebsd)
+#define LIBC_FUNCS(ret_ty, zf, implf, argl_decl, argl)           \
+   LIBC_FUNC(ret_ty, zf, implf, argl_decl, argl);
+#endif
+
 
 /*
  * Not inlining one of the intercept functions will cause the regression
@@ -1370,6 +1383,11 @@ PTH_FUNCS(int, semaZuinit, sema_init_intercept,
           (sema_t *sem, unsigned int value, int type, void *arg),
           (sem, value, type, arg));
 #endif /* VGO_solaris */
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZuinit, sem_init_intercept,
+          (sem_t *sem, int pshared, unsigned int value), (sem, pshared, value));
+#endif
+
 
 static __always_inline
 int sem_destroy_intercept(sem_t *sem)
@@ -1389,6 +1407,9 @@ PTH_FUNCS(int, semZudestroy, sem_destroy_intercept, (sem_t *sem), (sem));
 #if defined(VGO_solaris)
 PTH_FUNCS(int, semaZudestroy, sem_destroy_intercept, (sem_t *sem), (sem));
 #endif /* VGO_solaris */
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZudestroy, sem_destroy_intercept, (sem_t *sem), (sem));
+#endif
 
 static __always_inline
 sem_t* sem_open_intercept(const char *name, int oflag, mode_t mode,
@@ -1409,6 +1430,12 @@ sem_t* sem_open_intercept(const char *name, int oflag, mode_t mode,
 PTH_FUNCS(sem_t *, semZuopen, sem_open_intercept,
           (const char *name, int oflag, mode_t mode, unsigned int value),
           (name, oflag, mode, value));
+#if defined(VGO_freebsd)
+LIBC_FUNCS(sem_t *, semZuopen, sem_open_intercept,
+          (const char *name, int oflag, mode_t mode, unsigned int value),
+          (name, oflag, mode, value));
+#endif
+
 
 static __always_inline int sem_close_intercept(sem_t *sem)
 {
@@ -1424,6 +1451,9 @@ static __always_inline int sem_close_intercept(sem_t *sem)
 }
 
 PTH_FUNCS(int, semZuclose, sem_close_intercept, (sem_t *sem), (sem));
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZuclose, sem_close_intercept, (sem_t *sem), (sem));
+#endif
 
 static __always_inline int sem_wait_intercept(sem_t *sem)
 {
@@ -1442,6 +1472,9 @@ PTH_FUNCS(int, semZuwait, sem_wait_intercept, (sem_t *sem), (sem));
 #if defined(VGO_solaris)
 PTH_FUNCS(int, semaZuwait, sem_wait_intercept, (sem_t *sem), (sem));
 #endif /* VGO_solaris */
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZuwait, sem_wait_intercept, (sem_t *sem), (sem));
+#endif
 
 static __always_inline int sem_trywait_intercept(sem_t *sem)
 {
@@ -1460,6 +1493,9 @@ PTH_FUNCS(int, semZutrywait, sem_trywait_intercept, (sem_t *sem), (sem));
 #if defined(VGO_solaris)
 PTH_FUNCS(int, semaZutrywait, sem_trywait_intercept, (sem_t *sem), (sem));
 #endif /* VGO_solaris */
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZutrywait, sem_trywait_intercept, (sem_t *sem), (sem));
+#endif
 
 static __always_inline
 int sem_timedwait_intercept(sem_t *sem, const struct timespec *abs_timeout)
@@ -1486,6 +1522,11 @@ PTH_FUNCS(int, semaZureltimedwait, sem_timedwait_intercept,
           (sem_t *sem, const struct timespec *timeout),
           (sem, timeout));
 #endif /* VGO_solaris */
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZutimedwait, sem_timedwait_intercept,
+          (sem_t *sem, const struct timespec *abs_timeout),
+          (sem, abs_timeout));
+#endif
 
 static __always_inline int sem_post_intercept(sem_t *sem)
 {
@@ -1504,6 +1545,9 @@ PTH_FUNCS(int, semZupost, sem_post_intercept, (sem_t *sem), (sem));
 #if defined(VGO_solaris)
 PTH_FUNCS(int, semaZupost, sem_post_intercept, (sem_t *sem), (sem));
 #endif /* VGO_solaris */
+#if defined(VGO_freebsd)
+LIBC_FUNCS(int, semZupost, sem_post_intercept, (sem_t *sem), (sem));
+#endif
 
 /* Android's pthread.h doesn't say anything about rwlocks, hence these
    functions have to be conditionally compiled. */
