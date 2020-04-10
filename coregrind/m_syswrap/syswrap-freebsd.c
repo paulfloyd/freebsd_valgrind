@@ -2704,9 +2704,19 @@ PRE(sys_sigsuspend)
 {
    *flags |= SfMayBlock;
    PRINT("sys_sigsuspend ( %#lx )", ARG1 );
-   PRE_REG_READ1(int, "rt_sigsuspend", vki_sigset_t *, mask)
+   PRE_REG_READ1(int, "sigsuspend", vki_sigset_t *, mask)
    if (ARG1 != (Addr)NULL) {
-      PRE_MEM_READ( "rt_sigsuspend(mask)", ARG1, sizeof(vki_sigset_t) );
+      PRE_MEM_READ( "_sigsuspend(mask)", ARG1, sizeof(vki_sigset_t) );
+      if (ML_(safe_to_deref)((vki_sigset_t *) (Addr)ARG1, sizeof(vki_sigset_t))) {
+         VG_(sigdelset)((vki_sigset_t *) (Addr)ARG1, VG_SIGVGKILL);
+         /* We cannot mask VG_SIGVGKILL, as otherwise this thread would not
+            be killable by VG_(nuke_all_threads_except).
+            We thus silently ignore the user request to mask this signal.
+            Note that this is similar to what is done for e.g.
+            sigprocmask (see m_signals.c calculate_SKSS_from_SCSS). */
+      } else {
+         SET_STATUS_Failure(VKI_EFAULT);
+      }
    }
 }
 
