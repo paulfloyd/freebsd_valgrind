@@ -127,7 +127,7 @@ static HReg          s390_isel_int_expr(ISelEnv *, IRExpr *);
 static s390_amode   *s390_isel_amode(ISelEnv *, IRExpr *);
 static s390_amode   *s390_isel_amode_b12_b20(ISelEnv *, IRExpr *);
 static s390_cc_t     s390_isel_cc(ISelEnv *, IRExpr *);
-static HReg          s390_isel_int1_expr(ISelEnv *env, IRExpr *expr, HReg dst);
+static HReg          s390_isel_int1_expr(ISelEnv *env, IRExpr *expr);
 static s390_opnd_RMI s390_isel_int_expr_RMI(ISelEnv *, IRExpr *);
 static void          s390_isel_int128_expr(HReg *, HReg *, ISelEnv *, IRExpr *);
 static HReg          s390_isel_float_expr(ISelEnv *, IRExpr *);
@@ -514,7 +514,7 @@ get_const_value_as_ulong(const IRConst *con)
 }
 
 
-/*  Substract n from stack pointer. Assumes 0 <= n <= 256 && n % 8 == 0. */
+/*  Subtract n from stack pointer. Assumes 0 <= n <= 256 && n % 8 == 0. */
 static void
 sub_from_SP ( ISelEnv* env, UInt n )
 {
@@ -525,7 +525,7 @@ sub_from_SP ( ISelEnv* env, UInt n )
 }
 
 
-/*  Substract n from stack pointer. Assumes 0 <= n <= 256 && n % 8 == 0. */
+/*  Add n to stack pointer. Assumes 0 <= n <= 256 && n % 8 == 0. */
 static void
 add_to_SP ( ISelEnv* env, UInt n )
 {
@@ -1423,13 +1423,9 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
          h1   = s390_isel_int_expr(env, arg1);   /* Process 1st operand */
          h2   = s390_isel_int_expr(env, arg2);   /* Process 2nd operand */
 
-         addInstr(env, s390_insn_move(arg_size, res, h1));
-         value = s390_opnd_imm(arg_size * 8);
-         addInstr(env, s390_insn_alu(size, S390_ALU_LSH, res, value));
-         value = s390_opnd_imm((((ULong)1) << arg_size * 8) - 1);
-         addInstr(env, s390_insn_alu(size, S390_ALU_AND, h2, value));
-         opnd = s390_opnd_reg(h2);
-         addInstr(env, s390_insn_alu(size, S390_ALU_OR,  res, opnd));
+         addInstr(env, s390_insn_move(arg_size, res, h2));
+         opnd = s390_opnd_reg(h1);
+         addInstr(env, s390_insn_alu(size, S390_ALU_ILIH, res, opnd));
          return res;
       }
 
@@ -1764,7 +1760,9 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
 
       /* Expressions whose argument is 1-bit wide */
       if (typeOfIRExpr(env->type_env, arg) == Ity_I1) {
-         dst = s390_isel_int1_expr(env, arg, INVALID_HREG);
+         h1 = s390_isel_int1_expr(env, arg);
+         dst = newVRegI(env);
+         addInstr(env, s390_insn_move(8, dst, h1));
 
          switch (unop) {
          case Iop_1Uto8:
@@ -2139,7 +2137,7 @@ s390_isel_float128_expr_wrk(HReg *dst_hi, HReg *dst_lo, ISelEnv *env,
       *dst_hi = newVRegF(env);
       *dst_lo = newVRegF(env);
       addInstr(env, s390_insn_load(8, *dst_hi, am_hi));
-      addInstr(env, s390_insn_load(8, *dst_hi, am_lo));
+      addInstr(env, s390_insn_load(8, *dst_lo, am_lo));
       return;
    }
 
@@ -2770,6 +2768,25 @@ s390_isel_float_expr_wrk(ISelEnv *env, IRExpr *expr)
       return dst;
    }
 
+      /* --------- MULTIPLEX --------- */
+   case Iex_ITE: {
+      IRExpr *cond_expr = expr->Iex.ITE.cond;
+      HReg dst, r0, r1;
+
+      vassert(typeOfIRExpr(env->type_env, cond_expr) == Ity_I1);
+
+      dst  = newVRegF(env);
+      r0   = s390_isel_float_expr(env, expr->Iex.ITE.iffalse);
+      r1   = s390_isel_float_expr(env, expr->Iex.ITE.iftrue);
+      size = sizeofIRType(typeOfIRExpr(env->type_env, expr->Iex.ITE.iftrue));
+
+      s390_cc_t cc = s390_isel_cc(env, cond_expr);
+
+      addInstr(env, s390_insn_move(size, dst, r0));
+      addInstr(env, s390_insn_cond_move(size, cc, dst, s390_opnd_reg(r1)));
+      return dst;
+   }
+
    default:
       goto irreducible;
    }
@@ -2828,7 +2845,7 @@ s390_isel_dfp128_expr_wrk(HReg *dst_hi, HReg *dst_lo, ISelEnv *env,
       *dst_hi = newVRegF(env);
       *dst_lo = newVRegF(env);
       addInstr(env, s390_insn_load(8, *dst_hi, am_hi));
-      addInstr(env, s390_insn_load(8, *dst_hi, am_lo));
+      addInstr(env, s390_insn_load(8, *dst_lo, am_lo));
       return;
    }
 
@@ -3539,7 +3556,7 @@ s390_isel_cc(ISelEnv *env, IRExpr *cond)
       if (cond->Iex.Binop.op == Iop_And1 || cond->Iex.Binop.op == Iop_Or1) {
          /* Perform the calculation in registers, but ignore the resulting
             value.  Instead, assume that the condition code is set. */
-         (void) s390_isel_int1_expr(env, cond, INVALID_HREG);
+         (void) s390_isel_int1_expr(env, cond);
          return S390_CC_NE;
       }
 
@@ -3670,34 +3687,30 @@ s390_isel_cc(ISelEnv *env, IRExpr *cond)
    values in registers always sign-extended to 64 bits.  This function is
    mutually recursive with s390_isel_cc. */
 static HReg
-s390_isel_int1_expr(ISelEnv *env, IRExpr *expr, HReg dst)
+s390_isel_int1_expr(ISelEnv *env, IRExpr *expr)
 {
    vassert(expr);
    vassert(typeOfIRExpr(env->type_env, expr) == Ity_I1);
 
    /* Variable. */
-   if (expr->tag == Iex_RdTmp) {
-      HReg res = lookupIRTemp(env, expr->Iex.RdTmp.tmp);
-      if (hregIsInvalid(dst)) {
-         return res;
-      }
-      addInstr(env, s390_insn_move(8, dst, res));
-      return dst;
-   }
+   if (expr->tag == Iex_RdTmp)
+      return lookupIRTemp(env, expr->Iex.RdTmp.tmp);
 
-   HReg res = hregIsInvalid(dst) ? newVRegI(env) : dst;
+   HReg res = newVRegI(env);
 
    /* And1 / Or1 */
    if (expr->tag == Iex_Binop
        && (expr->Iex.Binop.op == Iop_And1 || expr->Iex.Binop.op == Iop_Or1)) {
-      HReg reg1 = s390_isel_int1_expr(env, expr->Iex.Binop.arg1, res);
-      HReg reg2 = s390_isel_int1_expr(env, expr->Iex.Binop.arg2, INVALID_HREG);
+      HReg reg1 = s390_isel_int1_expr(env, expr->Iex.Binop.arg1);
+      HReg reg2 = s390_isel_int1_expr(env, expr->Iex.Binop.arg2);
       s390_alu_t opkind
          = expr->Iex.Binop.op == Iop_And1 ? S390_ALU_AND : S390_ALU_OR;
 
+      addInstr(env, s390_insn_move(8, res, reg1));
+
       /* Ensure that the condition code is set; s390_isel_cc relies on it. */
-      addInstr(env, s390_insn_alu(8, opkind, reg1, s390_opnd_reg(reg2)));
-      return reg1;
+      addInstr(env, s390_insn_alu(8, opkind, res, s390_opnd_reg(reg2)));
+      return res;
    }
 
    /* Else, call s390_isel_cc and force the value into a register. */
@@ -4694,6 +4707,25 @@ s390_isel_vec_expr_wrk(ISelEnv *env, IRExpr *expr)
       }
    }
 
+   /* --------- MULTIPLEX --------- */
+   case Iex_ITE: {
+      IRExpr *cond_expr = expr->Iex.ITE.cond;
+      HReg dst, r0, r1;
+
+      vassert(typeOfIRExpr(env->type_env, cond_expr) == Ity_I1);
+
+      dst  = newVRegV(env);
+      r0   = s390_isel_vec_expr(env, expr->Iex.ITE.iffalse);
+      r1   = s390_isel_vec_expr(env, expr->Iex.ITE.iftrue);
+      size = sizeofIRType(typeOfIRExpr(env->type_env, expr->Iex.ITE.iftrue));
+
+      s390_cc_t cc = s390_isel_cc(env, cond_expr);
+
+      addInstr(env, s390_insn_move(size, dst, r0));
+      addInstr(env, s390_insn_cond_move(size, cc, dst, s390_opnd_reg(r1)));
+      return dst;
+   }
+
    default:
       goto irreducible;
    }
@@ -4980,8 +5012,9 @@ no_memcpy_put:
          break;
 
       case Ity_I1: {
+         src = s390_isel_int1_expr(env, stmt->Ist.WrTmp.data);
          dst = lookupIRTemp(env, tmp);
-         dst = s390_isel_int1_expr(env, stmt->Ist.WrTmp.data, dst);
+         addInstr(env, s390_insn_move(8, dst, src));
          return;
       }
 
@@ -5152,10 +5185,6 @@ no_memcpy_put:
             addInstr(env, s390_insn_cdas(8, r8, r9, op2, r10, r11,
                                          old_high, old_low, r1));
          }
-         addInstr(env, s390_insn_move(8, op1_high, r8));
-         addInstr(env, s390_insn_move(8, op1_low,  r9));
-         addInstr(env, s390_insn_move(8, op3_high, r10));
-         addInstr(env, s390_insn_move(8, op3_low,  r11));
          return;
       }
       break;
