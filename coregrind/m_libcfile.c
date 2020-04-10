@@ -478,16 +478,15 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
    }
 #  elif defined(VGO_freebsd)
    {
+      struct vki_freebsd11_stat buf;
 # if (FREEBSD_VERS >= FREEBSD_12)
-     struct vki_freebsd11_stat buf;
-     res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
-#    else
-    struct vki_stat buf;
-     res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
+      res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
+#     else
+      res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
 #    endif
-     if (!sr_isError(res))
-        TRANSLATE_TO_vg_stat(vgbuf, &buf);
-     return res;
+      if (!sr_isError(res))
+         TRANSLATE_TO_vg_stat(vgbuf, &buf);
+      return res;
    }
 #  else
 #    error Unknown OS
