@@ -865,7 +865,7 @@ PRE(sys_fstat)
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
-POST(sys_freebsd11_fstat)
+POST(sys_fstat)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
