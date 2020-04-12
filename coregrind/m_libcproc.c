@@ -1156,27 +1156,11 @@ Bool VG_(is32on64)(void)
 #if defined(VGP_amd64_freebsd)
    return False;
 #elif defined(VGP_x86_freebsd)
-   Int oid[2], error;
-   vki_size_t len;
-   char machbuf[32];
-   static Int is32on64 = -1;
-
-   if (is32on64 == -1) {
-      oid[0] = VKI_CTL_HW;
-      oid[1] = VKI_HW_MACHINE;
-      len = sizeof(machbuf);
-      error =  VG_(sysctl)(oid, 2, machbuf, &len, NULL, 0);
-      if (error == 0) {
-	 machbuf[31] = '\0';
-	 if (VG_(strcmp)(machbuf, "amd64") == 0)
-	    is32on64 = 1;
-	 else
-	    is32on64 = 0;
-      } else {
-	 is32on64 = -2;
-      }
-   }
-   if (is32on64 == 1) {
+   SysRes res;
+   struct vg_stat stat_buf;
+   res = VG_(stat)("/libexec/ld-elf32.so.1", &stat_buf);
+   if (!sr_isError(res)) {
+      // file exists, we're running on amd64
       return True;
    } else {
       return False;

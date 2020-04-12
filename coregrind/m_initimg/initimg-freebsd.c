@@ -123,12 +123,7 @@ static void load_client ( /*OUT*/ExeInfo* info,
 static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
 {
    const HChar* preload_core    = "vgpreload_core";
-// @todo PJF probably won't work for x86 FreeBSD
-#if defined(VGP_amd64_freebsd)
    const HChar* ld_preload      = "LD_PRELOAD=";
-#else
-   const HChar* ld_preload      = "LD_32_PRELOAD=";
-#endif
    const HChar* v_launcher      = VALGRIND_LAUNCHER "=";
    Int    ld_preload_len  = VG_(strlen)( ld_preload );
    Int    v_launcher_len  = VG_(strlen)( v_launcher );
