@@ -1,4 +1,3 @@
-
 /*--------------------------------------------------------------------*/
 /*--- FreeBSD-specific syscalls, etc.            syswrap-freebsd.c ---*/
 /*--------------------------------------------------------------------*/
@@ -843,6 +842,8 @@ POST(sys_stat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
+#if (FREEBSD_VERS >= FREEBSD_12)
+
 PRE(sys_freebsd11_fstat)
 {
    PRINT("sys_freebsd11_fstat ( %ld, %#lx )",SARG1,ARG2);
@@ -854,6 +855,22 @@ POST(sys_freebsd11_fstat)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
+
+#else
+
+PRE(sys_fstat)
+{
+   PRINT("sys_fstat ( %ld, %#lx )",SARG1,ARG2);
+   PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
+   PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+POST(sys_freebsd11_fstat)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+#endif
 
 PRE(sys_pathconf)
 {
@@ -4367,7 +4384,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
  #if (FREEBSD_VERS >= FREEBSD_12)
    BSDXY(__NR_freebsd11_stat,	sys_stat),			// 188
-   BSDXY(__NR_freebsd11_fstat,	sys_fstat),			// 189
+   BSDXY(__NR_freebsd11_fstat,	sys_freebsd11_fstat),	// 189
    BSDXY(__NR_freebsd11_lstat,	sys_lstat),			// 190
  #else
    BSDXY(__NR_stat,             sys_stat),			// 188

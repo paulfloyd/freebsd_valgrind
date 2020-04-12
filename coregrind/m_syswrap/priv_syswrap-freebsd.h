@@ -99,7 +99,11 @@ DECL_TEMPLATE(freebsd, sys_ntp_adjtime)
 DECL_TEMPLATE(freebsd, sys_setegid)
 DECL_TEMPLATE(freebsd, sys_seteuid)
 DECL_TEMPLATE(freebsd, sys_stat)
+#if (FREEBSD_VERS >= FREEBSD_12)
 DECL_TEMPLATE(freebsd, sys_freebsd11_fstat)
+#else
+DECL_TEMPLATE(freebsd, sys_fstat)
+#endif
 DECL_TEMPLATE(freebsd, sys_lstat)
 DECL_TEMPLATE(freebsd, sys_pathconf)
 DECL_TEMPLATE(freebsd, sys_fpathconf)
