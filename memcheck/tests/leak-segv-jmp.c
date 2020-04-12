@@ -348,7 +348,7 @@ static void non_simd_mprotect (long tid, void* addr, long len)
    mprotect_result = do_syscall_WRK(__NR_mprotect,
                                     (UWord) addr, len, PROT_NONE,
                                     0, 0, 0, 0, 0, &flags);
-#elif defined(VGP_amdx6_freebsd)
+#elif defined(VGP_amd64_freebsd)
    
    UInt flags = 0U;
    UWord rv2 = 0U;
