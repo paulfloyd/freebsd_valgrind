@@ -446,9 +446,11 @@ Addr setup_client_stack( void*  init_sp,
    if (0) VG_(printf)("clstack_end = %lx\n", clstack_end);
 
 #if defined(VGP_x86_freebsd)
+   VG_(debugLog)(1, "initimg", "clstack_end before adjustent %lu\n", clstack_end);
    // @todo PJF see comment regarding aspacem_maxAddr in aspacemgr-linux.c
    // need to find a better way to do this !!!
    clstack_end -= 0x3FE0000;
+   VG_(debugLog)(1, "initimg", "clstack_end after adjustent %lu\n", clstack_end);
 #endif
 
    /* client_SP is the client's stack pointer */
