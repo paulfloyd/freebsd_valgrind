@@ -396,7 +396,11 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
    return False;
 #  elif defined(VGO_freebsd)
    struct vki_freebsd11_stat buf;
+#if (FREEBSD_VERS >= FREEBSD_12)
    SysRes res = VG_(do_syscall2)(__NR_freebsd11_fstat, fd, (UWord)&buf);
+#else
+   SysRes res = VG_(do_syscall2)(__NR_fstat, fd, (UWord)&buf);
+#endif
    if (!sr_isError(res)) {
       *dev  = (ULong)buf.st_dev;
       *ino  = (ULong)buf.st_ino;
