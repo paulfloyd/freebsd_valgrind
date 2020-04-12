@@ -1161,8 +1161,10 @@ Bool VG_(is32on64)(void)
    res = VG_(stat)("/libexec/ld-elf32.so.1", &stat_buf);
    if (!sr_isError(res)) {
       // file exists, we're running on amd64
+      VG_(debugLog)(1, "check-os-bitness", "i386 executable on amd64 kernel\n");
       return True;
    } else {
+      VG_(debugLog)(1, "check-os-bitness", "i386 executable on is86 kernel\n");
       return False;
    }
 #else
