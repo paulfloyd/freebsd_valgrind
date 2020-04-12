@@ -31,6 +31,7 @@
 
 /* requires #include "priv_types_n_macros.h" */
 #include "priv_types_n_macros.h"
+#include "config.h"
 
 // Clone-related functions
 extern Word ML_(start_thread_NORETURN) ( void* arg );
@@ -98,7 +99,7 @@ DECL_TEMPLATE(freebsd, sys_ntp_adjtime)
 DECL_TEMPLATE(freebsd, sys_setegid)
 DECL_TEMPLATE(freebsd, sys_seteuid)
 DECL_TEMPLATE(freebsd, sys_stat)
-DECL_TEMPLATE(freebsd, sys_fstat)
+DECL_TEMPLATE(freebsd, sys_freebsd11_fstat)
 DECL_TEMPLATE(freebsd, sys_lstat)
 DECL_TEMPLATE(freebsd, sys_pathconf)
 DECL_TEMPLATE(freebsd, sys_fpathconf)
@@ -295,8 +296,13 @@ DECL_TEMPLATE(freebsd, sys_cap_ioctls_limit)
 DECL_TEMPLATE(freebsd, sys_cap_fcntls_limit)
 DECL_TEMPLATE(freebsd, sys_accept4)
 DECL_TEMPLATE(freebsd, sys_pipe2)
-// FreeBSD 12 fstat is here
+
+#if (FREEBSD_VERS >= FREEBSD_12)
+
+DECL_TEMPLATE(freebsd, sys_fstat)
 DECL_TEMPLATE(freebsd, sys_getrandom)
+
+#endif
 
 #endif   // PRIV_SYSWRAP_FREEBSD_H
 

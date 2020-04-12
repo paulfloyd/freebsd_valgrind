@@ -479,11 +479,7 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
 #  elif defined(VGO_freebsd)
    {
       struct vki_freebsd11_stat buf;
-# if (FREEBSD_VERS >= FREEBSD_12)
       res = VG_(do_syscall2)(__NR_freebsd11_stat, (UWord)file_name, (UWord)&buf);
-#     else
-      res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
-#    endif
       if (!sr_isError(res))
          TRANSLATE_TO_vg_stat(vgbuf, &buf);
       return res;
@@ -553,13 +549,8 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
    }
 #  elif defined(VGO_freebsd)
    {
-#    if (FREEBSD_VERS >= FREEBSD_12)
      struct vki_freebsd11_stat buf;
      res = VG_(do_syscall2)(__NR_freebsd11_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
-#    else
-       struct vki_stat buf;
-       res = VG_(do_syscall2)(__NR_fstat, (RegWord)fd, (RegWord)(Addr)&buf);
-#    endif
      if (!sr_isError(res)) {
         TRANSLATE_TO_vg_stat(vgbuf, &buf);
      }

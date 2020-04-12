@@ -357,7 +357,7 @@ SysRes ML_(do_fork) ( ThreadId tid )
 
 
 /* ---------------------------------------------------------------------
-   PRE/POST wrappers for arch-generic, Linux-specific syscalls
+   PRE/POST wrappers for arch-generic, FreeBSD-specific syscalls
    ------------------------------------------------------------------ */
 
 // Nb: See the comment above the generic PRE/POST wrappers in
@@ -843,19 +843,16 @@ POST(sys_stat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
-PRE(sys_fstat)
+PRE(sys_freebsd11_fstat)
 {
-   PRINT("sys_fstat ( %lu, %#lx )",ARG1,ARG2);
+   PRINT("sys_freebsd11_fstat ( %ld, %#lx )",SARG1,ARG2);
    PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
-   // @todo PJF this needs adapting for FreeBSD 11 and earlier
-   // @todo PJF also is this correct for x86?
-   PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_stat) );
+   PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
-POST(sys_fstat)
+POST(sys_freebsd11_fstat)
 {
-   // @todo PJF this needs adapting for FreeBSD 11 and earlier
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
 PRE(sys_pathconf)
@@ -4098,6 +4095,21 @@ PRE(sys_cap_fcntls_limit)
                  int, fd, vki_uint32_t, fcntlrights);
 }
 
+#if (FREEBSD_VERS >= FREEBSD_12)
+
+PRE(sys_fstat)
+{
+   PRINT("sys_fstat ( %lu, %#lx )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
+   PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_stat) );
+}
+
+POST(sys_fstat)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
+}
+
+
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
 {
@@ -4111,6 +4123,8 @@ POST(sys_getrandom)
 {
    POST_MEM_WRITE( ARG1, ARG2 );
 }
+
+#endif
 
 #undef PRE
 #undef POST
@@ -4352,11 +4366,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl lfs_segwait						   187
 
  #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_stat,			sys_stat),			// 188
-   BSDXY(__NR_freebsd11_fstat,			sys_fstat),			// 189
-   BSDXY(__NR_freebsd11_lstat,			sys_lstat),			// 190
+   BSDXY(__NR_freebsd11_stat,	sys_stat),			// 188
+   BSDXY(__NR_freebsd11_fstat,	sys_fstat),			// 189
+   BSDXY(__NR_freebsd11_lstat,	sys_lstat),			// 190
  #else
-   BSDXY(__NR_stat,			sys_stat),			// 188
+   BSDXY(__NR_stat,             sys_stat),			// 188
    BSDXY(__NR_fstat,			sys_fstat),			// 189
    BSDXY(__NR_lstat,			sys_lstat),			// 190
  #endif
@@ -4615,16 +4629,17 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_uuidgen,			sys_uuidgen),			// 392
    BSDXY(__NR_sendfile,			sys_sendfile),			// 393
    // mac_syscall							   394
-   BSDXY(__NR_getfsstat,		sys_getfsstat),			// 395
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-    BSDXY(__NR_freebsd11_statfs6,			sys_statfs6),			// 396
-    BSDXY(__NR_freebsd11_fstatfs6,			sys_fstatfs6),			// 397
-    BSDXY(__NR_freebsd11_fhstatfs6,		sys_fhstatfs6),			// 398
+   BSDXY(__NR_freebsd11_getfsstat,		sys_getfsstat),			// 395
+   BSDXY(__NR_freebsd11_statfs6,			sys_statfs6),			// 396
+   BSDXY(__NR_freebsd11_fstatfs6,			sys_fstatfs6),			// 397
+   BSDXY(__NR_freebsd11_fhstatfs6,		sys_fhstatfs6),			// 398
 #else
-    BSDXY(__NR_statfs6,			sys_statfs6),			// 396
-    BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
-    BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
+   BSDXY(__NR_getfsstat,		sys_getfsstat),			// 395
+   BSDXY(__NR_statfs6,			sys_statfs6),			// 396
+   BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
+   BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
 #endif
 
    // nosys								   399
@@ -4775,7 +4790,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // pdfork                                   518
     // pdkill                                   519
     // pdgetpid                                 520
-    BSDXY(__NR_pselect, sys_pselect),               // 522
+    BSDXY(__NR_pselect, sys_pselect),                   // 522
     // getloginclass                            523
     // setloginclass                            524
     // rctl_get_racct                           525
@@ -4783,8 +4798,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // rctl_get_limits                          527
     // rctl_add_rule                            528
     // rctl_remove_rule                         529
-    BSDX_(__NR_posix_fallocate, sys_posix_fallocate), // 530
-    BSDX_(__NR_posix_fadvise,   sys_posix_fadvise), // 531
+    BSDX_(__NR_posix_fallocate, sys_posix_fallocate),   // 530
+    BSDX_(__NR_posix_fadvise,   sys_posix_fadvise),     // 531
     // wait6                                    532
     BSDXY(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
     BSDXY(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
@@ -4794,13 +4809,19 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // bindat                                   538
     // connectat                                539
     // chflagsat                                540
-   BSDXY(__NR_accept4,           sys_accept4),          //541
-   BSDXY(__NR_pipe2,			sys_pipe2),			    // 542
+   BSDXY(__NR_accept4,          sys_accept4),          //541
+   BSDXY(__NR_pipe2,			sys_pipe2),     	    // 542
     // aio_mlock                            	543
     // procctl                                  544
+
+    // @todo PJF 544 is the highest syscall on FreeBSD 9
+
     // ppoll                                    545
     // futimens                                 546
     // utimensat                                547
+
+    // @todo PJF 547 is the highest syscall on FreeBSD 10
+
     /* 548 is obsolete numa_getaffinity */
     /* 549 is obsolete numa_setaffinity */
     // fdatasync                                550

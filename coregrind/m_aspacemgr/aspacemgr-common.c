@@ -336,7 +336,7 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
                            /*OUT*/ULong* dev, 
                            /*OUT*/ULong* ino, /*OUT*/UInt* mode )
 {
-#  if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_darwin)
    SysRes          res;
 #  if defined(VGO_linux)
    /* First try with statx. */
@@ -350,7 +350,8 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
       *mode = (UInt)bufx.stx_mode;
       return True;
    }
-#  endif
+#  endif // VGO_linux only
+
 #  if defined(VGO_linux) && defined(__NR_fstat64)
    /* fstat64 is second candidate as it can cope with minor and major device
       numbers outside the 0-255 range and it works properly for x86
@@ -363,25 +364,18 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
       *mode = (UInt) buf64.st_mode;
       return True;
    }
-#  endif
+#  endif // VGO_linux and defined __NR_fstat64
 
-   // @todo PJF this is a horrible mess
-
-#  if defined(__NR_fstat) || defined(__NR_freebsd11_fstat)
-#    if defined(VGP_x86_freebsd) && (FREEBSD_VERS >= FREEBSD_12)
-   struct vki_freebsd11_stat buf;
-   res = VG_(do_syscall2)(__NR_freebsd11_fstat, fd, (UWord)&buf);
-#    else
+#  if defined(__NR_fstat)
    struct vki_stat buf;
    res = VG_(do_syscall2)(__NR_fstat, fd, (UWord)&buf);
-#    endif
    if (!sr_isError(res)) {
       *dev  = (ULong)buf.st_dev;
       *ino  = (ULong)buf.st_ino;
       *mode = (UInt) buf.st_mode;
       return True;
    }
-#  endif
+#  endif // defined __NR_fstat
    return False;
 #  elif defined(VGO_solaris)
 #  if defined(VGP_x86_solaris)
@@ -397,6 +391,16 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
       *dev  = (ULong)buf64.st_dev;
       *ino  = (ULong)buf64.st_ino;
       *mode = (UInt) buf64.st_mode;
+      return True;
+   }
+   return False;
+#  elif defined(VGO_freebsd)
+   struct vki_freebsd11_stat buf;
+   SysRes res = VG_(do_syscall2)(__NR_freebsd11_fstat, fd, (UWord)&buf);
+   if (!sr_isError(res)) {
+      *dev  = (ULong)buf.st_dev;
+      *ino  = (ULong)buf.st_ino;
+      *mode = (UInt) buf.st_mode;
       return True;
    }
    return False;
