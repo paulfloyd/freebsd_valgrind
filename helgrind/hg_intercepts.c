@@ -1560,7 +1560,7 @@ static int pthread_cond_init_WRK(pthread_cond_t* cond, pthread_condattr_t *cond_
      return pthread_cond_init_WRK(cond, cond_attr);
    }
 #elif defined(VGO_freebsd)
-   PTH_FUNC(int, pthreadZucondZuinitZAZa, // pthread_cond_init@*
+   PTH_FUNC(int, pthreadZucondZuinit, // pthread_cond_init@*
 	    pthread_cond_t* cond, pthread_condattr_t* cond_attr) {
      return pthread_cond_init_WRK(cond, cond_attr);
    }
@@ -1610,6 +1610,7 @@ PTH_FUNC(int, condZuinit, // cond_init
 // glibc:   pthread_cond_destroy@@GLIBC_2.3.2
 // glibc:   pthread_cond_destroy@GLIBC_2.2.5
 // glibc:   pthread_cond_destroy@GLIBC_2.0
+// FreeBSD: pthread_cond_destroy
 // darwin:  pthread_cond_destroy
 // Solaris: cond_destroy (pthread_cond_destroy is a weak alias)
 //
@@ -1655,7 +1656,7 @@ static int pthread_cond_destroy_WRK(pthread_cond_t* cond)
       return pthread_cond_destroy_WRK(cond);
    }
 #elif defined(VGO_freebsd)
-   PTH_FUNC(int, pthreadZucondZudestroy, // pthread_cond_destroy
+   PTH_FUNC(int, pthreadZucondZudestroy, // pthread_cond_destroy@*
                  pthread_cond_t* cond) {
       return pthread_cond_destroy_WRK(cond);
    }
@@ -1870,7 +1871,7 @@ static int pthread_spin_init_or_unlock_WRK(pthread_spinlock_t* lock,
             pthread_spinlock_t* lock, int pshared) {
       return pthread_spin_init_or_unlock_WRK(lock, pshared);
    }
-   PTH_FUNC(int, pthreadZuspinZuunlockZAZa, // pthread_spin_unlock@*
+   PTH_FUNC(int, pthreadZuspinZuunlock, // pthread_spin_unlock@*
             pthread_spinlock_t* lock) {
       /* this is never actually called */
       return pthread_spin_init_or_unlock_WRK(lock, 0/*pshared*/);

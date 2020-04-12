@@ -87,8 +87,8 @@ extern void VG_(do_atfork_child)  ( ThreadId tid );
 
 #if defined(VGO_freebsd)
 // sysctl, modfind
-extern Int VG_(sysctl)(Int *oid, UInt oidlen, void *oldp, SizeT *oldlenp, void *newp, SizeT newlen);
-extern Int VG_(sysctlbyname)(const Char *name, void *oldp, vki_size_t *oldlenp, void *newp, vki_size_t newlen);
+extern Int VG_(sysctl)(Int *name, UInt namedlen, void *oldp, SizeT *oldlenp, void *newp, SizeT newlen);
+extern Int VG_(sysctlbyname)(const HChar *name, void *oldp, SizeT *oldlenp, void *newp, SizeT newlen);
 extern Int VG_(getosreldate)(void);
 extern Bool VG_(is32on64)(void);
 #endif

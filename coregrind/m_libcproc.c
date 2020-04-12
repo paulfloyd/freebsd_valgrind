@@ -41,6 +41,7 @@
 #include "pub_core_syscall.h"
 #include "pub_core_xarray.h"
 #include "pub_core_clientstate.h"
+#include "pub_core_debuglog.h"   // VG_(debugLog)
 
 #if defined(VGO_darwin)
 /* --- !!! --- EXTERNAL HEADERS start --- !!! --- */
@@ -1121,17 +1122,17 @@ void VG_(do_atfork_child)(ThreadId tid)
    ------------------------------------------------------------------ */
 
 #if defined(VGO_freebsd)
-Int VG_(sysctlbyname)(const Char *name, void *oldp, vki_size_t *oldlenp, void *newp, vki_size_t newlen)
+Int VG_(sysctlbyname)(const HChar *name, void *oldp, SizeT *oldlenp, void *newp, SizeT newlen)
 {
    Int oid[2];
    Int real_oid[10];
-   vki_size_t oidlen;
+   SizeT oidlen;
    int error;
 
    oid[0] = 0;		/* magic */
    oid[1] = 3;		/* undocumented */
    oidlen = sizeof(real_oid);
-   error = VG_(sysctl)(oid, 2, real_oid, &oidlen, (void *)name, VG_(strlen)((const HChar*)name));
+   error = VG_(sysctl)(oid, 2, real_oid, &oidlen, (void *)name, VG_(strlen)(name));
    if (error < 0)
       return error;
    oidlen /= sizeof(int);
@@ -1142,11 +1143,11 @@ Int VG_(sysctlbyname)(const Char *name, void *oldp, vki_size_t *oldlenp, void *n
 Int VG_(getosreldate)(void)
 {
    static Int osreldate = 0;
-   vki_size_t osreldatel;
+   SizeT osreldatel;
 
    if (osreldate == 0) {
       osreldatel = sizeof(osreldate);
-      VG_(sysctlbyname)((const Char*)"kern.osreldate", &osreldate, &osreldatel, 0, 0);
+      VG_(sysctlbyname)("kern.osreldate", &osreldate, &osreldatel, 0, 0);
    }
    return (osreldate);
 }
@@ -1164,7 +1165,7 @@ Bool VG_(is32on64)(void)
       VG_(debugLog)(1, "check-os-bitness", "i386 executable on amd64 kernel\n");
       return True;
    } else {
-      VG_(debugLog)(1, "check-os-bitness", "i386 executable on is86 kernel\n");
+      VG_(debugLog)(1, "check-os-bitness", "i386 executable on i386 kernel\n");
       return False;
    }
 #else
