@@ -2508,6 +2508,8 @@ PRE(sys_ni_syscall)
    SET_STATUS_Failure( VKI_ENOSYS );
 }
 
+// @todo PJF clean out all of these VGO_freebsd conditionals
+// question: are there conflicts or are these just not used?
 #if !defined(VGO_freebsd)
 PRE(sys_iopl)
 {
@@ -4241,9 +4243,8 @@ PRE(sys_poll)
 
 POST(sys_poll)
 {
-    // @todo PJF this can't be false
-    // either > 0 or == 0
-   if (RES >= 0) {
+   // RES is UWord so always >= 0
+   if (SUCCESS && RES >= 0) {
       UInt i;
       struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;
       for (i = 0; i < ARG2; i++)

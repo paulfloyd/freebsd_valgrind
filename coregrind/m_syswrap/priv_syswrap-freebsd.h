@@ -301,6 +301,7 @@ DECL_TEMPLATE(freebsd, sys_cap_ioctls_limit)
 DECL_TEMPLATE(freebsd, sys_cap_fcntls_limit)
 DECL_TEMPLATE(freebsd, sys_accept4)
 DECL_TEMPLATE(freebsd, sys_pipe2)
+DECL_TEMPLATE(freebsd, sys_ppoll)
 
 #if (FREEBSD_VERS >= FREEBSD_12)
 

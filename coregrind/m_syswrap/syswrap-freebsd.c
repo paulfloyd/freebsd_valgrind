@@ -1973,6 +1973,7 @@ PRE(sys_pipe2)
    PRE_MEM_WRITE("pipe2(fildes)", ARG1, 2 * sizeof(int));
 
 }
+
 POST(sys_pipe2)
 {
    int *fildes;
@@ -1993,6 +1994,68 @@ POST(sys_pipe2)
       ML_(record_fd_open_nameless)(tid, fildes[1]);
    }
 }
+
+// int ppoll(struct pollfd fds[], nfds_t nfds,
+//           const struct timespec * restrict timeout,
+//           const sigset_t * restrict newsigmask);
+PRE(sys_ppoll)
+{
+   PRINT("sys_ppoll ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD
+         "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )\n",
+         ARG1, ARG2, ARG3, ARG4, ARG5);
+   UInt i;
+   struct vki_pollfd* fds = (struct vki_pollfd *)(Addr)ARG1;
+   *flags |= SfMayBlock | SfPostOnFail;
+   PRINT("sys_ppoll ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD
+         "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )\n",
+         ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRE_REG_READ5(long, "ppoll",
+                 struct vki_pollfd *, fds, unsigned int, nfds,
+                 struct vki_timespec *, timeout, vki_sigset_t *, newsigmask,
+                 vki_size_t, sigsetsize);
+
+   for (i = 0; i < ARG2; i++) {
+      PRE_MEM_READ( "ppoll(fds.fd)",
+                    (Addr)(&fds[i].fd), sizeof(fds[i].fd) );
+      PRE_MEM_READ( "ppoll(fds.events)",
+                    (Addr)(&fds[i].events), sizeof(fds[i].events) );
+      PRE_MEM_WRITE( "ppoll(fds.revents)",
+                     (Addr)(&fds[i].revents), sizeof(fds[i].revents) );
+   }
+
+   if (ARG3) {
+         PRE_MEM_READ( "ppoll(tsp)", ARG3,
+                       sizeof(struct vki_timespec) );
+   }
+   if (ARG4 != 0 && sizeof(vki_sigset_t) == ARG5) {
+      const vki_sigset_t *guest_sigmask = (vki_sigset_t *)(Addr)ARG4;
+      PRE_MEM_READ( "ppoll(sigmask)", ARG4, ARG5);
+      if (!ML_(safe_to_deref)(guest_sigmask, sizeof(*guest_sigmask))) {
+         ARG4 = 1; /* Something recognisable to POST() hook. */
+      } else {
+         vki_sigset_t *vg_sigmask =
+             VG_(malloc)("syswrap.ppoll.1", sizeof(*vg_sigmask));
+         ARG4 = (Addr)vg_sigmask;
+         *vg_sigmask = *guest_sigmask;
+         VG_(sanitize_client_sigmask)(vg_sigmask);
+      }
+   }
+}
+
+POST(sys_ppoll)
+{
+    if (SUCCESS && (RES >= 0)) {
+       UInt i;
+       struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;
+       for (i = 0; i < ARG2; i++)
+      POST_MEM_WRITE( (Addr)(&ufds[i].revents), sizeof(ufds[i].revents) );
+    }
+    if (ARG4 != 0 && ARG5 == sizeof(vki_sigset_t) && ARG4 != 1) {
+       VG_(free)((vki_sigset_t *) (Addr)ARG4);
+    }
+}
+
+
 
 PRE(sys_accept4)
 {
@@ -4381,7 +4444,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_pwrite6,			sys_pwrite),			// 174
    // nosys								   175
 
-// BSDXY(__NR_ntp_adjtime,		sys_ntp_adjtime),		// 176
+   // BSDXY(__NR_ntp_adjtime,		sys_ntp_adjtime),		// 176
    // bsd/os sfork							   177
    // bsd/os getdescriptor						   178
    // bsd/os setdescriptor						   179
@@ -4428,7 +4491,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENX_(__NR_getpgid,			sys_getpgid),			// 207
 
    // netbsd newreboot							   208
-   GENXY(__NR_poll,			sys_poll),			// 209
+   GENXY(__NR_poll,             sys_poll),			// 209
    BSDX_(__NR_lkmnosys0,		sys_lkmnosys0),			// 210
    BSDX_(__NR_lkmnosys1,		sys_lkmnosys1),			// 211
 
@@ -4847,7 +4910,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
     // @todo PJF 544 is the highest syscall on FreeBSD 9
 
-    // ppoll                                    545
+   BSDXY(__NR_ppoll,            sys_ppoll),             // 545
     // futimens                                 546
     // utimensat                                547
 
