@@ -52,6 +52,10 @@
 #include "pub_core_signals.h"
 #include "pub_core_syscall.h"
 #include "pub_core_syswrap.h"
+#include "pub_core_inner.h"
+#if defined(ENABLE_INNER_CLIENT_REQUEST)
+#include "pub_core_clreq.h"
+#endif
 
 #include "priv_types_n_macros.h"
 #include "priv_syswrap-generic.h"
@@ -120,6 +124,9 @@ static void run_a_thread_NORETURN ( Word tidW )
    VgSchedReturnCode src;
    Int               c;
    ThreadState*      tst;
+#ifdef ENABLE_INNER_CLIENT_REQUEST
+   Int               registered_vgstack_id;
+#endif
 
    VG_(debugLog)(1, "syswrap-freebsd", 
                     "run_a_thread_NORETURN(tid=%llu): pre-thread_wrapper\n",
@@ -128,6 +135,19 @@ static void run_a_thread_NORETURN ( Word tidW )
    tst = VG_(get_ThreadState)(tid);
    vg_assert(tst);
 
+   /* An thread has two stacks:
+      * the simulated stack (used by the synthetic cpu. Guest process
+        is using this stack).
+      * the valgrind stack (used by the real cpu. Valgrind code is running
+        on this stack).
+      When Valgrind runs as an inner, it must signals that its (real) stack
+      is the stack to use by the outer to e.g. do stacktraces.
+   */
+   INNER_REQUEST
+      (registered_vgstack_id 
+       = VALGRIND_STACK_REGISTER (tst->os_state.valgrind_stack_base,
+                                  tst->os_state.valgrind_stack_init_SP));
+   
    /* Run the thread all the way through. */
    src = thread_wrapper(tid);  
 
@@ -186,6 +206,10 @@ static void run_a_thread_NORETURN ( Word tidW )
       /* This releases the run lock */
       VG_(exit_thread)(tid);
       vg_assert(tst->status == VgTs_Zombie);
+      vg_assert(sizeof(tst->status) == 4);
+      vg_assert(sizeof(tst->os_state.exitcode) == sizeof(Word));
+
+      INNER_REQUEST (VALGRIND_STACK_DEREGISTER (registered_vgstack_id));
 
       /* We have to use this sequence to terminate the thread to
          prevent a subtle race.  If VG_(exit_thread)() had left the
@@ -293,6 +317,18 @@ void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
                     "entering VG_(main_thread_wrapper_NORETURN)\n");
 
    sp = ML_(allocstack)(tid);
+#if defined(ENABLE_INNER_CLIENT_REQUEST)
+   {
+      // we must register the main thread stack before the call
+      // to ML_(call_on_new_stack_0_1), otherwise the outer valgrind
+      // reports 'write error' on the non registered stack.
+      ThreadState* tst = VG_(get_ThreadState)(tid);
+      INNER_REQUEST
+         ((void) 
+          VALGRIND_STACK_REGISTER (tst->os_state.valgrind_stack_base,
+                                   tst->os_state.valgrind_stack_init_SP));
+   }
+#endif
 
    /* If we can't even allocate the first thread's stack, we're hosed.
       Give up. */
