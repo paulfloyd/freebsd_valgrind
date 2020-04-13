@@ -116,6 +116,8 @@ static const char *select_platform(const char *clientname)
    ssize_t n_bytes;
    const char *platform = NULL;
 
+   VG_(debugLog)(2, "launcher", "selecting platform for '%s'\n", clientname);
+
    if (strchr(clientname, '/') == NULL)
       clientname = find_client(clientname);
 
@@ -174,6 +176,9 @@ static const char *select_platform(const char *clientname)
          }
       }
    }
+
+   VG_(debugLog)(2, "launcher", "selected platform '%s'\n",
+                 platform ? platform : "unknown");
 
    return platform;
 }
