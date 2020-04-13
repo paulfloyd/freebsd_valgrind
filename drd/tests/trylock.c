@@ -55,14 +55,11 @@ int main(int argc, char** argv)
   r = pthread_rwlock_timedrdlock(&rwlock, &abs_timeout); assert(r == 0);
   r = pthread_rwlock_unlock(&rwlock); assert(r == 0);
 #endif
-#if !defined(VGO_freebsd)
-  /* this hangs on FreeBSD */
   fprintf(stderr, "Attempt to lock for writing recursively (not allowed).\n");
   r = pthread_rwlock_wrlock(&rwlock); assert(r == 0);
   r = pthread_rwlock_trywrlock(&rwlock); assert(r == EBUSY);
   r = pthread_rwlock_unlock(&rwlock); assert(r == 0);
   r = pthread_rwlock_destroy(&rwlock); assert(r == 0);
-#endif
 
   r = pthread_mutex_init(&mutex, NULL); assert(r == 0);
   fprintf(stderr, "Locking mutex via pthread_mutex_trylock().\n");
