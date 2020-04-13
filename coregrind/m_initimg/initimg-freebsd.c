@@ -1,6 +1,6 @@
 
 /*--------------------------------------------------------------------*/
-/*--- Startup: create initial process image on Linux               ---*/
+/*--- Startup: create initial process image on FreeBSD             ---*/
 /*---                                            initimg-freebsd.c ---*/
 /*--------------------------------------------------------------------*/
 
