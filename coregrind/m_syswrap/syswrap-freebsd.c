@@ -4053,8 +4053,22 @@ POST(sys_pselect)
 
 PRE(sys_cap_enter)
 {
-   PRINT("cap_enter ( )");
+   PRINT("sys_cap_enter ( )");
    PRE_REG_READ0(long, "cap_enter");
+}
+
+// pid_t pdfork(int *fdp, int flags);
+PRE(sys_pdfork)
+{
+   PRINT("sys_pdfork ( %ld, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRE_REG_READ2(long, "pdfork", int*, ARG1, int, ARG2);
+
+   SET_STATUS_from_SysRes( ML_(do_fork)(tid) );
+   if (SUCCESS) {
+      /* Thread creation was successful; let the child have the chance
+         to run */
+      *flags |= SfYieldAfter;
+   }
 }
 
 #define VKI_CAP_RIGHTS_VERSION_00   0
@@ -4804,7 +4818,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // __cap_rights_get                         515
     BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
     // cap_getmode                              517
-    // pdfork                                   518
+    BSDX_(__NR_pdfork,       sys_pdfork),         // 518
     // pdkill                                   519
     // pdgetpid                                 520
     BSDXY(__NR_pselect, sys_pselect),                   // 522

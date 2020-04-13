@@ -293,6 +293,7 @@ DECL_TEMPLATE(freebsd, sys_jail_remove);
 DECL_TEMPLATE(freebsd, sys___semctl)
 DECL_TEMPLATE(freebsd, sys_shmctl)
 DECL_TEMPLATE(freebsd, sys_cap_enter)
+DECL_TEMPLATE(freebsd, sys_pdfork)
 DECL_TEMPLATE(freebsd, sys_posix_fallocate)
 DECL_TEMPLATE(freebsd, sys_posix_fadvise)
 DECL_TEMPLATE(freebsd, sys_cap_rights_limit)
