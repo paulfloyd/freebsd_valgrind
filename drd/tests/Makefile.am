@@ -357,7 +357,6 @@ EXTRA_DIST =                                        \
 	tls_threads.stderr.exp			    \
 	tls_threads.vgtest			    \
 	trylock.stderr.exp                          \
-	trylock.stderr.exp.freebsd                  \
 	trylock.vgtest				    \
 	unit_bitmap.stderr.exp                      \
 	unit_bitmap.vgtest                          \

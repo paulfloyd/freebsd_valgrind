@@ -1,0 +1,19 @@
+
+
+FILE DESCRIPTORS: 5 open at exit.
+Open file descriptor ...: /tmp/file
+   ...
+
+Open file descriptor ...: ...
+   <inherited from parent>
+
+Open file descriptor ...: ...
+   <inherited from parent>
+
+Open file descriptor ...: ...
+   <inherited from parent>
+
+Open file descriptor ...: /dev/null
+   <inherited from parent>
+
+
