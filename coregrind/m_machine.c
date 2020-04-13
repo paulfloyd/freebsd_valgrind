@@ -910,7 +910,7 @@ Bool VG_(machine_get_hwcaps)( void )
 #if defined(VGP_x86_freebsd)
      if (have_sse1 || have_sse2) {
 	Int sc, error;
-	vki_size_t scl;
+	SizeT scl;
 	/* Regardless of whether cpuid says, the OS has to enable SSE first! */
 	scl = sizeof(sc);
 	error = VG_(sysctlbyname)("hw.instruction_sse", &sc, &scl, 0, 0);
