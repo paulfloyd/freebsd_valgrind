@@ -1171,18 +1171,26 @@ extern unsigned int __vki_invalid_size_argument_for_IOC;
 #define	VKI_TIOCSETAW	_VKI_IOR('t', 21, struct vki_termios)	/* drain,set */
 #define	VKI_TIOCSETAF	_VKI_IOR('t', 22, struct vki_termios)	/* flush,set */
 
-#define	VKI_TIOCSBRK	_VKI_IO('t', 123)
-#define	VKI_TIOCCBRK	_VKI_IO('t', 122)
-#define	VKI_TIOCGPGRP	_VKI_IOR('t', 119, int)		/* get pgrp */
-#define	VKI_TIOCSPGRP	_VKI_IOW('t', 118, int)		/* set pgrp */
+#define	_VKI_TIOCPTMASTER	 _VKI_IO('t', 28)		/* pts master validation */
 
-#define VKI_TIOCGWINSZ	_VKI_IOR('t', 104, struct vki_winsize)  /* get window size */
 #define VKI_TIOCSWINSZ	_VKI_IOW('t', 103, struct vki_winsize)  /* set window size */
+#define VKI_TIOCGWINSZ	_VKI_IOR('t', 104, struct vki_winsize)  /* get window size */
 
 #define VKI_TIOCMGET	_VKI_IOR('t', 106, int)	/* get all modem bits */
-#define VKI_TIOCMBIS	_VKI_IOW('t', 108, int)	/* bis modem bits */
 #define VKI_TIOCMBIC	_VKI_IOW('t', 107, int)	/* bic modem bits */
+#define VKI_TIOCMBIS	_VKI_IOW('t', 108, int)	/* bis modem bits */
 #define VKI_TIOCMSET	_VKI_IOW('t', 109, int)	/* set all modem bits */
+#define	VKI_TIOCSTART	_VKI_IO('t', 110)		/* start output, like ^Q */
+#define	VKI_TIOCSTOP	_VKI_IO('t', 111)		/* stop output, like ^S */
+#define	VKI_TIOCPKT		_VKI_IOW('t', 112, int)	/* pty: set/clear packet mode */
+
+#define	VKI_TIOCSPGRP	_VKI_IOW('t', 118, int)		/* set pgrp */
+#define	VKI_TIOCGPGRP	_VKI_IOR('t', 119, int)		/* get pgrp */
+#define	VKI_TIOCCBRK	_VKI_IO('t', 122)
+#define	VKI_TIOCSBRK	_VKI_IO('t', 123)
+
+
+
 
 
 //----------------------------------------------------------------------
@@ -1298,7 +1306,7 @@ struct vki_elf_prpsinfo
 {
 	int	pr_version;	/* version of struct - PRPSINFO_VERSION */
 	vki_size_t	pr_psinfosz;
-	char	pr_fname[VKI_MAXCOMLEN+1];		/* filename of executable */
+    char	pr_fname[VKI_MAXCOMLEN+1];		/* filename of executable */
 	char	pr_psargs[VKI_ELF_PRARGSZ];	/* initial part of arg list */
 };
 
