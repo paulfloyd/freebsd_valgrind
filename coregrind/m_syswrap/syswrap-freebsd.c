@@ -1064,7 +1064,7 @@ PRE(sys___sysctl)
    // is oldlenp is not NULL, can write
    if (ARG4 != (UWord)NULL) {
 
-       // @todo PJF I don't know what to do with oldlenp, it it inout
+       // @todo PJF I don't know what to do with oldlenp, ir is inout
 
        //PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       if (ARG3 != (UWord)NULL) {
@@ -1283,12 +1283,30 @@ POST(sys_getfsstat4)
    }
 }
 
+#if (FREEBSD_VERS >= FREEBSD_12)
+PRE(sys_freebsd11_getfsstat)
+{
+   PRINT("sys_freebsd11_getfsstat ( %#lx, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
+   PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
+}
+
+POST(sys_freebsd11_getfsstat)
+{
+   vg_assert(SUCCESS);
+   if (RES > 0) {
+      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs) );
+   }
+}
+#endif
+
 PRE(sys_getfsstat)
 {
    PRINT("sys_getfsstat ( %#lx, %lu, %lu )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
    PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
 }
+
 POST(sys_getfsstat)
 {
    vg_assert(SUCCESS);
@@ -4761,7 +4779,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // mac_syscall							   394
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_getfsstat,		sys_getfsstat),			// 395
+   BSDXY(__NR_freebsd11_getfsstat,		sys_freebsd11_getfsstat),			// 395
    BSDXY(__NR_freebsd11_statfs6,			sys_statfs6),			// 396
    BSDXY(__NR_freebsd11_fstatfs6,			sys_fstatfs6),			// 397
    BSDXY(__NR_freebsd11_fhstatfs6,		sys_fhstatfs6),			// 398
@@ -4963,7 +4981,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // getdirentries                            554
     // statfs                                   555
     // fstatfs                                  556
-    // getfsstat                            	557
+    BSDXY(__NR_getfsstat,       sys_getfsstat),     // 557
     // fhstatfs                                 558
     // mknodat                                  559
     // kevent                                   560

@@ -49,6 +49,9 @@ DECL_TEMPLATE(freebsd, sys_fork)
 // lots are not here ????
 
 DECL_TEMPLATE(freebsd, sys_getfsstat4)
+#if (FREEBSD_VERS >= FREEBSD_12)
+DECL_TEMPLATE(freebsd, sys_freebsd11_getfsstat)
+#endif
 DECL_TEMPLATE(freebsd, sys_getfsstat)
 DECL_TEMPLATE(freebsd, sys_mount)
 DECL_TEMPLATE(freebsd, sys_unmount)

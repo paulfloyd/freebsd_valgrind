@@ -65,6 +65,16 @@ Mostly not analyzed.
 
 addressable - looks like a filtering issue
 
+## Tests in massif
+
+94.6% good
+
+== 37 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 2 post failures ==
+massif/tests/new-cpp                     (post)
+massif/tests/overloaded-new              (post)
+
+The two fails need freebsd specific expected files.
+
 ## Tests in gdbserver_tests
 
 71.4% good
