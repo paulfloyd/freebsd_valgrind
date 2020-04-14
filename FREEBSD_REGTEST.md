@@ -32,11 +32,11 @@ none/tests/sigstackgrowth                (stderr)
 
 Most of these are signal issues.
 
-amd64/sse4-64 - floating point issues
-nocwd and scripts/bug231357 - fail to unlink gdb pipes
-rlimit_nofile - problem with setting errno
-procfs-non-linux - not applicable and needs to be disabled
-ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.
+amd64/sse4-64 - floating point issues  
+nocwd and scripts/bug231357 - fail to unlink gdb pipes  
+rlimit_nofile - problem with setting errno  
+procfs-non-linux - not applicable and needs to be disabled  
+ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.  
 
 ## Tests in memcheck
 
