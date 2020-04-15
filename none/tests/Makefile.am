@@ -209,7 +209,7 @@ EXTRA_DIST = \
 	vgprintf.stderr.exp vgprintf.vgtest \
 	vgprintf_nvalgrind.stderr.exp vgprintf_nvalgrind.vgtest \
 	process_vm_readv_writev.stderr.exp process_vm_readv_writev.vgtest \
-	sigprocmask.stderr.exp sigprocmask.vgtest
+	sigprocmask.stderr.exp sigprocmask.vgtest \
 	fdleak_cmsg.stderr.exp.freebsd fdleak_creat.stderr.exp.freebsd \
 	fdleak_dup.stderr.exp.freebsd fdleak_dup2.stderr.exp.freebsd \
 	fdleak_fcntl.stderr.exp.freebsd fdleak_ipv4.stderr.exp.freebsd \

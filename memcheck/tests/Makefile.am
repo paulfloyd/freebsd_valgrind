@@ -332,7 +332,8 @@ EXTRA_DIST = \
 	wrapmallocstatic.vgtest wrapmallocstatic.stdout.exp \
 	wrapmallocstatic.stderr.exp \
 	writev1.stderr.exp writev1.stderr.exp-solaris writev1.vgtest \
-	xml1.stderr.exp xml1.stdout.exp xml1.vgtest xml1.stderr.exp-s390x-mvc
+	xml1.stderr.exp xml1.stdout.exp xml1.vgtest xml1.stderr.exp-s390x-mvc \
+	leak_cpp_interior.stderr.exp-freebsd
 
 check_PROGRAMS = \
 	accounting \
