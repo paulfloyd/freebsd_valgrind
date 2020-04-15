@@ -379,15 +379,19 @@ struct vki_freebsd11_stat {
  */
 
 struct vki_stat {
-    vki_dev_t     st_dev;
-    vki_ino_t	  st_ino;
-    vki_nlink_t	  st_nlink;
+    //vki_dev_t     st_dev;
+    vki_uint64_t    st_dev;
+    //vki_ino_t	  st_ino;
+    vki_uint64_t    st_ino;
+    //vki_nlink_t	  st_nlink;
+    vki_uint64_t    st_nlink;
     vki_mode_t	  st_mode;
     vki_int16_t st_padding0;
     vki_uid_t	  st_uid;
     vki_gid_t	  st_gid;
     vki_int32_t st_padding1;
-    vki_dev_t     st_rdev;
+    //vki_dev_t     st_rdev;
+    vki_uint64_t    st_rdev;
 #ifdef	VKI_STAT_TIME_T_EXT
     vki_int32_t st_atim_ext;
 #endif
