@@ -4,15 +4,14 @@
 
 ## Tests in none
 
-93.6% good
+94.6% good
 
 
 ```
 
 pselect_alarm hangs. Valgrind says that it is terminating, but the last thread doesn't die.
 
-== 204 tests, 11 stderr failures, 5 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-none/tests/amd64/sse4-64                 (stdout)
+== 204 tests, 11 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/async-sigs                    (stderr)
 none/tests/bug234814                     (stdout)
 none/tests/bug234814                     (stderr)
@@ -40,22 +39,17 @@ ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.
 
 ## Tests in memcheck
 
-93.9% good
+96.1% good
 
 ```
-== 231 tests, 14 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 231 tests, 9 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 memcheck/tests/addressable               (stderr)
 memcheck/tests/descr_belowsp             (stderr)
 memcheck/tests/dw4                       (stderr)
 memcheck/tests/gone_abrt_xml             (stderr)
-memcheck/tests/leak-segv-jmp             (stderr)
-memcheck/tests/leak_cpp_interior         (stderr)
-memcheck/tests/origin5-bz2               (stderr)
 memcheck/tests/reach_thread_register     (stderr)
 memcheck/tests/sigaltstack               (stderr)
-memcheck/tests/sigkill                   (stderr)
 memcheck/tests/supponlyobj               (stderr)
-memcheck/tests/test-plo-no               (stderr)
 memcheck/tests/varinfo5                  (stderr)
 memcheck/tests/x86/pushfpopf             (stderr)
 
@@ -64,16 +58,20 @@ memcheck/tests/x86/pushfpopf             (stderr)
 Mostly not analyzed.
 
 addressable - looks like a filtering issue
+descr_belowsp - SIGSEV handling issue
+d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD
+gone_abrt_xml - differences in signal details
+reach_thread_register - false positive leak
+sigaltstack - SIGSEV handling issue
+supponlyobj - false positive in a static in an inline function
+varinfo5 - diff in source backannotation
+x86/pushfpopf - not finding name of asm function
 
 ## Tests in massif
 
-94.6% good
+100% good
 
-== 37 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 2 post failures ==
-massif/tests/new-cpp                     (post)
-massif/tests/overloaded-new              (post)
-
-The two fails need freebsd specific expected files.
+== 37 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 
 ## Tests in gdbserver_tests
 
