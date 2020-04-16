@@ -57,11 +57,11 @@ memcheck/tests/x86/pushfpopf             (stderr)
 Mostly not analyzed.
 
 addressable - looks like a filtering issue  
-descr_belowsp - SIGSEV handling issue  
+descr_belowsp - SIGSEGV handling issue  
 d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD  
 gone_abrt_xml - differences in signal details  
 reach_thread_register - false positive leak  
-sigaltstack - SIGSEV handling issue  
+sigaltstack - SIGSEGV handling issue  
 supponlyobj - false positive in a static in an inline function  
 varinfo5 - diff in source backannotation  
 x86/pushfpopf - not finding name of asm function  
