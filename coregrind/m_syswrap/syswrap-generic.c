@@ -4444,7 +4444,11 @@ PRE(sys_setrlimit)
    }
    else if (((struct vki_rlimit *)(Addr)ARG2)->rlim_cur
             > ((struct vki_rlimit *)(Addr)ARG2)->rlim_max) {
+#if defined(VGO_freebsd)
+      SET_STATUS_Failure( VKI_EPERM );
+#else
       SET_STATUS_Failure( VKI_EINVAL );
+#endif
    }
    else if (arg1 == VKI_RLIMIT_NOFILE) {
       if (((struct vki_rlimit *)(Addr)ARG2)->rlim_cur > VG_(fd_hard_limit) ||
