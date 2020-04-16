@@ -31,7 +31,6 @@ none/tests/sigstackgrowth                (stderr)
 
 Most of these are signal issues.
 
-amd64/sse4-64 - floating point issues  
 nocwd and scripts/bug231357 - fail to unlink gdb pipes  
 rlimit_nofile - problem with setting errno  
 procfs-non-linux - not applicable and needs to be disabled  
@@ -57,15 +56,15 @@ memcheck/tests/x86/pushfpopf             (stderr)
 
 Mostly not analyzed.
 
-addressable - looks like a filtering issue
-descr_belowsp - SIGSEV handling issue
-d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD
-gone_abrt_xml - differences in signal details
-reach_thread_register - false positive leak
-sigaltstack - SIGSEV handling issue
-supponlyobj - false positive in a static in an inline function
-varinfo5 - diff in source backannotation
-x86/pushfpopf - not finding name of asm function
+addressable - looks like a filtering issue  
+descr_belowsp - SIGSEV handling issue  
+d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD  
+gone_abrt_xml - differences in signal details  
+reach_thread_register - false positive leak  
+sigaltstack - SIGSEV handling issue  
+supponlyobj - false positive in a static in an inline function  
+varinfo5 - diff in source backannotation  
+x86/pushfpopf - not finding name of asm function  
 
 ## Tests in massif
 
