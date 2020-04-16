@@ -4,14 +4,14 @@
 
 ## Tests in none
 
-94.6% good
+95.6% good
 
 
 ```
 
 pselect_alarm hangs. Valgrind says that it is terminating, but the last thread doesn't die.
 
-== 204 tests, 11 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 203 tests, 9 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/async-sigs                    (stderr)
 none/tests/bug234814                     (stdout)
 none/tests/bug234814                     (stderr)
@@ -22,8 +22,6 @@ none/tests/ioctl_moans                   (stderr)
 none/tests/nocwd                         (stderr)
 none/tests/pending                       (stdout)
 none/tests/pending                       (stderr)
-none/tests/procfs-non-linux              (stderr)
-none/tests/rlimit_nofile                 (stderr)
 none/tests/scripts/bug231357             (stderr)
 none/tests/sigstackgrowth                (stdout)
 none/tests/sigstackgrowth                (stderr)
@@ -32,8 +30,6 @@ none/tests/sigstackgrowth                (stderr)
 Most of these are signal issues.
 
 nocwd and scripts/bug231357 - fail to unlink gdb pipes  
-rlimit_nofile - problem with setting errno  
-procfs-non-linux - not applicable and needs to be disabled  
 ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.  
 
 ## Tests in memcheck

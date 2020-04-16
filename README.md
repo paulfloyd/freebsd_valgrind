@@ -47,17 +47,17 @@ To build with clang,
 
 The code should build and execute on FreeBSD 12.1 amd64 generating both amd64 and x86 executables.
 
-The regression suite produces the following results [2020-04-13]
+The regression suite produces the following results [2020-04-16]
 
 ```
-== 711 tests, 141 stderr failures, 7 stdout failures, 2 stderrB failures, 3 stdoutB failures, 2 post failures ==
+== 710 tests, 133 stderr failures, 6 stdout failures, 2 stderrB failures, 3 stdoutB failures, 0 post failures ==
 
 ```
 
 
 ## Bugzilla items
 
-All of the patches in these itrms have been merged.
+All of the patches in these items have been merged.
 
 [Bug 234631](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234631) - devel/valgrind: Fixes for FreeBSD 12.x support  
 Several patches in this item.
