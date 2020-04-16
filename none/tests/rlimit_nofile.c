@@ -91,7 +91,12 @@ int main(int argc, char **argv)
               (unsigned long long)oldrlim.rlim_max);
    }
 
+#if defined(VGO_freebsd)
+   // less than rather than equal to?
+   newrlim.rlim_cur -= 4;
+#else
    newrlim.rlim_cur -= 3; /* allow for stdin, stdout and stderr */
+#endif
 
    while (newrlim.rlim_cur-- > 0)
    {
