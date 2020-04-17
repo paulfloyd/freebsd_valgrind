@@ -3882,7 +3882,7 @@ static void parse_procselfmaps (
     sres = VG_(do_syscall6)(__NR___sysctl, (UWord)oid, 4, (UWord)procmap_buf,
        (UWord)&len, 0, 0);
     if (sr_isError(sres)) {
-       VG_(debugLog)(0, "procselfmaps", "sysctll %lu\n", sr_Err(sres));
+       VG_(debugLog)(0, "procselfmaps", "sysctl %lu\n", sr_Err(sres));
        ML_(am_exit)(1);
     }
     gapStart = Addr_MIN;
