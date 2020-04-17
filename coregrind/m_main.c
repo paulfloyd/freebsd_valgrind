@@ -1338,6 +1338,27 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    }
 
    //--------------------------------------------------------------
+   // FreeBSD check security.bsd.unprivileged_proc_debug sysctl
+   // This needs to be done before aspacemgr starts, otherwise that
+   // will fail with mysterious error codes
+   //--------------------------------------------------------------
+#if defined(VGO_freebsd)
+   Int val;
+   SizeT len = sizeof(val);
+   Int error = VG_(sysctlbyname)("security.bsd.unprivileged_proc_debug", &val, &len, 0, 0);
+   if (error != -1 && val != 1) {
+       VG_(debugLog)(0, "main", "Valgrind: FATAL:\n");
+       VG_(debugLog)(0, "main", "security.bsd.unprivileged_proc_debug sysctl is 0.\n");
+       VG_(debugLog)(0, "main", "   Set this sysctl with\n");
+       VG_(debugLog)(0, "main", "   'sysctl security.bsd.unprivileged_proc_debug=1'.\n");
+       VG_(debugLog)(0, "main", "   Cannot continue.\n");
+
+       VG_(exit)(1);
+   }
+#endif
+
+
+   //--------------------------------------------------------------
    // Start up the address space manager, and determine the
    // approximate location of the client's stack
    //   p: logging, plausible-stack
