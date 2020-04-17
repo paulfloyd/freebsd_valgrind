@@ -90,6 +90,9 @@ static void fill_ehdr(ESZ(Ehdr) *ehdr, Int num_phdrs)
    ehdr->e_ident[EI_CLASS]   = VG_ELF_CLASS;
    ehdr->e_ident[EI_DATA]    = VG_ELF_DATA2XXX;
    ehdr->e_ident[EI_VERSION] = EV_CURRENT;
+#if defined(VGO_freebsd)
+   ehdr->e_ident[EI_OSABI] = ELFOSABI_FREEBSD;
+#endif
 
    ehdr->e_type = ET_CORE;
    ehdr->e_machine = VG_ELF_MACHINE;
@@ -201,8 +204,8 @@ static void fill_prpsinfo(const ThreadState *tst,
 
    prpsinfo->pr_version = VKI_PRPSINFO_VERSION;
    prpsinfo->pr_psinfosz = sizeof(struct vki_elf_prpsinfo);
-
    VG_(client_fname)(prpsinfo->pr_fname, sizeof(prpsinfo->pr_fname), False);
+   // why?
    VG_(strncpy)(prpsinfo->pr_psargs, prpsinfo->pr_fname, sizeof(prpsinfo->pr_psargs) - 1);
 }
 #else

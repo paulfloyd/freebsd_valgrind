@@ -1297,7 +1297,7 @@ struct vki_elf_prstatus
 	vki_size_t	pr_gregsetsz;
 	vki_size_t	pr_fpregsetsz;
 	int		pr_osreldate;
-	short		pr_cursig;	/* Current signal */
+    int		pr_cursig;	/* Current signal */
 	vki_pid_t	pr_pid;
 	vki_elf_gregset_t pr_reg;	/* GP registers */
 };
