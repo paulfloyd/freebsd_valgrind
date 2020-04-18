@@ -4188,6 +4188,27 @@ PRE(sys_pdfork)
    }
 }
 
+// int pdgetpid(int fd, pid_t *pidp);
+PRE(sys_pdgetpid)
+{
+   PRINT("pdgetpid ( %" FMT_REGWORD "d, %#lx )", SARG1, ARG2);
+   PRE_REG_READ2(long, "pdgetpid",
+                 int, fd, pid_t*, pidp);
+   if (ARG2 != 0)
+   {
+       PRE_MEM_WRITE( "pdgetpid(fd, pidp))", ARG2, sizeof(vki_pid_t) );
+   }
+}
+
+POST(sys_pdgetpid)
+{
+   if (ARG2 != 0)
+   {
+      POST_MEM_WRITE( ARG2, sizeof(vki_pid_t) );
+   }
+}
+
+
 #define VKI_CAP_RIGHTS_VERSION_00   0
 #define VKI_CAP_RIGHTS_VERSION VKI_CAP_RIGHTS_VERSION_00
 
@@ -4935,9 +4956,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // __cap_rights_get                         515
     BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
     // cap_getmode                              517
-    BSDX_(__NR_pdfork,       sys_pdfork),         // 518
+    BSDX_(__NR_pdfork,          sys_pdfork),         // 518
     // pdkill                                   519
-    // pdgetpid                                 520
+    BSDXY(__NR_pdgetpid,        sys_pdgetpid),      // 520
     BSDXY(__NR_pselect, sys_pselect),                   // 522
     // getloginclass                            523
     // setloginclass                            524
