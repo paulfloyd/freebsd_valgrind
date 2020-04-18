@@ -123,3 +123,14 @@ Few analyzed, but I see many errors 'detected' in the pthread functions
 ```
 == 6 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 ```
+
+# Linux results
+
+(Debug build)
+
+```
+== 783 tests, 3 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+memcheck/tests/linux/sys-preadv2_pwritev2 (stderr)
+memcheck/tests/origin5-bz2               (stderr)
+memcheck/tests/varinfo5                  (stderr)
+```
