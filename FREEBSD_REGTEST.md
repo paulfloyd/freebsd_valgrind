@@ -95,7 +95,7 @@ mcinfcallWSRU - looks like a filter issue
 I have fixed a few issues (wrong redir signatures for Helgrind, semaphore functions in libc not libthr). But there are still a load of errors.
 
 DRD - 46.1% good
-Helgrind - 23.2% good
+Helgrind - 28.6% good
 
 
 ```
@@ -106,7 +106,7 @@ Helgrind - 23.2% good
 
 -- Finished tests in helgrind/tests ------------------------------------
 
-== 56 tests, 43 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 56 tests, 40 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 
 
 ```
