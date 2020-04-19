@@ -17,6 +17,7 @@ EXTRA_DIST = \
 	cond_init_destroy.vgtest cond_init_destroy.stderr.exp \
 	cond_timedwait_invalid.vgtest cond_timedwait_invalid.stdout.exp \
 		cond_timedwait_invalid.stderr.exp \
+		cond_timedwait_invalid.stderr.exp-freebsd \
 	cond_timedwait_test.vgtest cond_timedwait_test.stdout.exp \
 		cond_timedwait_test.stderr.exp \
 	bar_bad.vgtest bar_bad.stdout.exp bar_bad.stderr.exp \
@@ -60,6 +61,7 @@ EXTRA_DIST = \
 	t2t_laog.vgtest t2t_laog.stdout.exp t2t_laog.stderr.exp \
 	tc01_simple_race.vgtest tc01_simple_race.stdout.exp \
 		tc01_simple_race.stderr.exp \
+		tc01_simple_race.stderr.exp-freebsd \
 	tc02_simple_tls.vgtest tc02_simple_tls.stdout.exp \
 		tc02_simple_tls.stderr.exp \
 	tc03_re_excl.vgtest tc03_re_excl.stdout.exp \
@@ -90,6 +92,7 @@ EXTRA_DIST = \
 		tc15_laog_lockdel.stderr.exp \
 	tc16_byterace.vgtest tc16_byterace.stdout.exp \
 		tc16_byterace.stderr.exp \
+		tc16_byterace.stderr.exp-freebsd \
 	tc17_sembar.vgtest tc17_sembar.stdout.exp \
 		tc17_sembar.stderr.exp \
 	tc18_semabuse.vgtest tc18_semabuse.stdout.exp \
