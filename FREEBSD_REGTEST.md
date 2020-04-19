@@ -4,14 +4,12 @@
 
 ## Tests in none
 
-95.6% good
-
+96.1% good
 
 ```
-
 pselect_alarm hangs. Valgrind says that it is terminating, but the last thread doesn't die.
 
-== 203 tests, 9 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 203 tests, 7 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/async-sigs                    (stderr)
 none/tests/bug234814                     (stdout)
 none/tests/bug234814                     (stderr)
@@ -19,10 +17,8 @@ none/tests/coolo_sigaction               (stdout)
 none/tests/coolo_sigaction               (stderr)
 none/tests/faultstatus                   (stderr)
 none/tests/ioctl_moans                   (stderr)
-none/tests/nocwd                         (stderr)
 none/tests/pending                       (stdout)
 none/tests/pending                       (stderr)
-none/tests/scripts/bug231357             (stderr)
 none/tests/sigstackgrowth                (stdout)
 none/tests/sigstackgrowth                (stderr)
 ```
