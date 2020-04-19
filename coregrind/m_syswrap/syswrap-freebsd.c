@@ -62,6 +62,13 @@
 #include "priv_syswrap-main.h"
 #include "priv_syswrap-freebsd.h"
 
+static Bool capabiltyMode = False;
+
+Bool VG_(getCapabilityMode)(void)
+{
+    return capabiltyMode;
+}
+
 
 // Run a thread from beginning to end and return the thread's
 // scheduler-return-code.
@@ -4172,6 +4179,15 @@ PRE(sys_cap_enter)
 {
    PRINT("sys_cap_enter ( )");
    PRE_REG_READ0(long, "cap_enter");
+   static Bool warning_given = False;
+   if (!warning_given) {
+      warning_given = True;
+      capabiltyMode = True;
+      VG_(umsg)(
+         "WARNING: Valgrind may not operate correctly in capability mode.\n"
+         "         Please consider disabling capability by using the RUNNING_ON_VALGRIND mechanism.\n"
+         "         See http://valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.clientreq\n");
+   }
 }
 
 // pid_t pdfork(int *fdp, int flags);

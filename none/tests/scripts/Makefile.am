@@ -9,6 +9,7 @@ dist_noinst_SCRIPTS = \
 EXTRA_DIST = \
 	say-hello.helper \
 	bug231357.vgtest bug231357.stderr.exp bug231357.stdout.exp \
+	bug231357.stderr.exp-freebsd \
 	bug338606 bug338606.vgtest bug338606.stderr.exp \
 	shell shell.vgtest shell.stderr.exp \
 	shell.stderr.exp-dash shell.stderr.exp-dash2 shell.stderr.exp-dash3 \
