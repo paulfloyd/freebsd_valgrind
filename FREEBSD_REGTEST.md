@@ -44,7 +44,6 @@ memcheck/tests/dw4                       (stderr)
 memcheck/tests/gone_abrt_xml             (stderr)
 memcheck/tests/reach_thread_register     (stderr)
 memcheck/tests/sigaltstack               (stderr)
-memcheck/tests/supponlyobj               (stderr)
 memcheck/tests/varinfo5                  (stderr)
 memcheck/tests/x86/pushfpopf             (stderr)
 
@@ -58,7 +57,6 @@ d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only 
 gone_abrt_xml - differences in signal details  
 reach_thread_register - false positive leak  
 sigaltstack - SIGSEGV handling issue  
-supponlyobj - false positive in a static in an inline function  
 varinfo5 - diff in source backannotation  
 x86/pushfpopf - not finding name of asm function  
 
@@ -123,6 +121,24 @@ Few analyzed, but I see many errors 'detected' in the pthread functions
 ```
 == 6 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 ```
+
+# x86 results
+
+Not so good  
+628 tests, 183 stderr failures, 15 stdout failures, 5 post faulures  
+Memcheck:  
+memcheck/tests/leak-segv-jmp  
+memcheck/tests/leak_cpp_interior  
+memcheck/tests/post-syscall  
+memcheck/tests/sendmsg  
+memcheck/tests/supp_unknown  
+memcheck/tests/test-plo-no  
+
+Massif:  
+Several new fails  
+
+None:  
+Also several new fails  
 
 # Linux results
 
