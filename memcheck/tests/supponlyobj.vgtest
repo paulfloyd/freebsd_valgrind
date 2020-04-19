@@ -1,8 +1,11 @@
-prereq: (! ../../tests/os_test solaris)
+prereq: (! ../../tests/os_test solaris) && (! ../../tests/os_test freebsd)
 # This test is disabled on Solaris because function below main (_start)
 # is part of the inlinfo object whereas on Linux it is part of libc
 # (__libc_start_main).
 # solaris/supponlyobj test exists to check the Solaris variant.
+#
+# Disabled for the same reason on FreeBSD
+# @todo PJF add a FreeBSD variant
 #
 # test suppressions with only obj: markers
 prog: inlinfo
