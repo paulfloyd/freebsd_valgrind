@@ -97,7 +97,7 @@ EXTRA_DIST = \
 	x87trigOOR.vgtest x87trigOOR.stderr.exp x87trigOOR.stdout.exp \
 	xacq_xrel.stderr.exp xacq_xrel.stdout.exp xacq_xrel.vgtest \
 	xadd.stderr.exp xadd.stdout.exp xadd.vgtest \
-	sse4-64.stdout.exp.freebsd
+	sse4-64.stdout.exp.freebsd sse4-64.stdout.exp-freebsd-clang
 
 check_PROGRAMS = \
 	allexec \

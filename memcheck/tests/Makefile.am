@@ -172,6 +172,7 @@ EXTRA_DIST = \
 	leak-autofreepool-4.vgtest leak-autofreepool-4.stderr.exp \
 	leak-autofreepool-5.vgtest leak-autofreepool-5.stderr.exp \
 	leak-autofreepool-6.vgtest leak-autofreepool-6.stderr.exp \
+	leak-autofreepool-5.stderr.exp-clang \
 	leak-tree.vgtest leak-tree.stderr.exp \
 	leak-segv-jmp.vgtest leak-segv-jmp.stderr.exp \
 	lks.vgtest lks.stdout.exp lks.supp lks.stderr.exp \
@@ -306,6 +307,7 @@ EXTRA_DIST = \
 		varinfo2.stderr.exp-ppc64 \
 	varinfo3.vgtest varinfo3.stdout.exp varinfo3.stderr.exp \
 		varinfo3.stderr.exp-ppc64 \
+		varinfo3.stderr.exp-clang \
 	varinfo4.vgtest varinfo4.stdout.exp varinfo4.stderr.exp \
 		varinfo4.stderr.exp-ppc64 \
 	varinfo5.vgtest varinfo5.stdout.exp varinfo5.stderr.exp \

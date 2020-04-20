@@ -1,4 +1,11 @@
 #! /bin/sh
 
+uname_s=`uname -s`
+
+case $uname_s in
+   FreeBSD) sed=gsed ;;
+   *) sed=sed ;;
+esac
+
 ./filter_allocs "$@" |
-sed 's/\(Memcheck: mc_leakcheck.c:\)[0-9]*\(.*impossible.*happened.*\)/\1...\2/'
+$sed 's/\(Memcheck: mc_leakcheck.c:\)[0-9]*\(.*impossible.*happened.*\)/\1...\2/'
