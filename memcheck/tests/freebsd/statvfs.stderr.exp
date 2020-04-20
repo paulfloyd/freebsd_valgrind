@@ -1,0 +1,154 @@
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 64 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 48 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 32 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 16 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 0 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 80 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 0 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 16 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 32 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 40 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 48 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 64 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 24 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:16)
+ Address 0x........ is 80 bytes inside a block of size 88 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:13)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:12)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:19)
+ Address 0x........ is 80 bytes inside a block of size 85 alloc'd
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:18)
+
+Invalid write of size 8
+   at 0x........: statvfs (in /...libc...)
+   by 0x........: main (statvfs.c:19)
+ Address 0x........ is 80 bytes inside a block of size 85 alloc'd
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (statvfs.c:18)
+

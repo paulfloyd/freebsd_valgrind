@@ -36,6 +36,9 @@ endif
 if VGCONF_OS_IS_SOLARIS
 SUBDIRS += solaris
 endif
+if VGCONF_OS_IS_FREEBSD
+SUBDIRS += freebsd
+endif
 
 # Platform-specific tests
 if VGCONF_PLATFORMS_INCLUDE_X86_LINUX
@@ -57,6 +60,7 @@ endif
 DIST_SUBDIRS = x86 amd64 ppc32 ppc64 s390x linux \
 		darwin solaris x86-linux amd64-linux arm64-linux \
 		x86-solaris amd64-solaris mips32 mips64 \
+		freebsd \
 		common .
 
 dist_noinst_SCRIPTS = \

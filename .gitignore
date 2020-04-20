@@ -1316,6 +1316,16 @@
 /memcheck/tests/x86-solaris/ldsoexec
 /memcheck/tests/x86-solaris/scalar
 
+# /memcheck/tests/freebsd/
+/memcheck/tests/freebsd/*.stderr.diff
+/memcheck/tests/freebsd/*.stderr.out
+/memcheck/tests/freebsd/*.stdout.diff
+/memcheck/tests/freebsd/*.stdout.out
+/memcheck/tests/freebsd/.deps
+/memcheck/tests/freebsd/Makefile
+/memcheck/tests/freebsd/Makefile.in
+/memcheck/tests/freebsd/statvfs
+
 # /mpi/
 /mpi/*.dSYM
 /mpi/*.so
