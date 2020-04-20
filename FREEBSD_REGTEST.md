@@ -4,14 +4,12 @@
 
 ## Tests in none
 
-95.6% good
-
+96.1% good
 
 ```
-
 pselect_alarm hangs. Valgrind says that it is terminating, but the last thread doesn't die.
 
-== 203 tests, 9 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 203 tests, 7 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/async-sigs                    (stderr)
 none/tests/bug234814                     (stdout)
 none/tests/bug234814                     (stderr)
@@ -19,10 +17,8 @@ none/tests/coolo_sigaction               (stdout)
 none/tests/coolo_sigaction               (stderr)
 none/tests/faultstatus                   (stderr)
 none/tests/ioctl_moans                   (stderr)
-none/tests/nocwd                         (stderr)
 none/tests/pending                       (stdout)
 none/tests/pending                       (stderr)
-none/tests/scripts/bug231357             (stderr)
 none/tests/sigstackgrowth                (stdout)
 none/tests/sigstackgrowth                (stderr)
 ```
@@ -95,7 +91,7 @@ mcinfcallWSRU - looks like a filter issue
 I have fixed a few issues (wrong redir signatures for Helgrind, semaphore functions in libc not libthr). But there are still a load of errors.
 
 DRD - 46.1% good
-Helgrind - 23.2% good
+Helgrind - 28.6% good
 
 
 ```
@@ -106,7 +102,7 @@ Helgrind - 23.2% good
 
 -- Finished tests in helgrind/tests ------------------------------------
 
-== 56 tests, 43 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 56 tests, 40 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 
 
 ```
