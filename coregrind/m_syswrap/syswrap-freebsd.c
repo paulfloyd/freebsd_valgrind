@@ -435,11 +435,13 @@ PRE(sys_vfork)
    }
 }
 
+// int socket(int domain, int type, int protocol);
 PRE(sys_socket)
 {
-   PRINT("sys_socket ( %lu, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_socket ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d )",SARG1,SARG2,SARG3);
    PRE_REG_READ3(long, "socket", int, domain, int, type, int, protocol);
 }
+
 POST(sys_socket)
 {
    SysRes r;
@@ -448,9 +450,11 @@ POST(sys_socket)
    SET_STATUS_from_SysRes(r);
 }
 
+// int setsockopt(int s, int level, int optname, const void *optval,
+//                socklen_t optlen);
 PRE(sys_setsockopt)
 {
-   PRINT("sys_setsockopt ( %lu, %lu, %lu, %#lx, %lu )",ARG1,ARG2,ARG3,ARG4,ARG5);
+   PRINT("sys_setsockopt ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",SARG1,SARG2,SARG3,ARG4,ARG5);
    PRE_REG_READ5(long, "setsockopt",
                  int, s, int, level, int, optname,
                  const void *, optval, int, optlen);
@@ -461,7 +465,7 @@ PRE(sys_getsockopt)
 {
    Addr optval_p = ARG4;
    Addr optlen_p = ARG5;
-   PRINT("sys_getsockopt ( %lu, %lu, %lu, %#lx, %#lx )",ARG1,ARG2,ARG3,ARG4,ARG5);
+   PRINT("sys_getsockopt ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4,ARG5);
    PRE_REG_READ5(long, "getsockopt",
                  int, s, int, level, int, optname,
                  void *, optval, int, *optlen);
@@ -471,6 +475,7 @@ PRE(sys_getsockopt)
                                    "getsockopt(optlen)" );
    }
 }
+
 POST(sys_getsockopt)
 {
    Addr optval_p = ARG4;
@@ -486,7 +491,7 @@ POST(sys_getsockopt)
 PRE(sys_connect)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_connect ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_connect ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "connect",
                  int, sockfd, struct sockaddr *, serv_addr, int, addrlen);
    ML_(generic_PRE_sys_connect)(tid, ARG1,ARG2,ARG3);
@@ -495,11 +500,12 @@ PRE(sys_connect)
 PRE(sys_accept)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_accept ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_accept ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "accept",
                  int, s, struct sockaddr *, addr, int, *addrlen);
    ML_(generic_PRE_sys_accept)(tid, ARG1,ARG2,ARG3);
 }
+
 POST(sys_accept)
 {
    SysRes r;
@@ -512,7 +518,7 @@ POST(sys_accept)
 PRE(sys_sendto)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_sendto ( %lu, %#lx, %lu, %lu, %#lx, %lu )",ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
+   PRINT("sys_sendto ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
    PRE_REG_READ6(long, "sendto",
                  int, s, const void *, msg, int, len, 
                  unsigned int, flags, 
@@ -520,15 +526,18 @@ PRE(sys_sendto)
    ML_(generic_PRE_sys_sendto)(tid, ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
 }
 
+// ssize_t recvfrom(int s, void *buf, size_t len, int flags,
+//                  struct sockaddr * restrict from, socklen_t * restrict fromlen);
 PRE(sys_recvfrom)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_recvfrom ( %lu, %#lx, %lu, %lu, %#lx, %#lx )",ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
+   PRINT("sys_recvfrom ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",SARG1,ARG2,ARG3,SARG4,ARG5,ARG6);
    PRE_REG_READ6(long, "recvfrom",
                  int, s, void *, buf, int, len, unsigned int, flags,
                  struct sockaddr *, from, int *, fromlen);
    ML_(generic_PRE_sys_recvfrom)(tid, ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
 }
+
 POST(sys_recvfrom)
 {
    vg_assert(SUCCESS);
@@ -539,7 +548,7 @@ POST(sys_recvfrom)
 PRE(sys_sendmsg)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_sendmsg ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_sendmsg ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "sendmsg",
                  int, s, const struct msghdr *, msg, int, flags);
    ML_(generic_PRE_sys_sendmsg)(tid, "sendmsg", (struct vki_msghdr *)ARG2);
@@ -548,10 +557,11 @@ PRE(sys_sendmsg)
 PRE(sys_recvmsg)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_recvmsg ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_recvmsg ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "recvmsg", int, s, struct msghdr *, msg, int, flags);
    ML_(generic_PRE_sys_recvmsg)(tid, "recvmsg", (struct vki_msghdr *)ARG2);
 }
+
 POST(sys_recvmsg)
 {
 
@@ -561,31 +571,35 @@ POST(sys_recvmsg)
 PRE(sys_shutdown)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_shutdown ( %lu, %lu )",ARG1,ARG2);
+   PRINT("sys_shutdown ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(int, "shutdown", int, s, int, how);
 }
 
 PRE(sys_bind)
 {
-   PRINT("sys_bind ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_bind ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "bind",
                  int, sockfd, struct sockaddr *, my_addr, int, addrlen);
    ML_(generic_PRE_sys_bind)(tid, ARG1,ARG2,ARG3);
 }
 
+// int listen(int s, int backlog);
 PRE(sys_listen)
 {
-   PRINT("sys_listen ( %lu, %lu )",ARG1,ARG2);
+   PRINT("sys_listen ( %" FMT_REGWORD "d, %" FMT_REGWORD "d )",SARG1,SARG2);
    PRE_REG_READ2(long, "listen", int, s, int, backlog);
 }
 
+// int getsockname(int s, struct sockaddr * restrict name,
+//                 socklen_t * restrict namelen);
 PRE(sys_getsockname)
 {
-   PRINT("sys_getsockname ( %lu, %#lx, %#lx )",ARG1,ARG2,ARG3);
+   PRINT("sys_getsockname ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",SARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getsockname",
                  int, s, struct sockaddr *, name, int *, namelen);
    ML_(generic_PRE_sys_getsockname)(tid, ARG1,ARG2,ARG3);
 }
+
 POST(sys_getsockname)
 {
    vg_assert(SUCCESS);
@@ -595,11 +609,12 @@ POST(sys_getsockname)
 
 PRE(sys_getpeername)
 {
-   PRINT("sys_getpeername ( %lu, %#lx, %#lx )",ARG1,ARG2,ARG3);
+   PRINT("sys_getpeername ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getpeername",
                  int, s, struct sockaddr *, name, int *, namelen);
    ML_(generic_PRE_sys_getpeername)(tid, ARG1,ARG2,ARG3);
 }
+
 POST(sys_getpeername)
 {
    vg_assert(SUCCESS);
@@ -609,7 +624,7 @@ POST(sys_getpeername)
 
 PRE(sys_socketpair)
 {
-   PRINT("sys_socketpair ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_socketpair ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "socketpair",
                  int, d, int, type, int, protocol, int *, sv);
    ML_(generic_PRE_sys_socketpair)(tid, ARG1,ARG2,ARG3,ARG4);
@@ -631,7 +646,7 @@ PRE(sys_mount)
    // We are conservative and check everything, except the memory pointed to
    // by 'data'.
    *flags |= SfMayBlock;
-   PRINT( "sys_mount( %#lx, %#lx, %lu, %#lx )" ,ARG1,ARG2,ARG3,ARG4);
+   PRINT( "sys_mount( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )" ,ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "mount",
                  char *, type, char *, path, int, flags,
                  void *, data);
@@ -641,7 +656,7 @@ PRE(sys_mount)
 
 PRE(sys_unmount)
 {
-   PRINT("sys_umount( %#lx, %lu )", ARG1, ARG2);
+   PRINT("sys_umount( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "unmount", char *, path, int, flags);
    PRE_MEM_RASCIIZ( "unmount(path)", ARG1);
 }
@@ -653,27 +668,27 @@ PRE(sys_unmount)
 #if 0
 PRE(sys_setfsuid)
 {
-   PRINT("sys_setfsuid ( %ld )", ARG1);
+   PRINT("sys_setfsuid ( %" FMT_REGWORD "d )", ARG1);
    PRE_REG_READ1(long, "setfsuid", vki_uid_t, uid);
 }
 
 PRE(sys_setfsgid)
 {
-   PRINT("sys_setfsgid ( %ld )", ARG1);
+   PRINT("sys_setfsgid ( %" FMT_REGWORD "d )", ARG1);
    PRE_REG_READ1(long, "setfsgid", vki_gid_t, gid);
 }
 #endif
 
 PRE(sys_setresuid)
 {
-   PRINT("sys_setresuid ( %lu, %lu, %lu )", ARG1, ARG2, ARG3);
+   PRINT("sys_setresuid ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "setresuid",
                  vki_uid_t, ruid, vki_uid_t, euid, vki_uid_t, suid);
 }
 
 PRE(sys_getresuid)
 {
-   PRINT("sys_getresuid ( %#lx, %#lx, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys_getresuid ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getresuid", 
                  vki_uid_t *, ruid, vki_uid_t *, euid, vki_uid_t *, suid);
    PRE_MEM_WRITE( "getresuid(ruid)", ARG1, sizeof(vki_uid_t) );
@@ -693,14 +708,14 @@ POST(sys_getresuid)
 
 PRE(sys_setresgid)
 {
-   PRINT("sys_setresgid ( %lu, %lu, %lu )", ARG1, ARG2, ARG3);
+   PRINT("sys_setresgid ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "setresgid",
                  vki_gid_t, rgid, vki_gid_t, egid, vki_gid_t, sgid);
 }
 
 PRE(sys_getresgid)
 {
-   PRINT("sys_getresgid ( %#lx, %#lx, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys_getresgid ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getresgid", 
                  vki_gid_t *, rgid, vki_gid_t *, egid, vki_gid_t *, sgid);
    PRE_MEM_WRITE( "getresgid(rgid)", ARG1, sizeof(vki_gid_t) );
@@ -728,7 +743,7 @@ PRE(sys_exit_group)
    ThreadId     t;
    ThreadState* tst;
 
-   PRINT("exit_group( %ld )", ARG1);
+   PRINT("exit_group( %" FMT_REGWORD "d )", ARG1);
    PRE_REG_READ1(void, "exit_group", int, exit_code);
 
    tst = VG_(get_ThreadState)(tid);
@@ -763,7 +778,7 @@ PRE(sys_exit)
 {
    ThreadId     t;
 
-   PRINT("exit( %lu )", ARG1);
+   PRINT("exit( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(void, "exit", int, status);
 
    /* Mark all threads (including this one) to exit. */
@@ -785,26 +800,29 @@ PRE(sys_exit)
 
 PRE(sys_getlogin)
 {
-   PRINT("sys_getlogin ( %#lx, %lu )",ARG1,ARG2);
+   PRINT("sys_getlogin ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(long, "getlogin",
                  char *, buf, int, len);
    PRE_MEM_WRITE( "getlogin(buf, len)", ARG1, ARG2 );
 }
+
 POST(sys_getlogin)
 {
    if (ARG1 != 0) {
       POST_MEM_WRITE( ARG1, ARG2 );
    }
 }
+
 PRE(sys_setlogin)
 {
-   PRINT("sys_setlogin ( %#lx )",ARG1);
+   PRINT("sys_setlogin ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(long, "setlogin", char *, buf);
    PRE_MEM_RASCIIZ( "setlogin(buf)", ARG1 );
 }
+
 PRE(sys_mkfifo)
 {
-   PRINT("sys_mkfifo ( %#lx(%s), 0x%lx, 0x%lx )", ARG1, (char *)ARG1, ARG2, ARG3 );
+   PRINT("sys_mkfifo ( %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1, (char *)ARG1, ARG2, ARG3 );
    PRE_REG_READ2(long, "mkfifo", const char *, pathname, int, mode);
    PRE_MEM_RASCIIZ( "mkfifo(pathname)", ARG1 );
 }
@@ -813,7 +831,7 @@ PRE(sys_mkfifo)
 
 PRE(sys_quotactl)
 {
-   PRINT("sys_quotactl (%#lx, %lu, %lu, %#lx )", ARG1,ARG2,ARG3, ARG4);
+   PRINT("sys_quotactl (%#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3, ARG4);
    PRE_REG_READ4(long, "quotactl",
                  const char *, path, int, cmd, int, id,
                  void *, addr);
@@ -823,28 +841,30 @@ PRE(sys_quotactl)
 /* int getdomainname(char *domainname, int len); */
 PRE(sys_getdomainname)
 {
-   PRINT("sys_getdomainname ( %#lx, %lu )",ARG1,ARG2);
+   PRINT("sys_getdomainname ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(long, "getdomainname",
                  char *, buf, int, len);
    PRE_MEM_WRITE( "getdomainname(buf, len)", ARG1, ARG2 );
 }
+
 POST(sys_getdomainname)
 {
    if (ARG1 != 0) {
       POST_MEM_WRITE( ARG1, ARG2 );
    }
 }
+
 /* int setdomainname(char *domainname, int len); */
 PRE(sys_setdomainname)
 {
-   PRINT("sys_setdomainname ( %#lx )",ARG1);
+   PRINT("sys_setdomainname ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(long, "setdomainname", char *, buf);
    PRE_MEM_RASCIIZ( "setdomainname(buf)", ARG1 );
 }
 
 PRE(sys_uname)
 {
-   PRINT("sys_uname ( %#lx )", ARG1);
+   PRINT("sys_uname ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "uname", struct utsname *, buf);
    PRE_MEM_WRITE( "uname(buf)", ARG1, sizeof(struct vki_utsname) );
 }
@@ -858,7 +878,7 @@ POST(sys_uname)
 
 PRE(sys_lstat)
 {
-   PRINT("sys_lstat ( %#lx(%s), %#lx )",ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_lstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "lstat", char *, file_name, struct stat *, buf);
    PRE_MEM_RASCIIZ( "lstat(file_name)", ARG1 );
    PRE_MEM_WRITE( "lstat(buf)", ARG2, sizeof(struct vki_stat) );
@@ -874,7 +894,7 @@ POST(sys_lstat)
 
 PRE(sys_stat)
 {
-   PRINT("sys_stat ( %#lx(%s), %#lx )",ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_stat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "stat", char *, file_name, struct stat *, buf);
    PRE_MEM_RASCIIZ( "stat(file_name)", ARG1 );
    PRE_MEM_WRITE( "stat(buf)", ARG2, sizeof(struct vki_stat) );
@@ -889,7 +909,7 @@ POST(sys_stat)
 
 PRE(sys_freebsd11_fstat)
 {
-   PRINT("sys_freebsd11_fstat ( %ld, %#lx )",SARG1,ARG2);
+   PRINT("sys_freebsd11_fstat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,ARG2);
    PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }
@@ -903,7 +923,7 @@ POST(sys_freebsd11_fstat)
 
 PRE(sys_fstat)
 {
-   PRINT("sys_fstat ( %ld, %#lx )",SARG1,ARG2);
+   PRINT("sys_fstat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,ARG2);
    PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }
@@ -917,20 +937,20 @@ POST(sys_fstat)
 
 PRE(sys_pathconf)
 {
-   PRINT("sys_pathconf ( %#lx(%s), %lu )",ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_pathconf ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )",ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "pathconf", char *, file_name, int, name);
    PRE_MEM_RASCIIZ( "pathconf(file_name)", ARG1 );
 }
 
 PRE(sys_fpathconf)
 {
-   PRINT("sys_fpathconf ( %lu, %lu )",ARG1,ARG2);
+   PRINT("sys_fpathconf ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(long, "fpathconf", int, fd, int, name);
 }
 
 PRE(sys_lchmod)
 {
-   PRINT("sys_lchmod ( %#lx(%s), %lu )", ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_lchmod ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "lchmod", const char *, path, vki_mode_t, mode);
    PRE_MEM_RASCIIZ( "lchmod(path)", ARG1 );
 }
@@ -946,13 +966,15 @@ PRE(sys_revoke)
    PRINT("%s", "sys_vhangup ( )");
    PRE_REG_READ0(long, "vhangup");
 }
+
 PRE(sys_undelete)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_undelete ( %#lx(%s) )", ARG1,(char *)ARG1);
+   PRINT("sys_undelete ( %#" FMT_REGWORD "x(%s) )", ARG1,(char *)ARG1);
    PRE_REG_READ1(long, "undelete", const char *, pathname);
    PRE_MEM_RASCIIZ( "undelete(pathname)", ARG1 );
 }
+
 PRE(sys_yield)
 {
    *flags |= SfMayBlock;
@@ -969,7 +991,7 @@ PRE(sys_sched_yield)
 #if 0
 PRE(sys_sysinfo)
 {
-   PRINT("sys_sysinfo ( %#lx )",ARG1);
+   PRINT("sys_sysinfo ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(long, "sysinfo", struct sysinfo *, info);
    PRE_MEM_WRITE( "sysinfo(info)", ARG1, sizeof(struct vki_sysinfo) );
 }
@@ -984,7 +1006,7 @@ POST(sys_sysinfo)
 /*               ARG1        ARG2          ARG3         ARG4           ARG5        ARG6 */
 PRE(sys___sysctl)
 {
-   PRINT("sys_sysctl ( %#lx, %ld, %#lx, %#lx, %#lx, %lu )", ARG1,SARG2,ARG3,ARG4,ARG5,ARG6 );
+   PRINT("sys_sysctl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5,ARG6 );
    int* name = (int*)ARG1;
    PRINT("\nmib[0]: ");
    if (SARG2 >= 1)
@@ -1108,6 +1130,7 @@ POST(sys___sysctl)
    }
 }
 
+// @todo PJF ought to be in platform files
 PRE(sys_sendfile)
 {
    *flags |= SfMayBlock;
@@ -1130,6 +1153,7 @@ PRE(sys_sendfile)
    if (SF_ARG_SBYTES != 0)
       PRE_MEM_WRITE( "sendfile(offset)", SF_ARG_SBYTES, sizeof(vki_off_t) );
 }
+
 POST(sys_sendfile)
 {
    if (SF_ARG_SBYTES != 0 ) {
@@ -1142,7 +1166,7 @@ POST(sys_sendfile)
 PRE(sys_getdirentries)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_getdents ( %lu, %#lx, %lu )", ARG1,ARG2,ARG3);
+   PRINT("sys_getdents ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getdirentries",
                  unsigned int, fd, struct dirent *, dirp,
                  unsigned int, count);
@@ -1161,19 +1185,19 @@ POST(sys_getdirentries)
 
 PRE(sys_seteuid)
 {
-   PRINT("sys_seteuid ( %lu )", ARG1);
+   PRINT("sys_seteuid ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "seteuid", vki_uid_t, uid);
 }
 
 PRE(sys_setegid)
 {
-   PRINT("sys_setegid ( %lu )", ARG1);
+   PRINT("sys_setegid ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "setegid", vki_gid_t, gid);
 }
 
 PRE(sys_lutimes)
 {
-   PRINT("sys_lutimes ( %#lx(%s), %#lx )", ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_lutimes ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "lutimes", char *, filename, struct timeval *, tvp);
    PRE_MEM_RASCIIZ( "lutimes(filename)", ARG1 );
    if (ARG2 != 0)
@@ -1182,7 +1206,7 @@ PRE(sys_lutimes)
 
 PRE(sys_futimes)
 {
-   PRINT("sys_lutimes ( %lu, %#lx )", ARG1,ARG2);
+   PRINT("sys_lutimes ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2);
    PRE_REG_READ2(long, "futimes", int, fd, struct timeval *, tvp);
    if (ARG2 != 0)
       PRE_MEM_READ( "futimes(tvp)", ARG2, sizeof(struct vki_timeval) );
@@ -1190,7 +1214,7 @@ PRE(sys_futimes)
 
 PRE(sys_utrace)
 {
-   PRINT("sys_utrace ( %#lx, %lu )", ARG1, ARG2);
+   PRINT("sys_utrace ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "utrace", const void *, buf, vki_size_t, len);
    PRE_MEM_READ( "utrace(buf,len)", ARG2, ARG3 );
 }
@@ -1205,6 +1229,7 @@ PRE(sys_kqueue)
 {
    PRINT("%s", "sys_kqueue ()");
 }
+
 POST(sys_kqueue)
 {
    if (!ML_(fd_allowed)(RES, "kqueue", tid, True)) {
@@ -1232,7 +1257,7 @@ PRE(sys_kevent)
                  const struct timespec *timeout);
    */
    *flags |= SfMayBlock;
-   PRINT("sys_kevent ( %lu, %#lx, %lu, %#lx, %lu, %#lx )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
+   PRINT("sys_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
    PRE_REG_READ6(long, "kevent",
                  int, fd, struct vki_kevent *, newev, int, num_newev,
 		 struct vki_kevent *, ret_ev, int, num_retev,
@@ -1249,7 +1274,7 @@ PRE(sys_kevent)
 POST(sys_kevent)
 {
    vg_assert(SUCCESS);
-   if (RES > 0) {
+   if ((Word)RES != -1) {
       if (ARG4 != 0)
          POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent)*RES) ;
    }
@@ -1257,7 +1282,7 @@ POST(sys_kevent)
 
 PRE(sys___getcwd)
 {
-   PRINT("sys___getcwd ( %#lx, %lu )", ARG1,ARG2);
+   PRINT("sys___getcwd ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "__getcwd", char *, buf, unsigned int, size);
    PRE_MEM_WRITE( "__getcwd(buf)", ARG1, ARG2 );
 }
@@ -1278,14 +1303,15 @@ POST(sys___getcwd)
 // returned, not a length.
 PRE(sys_getfsstat4)
 {
-   PRINT("sys_getfsstat ( %#lx, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d )",ARG1,SARG2,SARG3);
    PRE_REG_READ3(long, "getfsstat", struct vki_statfs4 *, buf, long, len, int, flags);
    PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
 }
+
 POST(sys_getfsstat4)
 {
    vg_assert(SUCCESS);
-   if (RES > 0) {
+   if ((Word)RES != -1) {
       POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs4) );
    }
 }
@@ -1293,7 +1319,7 @@ POST(sys_getfsstat4)
 #if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_getfsstat)
 {
-   PRINT("sys_freebsd11_getfsstat ( %#lx, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_freebsd11_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
    PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
 }
@@ -1301,7 +1327,7 @@ PRE(sys_freebsd11_getfsstat)
 POST(sys_freebsd11_getfsstat)
 {
    vg_assert(SUCCESS);
-   if (RES > 0) {
+   if ((Word)RES != -1) {
       POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs) );
    }
 }
@@ -1309,7 +1335,7 @@ POST(sys_freebsd11_getfsstat)
 
 PRE(sys_getfsstat)
 {
-   PRINT("sys_getfsstat ( %#lx, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
    PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
 }
@@ -1317,14 +1343,14 @@ PRE(sys_getfsstat)
 POST(sys_getfsstat)
 {
    vg_assert(SUCCESS);
-   if (RES > 0) {
+   if ((Word)RES != -1) {
       POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs) );
    }
 }
 
 PRE(sys_fhopen)
 {
-   PRINT("sys_open ( %#lx, %lu )",ARG1,ARG2);
+   PRINT("sys_open ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(long, "open",
                  struct fhandle *, fhp, int, flags);
    PRE_MEM_READ( "fhopen(fhp)", ARG1, sizeof(struct vki_fhandle) );
@@ -1347,7 +1373,7 @@ POST(sys_fhopen)
 
 PRE(sys_fhstat)
 {
-   PRINT("sys_fhstat ( %#lx, %#lx )",ARG1,ARG2);
+   PRINT("sys_fhstat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "fhstat", struct fhandle *, fhp, struct stat *, buf);
    PRE_MEM_READ( "fhstat(fhp)", ARG1, sizeof(struct vki_fhandle) );
    PRE_MEM_WRITE( "fhstat(buf)", ARG2, sizeof(struct vki_stat) );
@@ -1360,7 +1386,7 @@ POST(sys_fhstat)
 
 PRE(sys_fhstatfs)
 {
-   PRINT("sys_fstatfs ( %#lx, %#lx )",ARG1,ARG2);
+   PRINT("sys_fstatfs ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "fhstatfs",
                  struct fhandle *, fhp, struct statfs *, buf);
    PRE_MEM_READ( "fhstatfs(fhp)", ARG1, sizeof(struct vki_fhandle) );
@@ -1374,7 +1400,7 @@ POST(sys_fhstatfs)
 
 PRE(sys_fhstatfs6)
 {
-   PRINT("sys_fstatfs6 ( %#lx, %#lx )",ARG1,ARG2);
+   PRINT("sys_fstatfs6 ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "fhstatfs6",
                  struct fhandle *, fhp, struct statfs *, buf);
    PRE_MEM_READ( "fhstatfs6(fhp)", ARG1, sizeof(struct vki_fhandle) );
@@ -1388,7 +1414,7 @@ POST(sys_fhstatfs6)
 
 PRE(sys_fstatfs6)
 {
-   PRINT("sys_fstatfs6 ( %lu, %#lx )",ARG1,ARG2);
+   PRINT("sys_fstatfs6 ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "fstatfs6",
                  unsigned int, fd, struct statfs *, buf);
    PRE_MEM_WRITE( "fstatfs6(buf)", ARG2, sizeof(struct vki_statfs6) );
@@ -1401,7 +1427,7 @@ POST(sys_fstatfs6)
 
 PRE(sys_statfs6)
 {
-   PRINT("sys_statfs6 ( %#lx(%s), %#lx )",ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_statfs6 ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "statfs6", const char *, path, struct statfs *, buf);
    PRE_MEM_RASCIIZ( "statfs6(path)", ARG1 );
    PRE_MEM_WRITE( "statfs(buf)", ARG2, sizeof(struct vki_statfs6) );
@@ -1417,7 +1443,7 @@ POST(sys_statfs6)
 
 PRE(sys_kldload)
 {
-   PRINT("sys_kldload ( %#lx(%s) )", ARG1, (char *)ARG1);
+   PRINT("sys_kldload ( %#" FMT_REGWORD "x(%s) )", ARG1, (char *)ARG1);
    PRE_REG_READ1(int, "kldload", const char *, "file");
 
    PRE_MEM_RASCIIZ( "kldload(file)", ARG1 );
@@ -1425,13 +1451,13 @@ PRE(sys_kldload)
 
 PRE(sys_kldunload)
 {
-   PRINT("sys_kldunload ( %lu )", ARG1);
+   PRINT("sys_kldunload ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(int, "kldunload", int, "fileid");
 }
 
 PRE(sys_kldfind)
 {
-   PRINT("sys_kldfind ( %#lx(%s) )", ARG1, (char *)ARG1);
+   PRINT("sys_kldfind ( %#" FMT_REGWORD "x(%s) )", ARG1, (char *)ARG1);
    PRE_REG_READ1(int, "kldfind", const char *, "file");
 
    PRE_MEM_RASCIIZ( "kldfind(file)", ARG1 );
@@ -1439,13 +1465,13 @@ PRE(sys_kldfind)
 
 PRE(sys_kldnext)
 {
-   PRINT("sys_kldnext ( %lu )", ARG1);
+   PRINT("sys_kldnext ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(int, "kldnext", int, "fileid");
 }
 
 PRE(sys_kldsym)
 {
-   PRINT("sys_kldsym ( %lu, %lu, %#lx )", ARG1,ARG2,ARG3 );
+   PRINT("sys_kldsym ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
    PRE_REG_READ3(int, "kldsym", int, "fileid", int, "command", void*, "data");
    PRE_MEM_READ( "kldsym(data)", ARG3, sizeof(struct vki_kld_sym_lookup) );
    struct vki_kld_sym_lookup *kslp = (struct vki_kld_sym_lookup *)ARG3;
@@ -1470,7 +1496,7 @@ POST(sys_kldsym)
 
 PRE(sys_io_setup)
 {
-   PRINT("sys_io_setup ( %lu, %#lx )", ARG1,ARG2);
+   PRINT("sys_io_setup ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2);
    PRE_REG_READ2(long, "io_setup",
                  unsigned, nr_events, vki_aio_context_t *, ctxp);
    PRE_MEM_WRITE( "io_setup(ctxp)", ARG2, sizeof(vki_aio_context_t) );
@@ -1658,7 +1684,7 @@ PRE(sys_inotify_rm_watch)
 
 PRE(sys_kmq_open)
 {
-   PRINT("sys_kmq_open( %#lx(%s), %lu, %llu, %#lx )",
+   PRINT("sys_kmq_open( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %llu, %#" FMT_REGWORD "x )",
          ARG1,(char *)ARG1,ARG2,(ULong)ARG3,ARG4);
    PRE_REG_READ4(long, "mq_open",
                  const char *, name, int, oflag, vki_mode_t, mode,
@@ -1687,7 +1713,7 @@ POST(sys_kmq_open)
 
 PRE(sys_kmq_setattr)
 {
-   PRINT("sys_kmq_getattr( %lu, %#lx, %#lx )", ARG1,ARG2,ARG3 );
+   PRINT("sys_kmq_getattr( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
    PRE_REG_READ3(long, "mq_getsetattr",
                  vki_mqd_t, mqdes, const struct mq_attr *, mqstat,
                  struct mq_attr *, omqstat);
@@ -1708,7 +1734,7 @@ PRE(sys_kmq_setattr)
 PRE(sys_kmq_timedreceive)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_kmq_timedreceive( %lu, %#lx, %llu, %#lx, %#lx )",
+   PRINT("sys_kmq_timedreceive( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %llu, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          ARG1,ARG2,(ULong)ARG3,ARG4,ARG5);
    PRE_REG_READ5(ssize_t, "mq_timedreceive",
                  vki_mqd_t, mqdes, char *, msg_ptr, vki_size_t, msg_len,
@@ -1737,7 +1763,7 @@ POST(sys_kmq_timedreceive)
 PRE(sys_kmq_timedsend)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_kmq_timedsend ( %lu, %#lx, %llu, %lu, %#lx )",
+   PRINT("sys_kmq_timedsend ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %llu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",
          ARG1,ARG2,(ULong)ARG3,ARG4,ARG5);
    PRE_REG_READ5(long, "mq_timedsend",
                  vki_mqd_t, mqdes, const char *, msg_ptr, vki_size_t, msg_len,
@@ -1754,7 +1780,7 @@ PRE(sys_kmq_timedsend)
 
 PRE(sys_kmq_notify)
 {
-   PRINT("sys_kmq_notify( %lu, %#lx )", ARG1,ARG2 );
+   PRINT("sys_kmq_notify( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2 );
    PRE_REG_READ2(long, "mq_notify",
                  vki_mqd_t, mqdes, const struct sigevent *, notification);
    if (!ML_(fd_allowed)(ARG1, "mq_notify", tid, False))
@@ -1766,7 +1792,7 @@ PRE(sys_kmq_notify)
 
 PRE(sys_mq_unlink)
 {
-   PRINT("sys_mq_unlink ( %#lx(%s) )", ARG1,(char *)ARG1);
+   PRINT("sys_mq_unlink ( %#" FMT_REGWORD "x(%s) )", ARG1,(char *)ARG1);
    PRE_REG_READ1(long, "mq_unlink", const char *, name);
    PRE_MEM_RASCIIZ( "mq_unlink(name)", ARG1 );
 }
@@ -1778,7 +1804,7 @@ PRE(sys_mq_unlink)
 
 PRE(sys_clock_settime)
 {
-   PRINT("sys_clock_settime( %lu, %#lx )", ARG1,ARG2);
+   PRINT("sys_clock_settime( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2);
    PRE_REG_READ2(long, "clock_settime", 
                  vki_clockid_t, clk_id, const struct timespec *, tp);
    PRE_MEM_READ( "clock_settime(tp)", ARG2, sizeof(struct vki_timespec) );
@@ -1786,11 +1812,12 @@ PRE(sys_clock_settime)
 
 PRE(sys_clock_gettime)
 {
-   PRINT("sys_clock_gettime( %lu, %#lx )" , ARG1,ARG2);
+   PRINT("sys_clock_gettime( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )" , ARG1,ARG2);
    PRE_REG_READ2(long, "clock_gettime", 
                  vki_clockid_t, clk_id, struct timespec *, tp);
    PRE_MEM_WRITE( "clock_gettime(tp)", ARG2, sizeof(struct vki_timespec) );
 }
+
 POST(sys_clock_gettime)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_timespec) );
@@ -1798,7 +1825,7 @@ POST(sys_clock_gettime)
 
 PRE(sys_clock_getres)
 {
-   PRINT("sys_clock_getres( %lu, %#lx )" , ARG1,ARG2);
+   PRINT("sys_clock_getres( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )" , ARG1,ARG2);
    // Nb: we can't use "RES" as the param name because that's a macro
    // defined above!
    PRE_REG_READ2(long, "clock_getres", 
@@ -1806,6 +1833,7 @@ PRE(sys_clock_getres)
    if (ARG2 != 0)
       PRE_MEM_WRITE( "clock_getres(res)", ARG2, sizeof(struct vki_timespec) );
 }
+
 POST(sys_clock_getres)
 {
    if (ARG2 != 0)
@@ -1814,7 +1842,7 @@ POST(sys_clock_getres)
 
 PRE(sys_minherit)
 {
-   PRINT("sys_minherit( %#lx, %lu, %lu )" , ARG1,ARG2,ARG3);
+   PRINT("sys_minherit( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )" , ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "minherit",
                  void *, addr, vki_size_t, len, int, inherit);
    if (ARG2 != 0)
@@ -1831,7 +1859,7 @@ POST(sys_minherit)
 PRE(sys_clock_nanosleep)
 {
    *flags |= SfMayBlock|SfPostOnFail;
-   PRINT("sys_clock_nanosleep( %ld, %ld, %#lx, %#lx )", ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_clock_nanosleep( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(int32_t, "clock_nanosleep",
                  vki_clockid_t, clkid, int, flags,
                  const struct timespec *, rqtp, struct timespec *, rmtp);
@@ -1839,6 +1867,7 @@ PRE(sys_clock_nanosleep)
    if (ARG4 != 0)
       PRE_MEM_WRITE( "clock_nanosleep(rmtp)", ARG4, sizeof(struct vki_timespec) );
 }
+
 POST(sys_clock_nanosleep)
 {
    if (ARG4 != 0 && FAILURE && RES_unchecked == VKI_EINTR)
@@ -1851,7 +1880,7 @@ POST(sys_clock_nanosleep)
 
 PRE(sys_timer_create)
 {
-   PRINT("sys_timer_create( %ld, %#lx, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys_timer_create( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "timer_create",
                  vki_clockid_t, clockid, struct sigevent *, evp,
                  vki_timer_t *, timerid);
@@ -1866,7 +1895,7 @@ POST(sys_timer_create)
 
 PRE(sys_timer_settime)
 {
-   PRINT("sys_timer_settime( %lld, %ld, %#lx, %#lx )", (ULong)ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_timer_settime( %lld, %l" FMT_REGWORD ", %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", (ULong)ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "timer_settime", 
                  vki_timer_t, timerid, int, flags,
                  const struct itimerspec *, value,
@@ -1877,6 +1906,7 @@ PRE(sys_timer_settime)
        PRE_MEM_WRITE( "timer_settime(ovalue)", ARG4,
                       sizeof(struct vki_itimerspec) );
 }
+
 POST(sys_timer_settime)
 {
    if (ARG4 != 0)
@@ -1885,12 +1915,13 @@ POST(sys_timer_settime)
 
 PRE(sys_timer_gettime)
 {
-   PRINT("sys_timer_gettime( %lld, %#lx )", (ULong)ARG1,ARG2);
+   PRINT("sys_timer_gettime( %lld, %#" FMT_REGWORD "x )", (ULong)ARG1,ARG2);
    PRE_REG_READ2(long, "timer_gettime", 
                  vki_timer_t, timerid, struct itimerspec *, value);
    PRE_MEM_WRITE( "timer_gettime(value)", ARG2,
                   sizeof(struct vki_itimerspec));
 }
+
 POST(sys_timer_gettime)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_itimerspec) );
@@ -1898,13 +1929,13 @@ POST(sys_timer_gettime)
 
 PRE(sys_timer_getoverrun)
 {
-   PRINT("sys_timer_getoverrun( %#lx )", ARG1);
+   PRINT("sys_timer_getoverrun( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "timer_getoverrun", vki_timer_t, timerid);
 }
 
 PRE(sys_timer_delete)
 {
-   PRINT("sys_timer_delete( %#lx )", ARG1);
+   PRINT("sys_timer_delete( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "timer_delete", vki_timer_t, timerid);
 }
 
@@ -1914,11 +1945,12 @@ PRE(sys_timer_delete)
 
 PRE(sys_sched_setparam)
 {
-   PRINT("sched_setparam ( %ld, %#lx )", ARG1, ARG2 );
+   PRINT("sched_setparam ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2 );
    PRE_REG_READ2(long, "sched_setparam", 
                  vki_pid_t, pid, struct sched_param *, p);
    PRE_MEM_READ( "sched_setparam(p)", ARG2, sizeof(struct vki_sched_param) );
 }
+
 POST(sys_sched_setparam)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_sched_param) );
@@ -1926,11 +1958,12 @@ POST(sys_sched_setparam)
 
 PRE(sys_sched_getparam)
 {
-   PRINT("sched_getparam ( %ld, %#lx )", ARG1, ARG2 );
+   PRINT("sched_getparam ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2 );
    PRE_REG_READ2(long, "sched_getparam", 
                  vki_pid_t, pid, struct sched_param *, p);
    PRE_MEM_WRITE( "sched_getparam(p)", ARG2, sizeof(struct vki_sched_param) );
 }
+
 POST(sys_sched_getparam)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_sched_param) );
@@ -1938,7 +1971,7 @@ POST(sys_sched_getparam)
 
 PRE(sys_sched_getscheduler)
 {
-   PRINT("sys_sched_getscheduler ( %ld )", ARG1);
+   PRINT("sys_sched_getscheduler ( %" FMT_REGWORD "d )", ARG1);
    PRE_REG_READ1(long, "sched_getscheduler", vki_pid_t, pid);
 }
 
@@ -1962,20 +1995,20 @@ PRE(sys_sched_yield)
 
 PRE(sys_sched_get_priority_max)
 {
-   PRINT("sched_get_priority_max ( %lu )", ARG1);
+   PRINT("sched_get_priority_max ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "sched_get_priority_max", int, policy);
 }
 
 PRE(sys_sched_get_priority_min)
 {
-   PRINT("sched_get_priority_min ( %lu )", ARG1);
+   PRINT("sched_get_priority_min ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "sched_get_priority_min", int, policy);
 }
 
 #if 0
 PRE(sys_sched_setaffinity)
 {
-   PRINT("sched_setaffinity ( %ld, %ld, %#lx )", ARG1, ARG2, ARG3);
+   PRINT("sched_setaffinity ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "sched_setaffinity", 
                  vki_pid_t, pid, unsigned int, len, unsigned long *, mask);
    PRE_MEM_READ( "sched_setaffinity(mask)", ARG3, ARG2);
@@ -1983,11 +2016,12 @@ PRE(sys_sched_setaffinity)
 
 PRE(sys_sched_getaffinity)
 {
-   PRINT("sched_getaffinity ( %ld, %ld, %#lx )", ARG1, ARG2, ARG3);
+   PRINT("sched_getaffinity ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "sched_getaffinity", 
                  vki_pid_t, pid, unsigned int, len, unsigned long *, mask);
    PRE_MEM_WRITE( "sched_getaffinity(mask)", ARG3, ARG2);
 }
+
 POST(sys_sched_getaffinity)
 {
    POST_MEM_WRITE(ARG3, ARG2);
@@ -2011,6 +2045,7 @@ PRE(sys_pipe)
 {
    PRINT("%s", "sys_pipe ()");
 }
+
 POST(sys_pipe)
 {
    if (!ML_(fd_allowed)(RES, "pipe", tid, True) ||
@@ -2028,7 +2063,7 @@ POST(sys_pipe)
 
 PRE(sys_pipe2)
 {
-   PRINT("sys_pipe2 ( %#lx, %lu )", ARG1, ARG2);
+   PRINT("sys_pipe2 ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "pipe2",
                  int *, fildes, int, flags);
    PRE_MEM_WRITE("pipe2(fildes)", ARG1, 2 * sizeof(int));
@@ -2105,7 +2140,7 @@ PRE(sys_ppoll)
 
 POST(sys_ppoll)
 {
-    if (SUCCESS && (RES >= 0)) {
+    if (SUCCESS && ((Word)RES != -1)) {
        UInt i;
        struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;
        for (i = 0; i < ARG2; i++)
@@ -2117,11 +2152,10 @@ POST(sys_ppoll)
 }
 
 
-
 PRE(sys_accept4)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_accept4 ( %lu, %#lx, %lu, %lu)",ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_accept4 ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u)",ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "accept4",
                  int, s, struct sockaddr *, addr, int, *addrlen, int, flags);
    ML_(generic_PRE_sys_accept)(tid, ARG1,ARG2,ARG3);
@@ -2139,7 +2173,7 @@ POST(sys_accept4)
 #if 0
 PRE(sys_quotactl)
 {
-   PRINT("sys_quotactl (0x%lx, %#lx, 0x%lx, 0x%lx )", ARG1,ARG2,ARG3, ARG4);
+   PRINT("sys_quotactl (0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x, 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,ARG3, ARG4);
    PRE_REG_READ4(long, "quotactl",
                  unsigned int, cmd, const char *, special, vki_qid_t, id,
                  void *, addr);
@@ -2149,7 +2183,7 @@ PRE(sys_quotactl)
 PRE(sys_waitid)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_waitid( %ld, %ld, %#lx, %ld, %#lx )", ARG1,ARG2,ARG3,ARG4,ARG5);
+   PRINT("sys_waitid( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3,ARG4,ARG5);
    PRE_REG_READ5(int32_t, "sys_waitid",
                  int, which, vki_pid_t, pid, struct vki_siginfo *, infop,
                  int, options, struct vki_rusage *, ru);
@@ -2157,6 +2191,7 @@ PRE(sys_waitid)
    if (ARG5 != 0)
       PRE_MEM_WRITE( "waitid(ru)", ARG5, sizeof(struct vki_rusage) );
 }
+
 POST(sys_waitid)
 {
    POST_MEM_WRITE( ARG3, sizeof(struct vki_siginfo) );
@@ -2171,7 +2206,7 @@ POST(sys_waitid)
 PRE(sys_utime)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_utime ( %#lx, %#lx )", ARG1,ARG2);
+   PRINT("sys_utime ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2);
    PRE_REG_READ2(long, "utime", char *, filename, struct utimbuf *, buf);
    PRE_MEM_RASCIIZ( "utime(filename)", ARG1 );
    if (ARG2 != 0)
@@ -2186,7 +2221,7 @@ PRE(sys_utime)
 
 PRE(sys_thr_self)
 {
-   PRINT( "sys_thr_self ( %#lx )", ARG1 );
+   PRINT( "sys_thr_self ( %#" FMT_REGWORD "x )", ARG1 );
    PRE_REG_READ1(long, "thr_self", long *, "id");
    PRE_MEM_WRITE( "thr_self()", ARG1, sizeof(long));
 }
@@ -2199,7 +2234,7 @@ PRE(sys_thr_exit)
 {
    ThreadState *tst;
 
-   PRINT( "sys_thr_exit ( %#lx )", ARG1 );
+   PRINT( "sys_thr_exit ( %#" FMT_REGWORD "x )", ARG1 );
    PRE_REG_READ1(long, "thr_exit", long *, "status");
 
    if (ARG1)
@@ -2212,14 +2247,14 @@ PRE(sys_thr_exit)
 
 PRE(sys_thr_set_name)
 {
-   PRINT( "sys_thr_set_name ( %lu, %#lx )", ARG1, ARG2 );
+   PRINT( "sys_thr_set_name ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2 );
    PRE_REG_READ2(long, "thr_set_name", long, "id", const char *, "name");
    PRE_MEM_RASCIIZ( "sys_thr_set_name(threadname)", ARG2);
 }
 
 PRE(sys_thr_kill)
 {
-   PRINT("sys_thr_kill ( %lu, %lu )", ARG1,ARG2);
+   PRINT("sys_thr_kill ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "thr_kill", long, id, int, sig);
    if (!ML_(client_signal_OK)(ARG2)) {
       SET_STATUS_Failure( VKI_EINVAL );
@@ -2251,15 +2286,17 @@ PRE(sys_thr_kill)
       at the top of async_signalhandler()). */
    *flags |= SfMayBlock;
 }
+
 POST(sys_thr_kill)
 {
    if (VG_(clo_trace_signals))
       VG_(message)(Vg_DebugMsg, "thr_kill: sent signal %lu to tid %lu\n",
                    ARG2, ARG1);
 }
+
 PRE(sys_thr_kill2)
 {
-   PRINT("sys_thr_kill2 ( %lu, %lu, %lu )", ARG1,ARG2,ARG3);
+   PRINT("sys_thr_kill2 ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "tgkill", int, pid, long, tid, int, sig);
    if (!ML_(client_signal_OK)(ARG3)) {
       SET_STATUS_Failure( VKI_EINVAL );
@@ -2291,6 +2328,7 @@ PRE(sys_thr_kill2)
       at the top of async_signalhandler()). */
    *flags |= SfMayBlock;
 }
+
 POST(sys_thr_kill2)
 {
    if (VG_(clo_trace_signals))
@@ -2300,7 +2338,7 @@ POST(sys_thr_kill2)
 
 PRE(sys_thr_wake)
 {
-   PRINT("sys_thr_wake ( %lu )", ARG1);
+   PRINT("sys_thr_wake ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "thr_wake", long, id);
 }
 
@@ -2315,7 +2353,7 @@ PRE(sys__umtx_op)
       they're always pointers.  They may not be used though. */
    switch(ARG2) {
    case VKI_UMTX_OP_LOCK:
-      PRINT( "sys__umtx_op ( %#lx, LOCK, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, LOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_lock",
                     struct umtx *, obj, int, op, unsigned long, id,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2326,14 +2364,14 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_UNLOCK:
-      PRINT( "sys__umtx_op ( %#lx, UNLOCK, %lu)", ARG1, ARG3);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, UNLOCK, %" FMT_REGWORD "u)", ARG1, ARG3);
       PRE_REG_READ3(long, "_umtx_op_unlock",
                     struct umtx *, obj, int, op, unsigned long, id);
       PRE_MEM_READ( "_umtx_op_unlock(mtx)", ARG1, sizeof(struct vki_umtx) );
       PRE_MEM_WRITE( "_umtx_op_unlock(mtx)", ARG1, sizeof(struct vki_umtx) );
       break;
    case VKI_UMTX_OP_WAIT:
-      PRINT( "sys__umtx_op ( %#lx, WAIT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_wait",
                     struct umtx *, obj, int, op, unsigned long, id,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2343,13 +2381,13 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_WAKE:
-      PRINT( "sys__umtx_op ( %#lx, WAKE, %lu)", ARG1, ARG3);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, WAKE, %" FMT_REGWORD "u)", ARG1, ARG3);
       PRE_REG_READ3(long, "_umtx_op_wake",
                     struct umtx *, obj, int, op, unsigned long, id);
       PRE_MEM_READ( "_umtx_op_wake(mtx)", ARG1, sizeof(struct vki_umtx) );
       break;
    case VKI_UMTX_OP_MUTEX_TRYLOCK:
-      PRINT( "sys__umtx_op ( %#lx, MUTEX_TRYLOCK, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_TRYLOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_mutex_trylock",
                     struct umutex *, obj, int, op, unsigned long, noid,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2359,7 +2397,7 @@ PRE(sys__umtx_op)
       PRE_MEM_WRITE( "_umtx_op_mutex_trylock(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_MUTEX_LOCK:
-      PRINT( "sys__umtx_op ( %#lx, MUTEX_LOCK, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_LOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_mutex_lock",
                     struct umutex *, obj, int, op, unsigned long, noid,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2370,14 +2408,14 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_MUTEX_UNLOCK:
-      PRINT( "sys__umtx_op ( %#lx, MUTEX_UNLOCK)", ARG1);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_UNLOCK)", ARG1);
       PRE_REG_READ2(long, "_umtx_op_mutex_unlock",
                     struct umutex *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_mutex_unlock(mutex)", ARG1, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_mutex_unlock(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_SET_CEILING:
-      PRINT( "sys__umtx_op ( %#lx, SET_CEILING, %lu, %#lx)", ARG1, ARG3, ARG4);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, SET_CEILING, %" FMT_REGWORD "u, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4);
       PRE_REG_READ4(long, "_umtx_op_set_ceiling",
                     struct umutex *, obj, int, op, unsigned int, ceiling,
                     unsigned int *, old_ceiling);
@@ -2387,7 +2425,7 @@ PRE(sys__umtx_op)
          PRE_MEM_WRITE( "_umtx_op_set_ceiling(old_ceiling)", ARG4, sizeof(vki_uint32_t) );
       break;
    case VKI_UMTX_OP_CV_WAIT:
-      PRINT( "sys__umtx_op ( %#lx, CV_WAIT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_cv_wait",
                     struct ucond *, obj, int, op, unsigned long, wflags,
                     struct umutex *, umtx, struct vki_timespec *, timeout);
@@ -2400,21 +2438,21 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_CV_SIGNAL:
-      PRINT( "sys__umtx_op ( %#lx, CV_SIGNAL)", ARG1);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_SIGNAL)", ARG1);
       PRE_REG_READ2(long, "_umtx_op_cv_signal",
                     struct ucond *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_cv_signal(cond)", ARG1, sizeof(struct vki_ucond) );
       PRE_MEM_WRITE( "_umtx_op_cv_signal(cond)", ARG1, sizeof(struct vki_ucond) );
       break;
    case VKI_UMTX_OP_CV_BROADCAST:
-      PRINT( "sys__umtx_op ( %#lx, CV_BROADCAST, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_BROADCAST, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ2(long, "_umtx_op_cv_broadcast",
                     struct ucond *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_cv_broadcast(cond)", ARG1, sizeof(struct vki_ucond) );
       PRE_MEM_WRITE( "_umtx_op_cv_broadcast(cond)", ARG1, sizeof(struct vki_ucond) );
       break;
    case VKI_UMTX_OP_WAIT_UINT:
-      PRINT( "sys__umtx_op ( %#lx, CV_WAIT_UINT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_WAIT_UINT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_wait_uint",
                     int *, obj, int, op, unsigned long, id,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2424,7 +2462,7 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_RW_RDLOCK:
-      PRINT( "sys__umtx_op ( %#lx, RW_RDLOCK, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, RW_RDLOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_rw_rdlock",
                     struct urwlock *, obj, int, op, unsigned long, noid,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2433,7 +2471,7 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_RW_WRLOCK:
-      PRINT( "sys__umtx_op ( %#lx, RW_WRLOCK, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, RW_WRLOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_rw_wrlock",
                     struct urwlock *, obj, int, op, unsigned long, noid,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2442,14 +2480,14 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_RW_UNLOCK:
-      PRINT( "sys__umtx_op ( %#lx, RW_UNLOCK, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, RW_UNLOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ2(long, "_umtx_op_rw_unlock",
                     struct urwlock *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_rw_unlock(rw)", ARG1, sizeof(struct vki_urwlock) );
       PRE_MEM_WRITE( "_umtx_op_rw_unlock(rw)", ARG1, sizeof(struct vki_urwlock) );
       break;
    case VKI_UMTX_OP_WAIT_UINT_PRIVATE:
-      PRINT( "sys__umtx_op ( %#lx, CV_WAIT_UINT_PRIVATE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_WAIT_UINT_PRIVATE, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_wait_uint_private",
                     int *, obj, int, op, unsigned long, id,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2459,13 +2497,13 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_WAKE_PRIVATE:
-      PRINT( "sys__umtx_op ( %#lx, CV_WAKE_PRIVATE, %lu)", ARG1, ARG3);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_WAKE_PRIVATE, %" FMT_REGWORD "u)", ARG1, ARG3);
       PRE_REG_READ3(long, "_umtx_op_wake_private",
                     struct umtx *, obj, int, op, unsigned long, id);
       PRE_MEM_READ( "_umtx_op_wake_private(mtx)", ARG1, sizeof(struct vki_umtx) );
       break;
    case VKI_UMTX_OP_MUTEX_WAIT:
-      PRINT( "sys__umtx_op ( %#lx, MUTEX_WAIT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ2(long, "_umtx_op_mutex_wait",
                     struct umutex *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_mutex_wait(mutex)", ARG1, sizeof(struct vki_umutex) );
@@ -2473,14 +2511,14 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_MUTEX_WAKE:
-      PRINT( "sys__umtx_op ( %#lx, MUTEX_WAKE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_WAKE, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ2(long, "_umtx_op_mutex_wake",
                     struct umutex *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_mutex_wake(mutex)", ARG1, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_mutex_wake(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_SEM_WAIT:
-      PRINT( "sys__umtx_op ( %#lx, SEM_WAIT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, SEM_WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_sem_wait",
                     struct usem *, obj, int, op, unsigned long, id,
                     void *, zero, struct vki_timespec *, timeout);
@@ -2491,28 +2529,28 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_SEM_WAKE:
-      PRINT( "sys__umtx_op ( %#lx, SEM_WAKE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, SEM_WAKE, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ2(long, "_umtx_op_sem_wake",
                     struct umutex *, obj, int, op);
       PRE_MEM_READ( "_umtx_op_sem_wake(mutex)", ARG1, sizeof(struct vki_usem) );
       PRE_MEM_WRITE( "_umtx_op_sem_wake(mutex)", ARG1, sizeof(struct vki_usem) );
       break;
    case VKI_UMTX_OP_NWAKE_PRIVATE:
-      PRINT( "sys__umtx_op ( %#lx, NWAKE_PRIVATE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, NWAKE_PRIVATE, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_nwake_private",
                     struct umutex *, obj, int, op, int, count);
       PRE_MEM_READ( "_umtx_op_nwake_private(mtxs)", ARG1, ARG3 * sizeof(void *) );
       PRE_MEM_WRITE( "_umtx_op_mutex_wake(mtxs)", ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_MUTEX_WAKE2:
-      PRINT( "sys__umtx_op ( %#lx, MUTEX_WAKE2, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_WAKE2, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_mutex_wake2",
                     struct umutex *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_mutex_wake(mutex)", ARG1, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_mutex_wake(mutex)", ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_SEM2_WAIT:
-      PRINT( "sys__umtx_op ( %#lx, SEM2_WAIT, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, SEM2_WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_sem2_wake",
                     struct _usem2 *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
@@ -2520,14 +2558,14 @@ PRE(sys__umtx_op)
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_SEM2_WAKE:
-      PRINT( "sys__umtx_op ( %#lx, SEM2_WAKE, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, SEM2_WAKE, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_sem2_wake",
                     struct _usem2 *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
       PRE_MEM_WRITE( "_umtx_op_sem2_wait(mutex)", ARG1, sizeof(struct vki_usem2) );
       break;
    case VKI_UMTX_OP_SHM:
-      PRINT( "sys__umtx_op ( %#lx, SHM, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, SHM, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ4(long, "_umtx_op_shm",
                     void *, obj, int, op, unsigned long, val, void*, uaddr);
       break;
@@ -2538,7 +2576,7 @@ PRE(sys__umtx_op)
       if (ARG1 != sizeof(struct vki_umtx_robust_lists_params))
           SET_STATUS_Failure( VKI_ENOSYS );
       VG_(umsg)("WARNING: _umtx_op not fully supported with ROBUST LISTS.\n");
-      PRINT( "sys__umtx_op ( %#lx, ROBUST_LISTS, %lu, %#lx, %#lx)", ARG1, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, ROBUST_LISTS, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_robust_lists",
                     struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_robust_lists(mutex)", ARG3, sizeof(struct vki_umtx_robust_lists_params) );
@@ -2547,7 +2585,7 @@ PRE(sys__umtx_op)
       break;
    default:
       VG_(umsg)("WARNING: _umtx_op unsupported value.\n");
-      PRINT( "sys__umtx_op ( %#lx, %lu(UNKNOWN), %lu, %#lx, %#lx )", ARG1, ARG2, ARG3, ARG4, ARG5);
+      PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u(UNKNOWN), %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3, ARG4, ARG5);
       break;
    }
 //   tst = VG_(get_ThreadState)(tid);
@@ -2625,7 +2663,7 @@ POST(sys__umtx_op)
 
 PRE(sys__umtx_lock)
 {
-   PRINT( "sys__umtx_lock ( %#lx )", ARG1);
+   PRINT( "sys__umtx_lock ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "_umtx_lock", struct vki_umtx *, umtx);
    PRE_MEM_READ( "_umtx_lock(mtx)", ARG1, sizeof(struct vki_umtx) );
    PRE_MEM_WRITE( "_umtx_lock(mtx)", ARG1, sizeof(struct vki_umtx) );
@@ -2639,7 +2677,7 @@ POST(sys__umtx_lock)
 
 PRE(sys__umtx_unlock)
 {
-   PRINT( "sys__umtx_unlock ( %#lx )", ARG1);
+   PRINT( "sys__umtx_unlock ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "_umtx_unlock", struct vki_umtx *, umtx);
    PRE_MEM_READ( "_umtx_unlock(mtx)", ARG1, sizeof(struct vki_umtx) );
    PRE_MEM_WRITE( "_umtx_unlock(mtx)", ARG1, sizeof(struct vki_umtx) );
@@ -2653,7 +2691,7 @@ POST(sys__umtx_unlock)
 
 PRE(sys_rtprio_thread)
 {
-   PRINT( "sys_rtprio_thread ( %lu, %lu, %#lx )", ARG1, ARG2, ARG3 );
+   PRINT( "sys_rtprio_thread ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3 );
    PRE_REG_READ3(long, "rtprio_thread",
       int, "function", __vki_lwpid_t, "lwpid", struct vki_rtprio *, "rtp");
    if (ARG1 == VKI_RTP_SET) {
@@ -2664,6 +2702,7 @@ PRE(sys_rtprio_thread)
 	/* PHK ?? */
    }
 }
+
 POST(sys_rtprio_thread)
 {
    if (ARG1 == VKI_RTP_LOOKUP && RES == 0)
@@ -2676,10 +2715,11 @@ POST(sys_rtprio_thread)
 
 PRE(sys_sigpending)
 {
-   PRINT( "sys_sigpending ( %#lx )", ARG1 );
+   PRINT( "sys_sigpending ( %#" FMT_REGWORD "x )", ARG1 );
    PRE_REG_READ1(long, "sigpending", vki_sigset_t *, set);
    PRE_MEM_WRITE( "sigpending(set)", ARG1, sizeof(vki_sigset_t));
 }
+
 POST(sys_sigpending)
 {
    POST_MEM_WRITE( ARG1, sizeof(vki_sigset_t) ) ;
@@ -2693,7 +2733,7 @@ static int sigformat[_VKI_NSIG];
 
 PRE(sys_sigaction4)
 {
-   PRINT("sys_sigaction ( %lu, %#lx, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys_sigaction ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "sigaction",
                  int, signum, const struct sigaction *, act,
                  struct sigaction *, oldact);
@@ -2715,6 +2755,7 @@ PRE(sys_sigaction4)
                             (vki_sigaction_fromK_t *)ARG3)
    );
 }
+
 POST(sys_sigaction4)
 {
    vg_assert(SUCCESS);
@@ -2725,7 +2766,7 @@ POST(sys_sigaction4)
 /* Identical, but warns the signal handler to expect the different sigframe */
 PRE(sys_sigaction)
 {
-   PRINT("sys_sigaction6 ( %lu, %#lx, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys_sigaction6 ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "sigaction6",
                  int, signum, const struct sigaction *, act,
                  struct sigaction *, oldact);
@@ -2746,6 +2787,7 @@ PRE(sys_sigaction)
                             (vki_sigaction_fromK_t *)ARG3)
    );
 }
+
 POST(sys_sigaction)
 {
    vg_assert(SUCCESS);
@@ -2756,7 +2798,7 @@ POST(sys_sigaction)
 
 PRE(sys_sigprocmask)
 {
-   PRINT("sys_sigprocmask ( %lu, %#lx, %#lx )",ARG1,ARG2,ARG3);
+   PRINT("sys_sigprocmask ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "sigprocmask", 
                  int, how, vki_sigset_t *, set, vki_sigset_t *, oldset);
    if (ARG2 != 0)
@@ -2773,6 +2815,7 @@ PRE(sys_sigprocmask)
    if (SUCCESS)
       *flags |= SfPollAfter;
 }
+
 POST(sys_sigprocmask)
 {
    vg_assert(SUCCESS);
@@ -2784,7 +2827,7 @@ POST(sys_sigprocmask)
 PRE(sys_sigtimedwait)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_sigtimedwait ( %#lx, %#lx, %#lx )",
+   PRINT("sys_sigtimedwait ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "sigtimedwait", 
                  const vki_sigset_t *, set, vki_siginfo_t *, info,
@@ -2797,6 +2840,7 @@ PRE(sys_sigtimedwait)
       PRE_MEM_READ( "sigtimedwait(timeout)",
                     ARG3, sizeof(struct vki_timespec) );
 }
+
 POST(sys_sigtimedwait)
 {
    if (ARG2 != 0)
@@ -2807,7 +2851,7 @@ POST(sys_sigtimedwait)
 PRE(sys_sigwaitinfo)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_sigwaitinfo ( %#lx, %#lx )",
+   PRINT("sys_sigwaitinfo ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          ARG1,ARG2);
    PRE_REG_READ2(long, "sigwaitinfo", 
                  const vki_sigset_t *, set, vki_siginfo_t *, info);
@@ -2816,6 +2860,7 @@ PRE(sys_sigwaitinfo)
    if (ARG2 != 0)
       PRE_MEM_WRITE( "sigwaitinfo(info)", ARG2, sizeof(vki_siginfo_t) );
 }
+
 POST(sys_sigwaitinfo)
 {
    if (ARG2 != 0)
@@ -2825,12 +2870,13 @@ POST(sys_sigwaitinfo)
 #if 0	/* not on freebsd 4.x */
 PRE(sys_rt_sigqueueinfo)
 {
-   PRINT("sys_rt_sigqueueinfo(%ld, %ld, %#lx)", ARG1, ARG2, ARG3);
+   PRINT("sys_rt_sigqueueinfo(%" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x)", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "rt_sigqueueinfo", 
                  int, pid, int, sig, vki_siginfo_t *, uinfo);
    if (ARG2 != 0)
       PRE_MEM_READ( "rt_sigqueueinfo(uinfo)", ARG3, sizeof(vki_siginfo_t) );
 }
+
 POST(sys_rt_sigqueueinfo)
 {
    if (!ML_(client_signal_OK)(ARG2))
@@ -2841,7 +2887,7 @@ POST(sys_rt_sigqueueinfo)
 PRE(sys_sigsuspend)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_sigsuspend ( %#lx )", ARG1 );
+   PRINT("sys_sigsuspend ( %#" FMT_REGWORD "x )", ARG1 );
    PRE_REG_READ1(int, "sigsuspend", vki_sigset_t *, mask)
    if (ARG1 != (Addr)NULL) {
       PRE_MEM_READ( "_sigsuspend(mask)", ARG1, sizeof(vki_sigset_t) );
@@ -2955,7 +3001,7 @@ ML_(linux_POST_sys_msgctl) ( ThreadId tid,
 
 PRE(sys_chflags)
 {
-   PRINT("sys_chflags ( %#lx(%s), 0x%lx )", ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_chflags ( %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "chown",
                  const char *, path, vki_int32_t, flags);
    PRE_MEM_RASCIIZ( "chflags(path)", ARG1 );
@@ -2963,21 +3009,21 @@ PRE(sys_chflags)
 
 PRE(sys_fchflags)
 {
-   PRINT("sys_fchflags ( %lu, %lu )", ARG1,ARG2);
+   PRINT("sys_fchflags ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "fchflags", unsigned int, fildes, vki_int32_t, flags);
 }
 
 
 PRE(sys_modfind)
 {
-   PRINT("sys_modfind ( %#lx )",ARG1);
+   PRINT("sys_modfind ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(long, "modfind", char *, modname);
    PRE_MEM_RASCIIZ( "modfind(modname)", ARG1 );
 }
 
 PRE(sys_modstat)
 {
-   PRINT("sys_modstat ( %lu, %#lx )",ARG1,ARG2);
+   PRINT("sys_modstat ( %lu, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "modstat", int, modid, struct module_stat *, buf);
    PRE_MEM_WRITE( "modstat(buf)", ARG2, sizeof(struct vki_module_stat) );
 }
@@ -3043,7 +3089,7 @@ PRE(sys_lkmnosys8)
 
 PRE(sys_kenv)
 {
-   PRINT("sys_kenv ( %lu, %#lx, %#lx, %lu )", ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_kenv ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "kenv",
                  int, action, const char *, name, char *, value, int, len);
    switch (ARG1) {
@@ -3076,7 +3122,7 @@ POST(sys_kenv)
 
 PRE(sys_uuidgen)
 {
-   PRINT("sys_uuidgen ( %#lx, %lu )", ARG1,ARG2);
+   PRINT("sys_uuidgen ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "uuidgen",
 		 struct vki_uuid *, store, int, count);
    PRE_MEM_WRITE( "uuidgen(store)", ARG1, ARG2 * sizeof(struct vki_uuid));
@@ -3088,17 +3134,16 @@ POST(sys_uuidgen)
       POST_MEM_WRITE( ARG1, ARG2 * sizeof(struct vki_uuid) );
 }
 
-
 PRE(sys_shmget)
 {
-   PRINT("sys_shmget ( %lu, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_shmget ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "shmget", vki_key_t, key, vki_size_t, size, int, shmflg);
 }
 
 PRE(sys_shmat)
 {
    UWord arg2tmp;
-   PRINT("sys_shmat ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_shmat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "shmat",
                  int, shmid, const void *, shmaddr, int, shmflg);
    arg2tmp = ML_(generic_PRE_sys_shmat)(tid, ARG1,ARG2,ARG3);
@@ -3115,7 +3160,7 @@ POST(sys_shmat)
 
 PRE(sys_shmdt)
 {
-   PRINT("sys_shmdt ( %#lx )",ARG1);
+   PRINT("sys_shmdt ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(long, "shmdt", const void *, shmaddr);
    if (!ML_(generic_PRE_sys_shmdt)(tid, ARG1))
       SET_STATUS_Failure( VKI_EINVAL );
@@ -3128,7 +3173,7 @@ POST(sys_shmdt)
 
 PRE(sys_shmctl)
 {
-   PRINT("sys_shmctl ( %lu, %lu, %#lx )",ARG1,ARG2,ARG3);
+   PRINT("sys_shmctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "shmctl",
                  int, shmid, int, cmd, struct vki_shmid_ds *, buf);
    switch (ARG2 /* cmd */) {
@@ -3146,7 +3191,7 @@ PRE(sys_shmctl)
 
 PRE(sys_shmctl7)
 {
-   PRINT("sys_shmctl7 ( %lu, %lu, %#lx )",ARG1,ARG2,ARG3);
+   PRINT("sys_shmctl7 ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "shmctl",
                  int, shmid, int, cmd, struct vki_shmid_ds7 *, buf);
    switch (ARG2 /* cmd */) {
@@ -3177,7 +3222,7 @@ POST(sys_shmctl7)
 
 PRE(sys_semget)
 {
-   PRINT("sys_semget ( %lu, %lu, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_semget ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "semget", vki_key_t, key, int, nsems, int, semflg);
 }
 
@@ -3186,9 +3231,9 @@ PRE(sys_shm_open)
    PRE_REG_READ3(long, "shm_open",
                 const char *, "name", int, "flags", vki_mode_t, "mode");
    if (ARG1 == VKI_SHM_ANON) {
-      PRINT("sys_shm_open(%#lx(SHM_ANON), %lu, %lu)", ARG1, ARG2, ARG3);
+      PRINT("sys_shm_open(%#" FMT_REGWORD "x(SHM_ANON), %" FMT_REGWORD "u, %" FMT_REGWORD "u)", ARG1, ARG2, ARG3);
    } else {
-      PRINT("sys_shm_open(%#lx(%s), %lu, %lu)", ARG1, (char *)ARG1, ARG2, ARG3);
+      PRINT("sys_shm_open(%#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %" FMT_REGWORD "u)", ARG1, (char *)ARG1, ARG2, ARG3);
       PRE_MEM_RASCIIZ( "shm_open(filename)", ARG1 );
    }
    *flags |= SfMayBlock;
@@ -3208,7 +3253,7 @@ POST(sys_shm_open)
 
 PRE(sys_shm_unlink)
 {
-   PRINT("sys_shm_unlink(%#lx(%s))", ARG1, (char *)ARG1);
+   PRINT("sys_shm_unlink(%#" FMT_REGWORD "x(%s))", ARG1, (char *)ARG1);
    PRE_REG_READ1(long, "shm_unlink",
                  const char *, "name");
 
@@ -3220,7 +3265,7 @@ PRE(sys_shm_unlink)
 PRE(sys_semop)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_semop ( %lu, %#lx, %lu )",ARG1,ARG2,ARG3);
+   PRINT("sys_semop ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "semop",
                  int, semid, struct sembuf *, sops, unsigned, nsoops);
    ML_(generic_PRE_sys_semop)(tid, ARG1,ARG2,ARG3);
@@ -3254,25 +3299,25 @@ PRE(sys___semctl7)
    switch (ARG3) {
    case VKI_IPC_INFO:
    case VKI_SEM_INFO:
-      PRINT("sys_semctl ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "semctl",
                     int, semid, int, semnum, int, cmd, struct seminfo *, arg);
       break;
    case VKI_IPC_STAT:
    case VKI_SEM_STAT:
    case VKI_IPC_SET:
-      PRINT("sys_semctl ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "semctl",
                     int, semid, int, semnum, int, cmd, struct semid_ds7 *, arg);
       break;
    case VKI_GETALL:
    case VKI_SETALL:
-      PRINT("sys_semctl ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "semctl",
                     int, semid, int, semnum, int, cmd, unsigned short *, arg);
       break;
    default:
-      PRINT("sys_semctl ( %lu, %lu, %lu )",ARG1,ARG2,ARG3);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
       PRE_REG_READ3(long, "semctl",
                     int, semid, int, semnum, int, cmd);
       break;
@@ -3290,25 +3335,25 @@ PRE(sys___semctl)
    switch (ARG3) {
    case VKI_IPC_INFO:
    case VKI_SEM_INFO:
-      PRINT("sys_semctl ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "semctl",
                     int, semid, int, semnum, int, cmd, struct seminfo *, arg);
       break;
    case VKI_IPC_STAT:
    case VKI_SEM_STAT:
    case VKI_IPC_SET:
-      PRINT("sys_semctl ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "semctl",
                     int, semid, int, semnum, int, cmd, struct semid_ds *, arg);
       break;
    case VKI_GETALL:
    case VKI_SETALL:
-      PRINT("sys_semctl ( %lu, %lu, %lu, %#lx )",ARG1,ARG2,ARG3,ARG4);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(long, "semctl",
                     int, semid, int, semnum, int, cmd, unsigned short *, arg);
       break;
    default:
-      PRINT("sys_semctl ( %lu, %lu, %lu )",ARG1,ARG2,ARG3);
+      PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
       PRE_REG_READ3(long, "semctl",
                     int, semid, int, semnum, int, cmd);
       break;
@@ -3323,7 +3368,7 @@ POST(sys___semctl)
 
 PRE(sys_eaccess)
 {
-   PRINT("sys_eaccess ( %#lx(%s), %lu )", ARG1,(char*)ARG1,ARG2);
+   PRINT("sys_eaccess ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char*)ARG1,ARG2);
    PRE_REG_READ2(long, "eaccess", const char *, pathname, int, mode);
    PRE_MEM_RASCIIZ( "eaccess(pathname)", ARG1 );
 }
@@ -3338,12 +3383,12 @@ PRE(sys_openat)
 
    if (ARG3 & VKI_O_CREAT) {
       // 4-arg version
-      PRINT("sys_openat ( %lu, %#lx(%s), %lu, %lu )",ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
+      PRINT("sys_openat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
       PRE_REG_READ4(int, "openat",
                     int, dfd, const char *, filename, int, flags, vki_mode_t, mode);
    } else {
       // 3-arg version
-      PRINT("sys_openat ( %lu, %#lx(%s), %lu )",ARG1,ARG2,(char*)ARG2,ARG3);
+      PRINT("sys_openat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )",ARG1,ARG2,(char*)ARG2,ARG3);
       PRE_REG_READ3(int, "openat",
                     int, dfd, const char *, filename, int, flags);
    }
@@ -3372,7 +3417,7 @@ POST(sys_openat)
 PRE(sys_mkdirat)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_mkdirat ( %lu, %#lx(%s), %lu )", ARG1,ARG2,(char*)ARG2,ARG3);
+   PRINT("sys_mkdirat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(long, "mkdirat",
                  int, dfd, const char *, pathname, int, mode);
    PRE_MEM_RASCIIZ( "mkdirat(pathname)", ARG2 );
@@ -3380,7 +3425,7 @@ PRE(sys_mkdirat)
 
 PRE(sys_mkfifoat)
 {
-  PRINT("sys_mkfifoat ( %lu, %#lx(%s), 0x%lx )", ARG1,ARG2,(char*)ARG2,ARG3 );
+  PRINT("sys_mkfifoat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3 );
    PRE_REG_READ3(long, "mkfifoat",
                  int, dfd, const char *, pathname, int, mode);
    PRE_MEM_RASCIIZ( "mkfifoat(pathname)", ARG2 );
@@ -3388,7 +3433,7 @@ PRE(sys_mkfifoat)
 
 PRE(sys_mknodat)
 {
-  PRINT("sys_mknodat ( %lu, %#lx(%s), 0x%lx, 0x%lx )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+  PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
    PRE_REG_READ4(long, "mknodat",
                  int, dfd, const char *, pathname, int, mode, unsigned, dev);
    PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
@@ -3396,7 +3441,7 @@ PRE(sys_mknodat)
 
 PRE(sys_fchownat)
 {
-   PRINT("sys_fchownat ( %lu, %#lx(%s), 0x%lx, 0x%lx )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
+   PRINT("sys_fchownat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "fchownat",
                  int, dfd, const char *, path,
                  vki_uid_t, owner, vki_gid_t, group);
@@ -3405,7 +3450,7 @@ PRE(sys_fchownat)
 
 PRE(sys_futimesat)
 {
-   PRINT("sys_futimesat ( %lu, %#lx(%s), %#lx )", ARG1,ARG2,(char*)ARG2,ARG3);
+   PRINT("sys_futimesat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(long, "futimesat",
                  int, dfd, char *, filename, struct timeval *, tvp);
    if (ARG2 != 0)
@@ -3416,7 +3461,7 @@ PRE(sys_futimesat)
 
 PRE(sys_fstatat)
 {
-   PRINT("sys_fstatat ( %lu, %#lx(%s), %#lx )", ARG1,ARG2,(char*)ARG2,ARG3);
+   PRINT("sys_fstatat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(long, "fstatat",
                  int, dfd, char *, file_name, struct stat *, buf);
    PRE_MEM_RASCIIZ( "fstatat(file_name)", ARG2 );
@@ -3431,7 +3476,7 @@ POST(sys_fstatat)
 PRE(sys_unlinkat)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_unlinkat ( %lu, %#lx(%s) )", ARG1,ARG2,(char*)ARG2);
+   PRINT("sys_unlinkat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s) )", ARG1,ARG2,(char*)ARG2);
    PRE_REG_READ2(long, "unlinkat", int, dfd, const char *, pathname);
    PRE_MEM_RASCIIZ( "unlinkat(pathname)", ARG2 );
 }
@@ -3439,15 +3484,14 @@ PRE(sys_unlinkat)
 //int posix_openpt(int oflag);
 PRE(sys_posix_openpt)
 {
-   PRINT("sys_posix_openpt ( %ld )", SARG2);
+   PRINT("sys_posix_openpt ( %" FMT_REGWORD "d )", SARG2);
    PRE_REG_READ1(long, "posix_openpt", int, oflag);
 
 }
 
 PRE(sys_jail_get)
 {
-
-    PRINT("sys_jail_get ( %#lx, %lu, %lu )", ARG1, ARG2, ARG3);
+    PRINT("sys_jail_get ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
     PRE_REG_READ3(int, "jail_get", struct vki_iovec *, iov, unsigned int,
         niov, int, flags);
     PRE_MEM_WRITE("jail_get", ARG1, ARG2 * sizeof(struct vki_iovec));
@@ -3461,7 +3505,7 @@ POST(sys_jail_get)
 
 PRE(sys_jail_set)
 {
-    PRINT("sys_jail_set ( %#lx, %lu, %lu )", ARG1, ARG2, ARG3);
+    PRINT("sys_jail_set ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
     PRE_REG_READ3(int, "jail_set", struct vki_iovec *, iov, unsigned int,
         niov, int, flags);
     PRE_MEM_WRITE("jail_set", ARG1, ARG2 * sizeof(struct vki_iovec));
@@ -3469,19 +3513,19 @@ PRE(sys_jail_set)
 
 PRE(sys_jail_attach)
 {
-    PRINT("sys_jail_attach ( %ld )", SARG1);
+    PRINT("sys_jail_attach ( %" FMT_REGWORD "d )", SARG1);
     PRE_REG_READ1(int, "jail_attach", int, jid);
 }
 
 PRE(sys_jail_remove)
 {
-    PRINT("sys_jail_remove ( %ld )", SARG1);
+    PRINT("sys_jail_remove ( %" FMT_REGWORD "d )", SARG1);
     PRE_REG_READ1(int, "jail_remove", int, jid);
 }
 
 PRE(sys_renameat)
 {
-   PRINT("sys_renameat ( %lu, %#lx(%s), %lu, %#lx(%s) )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4,(char*)ARG4);
+   PRINT("sys_renameat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s) )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4,(char*)ARG4);
    PRE_REG_READ4(long, "renameat",
                  int, olddfd, const char *, oldpath,
                  int, newdfd, const char *, newpath);
@@ -3492,7 +3536,7 @@ PRE(sys_renameat)
 PRE(sys_linkat)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_linkat ( %lu, %#lx(%s), %lu, %#lx(%s), %lu )",ARG1,ARG2,(char*)ARG2,ARG3,ARG4,(char*)ARG4,ARG5);
+   PRINT("sys_linkat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )",ARG1,ARG2,(char*)ARG2,ARG3,ARG4,(char*)ARG4,ARG5);
    PRE_REG_READ5(long, "linkat",
                  int, olddfd, const char *, oldpath,
                  int, newdfd, const char *, newpath,
@@ -3504,7 +3548,7 @@ PRE(sys_linkat)
 PRE(sys_symlinkat)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_symlinkat ( %#lx(%s), %lu, %#lx(%s) )",ARG1,(char*)ARG1,ARG2,ARG3,(char*)ARG3);
+   PRINT("sys_symlinkat ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s) )",ARG1,(char*)ARG1,ARG2,ARG3,(char*)ARG3);
    PRE_REG_READ3(long, "symlinkat",
                  const char *, oldpath, int, newdfd, const char *, newpath);
    PRE_MEM_RASCIIZ( "symlinkat(oldpath)", ARG1 );
@@ -3516,7 +3560,7 @@ PRE(sys_readlinkat)
    HChar name[25];
    Word  saved = SYSNO;
 
-   PRINT("sys_readlinkat ( %lu, %#lx(%s), %#lx, %llu )", ARG1,ARG2,(char*)ARG2,ARG3,(ULong)ARG4);
+   PRINT("sys_readlinkat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %llu )", ARG1,ARG2,(char*)ARG2,ARG3,(ULong)ARG4);
    PRE_REG_READ4(long, "readlinkat",
                  int, dfd, const char *, path, char *, buf, int, bufsiz);
    PRE_MEM_RASCIIZ( "readlinkat(path)", ARG2 );
@@ -3538,13 +3582,13 @@ PRE(sys_readlinkat)
       SET_STATUS_from_SysRes( VG_(do_syscall4)(saved, ARG1, ARG2, ARG3, ARG4));
    }
 
-   if (SUCCESS && RES > 0)
+   if (SUCCESS && (Word)RES != -1)
       POST_MEM_WRITE( ARG3, RES );
 }
 
 PRE(sys_fchmodat)
 {
-   PRINT("sys_fchmodat ( %lu, %#lx(%s), %lu )", ARG1,ARG2,(char*)ARG2,ARG3);
+   PRINT("sys_fchmodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(long, "fchmodat",
                  int, dfd, const char *, path, vki_mode_t, mode);
    PRE_MEM_RASCIIZ( "fchmodat(path)", ARG2 );
@@ -3552,7 +3596,7 @@ PRE(sys_fchmodat)
 
 PRE(sys_faccessat)
 {
-   PRINT("sys_faccessat ( %lu, %#lx(%s), %lu )", ARG1,ARG2,(char*)ARG2,ARG3);
+   PRINT("sys_faccessat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(long, "faccessat",
                  int, dfd, const char *, pathname, int, mode);
    PRE_MEM_RASCIIZ( "faccessat(pathname)", ARG2 );
@@ -3564,7 +3608,7 @@ PRE(sys_faccessat)
 
 PRE(sys___acl_get_file)
 {
-   PRINT("sys___acl_get_file ( %#lx(%s), %lu, %#lx )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys___acl_get_file ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_get_file",
                  const char *, path, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_WRITE( "__acl_get_file(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3580,7 +3624,7 @@ POST(sys___acl_get_file)
 
 PRE(sys___acl_set_file)
 {
-   PRINT("sys___acl_set_file ( %#lx(%s), %lu, %#lx )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys___acl_set_file ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_set_file",
                  const char *, path, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_READ( "__acl_set_file(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3588,7 +3632,7 @@ PRE(sys___acl_set_file)
 
 PRE(sys___acl_get_fd)
 {
-   PRINT("sys___acl_get_fd ( %lu, %lu, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys___acl_get_fd ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_get_fd",
                  int, fd, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_WRITE( "__acl_get_file(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3604,7 +3648,7 @@ POST(sys___acl_get_fd)
 
 PRE(sys___acl_set_fd)
 {
-   PRINT("sys___acl_set_fd ( %lu, %lu, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys___acl_set_fd ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_set_fd",
                  int, fd, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_READ( "__acl_get_file(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3612,21 +3656,21 @@ PRE(sys___acl_set_fd)
 
 PRE(sys___acl_delete_file)
 {
-   PRINT("sys___acl_delete_file ( %#lx(%s), %lu )", ARG1,(char *)ARG1,ARG2);
+   PRINT("sys___acl_delete_file ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "__acl_delete_file",
                  const char *, path, int, acltype);
 }
 
 PRE(sys___acl_delete_fd)
 {
-   PRINT("sys___acl_delete_fd ( %lu, %lu )", ARG1,ARG2);
+   PRINT("sys___acl_delete_fd ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "__acl_delete_fd",
                  int, fd, int, acltype);
 }
 
 PRE(sys___acl_aclcheck_file)
 {
-   PRINT("sys___acl_aclcheck_file ( %#lx(%s), %lu, %#lx )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys___acl_aclcheck_file ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_aclcheck_file",
                  const char *, path, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_READ( "__acl_aclcheck_file(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3634,7 +3678,7 @@ PRE(sys___acl_aclcheck_file)
 
 PRE(sys___acl_aclcheck_fd)
 {
-   PRINT("sys___acl_aclcheck_fd ( %lu, %lu, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys___acl_aclcheck_fd ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_aclcheck_fd",
                  int, fd, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_READ( "__acl_aclcheck_fd(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3642,7 +3686,7 @@ PRE(sys___acl_aclcheck_fd)
 
 PRE(sys___acl_get_link)
 {
-   PRINT("sys___acl_get_link ( %#lx(%s), %lu, %#lx )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys___acl_get_link ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_get_link",
                  const char *, path, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_WRITE( "__acl_get_link(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3658,7 +3702,7 @@ POST(sys___acl_get_link)
 
 PRE(sys___acl_set_link)
 {
-   PRINT("sys___acl_set_link ( %#lx(%s), %lu, %#lx )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys___acl_set_link ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_set_link",
                  const char *, path, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_READ( "__acl_set_link(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3666,14 +3710,14 @@ PRE(sys___acl_set_link)
 
 PRE(sys___acl_delete_link)
 {
-   PRINT("sys___acl_delete_link ( %#lx(%s), %lu )", ARG1,(char *)ARG1,ARG2);
+   PRINT("sys___acl_delete_link ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "__acl_delete_link",
                  const char *, path, int, acltype);
 }
 
 PRE(sys___acl_aclcheck_link)
 {
-   PRINT("sys___acl_aclcheck_link ( %#lx(%s), %lu, %#lx )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys___acl_aclcheck_link ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "__acl_aclcheck_link",
                  const char *, path, int, acltype, struct vki_acl *, aclp);
    PRE_MEM_READ( "__acl_aclcheck_link(aclp)", ARG3, sizeof(struct vki_acl) );
@@ -3682,7 +3726,7 @@ PRE(sys___acl_aclcheck_link)
 PRE(sys_sigwait)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_sigwait ( %#lx, %#lx )",
+   PRINT("sys_sigwait ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          ARG1,ARG2);
    PRE_REG_READ2(long, "sigwait",
                  const vki_sigset_t *, set, int *, sig);
@@ -3716,7 +3760,7 @@ PRE(sys_fcntl)
    case VKI_F_GETFD:
    case VKI_F_GETFL:
    case VKI_F_GETOWN:
-      PRINT("sys_fcntl ( %lu, %lu )", ARG1,ARG2);
+      PRINT("sys_fcntl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
       PRE_REG_READ2(long, "fcntl", unsigned int, fd, unsigned int, cmd);
       break;
 
@@ -3728,7 +3772,7 @@ PRE(sys_fcntl)
    case VKI_F_SETOWN:
    case VKI_F_READAHEAD:
    case VKI_F_RDAHEAD:
-      PRINT("sys_fcntl[ARG3=='arg'] ( %lu, %lu, %lu )", ARG1,ARG2,ARG3);
+      PRINT("sys_fcntl[ARG3=='arg'] ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
       PRE_REG_READ3(long, "fcntl",
                     unsigned int, fd, unsigned int, cmd, unsigned long, arg);
       break;
@@ -3801,7 +3845,7 @@ PRE(sys_ioctl)
    UInt dir  = _VKI_IOC_DIR(ARG2);
    UInt size = _VKI_IOC_SIZE(ARG2);
    *flags |= SfMayBlock;
-   PRINT("sys_ioctl ( %lu, 0x%lx, %#lx )",ARG1,ARG2,ARG3);
+   PRINT("sys_ioctl ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "ioctl",
                  unsigned int, fd, unsigned int, request, unsigned long, arg);
 
@@ -3851,7 +3895,7 @@ POST(sys_ioctl)
 PRE(sys_ptrace)
 {
    struct vki_ptrace_io_desc *io_desc;
-   PRINT("sys_ptrace ( %lu, %lu, 0x%lx, %lu)", ARG1, ARG2, ARG3, ARG4);
+   PRINT("sys_ptrace ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "u)", ARG1, ARG2, ARG3, ARG4);
 
    PRE_REG_READ4(int, "ptrace", int, request, int, pid, char *, addr, int, data);
 
@@ -3981,7 +4025,7 @@ POST(sys_ptrace)
          switch (io_desc->piod_op) {
             case VKI_PIOD_READ_D:
             case VKI_PIOD_READ_I:
-               if (RES > 0)
+               if ((Word)RES != -1)
                   POST_MEM_WRITE((UWord)io_desc->piod_addr, io_desc->piod_len);
                break;
             case VKI_PIOD_WRITE_D:
@@ -4006,7 +4050,7 @@ POST(sys_ptrace)
          break;
 
       case VKI_PTRACE_GETREGS:
-         if (RES > 0)
+         if ((Word)RES != -1)
             POST_MEM_WRITE(ARG3, sizeof(struct vki_reg_struct));
          break;
 
@@ -4014,7 +4058,7 @@ POST(sys_ptrace)
          break;
 
       case VKI_PTRACE_GETFPREGS:
-         if (RES > 0)
+         if ((Word)RES != -1)
             POST_MEM_WRITE(ARG3, sizeof(struct vki_fpreg));
          break;
 
@@ -4022,7 +4066,7 @@ POST(sys_ptrace)
          break;
 
       case VKI_PTRACE_GETDBREGS:
-         if (RES > 0)
+         if ((Word)RES != -1)
             POST_MEM_WRITE(ARG3, sizeof(struct vki_dbreg));
          break;
 
@@ -4030,7 +4074,7 @@ POST(sys_ptrace)
          break;
 
       case VKI_PTRACE_LWPINFO:
-         if (RES > 0)
+         if ((Word)RES != -1)
             POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_lwpinfo));
          break;
 
@@ -4038,7 +4082,7 @@ POST(sys_ptrace)
          break;
 
       case VKI_PTRACE_GETLWPLIST:
-         if (RES > 0)
+         if ((Word)RES != -1)
             POST_MEM_WRITE(ARG3, sizeof(vki_lwpid_t) * RES);
          break;
 
@@ -4067,7 +4111,7 @@ POST(sys_ptrace)
          break;
 
       case VKI_PTRACE_VM_ENTRY:
-         if (RES > 0)
+         if ((Word)RES != -1)
             POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_vm_entry));
          break;
    }
@@ -4076,7 +4120,7 @@ POST(sys_ptrace)
 PRE(sys_cpuset_setaffinity)
 {
 
-    PRINT("sys_cpuset_setaffinity ( %lu, %lu, %lu, %lu, %#lx )", ARG1, ARG2,
+    PRINT("sys_cpuset_setaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
         ARG3, ARG4, ARG5);
     PRE_REG_READ5(int, "cpuset_setaffinity",
         int, level, int, which, long, id,
@@ -4086,8 +4130,7 @@ PRE(sys_cpuset_setaffinity)
 
 PRE(sys_cpuset_getaffinity)
 {
-
-    PRINT("sys_cpuset_getaffinity ( %lu, %lu, %lu, %lu, %#lx )", ARG1, ARG2,
+    PRINT("sys_cpuset_getaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
         ARG3, ARG4, ARG5);
     PRE_REG_READ5(int, "cpuset_getaffinity",
         int, level, int, which, long, id,
@@ -4106,6 +4149,7 @@ struct pselect_sized_sigset {
     const vki_sigset_t *ss;
     vki_size_t ss_len;
 };
+
 struct pselect_adjusted_sigset {
     struct pselect_sized_sigset ss; /* The actual syscall arg */
     vki_sigset_t adjusted_ss;
@@ -4193,7 +4237,7 @@ PRE(sys_cap_enter)
 // pid_t pdfork(int *fdp, int flags);
 PRE(sys_pdfork)
 {
-   PRINT("sys_pdfork ( %ld, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRINT("sys_pdfork ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
    PRE_REG_READ2(long, "pdfork", int*, ARG1, int, ARG2);
 
    SET_STATUS_from_SysRes( ML_(do_fork)(tid) );
@@ -4235,7 +4279,7 @@ struct vki_cap_rights {
 //int cap_rights_limit(int fd, const cap_rights_t *rights);
 PRE(sys_cap_rights_limit)
 {
-   PRINT("cap_rights_limit ( %ld, %#lx )", SARG1, ARG2);
+   PRINT("cap_rights_limit ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
    PRE_REG_READ2(long, "cap_rights_limit",
                  int, fd, void*, rights);
    if (ARG2 != 0)
@@ -4255,7 +4299,7 @@ POST(sys_cap_rights_limit)
 // int cap_ioctls_limit(int fd, const unsigned long *cmds, size_t ncmds);
 PRE(sys_cap_ioctls_limit)
 {
-   PRINT("cap_ioctls_limit ( %lu, %#lx, %lu )", ARG1, ARG2, ARG3);
+   PRINT("cap_ioctls_limit ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "cap_ioctls_limit",
                  int, fd, unsigned long*, rights, vki_size_t, ncmds);
    if (ARG2 != 0 && ARG3 <= 256 )
@@ -4275,7 +4319,7 @@ POST(sys_cap_ioctls_limit)
 //int cap_fcntls_limit(int fd, uint32_t fcntlrights);
 PRE(sys_cap_fcntls_limit)
 {
-   PRINT("cap_fcntls_limit ( %lu, %lu )", ARG1, ARG2);
+   PRINT("cap_fcntls_limit ( %" FMT_REGWORD "d, %" FMT_REGWORD "u )", SARG1, ARG2);
    PRE_REG_READ2(long, "cap_fcntls_limit",
                  int, fd, vki_uint32_t, fcntlrights);
 }
@@ -4284,7 +4328,7 @@ PRE(sys_cap_fcntls_limit)
 
 PRE(sys_fstat)
 {
-   PRINT("sys_fstat ( %lu, %#lx )",ARG1,ARG2);
+   PRINT("sys_fstat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "fstat", unsigned long, fd, struct stat *, buf);
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_stat) );
 }
@@ -4298,7 +4342,7 @@ POST(sys_fstat)
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
 {
-   PRINT("sys_getrandom ( %#lx, %lu, %lu )" , ARG1, ARG2, ARG3);
+   PRINT("sys_getrandom ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )" , ARG1, ARG2, ARG3);
    PRE_REG_READ3(int, "getrandom",
                  char *, buf, vki_size_t, count, unsigned int, flags);
    PRE_MEM_WRITE( "getrandom(cpu)", ARG1, ARG2 );
