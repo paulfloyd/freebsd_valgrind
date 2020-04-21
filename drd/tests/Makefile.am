@@ -229,6 +229,7 @@ EXTRA_DIST =                                        \
 	pth_spinlock.stderr.exp                     \
 	pth_spinlock.vgtest                         \
 	pth_uninitialized_cond.stderr.exp           \
+	pth_uninitialized_cond.stderr.exp-freebsd   \
 	pth_uninitialized_cond.vgtest               \
 	read_and_free_race.stderr.exp		    \
 	read_and_free_race.vgtest		    \
