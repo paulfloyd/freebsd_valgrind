@@ -5,7 +5,7 @@ dist_noinst_SCRIPTS = filter_stderr
 
 EXTRA_DIST = \
 	statvfs.vgtest \
-	statvfs.stderr
+	statvfs.stderr.exp
 
 check_PROGRAMS = \
 	statvfs
