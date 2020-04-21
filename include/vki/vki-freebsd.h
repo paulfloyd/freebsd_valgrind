@@ -582,7 +582,8 @@ typedef struct vki_siginfo {
 #define VKI_SI_TIMER	0x10003
 #define VKI_SI_ASYNCIO	0x10004
 #define VKI_SI_MESGQ	0x10005
-
+#define VKI_SI_KERNEL   0x10006
+#define VKI_SI_LWP      0x10007
 /*
  * SIGILL si_codes
  */
@@ -627,7 +628,8 @@ typedef struct vki_siginfo {
  */
 #define VKI_TRAP_BRKPT	1	/* process breakpoint */
 #define VKI_TRAP_TRACE	2	/* process trace trap */
-
+#define VKI_TRAP_DTRACE 3   /* DTrace induced trap.                 */
+#define VKI_TRAP_CAP    4   /* Capabilities protective trap.        */
 
 #if 0	/* freebsd-6 */
 typedef struct vki_sigevent {

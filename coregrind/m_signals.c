@@ -1680,6 +1680,15 @@ static Bool is_signal_from_kernel(ThreadId tid, int signum, int si_code)
    // them.
    return ( si_code > VKI_SI_USER ? True : False );
 #elif defined(VGO_freebsd)
+
+    // The comment below seems a bit out of date. From the siginfo manpage
+
+    // Full support for POSIX signal information first appeared in FreeBSD 7.0.
+    // The codes SI_USER and SI_KERNEL can be generated as of FreeBSD 8.1.  The
+    // code SI_LWP can be	generated as of	FreeBSD	9.0.
+    if (si_code == VKI_SI_USER)
+        return False;
+
    // It looks like there's no reliable way to say where the signal came from
    if (VG_(threads)[tid].status == VgTs_WaitSys) {
       return False;
