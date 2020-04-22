@@ -4,8 +4,8 @@ include $(top_srcdir)/Makefile.tool-tests.am
 dist_noinst_SCRIPTS = filter_stderr
 
 EXTRA_DIST = \
-	posif_fadvise.vgtest \
-	posif_fallocate.vgtest \
+	posix_fadvise.vgtest \
+	posix_fallocate.vgtest \
 	posix_fadvise.stderr.exp \
 	posix_fallocate.stderr.exp
 
