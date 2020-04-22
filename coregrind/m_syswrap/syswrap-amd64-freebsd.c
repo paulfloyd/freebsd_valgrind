@@ -128,7 +128,7 @@ PRE(sys_thr_new)
    struct vki_thr_param tp;
    Addr stk;
 
-   PRINT("thr_new ( %#lx, %lu )",ARG1,ARG2);
+   PRINT("thr_new ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(int, "thr_new",
                  struct thr_param *, param,
                  int, param_size);
@@ -245,7 +245,7 @@ fail:
 
 PRE(sys_rfork)
 {
-   PRINT("sys_rfork ( %#lx )", ARG1 );
+   PRINT("sys_rfork ( %#" FMT_REGWORD "x )", ARG1 );
    PRE_REG_READ1(long, "rfork", int, flags);
 
    VG_(message)(Vg_UserMsg, "rfork() not implemented");
@@ -256,7 +256,7 @@ PRE(sys_rfork)
 
 PRE(sys_sigreturn)
 {
-   PRINT("sys_sigreturn ( %#lx )", ARG1);
+   PRINT("sys_sigreturn ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "sigreturn",
                  struct vki_ucontext *, ucp);
 
@@ -270,7 +270,7 @@ PRE(sys_fake_sigreturn)
    struct vki_ucontext *uc;
    int rflags;
 
-   PRINT("sys_sigreturn ( %#lx )", ARG1);
+   PRINT("sys_sigreturn ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "sigreturn",
                  struct vki_ucontext *, ucp);
 
@@ -394,7 +394,7 @@ PRE(sys_getcontext)
    ThreadState* tst;
    struct vki_ucontext *uc;
 
-   PRINT("sys_getcontext ( %#lx )", ARG1);
+   PRINT("sys_getcontext ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "getcontext",
                  struct vki_ucontext *, ucp);
    PRE_MEM_WRITE( "getcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
@@ -418,7 +418,7 @@ PRE(sys_setcontext)
    ThreadState* tst;
    struct vki_ucontext *uc;
 
-   PRINT("sys_setcontext ( %#lx )", ARG1);
+   PRINT("sys_setcontext ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "setcontext",
                  struct vki_ucontext *, ucp);
 
@@ -453,7 +453,7 @@ PRE(sys_swapcontext)
    struct vki_ucontext *ucp, *oucp;
    ThreadState* tst;
 
-   PRINT("sys_swapcontext ( %#lx, %#lx )", ARG1, ARG2);
+   PRINT("sys_swapcontext ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
    PRE_REG_READ2(long, "swapcontext",
                  struct vki_ucontext *, oucp, struct vki_ucontext *, ucp);
 
@@ -503,7 +503,7 @@ PRE(sys_mmap)
 {
    SysRes r;
 
-   PRINT("sys_mmap ( %#lx, %lu, %lu, %lu, %lu, pad%lu, 0x%lx)",
+   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, pad%" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
          ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7 );
    PRE_REG_READ7(long, "mmap",
                  char *, addr, unsigned long, len, int, prot,  int, flags,
@@ -518,7 +518,7 @@ PRE(sys_mmap7)
 {
    SysRes r;
 
-   PRINT("sys_mmap ( %#lx, %lu, %lu, %lu, %lu, 0x%lx)",
+   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
          ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6 );
    PRE_REG_READ6(long, "mmap",
                  char *, addr, unsigned long, len, int, prot,  int, flags,
@@ -530,7 +530,7 @@ PRE(sys_mmap7)
 
 PRE(sys_lseek)
 {
-   PRINT("sys_lseek ( %lu, 0x%lx, %#lx, %lu )", ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "lseek",
                  unsigned int, fd, int, pad, unsigned long, offset,
                  unsigned int, whence);
@@ -538,7 +538,7 @@ PRE(sys_lseek)
 
 PRE(sys_lseek7)
 {
-   PRINT("sys_lseek ( %lu, 0x%lx, %lu )", ARG1,ARG2,ARG3);
+   PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "lseek",
                  unsigned int, fd, unsigned long, offset,
                  unsigned int, whence);
@@ -547,7 +547,7 @@ PRE(sys_lseek7)
 PRE(sys_pread)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_read ( %lu, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %lu, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "read",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  int, pad, unsigned long, off);
@@ -567,7 +567,7 @@ POST(sys_pread)
 PRE(sys_pread7)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_read ( %lu, %#lx, %lu, %lu )", ARG1, ARG2, ARG3, ARG4);
+   PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
    PRE_REG_READ4(ssize_t, "read",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  unsigned long, off);
@@ -588,7 +588,7 @@ PRE(sys_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %lu, %#lx, %lu, %lu, %lu )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_write ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "write",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  int, pad, unsigned long, off);
@@ -608,7 +608,7 @@ PRE(sys_pwrite7)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %lu, %#lx, %lu, %lu )", ARG1, ARG2, ARG3, ARG4);
+   PRINT("sys_write ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
    PRE_REG_READ4(ssize_t, "write",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  unsigned long, off);
@@ -627,7 +627,7 @@ PRE(sys_pwrite7)
 PRE(sys_ftruncate)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %lu, %lu )", ARG1,ARG3);
+   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG3);
    PRE_REG_READ3(long, "ftruncate", unsigned int, fd, int, pad,
 		  unsigned int, length);
 }
@@ -635,7 +635,7 @@ PRE(sys_ftruncate)
 PRE(sys_ftruncate7)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %lu, %lu )", ARG1,ARG2);
+   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "ftruncate", unsigned int, fd,
 		  unsigned long, length);
 }
@@ -643,7 +643,7 @@ PRE(sys_ftruncate7)
 PRE(sys_truncate)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_truncate ( %#lx(%s), %lu )", ARG1,(char *)ARG1,ARG3);
+   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG3);
    PRE_REG_READ3(long, "truncate",
                  const char *, path, int, pad, unsigned int, length);
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
@@ -652,7 +652,7 @@ PRE(sys_truncate)
 PRE(sys_truncate7)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_truncate ( %#lx(%s), %lu )", ARG1,(char *)ARG1,ARG2);
+   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(long, "truncate",
                  const char *, path, unsigned long, length);
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
@@ -663,7 +663,7 @@ PRE(sys_sysarch)
    ThreadState *tst;
    void **p;
 
-   PRINT("sys_sysarch ( %lu, %#lx )", ARG1, ARG2);
+   PRINT("sys_sysarch ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2);
    PRE_REG_READ2(int, "sysarch",
                  int, number, void *, args);
    switch (ARG1) {
@@ -710,9 +710,8 @@ PRE(sys_sysarch)
 // int posix_fallocate(int fd, off_t offset, off_t len);
 PRE(sys_posix_fallocate)
 {
-   PRINT("sys_posix_fallocate ( %ld, %lu, %lu )",
+   PRINT("sys_posix_fallocate ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",
          SARG1, ARG2, ARG3);
-   // @todo PJF should I be checking that fd is an opened file?
    PRE_REG_READ3(long, "posix_fallocate",
                  int, fd, vki_uint32_t, offset,
                  vki_uint32_t, len);
@@ -721,14 +720,13 @@ PRE(sys_posix_fallocate)
 // int posix_fadvise(int fd, off_t offset, off_t len, int advice);
 PRE(sys_posix_fadvise)
 {
-   PRINT("sys_posix_fadvise ( %ld, %lu, %lu, %ld )",
+   PRINT("sys_posix_fadvise ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "d )",
          SARG1, ARG2, ARG3, SARG4);
    PRE_REG_READ4(long, "posix_fadvise",
                 int, fd, off_t, offset,
                 off_t, len,
                 int, advice);
    // @todo PJF advice can be 0 to 5 inclusive
-
 }
 
 #undef PRE
