@@ -7,8 +7,6 @@
 96.1% good
 
 ```
-pselect_alarm hangs. Valgrind says that it is terminating, but the last thread doesn't die.
-
 == 203 tests, 7 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/async-sigs                    (stderr)
 none/tests/bug234814                     (stdout)
@@ -25,7 +23,6 @@ none/tests/sigstackgrowth                (stderr)
 
 Most of these are signal issues.
 
-nocwd and scripts/bug231357 - fail to unlink gdb pipes  
 ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.  
 
 ## Tests in memcheck
@@ -45,9 +42,7 @@ memcheck/tests/x86/pushfpopf             (stderr)
 
 ```
 
-Mostly not analyzed.
-
-addressable - looks like a filtering issue  
+addressable - signal issue  
 descr_belowsp - SIGSEGV handling issue  
 d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD  
 gone_abrt_xml - differences in signal details  
@@ -82,7 +77,7 @@ gdbserver_tests/nlgone_abrt              (stderr)
 
 ```
 
-Mostly not analyed.
+Mostly not analsyed.
 
 mcinfcallWSRU - looks like a filter issue
 
