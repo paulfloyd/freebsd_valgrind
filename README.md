@@ -47,11 +47,10 @@ To build with clang,
 
 The code should build and execute on FreeBSD 12.1 amd64 generating both amd64 and x86 executables.
 
-The regression suite produces the following results [2020-04-16]
+The regression suite produces the following results [2020-04-23]
 
 ```
-== 710 tests, 133 stderr failures, 6 stdout failures, 2 stderrB failures, 3 stdoutB failures, 0 post failures ==
-
+== 712 tests, 108 stderr failures, 5 stdout failures, 13 stderrB failures, 5 stdoutB failures, 0 post failures ==
 ```
 
 
