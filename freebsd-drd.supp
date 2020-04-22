@@ -1,0 +1,15 @@
+# Suppressions for FreeBSD / DRD
+
+{
+   DRD-1
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   fun:pthread_create
+   fun:pthread_create
+   fun:main
+}
+{
+   DRD-2
+   drd:ConflictingAccess
+   fun:pthread_exit
+}

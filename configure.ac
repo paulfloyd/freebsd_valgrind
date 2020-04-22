@@ -396,7 +396,7 @@ case "${host_os}" in
            ;;
         esac
 
-	DEFAULT_SUPP="freebsd.supp ${DEFAULT_SUPP}"
+	DEFAULT_SUPP="freebsd.supp freebsd-helgrind.supp freebsd-drd.supp ${DEFAULT_SUPP}"
         ;;
 
      *darwin*)
@@ -4911,6 +4911,8 @@ AC_CONFIG_FILES([
    memcheck/tests/x86-linux/Makefile
    memcheck/tests/amd64-solaris/Makefile
    memcheck/tests/x86-solaris/Makefile
+   memcheck/tests/amd64-freebsd/Makefile
+   memcheck/tests/x86-freebsd/Makefile
    memcheck/tests/ppc32/Makefile
    memcheck/tests/ppc64/Makefile
    memcheck/tests/s390x/Makefile

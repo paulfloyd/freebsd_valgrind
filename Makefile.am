@@ -45,7 +45,7 @@ SUPP_FILES = \
 	glibc-2.2-LinuxThreads-helgrind.supp \
 	glibc-2.X-drd.supp \
 	darwin9.supp darwin9-drd.supp \
-	freebsd.supp \
+	freebsd.supp freebsd-helgrind.supp freebsd-drd.supp \
 	darwin10.supp darwin10-drd.supp \
 	darwin11.supp darwin12.supp darwin13.supp darwin14.supp darwin15.supp \
 	darwin16.supp darwin17.supp \
