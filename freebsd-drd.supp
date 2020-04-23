@@ -1,15 +1,76 @@
 # Suppressions for FreeBSD / DRD
 
 {
-   DRD-1
+   DRD-LDRT
    drd:ConflictingAccess
-   obj:/lib/libthr.so.3
-   fun:pthread_create
-   fun:pthread_create
-   fun:main
+   obj:/libexec/ld-elf*.so.1
 }
 {
-   DRD-2
+   DRD-PTHREAD-EXIT1
    drd:ConflictingAccess
+   ...
    fun:pthread_exit
 }
+{
+   DRD-PTHREAD_CREATE1
+   drd:ConflictingAccess
+   ...
+   fun:pthread_create
+}
+{
+   DRD-PTHREAD-EXIT2
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   fun:pthread_exit
+}
+{
+   DRD-PRINTF1
+   drd:ConflictingAccess
+   fun:f*lockfile
+}
+{
+   DRD-MANY1
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   obj:/libexec/ld-elf*.so.1
+}
+{
+   DRD-MANY2
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   obj:/lib/libthr.so.3
+   obj:/libexec/ld-elf*.so.1
+}
+{
+   DRD-UNWIND1
+   drd:ConflictingAccess
+   ...
+   fun:dl_iterate_phdr
+   obj:/lib/libgcc_s.so.1
+}
+{
+   DRD-PTHREAD-DETACH1
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   fun:pthread_detach
+}
+{
+   DRD-LIBGOMP1
+   drd:ConflictingAccess
+   obj:/usr/local/lib*/gcc9/libgomp.so.1.0.0
+}
+{
+   DRD-UNWIND1
+   drd:ConflictingAccess
+   fun:_Unwind_GetCFA
+   obj:/lib/libthr.so.3
+   obj:/lib/libgcc_s.so.1
+}
+{
+   DRD-UNWIND2
+   drd:ConflictingAccess
+   ...
+   fun:_Unwind_ForcedUnwind
+}
+
+
