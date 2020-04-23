@@ -22,7 +22,9 @@ The secondary objectives are
 
 I don't have a full history of everyone that has worked on this code. Obviously there is the upstream Valgrind team. When I started working on the code, it was based on the efforts of Phil Longstaff (https://bitbucket.org/plongstaff/valgrind-freebsd-git.git). This stalled for a bit, and then Ed Maste (https://github.com/FreeBSDFoundation/valgrind.git) took the baton. I restarted working on the code in late January 2020.
 
-Patches (from the FreeBSD bugzilla, https://bugs.freebsd.org/bugzilla/) have been merged from Julien Nadeau, Kubilay Kocak
+Patches (from the FreeBSD bugzilla, https://bugs.freebsd.org/bugzilla/) have been merged from Julien Nadeau, Kubilay Kocak.
+
+Thanks to Nick Briggs for testing, analyzing and providing patches.
 
 ## Building the code
 
