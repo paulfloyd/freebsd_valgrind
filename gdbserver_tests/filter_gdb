@@ -30,6 +30,11 @@ s/^\[?1034hReading symbols/Reading symbols/
 #       suppress lines telling file _exit.c does not exist
 /\/_exit.c: No such file or directory/d
 
+#       On FreeBSD if the base and/or lib32 dbg components
+#       are installed but not system source then these
+#       errors get produced by GDB
+/\(rtld_start.S\|kill.S\|_exit.S\|_select.S\): No such file or directory/d
+
 #       Remove some Suse package manager messages
 /^Try: zypper install -C/d
 
@@ -136,6 +141,15 @@ s/in \.__select ()$/in syscall .../
 
 #           + yet another way to get a select system call
 s/in select () at \.\.\/sysdeps\/unix\/syscall-template\.S.*$/in syscall .../
+
+#          FreeBSD system call
+s/_select () at _select.S:.*$/0x........ in syscall .../
+
+#          FreeBSD system call again
+/in _select.S/d
+
+#          FreeBSD system call
+s/kill () at kill.S:.*$/0x........ in syscall .../
 
 #      filter out names which starts with a "."
 #      such names are used for "function descriptors" on ppc64
