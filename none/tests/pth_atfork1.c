@@ -18,16 +18,11 @@
    Boston, MA 02111-1307, USA.  */
 
 #include <errno.h>
-#if !defined(__APPLE__) && !defined(__sun) && !defined(__FreeBSD__)
-# include <error.h>
-#endif
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
-
-#if defined(__APPLE__) || defined(__sun) || defined(__FreeBSD__)
 #include <string.h>  /* strerror */
 static void error (int status, int errnum, char* msg)
 {
@@ -38,7 +33,6 @@ static void error (int status, int errnum, char* msg)
    if (errnum)
       exit(errnum);
 }
-#endif
 
 enum
 {
