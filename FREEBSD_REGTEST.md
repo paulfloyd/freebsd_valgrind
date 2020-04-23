@@ -59,27 +59,23 @@ x86/pushfpopf - not finding name of asm function
 
 ## Tests in gdbserver_tests
 
-71.4% good
+85.7% good
 
 ```
-== 21 tests, 5 stderr failures, 1 stdout failure, 2 stderrB failures, 3 stdoutB failures, 0 post failures ==
-gdbserver_tests/hginfo                   (stderr)
-gdbserver_tests/mcinfcallWSRU            (stderrB)
+== 21 tests, 2 stderr failures, 1 stdout failure, 1 stderrB failure, 3 stdoutB failures, 0 post failures ==
 gdbserver_tests/mcmain_pic               (stdout)
-gdbserver_tests/mcmain_pic               (stderr)
 gdbserver_tests/mcmain_pic               (stdoutB)
 gdbserver_tests/mcmain_pic               (stderrB)
 gdbserver_tests/mcsignopass              (stderr)
 gdbserver_tests/mcsignopass              (stdoutB)
 gdbserver_tests/mcsigpass                (stderr)
 gdbserver_tests/mcsigpass                (stdoutB)
-gdbserver_tests/nlgone_abrt              (stderr)
 
 ```
 
-Mostly not analsyed.
-
-mcinfcallWSRU - looks like a filter issue
+mcmain_pic - gdb complains that it can't find main_pic.c ???  
+mcsignopass - guest terminating with SIGSEGV  
+mcsigpass - guest getting SIGSEGV rather than SIGBUS  
 
 ## Tests in drd and helgrind
 
