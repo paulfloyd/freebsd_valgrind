@@ -45,12 +45,12 @@ To build with clang,
 
 ## Status
 
-The code should build and execute on FreeBSD 12.1 amd64 generating both amd64 and x86 executables.
+The code should build and execute on FreeBSD 12.1 amd64 generating both amd64 and x86 executables. 12.1 i386, 11.3 amd64 and 11.3 i386 should all also work.
 
 The regression suite produces the following results [2020-04-23]
 
 ```
-== 712 tests, 108 stderr failures, 5 stdout failures, 13 stderrB failures, 5 stdoutB failures, 0 post failures ==
+== 712 tests, 87 stderr failures, 5 stdout failures, 1 stderrB failure, 3 stdoutB failures, 0 post failures ==
 ```
 
 
