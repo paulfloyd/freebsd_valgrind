@@ -22,6 +22,7 @@ EXTRA_DIST = \
 		cond_timedwait_test.stderr.exp \
 	bar_bad.vgtest bar_bad.stdout.exp bar_bad.stderr.exp \
 		bar_bad.stderr.exp-destroy-hang \
+		bar_bad.stderr.exp-freebsd \
 	bar_trivial.vgtest bar_trivial.stdout.exp bar_trivial.stderr.exp \
 	free_is_write.vgtest free_is_write.stdout.exp \
 		free_is_write.stderr.exp free_is_write.stderr.exp-freebsd \
@@ -51,11 +52,13 @@ EXTRA_DIST = \
 	locked_vs_unlocked3.vgtest \
 		locked_vs_unlocked3.stderr.exp \
 		locked_vs_unlocked3.stdout.exp \
+		locked_vs_unlocked3.stderr.exp-freebsd \
 	pth_barrier1.vgtest pth_barrier1.stdout.exp pth_barrier1.stderr.exp \
 		pth_barrier1.stderr.exp-freebsd \
 	pth_barrier2.vgtest pth_barrier2.stdout.exp pth_barrier2.stderr.exp \
 		pth_barrier2.stderr.exp-freebsd \
 	pth_barrier3.vgtest pth_barrier3.stdout.exp pth_barrier3.stderr.exp \
+		pth_barrier3.stderr.exp-freebsd \
 	pth_destroy_cond.vgtest \
 		pth_destroy_cond.stdout.exp \
 		pth_destroy_cond.stderr.exp pth_destroy_cond.stderr.exp2 \
@@ -65,6 +68,7 @@ EXTRA_DIST = \
 		pth_cond_destroy_busy.stderr.exp-solaris \
 	pth_spinlock.vgtest pth_spinlock.stdout.exp pth_spinlock.stderr.exp \
 	rwlock_race.vgtest rwlock_race.stdout.exp rwlock_race.stderr.exp \
+		rwlock_race.stderr.exp-freebsd \
 	rwlock_test.vgtest rwlock_test.stdout.exp rwlock_test.stderr.exp \
 	shmem_abits.vgtest shmem_abits.stdout.exp shmem_abits.stderr.exp \
 	stackteardown.vgtest stackteardown.stdout.exp stackteardown.stderr.exp \

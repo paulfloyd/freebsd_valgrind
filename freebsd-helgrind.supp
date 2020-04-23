@@ -124,3 +124,29 @@
    Helgrind:Race
    fun:sem_clockwait_np
 }
+{
+   HELGRIND-UMTX-OP1
+   Helgrind:Race
+   fun:_umtx_op
+}
+{
+   HELGRIND-SEM-POST1
+   Helgrind:Race
+   fun:sem_post
+}
+{
+   HELGRIND-GCC-UNWIND1
+   Helgrind:Race
+   obj:/lib/libgcc_s.so.1
+}
+{
+   HELGRIND-LIBC-PRINTF1
+   Helgrind:Race
+   fun:flockfile
+}
+{
+   HELGRIND-MUTEX-LOCK1
+   Helgrind:Race
+   fun:memset
+   obj:/lib/libthr.so.3
+}
