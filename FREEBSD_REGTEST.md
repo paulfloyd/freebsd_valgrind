@@ -4,21 +4,20 @@
 
 ## Tests in none
 
-96.1% good
+97.0% good
 
 ```
-== 203 tests, 7 stderr failures, 4 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-none/tests/async-sigs                    (stderr)
-none/tests/bug234814                     (stdout)
-none/tests/bug234814                     (stderr)
+== 202 tests, 6 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/coolo_sigaction               (stdout)
 none/tests/coolo_sigaction               (stderr)
 none/tests/faultstatus                   (stderr)
 none/tests/ioctl_moans                   (stderr)
 none/tests/pending                       (stdout)
 none/tests/pending                       (stderr)
+none/tests/rlimit_nofile                 (stderr)
 none/tests/sigstackgrowth                (stdout)
 none/tests/sigstackgrowth                (stderr)
+
 ```
 
 Most of these are signal issues.
@@ -27,10 +26,10 @@ ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.
 
 ## Tests in memcheck
 
-96.1% good
+96.6% good
 
 ```
-== 231 tests, 9 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 235 tests, 8 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 memcheck/tests/addressable               (stderr)
 memcheck/tests/descr_belowsp             (stderr)
 memcheck/tests/dw4                       (stderr)
@@ -51,9 +50,10 @@ sigaltstack - SIGSEGV handling issue
 varinfo5 - diff in source backannotation  
 x86/pushfpopf - not finding name of asm function  
 
-## Tests in massif
+## Tests in massif, callgrind and cachegrind, dhat
 
 100% good
+
 
 == 37 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 
@@ -77,33 +77,54 @@ mcmain_pic - gdb complains that it can't find main_pic.c ???
 mcsignopass - guest terminating with SIGSEGV  
 mcsigpass - guest getting SIGSEGV rather than SIGBUS  
 
-## Tests in drd and helgrind
+## Tests in helgrind
 
-I have fixed a few issues (wrong redir signatures for Helgrind, semaphore functions in libc not libthr). But there are still a load of errors.
+Helgrind - 92.9% good
+```
+== 56 tests, 4 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+helgrind/tests/pth_cond_destroy_busy     (stderr)
+helgrind/tests/tc20_verifywrap           (stderr)
+helgrind/tests/tc23_bogus_condwait       (stderr)
+helgrind/tests/tls_threads               (stderr)
+```
+pth_cond_destroy_busy - one missing race error
+tc20_verifywrap - C file doesn't compile. Either need to fix the C file or disable the test.
+tc23_bogus_condwait - a few extra dubious lock messages
+tls_threads - don't understand the error message
 
-DRD - 46.1% good
-Helgrind - 28.6% good
+## Tests in drd
+
+DRD - 90.6% good
 
 
 ```
--- Finished tests in drd/tests -----------------------------------------
-
-== 128 tests, 69 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-
-
--- Finished tests in helgrind/tests ------------------------------------
-
-== 56 tests, 40 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-
-
+== 127 tests, 12 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+drd/tests/bar_bad                        (stderr)
+drd/tests/bar_bad_xml                    (stderr)
+drd/tests/circular_buffer                (stderr)
+drd/tests/concurrent_close               (stderr)
+drd/tests/dlopen                         (stdout)
+drd/tests/dlopen                         (stderr)
+drd/tests/pth_detached3                  (stderr)
+drd/tests/recursive_mutex                (stderr)
+drd/tests/sigaltstack                    (stderr)
+drd/tests/std_list                       (stderr)
+drd/tests/tc09_bad_unlock                (stderr)
+drd/tests/tc23_bogus_condwait            (stderr)
+drd/tests/thread_name_xml                (stderr)
 ```
 
-Few analyzed, but I see many errors 'detected' in the pthread functions
-
-
-# Tests in dhat
-
-100% good
+bar_bad - one extra error message  
+bar_bad_xml - as above  
+circular_buffer - lots of errors related to rand  
+concurrent_close - runs OK standalone but not under perl regtest  
+dlopen - crash  
+pth_uninitialized_cond - sigbus in guest
+sigaltstack - sigsegv in guest  
+std_list - lots of errors related to setlocale  
+drd/tests/tc09_bad_unlock - two missing error messages  
+tc23_bogus_condwait - several exp files, not sure which is relevant for FreeBSD 
+thread_name_xml - hard to read diffs but thread_name was crashing  
 
 ```
 == 6 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
