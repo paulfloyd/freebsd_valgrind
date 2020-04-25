@@ -4237,7 +4237,7 @@ PRE(sys_cap_enter)
 // pid_t pdfork(int *fdp, int flags);
 PRE(sys_pdfork)
 {
-   PRINT("sys_pdfork ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRINT("sys_pdfork ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
    PRE_REG_READ2(long, "pdfork", int*, ARG1, int, ARG2);
 
    SET_STATUS_from_SysRes( ML_(do_fork)(tid) );
@@ -4246,6 +4246,38 @@ PRE(sys_pdfork)
          to run */
       *flags |= SfYieldAfter;
    }
+   PRE_MEM_WRITE( "pdfork(fdp)", ARG1, sizeof(int) );
+}
+
+POST(sys_pdfork)
+{
+   POST_MEM_WRITE( ARG1, sizeof(int) );
+}
+
+//int pdkill(int fd, int signum)
+PRE(sys_pdkill)
+{
+   PRINT("sys_pdkill ( %" FMT_REGWORD "u, %" FMT_REGWORD "d )", ARG1, SARG2);
+   PRE_REG_READ2(long, "pdkill", int, ARG1, int, ARG2);
+
+   if (!ML_(client_signal_OK)(ARG2)) {
+      SET_STATUS_Failure( VKI_EINVAL );
+      return;
+   }
+
+   /* If we're sending SIGKILL, check to see if the target is one of
+      our threads and handle it specially. */
+   if (ARG2 == VKI_SIGKILL && ML_(do_sigkill)(ARG1, -1))
+      SET_STATUS_Success(0);
+
+   if (VG_(clo_trace_signals))
+      VG_(message)(Vg_DebugMsg, "pdkill: sent signal %ld to fd %ld\n",
+           SARG2, SARG1);
+
+   /* This kill might have given us a pending signal.  Ask for a check once
+      the syscall is done. */
+   *flags |= SfPollAfter;
+
 }
 
 // int pdgetpid(int fd, pid_t *pidp);
@@ -5016,8 +5048,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // __cap_rights_get                         515
     BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
     // cap_getmode                              517
-    BSDX_(__NR_pdfork,          sys_pdfork),         // 518
-    // pdkill                                   519
+    BSDXY(__NR_pdfork,          sys_pdfork),         // 518
+    BSDX_(__NR_pdkill,          sys_pdkill),        // 519
     BSDXY(__NR_pdgetpid,        sys_pdgetpid),      // 520
     BSDXY(__NR_pselect, sys_pselect),                   // 522
     // getloginclass                            523
