@@ -5,10 +5,12 @@ dist_noinst_SCRIPTS = filter_stderr
 
 EXTRA_DIST = \
 	statvfs.vgtest \
-	statvfs.stderr.exp
+	statvfs.stderr.exp \
+	pdfork_pdkill.vgtest \
+	pdfork_pdkill
 
 check_PROGRAMS = \
-	statvfs
+	statvfs pdfork_pdkill
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)

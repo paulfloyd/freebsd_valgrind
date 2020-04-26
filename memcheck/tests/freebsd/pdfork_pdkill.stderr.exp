@@ -1,0 +1,27 @@
+parent: kill fd 0
+Syscall param pdfork(fdp) points to unaddressable byte(s)
+   ...
+   by 0x........: main (pdfork_pdkill.c:86)
+ Address 0x........ is 0 bytes inside a block of size 4 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (pdfork_pdkill.c:85)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (pdfork_pdkill.c:84)
+
+parent after 1st bad pdfork
+Syscall param pdfork((arrghs->arg2)) contains uninitialised byte(s)
+   ...
+   by 0x........: main (pdfork_pdkill.c:91)
+
+FILE DESCRIPTORS: 3 open at exit.
+Open file descriptor 2: /usr/home/paulf/scratch/valgrind/memcheck/tests/freebsd/pdfork_pdkill.stderr.out
+   <inherited from parent>
+
+Open file descriptor 1: /usr/home/paulf/scratch/valgrind/memcheck/tests/freebsd/pdfork_pdkill.stdout.out
+   <inherited from parent>
+
+Open file descriptor 0: /dev/pts/2
+   <inherited from parent>
+
+
