@@ -1,0 +1,42 @@
+Conditional jump or move depends on uninitialised value(s)
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Use of uninitialised value of size 8
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Conditional jump or move depends on uninitialised value(s)
+   at 0x........: is_overlap (vg_replace_strmem.c:...)
+   by 0x........: __GI_mempcpy (vg_replace_strmem.c:...)
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Conditional jump or move depends on uninitialised value(s)
+   at 0x........: __GI_mempcpy (vg_replace_strmem.c:...)
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Conditional jump or move depends on uninitialised value(s)
+   at 0x........: __GI_mempcpy (vg_replace_strmem.c:...)
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Use of uninitialised value of size 8
+   at 0x........: __GI_mempcpy (vg_replace_strmem.c:...)
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Use of uninitialised value of size 8
+   at 0x........: __GI_mempcpy (vg_replace_strmem.c:...)
+   ...
+   by 0x........: main (clientperm.c:29)
+
+Conditional jump or move depends on uninitialised value(s)
+   ...
+   by 0x........: main (clientperm.c:36)
+
+Use of uninitialised value of size 8
+   ...
+   by 0x........: main (clientperm.c:36)
+
