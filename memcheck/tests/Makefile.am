@@ -203,6 +203,7 @@ EXTRA_DIST = \
 	malloc2.stderr.exp malloc2.vgtest \
 	malloc3.stderr.exp malloc3.stdout.exp malloc3.vgtest \
 	manuel1.stderr.exp manuel1.stdout.exp manuel1.vgtest \
+		manuel1.stderr.exp-clang \
 	manuel2.stderr.exp manuel2.stderr.exp64 manuel2.stdout.exp \
 		manuel2.vgtest \
 	manuel3.stderr.exp manuel3.vgtest \
