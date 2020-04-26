@@ -7,7 +7,7 @@ EXTRA_DIST = \
 	statvfs.vgtest \
 	statvfs.stderr.exp \
 	pdfork_pdkill.vgtest \
-	pdfork_pdkill
+	pdfork_pdkill.stderr.exp
 
 check_PROGRAMS = \
 	statvfs pdfork_pdkill

@@ -134,6 +134,7 @@ EXTRA_DIST = \
 	custom-overlap.stderr.exp custom-overlap.vgtest \
 	deep-backtrace.vgtest deep-backtrace.stderr.exp \
 	demangle.stderr.exp demangle.vgtest \
+		demangle.stderr.exp-clang \
 	big_debuginfo_symbol.stderr.exp big_debuginfo_symbol.vgtest \
 	describe-block.stderr.exp describe-block.vgtest \
 	descr_belowsp.vgtest descr_belowsp.stderr.exp \
@@ -153,6 +154,7 @@ EXTRA_DIST = \
 	file_locking.stderr.exp file_locking.vgtest \
 	fprw.stderr.exp fprw.stderr.exp-freebsd fprw.stderr.exp-mips32-be \
 		fprw.stderr.exp-mips32-le fprw.vgtest \
+		fprw.stderr.exp-clang \
 	fwrite.stderr.exp fwrite.vgtest fwrite.stderr.exp-kfail \
 	gone_abrt_xml.vgtest gone_abrt_xml.stderr.exp gone_abrt_xml.stderr.exp-solaris \
 	holey_buffer_too_small.vgtest holey_buffer_too_small.stdout.exp \
@@ -222,10 +224,12 @@ EXTRA_DIST = \
 	noisy_child.vgtest noisy_child.stderr.exp noisy_child.stdout.exp \
 	null_socket.stderr.exp null_socket.vgtest \
 	origin1-yes.vgtest origin1-yes.stdout.exp origin1-yes.stderr.exp \
+		origin1-yes.stderr.exp-clang \
 	origin2-not-quite.vgtest origin2-not-quite.stdout.exp \
 	origin2-not-quite.stderr.exp \
+		origin2-not-quite.stderr.exp-clang \
 	origin3-no.vgtest origin3-no.stdout.exp \
-	origin3-no.stderr.exp \
+	origin3-no.stderr.exp origin3-no.stderr.exp-clang \
 	origin4-many.vgtest origin4-many.stdout.exp \
 	origin4-many.stderr.exp \
 	origin5-bz2.vgtest origin5-bz2.stdout.exp \
