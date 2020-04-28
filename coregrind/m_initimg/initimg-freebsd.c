@@ -586,6 +586,37 @@ Addr setup_client_stack( void*  init_sp,
    /* --- auxv --- */
    auxv = (struct auxv *)ptr;
    *client_auxv = (UInt *)auxv;
+#if defined(VGP_x86_freebsd)
+   int* pagesizes = NULL;
+#endif
+
+   /*
+    * The PAGESIZES hack - PJF
+    *
+    * Normally a standalone application has a full auxv which, among
+    * many other things contains a vectorof integers (PAGESIZES)
+    * of a platform dependent length (PAGESIZESLEN). On x86 the
+    * length is 2, on amd64 the length is 3 and there are other lengths
+    *  for unsupported platforms.
+    *
+    * When the dynamic loader executes it will run a routine
+    * static void init_pagesizes(Elf_Auxinfo **aux_info)
+    * (see /usr/src/libexec/rtld-elf/rltd.c). If the PAGESIZES info is in
+    * auxv, init_pagesizes will use that. However, normally this loop
+    * does not copy 'pointered' elements (because that would generate
+    * 'Invalid reads' in the guest).
+    *
+    * So init_pagesizes falls back to using sysctlnametomib/sysctl
+    * to read "hw.pagesizes". Unfortunately there seems to be a bug
+    * in this for an x86 executable compiled and running on an amd64
+    * kernel.
+    *
+    * The application sees MAXPAGESLEN as 3 (from the amd64 headers)
+    * but the x86 kernel sees MAXPAGESLEN as 2. The routine that
+    * copies out the data for a sysctl sees this discrepancy and
+    * sets an ENOMEM error. So guest execution doesn't even get past
+    * executing the dynamic linker.
+    */
 
    for (; orig_auxv->a_type != AT_NULL; auxv++, orig_auxv++) {
 
@@ -604,8 +635,30 @@ Addr setup_client_stack( void*  init_sp,
          case AT_EUID:
          case AT_GID:
          case AT_EGID:
+         case AT_STACKPROT:
+         case AT_NCPUS:
+         case AT_EHDRFLAGS:
+#if defined(VGP_x86_freebsd)
+         case AT_PAGESIZESLEN:
+#endif
+         case AT_CANARYLEN:
+         case AT_OSRELDATE:
             /* All these are pointerless, so we don't need to do
                anything about them. */
+            break;
+        // case AT_EXECPATH:
+        // case AT_CANARY:
+#if defined(VGP_x86_freebsd)
+         case AT_PAGESIZES:
+             if (VG_(is32on64)())
+             {
+                 pagesizes = VG_(malloc)("initimg-freebsd.cpauxv.1", 2*sizeof(int));
+                 pagesizes[0] = ((int*)auxv->u.a_ptr)[0];
+                 pagesizes[1] = ((int*)auxv->u.a_ptr)[1];
+             }
+          break;
+#endif
+        // case AT_TIMEKEEP:
             break;
 
          case AT_PHDR:

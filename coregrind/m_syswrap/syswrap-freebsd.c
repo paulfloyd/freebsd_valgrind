@@ -1053,18 +1053,6 @@ PRE(sys___sysctl)
        PRINT(" mib[1]: %d\n", name[1]);
    }
 
-   /*
-    * From https://github.com/freebsd/freebsd/blob/master/sys/kern/syscalls.master
-    *
-   int __sysctl(
-   ARG1    _In_reads_(namelen) int *name,
-   ARG2    u_int namelen,
-   ARG3    _Out_writes_bytes_opt_(*oldlenp) void *oldp,
-   ARG4    _Inout_opt_ size_t *oldlenp,
-   ARG5    _In_reads_bytes_opt_(newlen) const void *newp,
-   ARG6    size_t newlen
-   );
-   */
    PRE_REG_READ6(long, "__sysctl", int *, name, vki_u_int32_t, namelen, void *, oldp,
          vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
 
@@ -1083,50 +1071,46 @@ PRE(sys___sysctl)
    }
 #else
 
-   // read 2 ints from mem pointed to by ARG1
+   // read number of ints specified in ARG2 from mem pointed to by ARG1
    PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
 
    // if 'newp' is not NULL can read namelen bytes from that addess
    if (ARG5 != (UWord)NULL)
       PRE_MEM_READ("sysctl(newp)", (Addr)ARG5, ARG6);
 
+   // there are two scenarios for oldlenp/oldp
+   // 1. oldval is NULL and oldlenp is non-NULL
+   //    this is a query of oldlenp so oldlenp will be written
+   // 2. Both are non-NULL
+   //    this is a query of oldp, oldlenp will be read and oldp will
+   //    be written
+
    // is oldlenp is not NULL, can write
    if (ARG4 != (UWord)NULL) {
-
-       // @todo PJF I don't know what to do with oldlenp, ir is inout
-
-       //PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       if (ARG3 != (UWord)NULL) {
-         PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
-
-         // @todo PJF and this seems to generate false positives ???
-         // to debug one day
-
-         //PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
+         // case 2 above
+         PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+         PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
+      } else {
+         // case 1 above
+          PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       }
+
    }
 #endif
 
 #undef ORIGINAL_CODE
 }
 
-// @todo PJF high priority to remove this hack
-static int hack;
 POST(sys___sysctl)
 {
-    int* name = (int*)ARG1;
-    if (ARG2 == 2 && name[0] == 0 && name[1] == 3 && !hack)
-    {
-        // sysctlgetbyname
-        int* newName = (int*)ARG3;
-        PRINT("new mib 0 %d 1 %d\n", newName[0], newName[1]);
-        newName[1] = 7;
-        hack = 1;
-    }
    if (ARG4 != (UWord)NULL) {
-      POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
-      if (ARG3 != (UWord)NULL)
+      if (ARG3 != (UWord)NULL) {
+         //POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
          POST_MEM_WRITE((Addr)ARG3, *(vki_size_t *)ARG4);
+      }
+      else
+         POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
    }
 }
 

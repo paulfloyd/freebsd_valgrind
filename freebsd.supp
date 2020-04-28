@@ -1,10 +1,17 @@
 # Suppressions for FreeBSD / Memcheck
 
 {
-   rtld-1
+   MEMCHECK-RTLD-COND
    Memcheck:Cond
    obj:/libexec/ld-elf*.so.1
 }
+{
+   MEMCHECK-RTLD-32ON64-ADDR4
+   Memcheck:Addr4
+   obj:/libexec/ld-elf32.so.1
+   obj:/libexec/ld-elf32.so.1
+}
+
 {
    MEMCHECK-LIBSTDC++-REACHABLE
    Memcheck:Leak

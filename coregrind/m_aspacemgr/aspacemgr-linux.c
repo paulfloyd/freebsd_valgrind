@@ -1639,7 +1639,6 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    suggested_clstack_end = -1; // ignored; Mach-O specifies its stack
 
    // --- Freebsd ------------------------------------------
-   
 #elif defined(VGO_freebsd)
 
 # if VG_WORDSIZE == 4
@@ -1660,7 +1659,7 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
      if (aspacem_maxAddr > cse)
         aspacem_maxAddr = cse;
    }
-#    endif
+#    endif // ENABLE_INNER
 # endif
 
    aspacem_cStart = aspacem_minAddr;
@@ -1668,7 +1667,7 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
 
 #  ifdef ENABLE_INNER
    aspacem_vStart -= 0x10000000; // 256M
-#  endif
+#  endif // ENABLE_INNER
 
    suggested_clstack_end = aspacem_maxAddr - 16*1024*1024ULL
                                            + VKI_PAGE_SIZE;
