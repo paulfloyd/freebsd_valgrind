@@ -21,7 +21,7 @@ Open file descriptor 2: /usr/home/paulf/scratch/valgrind/memcheck/tests/freebsd/
 Open file descriptor 1: /usr/home/paulf/scratch/valgrind/memcheck/tests/freebsd/pdfork_pdkill.stdout.out
    <inherited from parent>
 
-Open file descriptor 0: /dev/pts/2
+Open file descriptor 0: [dev pts]
    <inherited from parent>
 
 
