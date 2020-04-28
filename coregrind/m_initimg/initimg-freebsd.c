@@ -638,20 +638,23 @@ Addr setup_client_stack( void*  init_sp,
          case AT_STACKPROT:
          case AT_NCPUS:
          case AT_EHDRFLAGS:
-#if defined(VGP_x86_freebsd)
-         case AT_PAGESIZESLEN:
-#endif
-         case AT_CANARYLEN:
          case AT_OSRELDATE:
             /* All these are pointerless, so we don't need to do
                anything about them. */
             break;
+        // case AT_CANARYLEN:
         // case AT_EXECPATH:
         // case AT_CANARY:
 #if defined(VGP_x86_freebsd)
+         case AT_PAGESIZESLEN:
+             // @todo PJF should print stomping messages here
+             if (!VG_(is32on64)())
+                 auxv->a_type = AT_IGNORE;
+             break;
          case AT_PAGESIZES:
              if (VG_(is32on64)())
              {
+
                  pagesizes = VG_(malloc)("initimg-freebsd.cpauxv.1", 2*sizeof(int));
                  pagesizes[0] = ((int*)auxv->u.a_ptr)[0];
                  pagesizes[1] = ((int*)auxv->u.a_ptr)[1];
