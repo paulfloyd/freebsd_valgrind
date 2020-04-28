@@ -605,6 +605,8 @@ PRE(sys_thr_new)
    ctst->tmp_sig_mask = ptst->sig_mask;
 
    /* Linux has to guess, we don't */
+   ctst->client_stack_highest_byte = (Addr)tp.stack_base + tp.stack_size;
+   ctst->client_stack_szB = tp.stack_size;
    VG_(register_stack)((Addr)tp.stack_base, (Addr)tp.stack_base + tp.stack_size);
 
    /* Assume the clone will succeed, and tell any tool that wants to
