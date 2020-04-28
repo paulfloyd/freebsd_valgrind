@@ -4222,7 +4222,7 @@ PRE(sys_cap_enter)
 PRE(sys_pdfork)
 {
    PRINT("sys_pdfork ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
-   PRE_REG_READ2(long, "pdfork", int*, ARG1, int, ARG2);
+   PRE_REG_READ2(long, "pdfork", int*, fdp, int, flags);
 
    SET_STATUS_from_SysRes( ML_(do_fork)(tid) );
    if (SUCCESS) {

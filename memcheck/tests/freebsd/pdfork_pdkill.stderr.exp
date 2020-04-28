@@ -10,7 +10,7 @@ Syscall param pdfork(fdp) points to unaddressable byte(s)
    by 0x........: main (pdfork_pdkill.c:84)
 
 parent after 1st bad pdfork
-Syscall param pdfork((arrghs->arg2)) contains uninitialised byte(s)
+Syscall param pdfork(flags) contains uninitialised byte(s)
    ...
    by 0x........: main (pdfork_pdkill.c:91)
 
