@@ -299,10 +299,12 @@ void VG_(sigframe_create)( ThreadId tid,
                            void *restorer )
 {
    Addr		esp;
+   struct sigframe *frame;
    ThreadState* tst = VG_(get_ThreadState)(tid);
 
    esp = build_sigframe(tst, esp_top_of_frame, siginfo, siguc, handler, 
                              flags, mask, restorer);
+   frame = (struct sigframe *)esp;
 
    /* Set the thread so it will next run the handler. */
    /* tst->m_esp  = esp;  also notify the tool we've updated ESP */
@@ -310,7 +312,9 @@ void VG_(sigframe_create)( ThreadId tid,
    VG_TRACK( post_reg_write, Vg_CoreSignal, tid, VG_O_STACK_PTR, sizeof(Addr));
 
    tst->arch.vex.guest_EIP = (Addr) handler;
-//   tst->arch.vex.guest_EDI = (ULong) siginfo->si_signo;
+   tst->arch.vex.guest_EDI = (ULong) siginfo->si_signo;
+   tst->arch.vex.guest_ESI = (Addr) &frame->sigInfo;
+   tst->arch.vex.guest_EDX = (Addr) &frame->uContext;
    /* This thread needs to be marked runnable, but we leave that the
       caller to do. */
 
