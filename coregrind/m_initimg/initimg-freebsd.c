@@ -629,8 +629,11 @@ Addr setup_client_stack( void*  init_sp,
          case AT_EGID:
          case AT_STACKPROT:
          case AT_NCPUS:
-         case AT_EHDRFLAGS:
          case AT_OSRELDATE:
+#if (FREEBSD_VERS >= FREEBSD_11)
+         // FreeBSD 11+ also have HWCAP and HWCAP2
+         case AT_EHDRFLAGS:
+#endif
             /* All these are pointerless, so we don't need to do
                anything about them. */
             break;

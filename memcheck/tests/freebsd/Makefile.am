@@ -6,6 +6,7 @@ dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout
 EXTRA_DIST = \
 	statvfs.vgtest \
 	statvfs.stderr.exp \
+	statvfs.stderr.exp-x86 \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
 	getfsstat.vgtest \

@@ -455,9 +455,9 @@ static UInt local_sys_write_stderr (const HChar* buf, Int n )
       "1: "
       "movl  %%eax, %0\n"    /* __res = eax */
       "addl  $16, %%esp\n"   /* pop x4 */
-      : "=mr" (result)
-      : "g" (buf), "g" (n)
-      : "eax", "edx", "cc"
+      : /*wr*/    "=mr" (result)
+      : /*rd*/    "g" (buf), "g" (n)
+      : /*trash*/ "eax", "edx", "cc"
    );
    return result >= 0 ? result : -1;
 }
