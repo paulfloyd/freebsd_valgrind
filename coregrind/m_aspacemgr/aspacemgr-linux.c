@@ -1492,6 +1492,12 @@ static void init_nsegment ( /*OUT*/NSegment* seg )
    seg->mode     = 0;
    seg->offset   = 0;
    seg->fnIdx    = -1;
+   // @todo PJF Martin  Jonston's fix
+/*
+   seg->hasR     = seg->hasW = seg->hasX = seg->hasT
+                 = seg->isCH = seg->isFF = False;
+*/
+
    seg->hasR = seg->hasW = seg->hasX = seg->hasT = seg->isCH = False;
 }
 
@@ -1662,14 +1668,14 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
 #  endif // ENABLE_INNER
 
    // starting with FreeBSD 11.1, the stack is created with a zone
-   // that is marked MAP_GUARD. This zone uns reserved but unmapped,
+   // that is marked MAP_GUARD. This zone is reserved but unmapped,
    // and fills the space up to the end of the segment
    // see man mmap
 
    // @todo PJF add conditionals for FreeBSD 11.1
    // will mean adding detection of minor version
 
-   // This was 16M byt with the MAP_GUARD zone I've upped it to 80M
+   // This was 16M but with the MAP_GUARD zone I've upped it to 80M
 
 
    suggested_clstack_end = aspacem_maxAddr - 80*1024*1024ULL
@@ -2469,6 +2475,8 @@ SysRes VG_(am_mmap_named_file_fixed_client_flags)
    } else if (ML_(am_resolve_filename)(fd, buf, VKI_PATH_MAX)) {
       seg.fnIdx = ML_(am_allocate_segname)( buf );
    }
+// @todo PJF Martin Johnston's patch
+   //seg.isFF = (flags & VKI_MAP_FIXED);
    add_segment( &seg );
 
    AM_SANITY_CHECK;
@@ -3845,6 +3853,8 @@ Bool VG_(get_changed_segments)(
 #endif // defined(VGO_darwin)
 
 /*------END-procmaps-parser-for-Darwin---------------------------*/
+
+// @todo PJF use consistently either #if/#elif or #if/#endif
 
 #if defined(VGO_freebsd)
 /*------BEGIN-procmaps-parser-for-Freebsd------------------------*/

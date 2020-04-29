@@ -949,57 +949,33 @@ typedef struct vki_fsid { vki_int32_t val[2]; } vki_fsid_t;
 #define VKI_OMFSNAMELEN	16
 #define VKI_OMNAMELEN	(88 - 2 * sizeof(long))
 #define VKI_MFSNAMELEN	16
-#define VKI_MNAMELEN	88
+#define VKI_FREEBSD11_MNAMELEN	88
 
-struct vki_statfs4 {
-	long		f_spare2;
-	long		f_bsize;
-	long		f_iosize;
-	long		f_blocks;
-	long		f_bfree;
-	long		f_bavail;
-	long		f_files;
-	long		f_ffree;
-	vki_fsid_t	f_fsid;
-	vki_uid_t	f_owner;
-	vki_int32_t	f_type;
-	vki_int32_t	f_flags;
-	long		f_syncwrites;
-	long		f_asyncwrites;
-	char		f_fstypename[VKI_OMFSNAMELEN];
-	char		f_mntonname[VKI_OMNAMELEN];
-	long		f_syncreads;
-	long		f_asyncreads;
-	vki_int16_t	f_spares1;
-	char		f_mntfromnname[VKI_OMNAMELEN];
-	vki_int16_t	f_spares2;
-	long		f_spare[2];
+struct vki_freebsd11_statfs {
+        vki_uint32_t f_version;
+        vki_uint32_t f_type;
+        vki_uint64_t f_flags;
+        vki_uint64_t f_bsize;
+        vki_uint64_t f_iosize;
+        vki_uint64_t f_blocks;
+        vki_uint64_t f_bfree;
+        vki_int64_t  f_bavail;
+        vki_uint64_t f_files;
+        vki_int64_t  f_ffree;
+        vki_uint64_t f_syncwrites;
+        vki_uint64_t f_asyncwrites;
+        vki_uint64_t f_syncreads;
+        vki_uint64_t f_asyncreads;
+        vki_uint64_t f_spare[10];
+        vki_uint32_t f_namemax;
+        vki_uid_t     f_owner;
+        vki_fsid_t    f_fsid;
+        char      f_charspare[80];
+        char      f_fstypename[VKI_OMFSNAMELEN];
+        char      f_mntfromname[VKI_FREEBSD11_MNAMELEN];
+        char      f_mntonname[VKI_FREEBSD11_MNAMELEN];
 };
 
-struct vki_statfs {
-	vki_uint32_t	f_version;
-	vki_uint32_t	f_type;
-	vki_uint64_t	f_flags;
-	vki_uint64_t	f_bsize;
-	vki_uint64_t	f_iosize;
-	vki_uint64_t	f_blocks;
-	vki_uint64_t	f_bfree;
-	vki_int64_t	f_bavail;
-	vki_uint64_t	f_files;
-	vki_int64_t	f_ffree;
-	vki_uint64_t	f_syncwrites;
-	vki_uint64_t	f_asyncwrites;
-	vki_uint64_t	f_syncreads;
-	vki_uint64_t	f_asyncreads;
-	vki_uint64_t	f_spare[10];
-	vki_uint32_t	f_namemax;
-	vki_uid_t	f_owner;
-	vki_fsid_t	f_fsid;
-	char		f_charspare[80];
-	char		f_fstypename[VKI_MFSNAMELEN];
-	char		f_mntfromnname[VKI_MNAMELEN];
-	char		f_mntonname[VKI_MNAMELEN];
-};
 
 #define MAXFIDSZ        16
 
@@ -1014,30 +990,31 @@ struct vki_fhandle {
 	struct vki_fid	fh_fid;
 };
 
-#define VKI_MNAMELEN6	88
-struct vki_statfs6 {
-	vki_uint32_t	f_version;
-	vki_uint32_t	f_type;
-	vki_uint64_t	f_flags;
-	vki_uint64_t	f_bsize;
-	vki_uint64_t	f_iosize;
-	vki_uint64_t	f_blocks;
-	vki_uint64_t	f_bfree;
-	vki_int64_t	f_bavail;
-	vki_uint64_t	f_files;
-	vki_int64_t	f_ffree;
-	vki_int64_t	f_syncwrites;
-	vki_int64_t	f_asyncwrites;
-	vki_int64_t	f_syncreads;
-	vki_int64_t	f_asyncreads;
-	vki_uint64_t	f_spare[10];
-	vki_uint32_t	f_namemax;
-	vki_uid_t	f_owner;
-	vki_fsid_t	f_fsid;
-	char		f_charspare[80];
-	char		f_fstypename[VKI_MFSNAMELEN];
-	char		f_mntfromnname[VKI_MNAMELEN6];
-	char		f_mntonname[VKI_MNAMELEN6];
+
+#define VKI_MNAMELEN        1024
+struct vki_statfs {
+        vki_uint32_t f_version;
+        vki_uint32_t f_type;
+        vki_uint64_t f_flags;
+        vki_uint64_t f_bsize;
+        vki_uint64_t f_iosize;
+        vki_uint64_t f_blocks;
+        vki_uint64_t f_bfree;
+        vki_int64_t  f_bavail;
+        vki_uint64_t f_files;
+        vki_int64_t  f_ffree;
+        vki_uint64_t f_syncwrites;
+        vki_uint64_t f_asyncwrites;
+        vki_uint64_t f_syncreads;
+        vki_uint64_t f_asyncreads;
+        vki_uint64_t f_spare[10];
+        vki_uint32_t f_namemax;
+        vki_uid_t     f_owner;
+        vki_fsid_t    f_fsid;
+        char      f_charspare[80];
+        char      f_fstypename[VKI_MFSNAMELEN];
+        char      f_mntfromname[VKI_MNAMELEN];
+        char      f_mntonname[VKI_MNAMELEN];
 };
 
 //----------------------------------------------------------------------
@@ -1299,7 +1276,7 @@ struct vki_elf_prstatus
 	vki_size_t	pr_gregsetsz;
 	vki_size_t	pr_fpregsetsz;
 	int		pr_osreldate;
-    int		pr_cursig;	/* Current signal */
+	int		pr_cursig;	/* Current signal */
 	vki_pid_t	pr_pid;
 	vki_elf_gregset_t pr_reg;	/* GP registers */
 };
@@ -1312,7 +1289,7 @@ struct vki_elf_prpsinfo
 {
 	int	pr_version;	/* version of struct - PRPSINFO_VERSION */
 	vki_size_t	pr_psinfosz;
-    char	pr_fname[VKI_MAXCOMLEN+1];		/* filename of executable */
+	char	pr_fname[VKI_MAXCOMLEN+1];		/* filename of executable */
 	char	pr_psargs[VKI_ELF_PRARGSZ];	/* initial part of arg list */
 };
 

@@ -176,7 +176,7 @@ ML_(do_syscall_for_client_WRK):
 /* export the ranges so that
    VG_(fixup_guest_state_after_syscall_interrupted) can do the
    right thing */
-        
+
 .globl ML_(blksys_setup)
 .globl ML_(blksys_restart)
 .globl ML_(blksys_complete)
@@ -188,10 +188,10 @@ ML_(blksys_complete):   .long 3b
 ML_(blksys_committed):  .long 4b
 ML_(blksys_finished):   .long 5b
 .previous
-        
+
 #endif // defined(VGP_x86_freebsd)
 
- /* Let the linker know we don't need an executable stack */
+/* Let the linker know we don't need an executable stack */
 MARK_STACK_NO_EXEC
 
 /*--------------------------------------------------------------------*/

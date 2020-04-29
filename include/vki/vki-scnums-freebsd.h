@@ -139,11 +139,12 @@
 #define	__NR_quotactl		148
 #define	__NR_nfssvc		155
 
-#if (FREEBSD_VERS < FREEBSD_12)
-#define	__NR_statfs		157
-#define	__NR_fstatfs		158
-#define	__NR_lgetfh		160
+#if (FREEBSD_VER <= FREEBSD_10)
+// these were removed in FreeBSD 11
+#define	__NR_freebsd4_statfs		157
+#define	__NR_freebsd4_fstatfs		158
 #endif
+#define	__NR_lgetfh		160
 #define	__NR_getfh		161
 #define	__NR_getdomainname	162
 #define	__NR_setdomainname	163
@@ -233,8 +234,8 @@
 #define	__NR_nfstat		279
 #define	__NR_nlstat		280
 
-#if (FREEBSD_VERS < FREEBSD_12)
-#define	__NR_fhstatfs		297
+#if (FREEBSD_VERS <= FREEBSD_10)
+#define	__NR_freebsd4_fhstatfs		297
 #endif
 
 #define	__NR_fhopen		298
@@ -255,7 +256,7 @@
 #define	__NR_kldnext		307
 #define	__NR_kldstat		308
 #define	__NR_kldfirstmod	309
-#define	__NR_getsid		310
+#define	__NR_getsid         310
 #define	__NR_setresuid		311
 #define	__NR_setresgid		312
 #define	__NR_aio_return		314
@@ -265,7 +266,7 @@
 #define	__NR_aio_read		318
 #define	__NR_aio_write		319
 #define	__NR_lio_listio		320
-#define	__NR_yield		321
+#define	__NR_yield          321
 #define	__NR_mlockall		324
 #define	__NR_munlockall		325
 #define	__NR___getcwd		326
@@ -336,14 +337,14 @@
 
 #if (FREEBSD_VERS >= FREEBSD_12)
 #define	__NR_freebsd11_getfsstat	395
-#define	__NR_freebsd11_statfs6		396
-#define	__NR_freebsd11_fstatfs6		397
-#define	__NR_freebsd11_fhstatfs6	398
+#define	__NR_freebsd11_statfs		396
+#define	__NR_freebsd11_fstatfs		397
+#define	__NR_freebsd11_fhstatfs 	398
 #else
 #define	__NR_getfsstat		395
-#define	__NR_statfs6		396
-#define	__NR_fstatfs6		397
-#define	__NR_fhstatfs6		398
+#define	__NR_statfs 		396
+#define	__NR_fstatfs   		397
+#define	__NR_fhstatfs   	398
 #endif
 
 #define	__NR_ksem_close		400
@@ -444,7 +445,7 @@
 #endif
 
 #define	__NR_futimesat		494
-#define	__NR_linkat         495
+#define	__NR_linkat		495
 #define	__NR_mkdirat		496
 #define	__NR_mkfifoat		497
 
@@ -466,15 +467,15 @@
 #define	__NR_jail_set		507
 #define	__NR_jail_remove	508
 #define	__NR___semctl		510
-#define	__NR_shmctl         512
-#define	__NR__lpathconf     513
+#define	__NR_shmctl		512
+#define	__NR__lpathconf		513
 /* 514 is obsolete cap_new */
 #define	__NR__cap_rights_get    515
 #define	__NR_cap_enter  	516
 #define	__NR_cap_getmode	517
-#define	__NR_pdfork         518
-#define	__NR_pdkill         519
-#define	__NR_pdgetpid       520
+#define	__NR_pdfork		518
+#define	__NR_pdkill		519
+#define	__NR_pdgetpid		520
 #define	__NR_pselect    	522
 #define	__NR_getloginclass	523
 #define	_NR_setloginclass	524
@@ -496,30 +497,30 @@
 #define	__NR_chflagsat  	540
 #define	__NR_accept4    	541
 #define	__NR_pipe2          542
-#define __NR_aio_mlock   543
-#define __NR_procctl     544
-#define __NR_ppoll       545
-#define __NR_futimens    546
-#define __NR_utimensat   547
-#define __NR_fdatasync   550
+#define __NR_aio_mlock		543
+#define __NR_procctl		544
+#define __NR_ppoll          545
+#define __NR_futimens		546
+#define __NR_utimensat		547
+#define __NR_fdatasync		550
 #if (FREEBSD_VERS >= FREEBSD_12)
-#define __NR_fstat       551
-#define __NR_fstatat     552
-#define __NR_fhstat      553
-#define __NR_getdirentries       554
-#define __NR_statfs      555
-#define __NR_fstatfs     556
-#define __NR_getfsstat   557
-#define __NR_fhstatfs    558
-#define __NR_mknodat     559
-#define __NR_kevent      560
-#define __NR_cpuset_getdomain    561
-#define __NR_cpuset_setdomain    562
-#define __NR_getrandom   563
-#define __NR_getfhat     564
-#define __NR_fhlink      565
-#define __NR_fhlinkat    566
-#define __NR_fhreadlink  567
+#define __NR_fstat          551
+#define __NR_fstatat		552
+#define __NR_fhstat         553
+#define __NR_getdirentries	554
+#define __NR_statfs         555
+#define __NR_fstatfs		556
+#define __NR_getfsstat		557
+#define __NR_fhstatfs		558
+#define __NR_mknodat		559
+#define __NR_kevent		560
+#define __NR_cpuset_getdomain	561
+#define __NR_cpuset_setdomain	562
+#define __NR_getrandom		563
+#define __NR_getfhat		564
+#define __NR_fhlink		565
+#define __NR_fhlinkat		566
+#define __NR_fhreadlink		567
 #endif
 
 #define __NR_fake_sigreturn	1000

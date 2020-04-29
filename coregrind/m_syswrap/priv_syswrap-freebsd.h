@@ -47,12 +47,9 @@ DECL_TEMPLATE(freebsd, sys_syscall)
 DECL_TEMPLATE(freebsd, sys_exit)
 DECL_TEMPLATE(freebsd, sys_fork)
 // lots are not here ????
+// it would be nice if thse were in the same order as sys/syscall.h
+// instead of just being some random jumble
 
-DECL_TEMPLATE(freebsd, sys_getfsstat4)
-#if (FREEBSD_VERS >= FREEBSD_12)
-DECL_TEMPLATE(freebsd, sys_freebsd11_getfsstat)
-#endif
-DECL_TEMPLATE(freebsd, sys_getfsstat)
 DECL_TEMPLATE(freebsd, sys_mount)
 DECL_TEMPLATE(freebsd, sys_unmount)
 DECL_TEMPLATE(freebsd, sys_ptrace)
@@ -215,9 +212,17 @@ DECL_TEMPLATE(freebsd, sys_getresgid)
 DECL_TEMPLATE(freebsd, sys_kqueue)
 DECL_TEMPLATE(freebsd, sys_kevent)
 DECL_TEMPLATE(freebsd, sys_sendfile)
-DECL_TEMPLATE(freebsd, sys_statfs6)
-DECL_TEMPLATE(freebsd, sys_fstatfs6)
-DECL_TEMPLATE(freebsd, sys_fhstatfs6)
+#if (FREEBSD_VERS >= FREEBSD_12)
+DECL_TEMPLATE(freebsd, sys_freebsd11_getfsstat)
+DECL_TEMPLATE(freebsd, sys_freebsd11_statfs)
+DECL_TEMPLATE(freebsd, sys_freebsd11_fstatfs)
+DECL_TEMPLATE(freebsd, sys_freebsd11_fhstatfs)
+#else
+DECL_TEMPLATE(freebsd, sys_getfsstat)
+DECL_TEMPLATE(freebsd, sys_statfs)
+DECL_TEMPLATE(freebsd, sys_fstatfs)
+DECL_TEMPLATE(freebsd, sys_fhstatfs)
+#endif
 DECL_TEMPLATE(freebsd, sys_thr_exit)
 DECL_TEMPLATE(freebsd, sys_thr_self)
 DECL_TEMPLATE(freebsd, sys_thr_set_name)
@@ -311,6 +316,11 @@ DECL_TEMPLATE(freebsd, sys_ppoll)
 #if (FREEBSD_VERS >= FREEBSD_12)
 
 DECL_TEMPLATE(freebsd, sys_fstat)
+DECL_TEMPLATE(freebsd, sys_statfs)
+DECL_TEMPLATE(freebsd, sys_fstatfs)
+DECL_TEMPLATE(freebsd, sys_getfsstat)
+DECL_TEMPLATE(freebsd, sys_hstatfs)
+
 DECL_TEMPLATE(freebsd, sys_getrandom)
 
 #endif

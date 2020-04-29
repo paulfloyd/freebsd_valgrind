@@ -1,5 +1,3 @@
-# hangs on FreeBSD, maybe because of wrong signal handling
-prereq: (! ../../tests/os_test freebsd)
 prog: pselect_alarm
 vgopts: -q
 stderr_filter: filter_stderr

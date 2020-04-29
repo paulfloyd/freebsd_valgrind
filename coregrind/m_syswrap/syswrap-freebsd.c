@@ -1283,28 +1283,12 @@ POST(sys___getcwd)
    }
 }
 
-// getfsstat() takes a length in bytes, but returns the number of structures
-// returned, not a length.
-PRE(sys_getfsstat4)
-{
-   PRINT("sys_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d )",ARG1,SARG2,SARG3);
-   PRE_REG_READ3(long, "getfsstat", struct vki_statfs4 *, buf, long, len, int, flags);
-   PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
-}
-
-POST(sys_getfsstat4)
-{
-   vg_assert(SUCCESS);
-   if ((Word)RES != -1) {
-      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs4) );
-   }
-}
-
 #if (FREEBSD_VERS >= FREEBSD_12)
+
 PRE(sys_freebsd11_getfsstat)
 {
    PRINT("sys_freebsd11_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
+   PRE_REG_READ3(long, "getfsstat", struct vki_freebsd11_statfs *, buf, long, len, int, flags);
    PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
 }
 
@@ -1312,15 +1296,57 @@ POST(sys_freebsd11_getfsstat)
 {
    vg_assert(SUCCESS);
    if ((Word)RES != -1) {
-      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs) );
+      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_freebsd11_statfs) );
    }
 }
-#endif
+
+PRE(sys_freebsd11_statfs)
+{
+   PRINT("sys_statfs ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "statfs", const char *, path, struct statfs *, buf);
+   PRE_MEM_RASCIIZ( "statfs(path)", ARG1 );
+   PRE_MEM_WRITE( "statfs(buf)", ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+POST(sys_freebsd11_statfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+PRE(sys_freebsd11_fstatfs)
+{
+   PRINT("sys_fstatfs ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fstatfs",
+                 unsigned int, fd, struct statfs *, buf);
+   PRE_MEM_WRITE( "fstatfs(buf)", ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+POST(sys_freebsd11_fstatfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+PRE(sys_freebsd11_fhstatfs)
+{
+   PRINT("sys_fhstatfs ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fhstatfs",
+                 struct fhandle *, fhp, struct statfs *, buf);
+   PRE_MEM_READ( "fhstatfs(fhp)", ARG1, sizeof(struct vki_fhandle) );
+   PRE_MEM_WRITE( "fhstatfs(buf)", ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+POST(sys_freebsd11_fhstatfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+
+#else
 
 PRE(sys_getfsstat)
 {
    PRINT("sys_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
+   PRE_REG_READ3(long, "getfsstat", struct vki_freebsd11_statfs *, buf, long, len, int, flags);
    PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
 }
 
@@ -1328,9 +1354,54 @@ POST(sys_getfsstat)
 {
    vg_assert(SUCCESS);
    if ((Word)RES != -1) {
-      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs) );
+      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_freebsd11_statfs) );
    }
 }
+
+PRE(sys_statfs)
+{
+   PRINT("sys_statfs ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "statfs", const char *, path, struct statfs *, buf);
+   PRE_MEM_RASCIIZ( "statfs(path)", ARG1 );
+   PRE_MEM_WRITE( "statfs(buf)", ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+POST(sys_statfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+PRE(sys_fstatfs)
+{
+   PRINT("sys_fstatfs ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fstatfs",
+                 unsigned int, fd, struct statfs *, buf);
+   PRE_MEM_WRITE( "fstatfs(buf)", ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+POST(sys_fstatfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+PRE(sys_fhstatfs)
+{
+   PRINT("sys_fhstatfs ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fhstatfs",
+                 struct fhandle *, fhp, struct statfs *, buf);
+   PRE_MEM_READ( "fhstatfs(fhp)", ARG1, sizeof(struct vki_fhandle) );
+   PRE_MEM_WRITE( "fhstatfs(buf)", ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+POST(sys_fhstatfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
+}
+
+
+#endif
+
+
 
 PRE(sys_fhopen)
 {
@@ -1368,58 +1439,6 @@ POST(sys_fhstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
-PRE(sys_fhstatfs)
-{
-   PRINT("sys_fstatfs ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
-   PRE_REG_READ2(long, "fhstatfs",
-                 struct fhandle *, fhp, struct statfs *, buf);
-   PRE_MEM_READ( "fhstatfs(fhp)", ARG1, sizeof(struct vki_fhandle) );
-   PRE_MEM_WRITE( "fhstatfs(buf)", ARG2, sizeof(struct vki_statfs) );
-}
-
-POST(sys_fhstatfs)
-{
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
-}
-
-PRE(sys_fhstatfs6)
-{
-   PRINT("sys_fstatfs6 ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
-   PRE_REG_READ2(long, "fhstatfs6",
-                 struct fhandle *, fhp, struct statfs *, buf);
-   PRE_MEM_READ( "fhstatfs6(fhp)", ARG1, sizeof(struct vki_fhandle) );
-   PRE_MEM_WRITE( "fhstatfs6(buf)", ARG2, sizeof(struct vki_statfs6) );
-}
-
-POST(sys_fhstatfs6)
-{
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs6) );
-}
-
-PRE(sys_fstatfs6)
-{
-   PRINT("sys_fstatfs6 ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
-   PRE_REG_READ2(long, "fstatfs6",
-                 unsigned int, fd, struct statfs *, buf);
-   PRE_MEM_WRITE( "fstatfs6(buf)", ARG2, sizeof(struct vki_statfs6) );
-}
-
-POST(sys_fstatfs6)
-{
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs6) );
-}
-
-PRE(sys_statfs6)
-{
-   PRINT("sys_statfs6 ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(long, "statfs6", const char *, path, struct statfs *, buf);
-   PRE_MEM_RASCIIZ( "statfs6(path)", ARG1 );
-   PRE_MEM_WRITE( "statfs(buf)", ARG2, sizeof(struct vki_statfs6) );
-}
-POST(sys_statfs6)
-{
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs6) );
-}
 
 /* ---------------------------------------------------------------------
    kld* wrappers
@@ -4129,13 +4148,7 @@ POST(sys_cpuset_getaffinity)
         POST_MEM_WRITE( ARG5, ARG4 );
 }
 
-struct pselect_sized_sigset {
-    const vki_sigset_t *ss;
-    vki_size_t ss_len;
-};
-
 struct pselect_adjusted_sigset {
-    struct pselect_sized_sigset ss; /* The actual syscall arg */
     vki_sigset_t adjusted_ss;
 };
 
@@ -4167,31 +4180,18 @@ PRE(sys_pselect)
       PRE_MEM_READ( "pselect(exceptfds)", 
 		     ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG5 != 0)
-      PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timespec) );
+      PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
    if (ARG6 != 0) {
-      const struct pselect_sized_sigset *pss =
-          (struct pselect_sized_sigset *)(Addr)ARG6;
-      PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(*pss) );
-      if (!ML_(safe_to_deref)(pss, sizeof(*pss))) {
+      vki_sigset_t *ss = (vki_sigset_t *)(Addr)ARG6;
+      PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(*ss) );
+      if (!ML_(safe_to_deref)(ss, sizeof(*ss))) {
          ARG6 = 1; /* Something recognisable to POST() hook. */
       } else {
-         struct pselect_adjusted_sigset *pas;
-         pas = VG_(malloc)("syswrap.pselect.1", sizeof(*pas));
-         ARG6 = (Addr)pas;
-         pas->ss.ss = (void *)1;
-         pas->ss.ss_len = pss->ss_len;
-         if (pss->ss_len == sizeof(*pss->ss)) {
-            if (pss->ss == NULL) {
-               pas->ss.ss = NULL;
-            } else {
-               PRE_MEM_READ("pselect(sig->ss)", (Addr)pss->ss, pss->ss_len);
-               if (ML_(safe_to_deref)(pss->ss, sizeof(*pss->ss))) {
-                  pas->adjusted_ss = *pss->ss;
-                  pas->ss.ss = &pas->adjusted_ss;
-                  VG_(sanitize_client_sigmask)(&pas->adjusted_ss);
-               }
-            }
-         }
+         vki_sigset_t *adjss;
+         adjss = VG_(malloc)("syswrap.pselect.1", sizeof(*adjss));
+         *adjss = *ss;
+         VG_(sanitize_client_sigmask)(adjss);
+         ARG6 = (Addr)adjss;
       }
    }
 }
@@ -4354,6 +4354,61 @@ POST(sys_fstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
+PRE(sys_statfs)
+{
+   PRINT("sys_statfs ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "statfs", const char *, path, struct statfs *, buf);
+   PRE_MEM_RASCIIZ( "statfs(path)", ARG1 );
+   PRE_MEM_WRITE( "statfs(buf)", ARG2, sizeof(struct vki_statfs) );
+}
+
+POST(sys_statfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
+}
+
+PRE(sys_fstatfs)
+{
+   PRINT("sys_fstatfs ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fstatfs",
+                 unsigned int, fd, struct statfs *, buf);
+   PRE_MEM_WRITE( "fstatfs(buf)", ARG2, sizeof(struct vki_statfs) );
+}
+
+POST(sys_fstatfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
+}
+
+PRE(sys_getfsstat)
+{
+   PRINT("sys_getfsstat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
+   PRE_REG_READ3(long, "getfsstat", struct vki_statfs *, buf, long, len, int, flags);
+   PRE_MEM_WRITE( "getfsstat(buf)", ARG1, ARG2 );
+}
+
+POST(sys_getfsstat)
+{
+   vg_assert(SUCCESS);
+   if ((Word)RES != -1) {
+      POST_MEM_WRITE( ARG1, RES * sizeof(struct vki_statfs) );
+   }
+}
+
+PRE(sys_fhstatfs)
+{
+   PRINT("sys_fhstatfs ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fhstatfs",
+                 struct fhandle *, fhp, struct statfs *, buf);
+   PRE_MEM_READ( "fhstatfs(fhp)", ARG1, sizeof(struct vki_fhandle) );
+   PRE_MEM_WRITE( "fhstatfs(buf)", ARG2, sizeof(struct vki_statfs) );
+}
+
+POST(sys_fhstatfs)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
+}
+
 
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
@@ -4397,7 +4452,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    GENX_(__NR_chown,			sys_chown),			// 16
    GENX_(__NR_break,			sys_brk),			// 17
-   BSDXY(__NR_getfsstat4,		sys_getfsstat4),		// 18
+   // freebsd 4 getfsstat                       18
    // 4.3 lseek								   19
 
    GENX_(__NR_getpid,			sys_getpid),			// 20
@@ -4571,8 +4626,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // BSDXY(__NR_nfssvc,		sys_nfssvc),			// 155
 
    // 4.3 getdirentries							   156
-   GENXY(__NR_statfs,			sys_statfs),			// 157
-   GENXY(__NR_fstatfs,			sys_fstatfs),			// 158
+   // freebsd 4 statfs                              157
+   // freebsd 4 fstatfs                             158
    // nosys								   159
 
 // BSDXY(__NR_lgetfh,			sys_lgetfh),			// 160
@@ -4752,7 +4807,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // nosys								   295
 
    // nosys								   296
-   BSDXY(__NR_fhstatfs,			sys_fhstatfs),			// 297
+   // freebsd 4 NR_fhstatfs                297
    BSDXY(__NR_fhopen,			sys_fhopen),			// 298
    BSDXY(__NR_fhstat,			sys_fhstat),			// 299
 
@@ -4876,15 +4931,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // mac_syscall							   394
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_getfsstat,		sys_freebsd11_getfsstat),			// 395
-   BSDXY(__NR_freebsd11_statfs6,			sys_statfs6),			// 396
-   BSDXY(__NR_freebsd11_fstatfs6,			sys_fstatfs6),			// 397
-   BSDXY(__NR_freebsd11_fhstatfs6,		sys_fhstatfs6),			// 398
+   BSDXY(__NR_freebsd11_getfsstat,  sys_freebsd11_getfsstat),   // 395
+   BSDXY(__NR_freebsd11_statfs, 	sys_statfs),                // 396
+   BSDXY(__NR_freebsd11_fstatfs,	sys_fstatfs),               // 397
+   BSDXY(__NR_freebsd11_fhstatfs,   sys_fhstatfs),               // 398
 #else
-   BSDXY(__NR_getfsstat,		sys_getfsstat),			// 395
-   BSDXY(__NR_statfs6,			sys_statfs6),			// 396
-   BSDXY(__NR_fstatfs6,			sys_fstatfs6),			// 397
-   BSDXY(__NR_fhstatfs6,		sys_fhstatfs6),			// 398
+   BSDXY(__NR_getfsstat,            sys_getfsstat),             			// 395
+   BSDXY(__NR_statfs,               sys_statfs),                        // 396
+   BSDXY(__NR_fstatfs,          	sys_fstatfs),			// 397
+   BSDXY(__NR_fhstatfs,         	sys_fhstatfs),			// 398
 #endif
 
    // nosys								   399
@@ -5076,10 +5131,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // fstatat                                  552
     // fhstat                                   553
     // getdirentries                            554
-    // statfs                                   555
-    // fstatfs                                  556
+    BSDXY(__NR_statfs,          sys_statfs),        // 555
+    BSDXY(__NR_fstatfs,         sys_fstatfs),       // 556
     BSDXY(__NR_getfsstat,       sys_getfsstat),     // 557
-    // fhstatfs                                 558
+    BSDXY(__NR_fhstatfs,        sys_fhstatfs),      // 558
     // mknodat                                  559
     // kevent                                   560
     // cpuset_getdomain                         561

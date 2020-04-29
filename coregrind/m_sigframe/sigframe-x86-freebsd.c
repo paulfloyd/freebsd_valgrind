@@ -302,7 +302,7 @@ void VG_(sigframe_create)( ThreadId tid,
    struct sigframe *frame;
    ThreadState* tst = VG_(get_ThreadState)(tid);
 
-   esp = build_sigframe(tst, esp_top_of_frame, siginfo, siguc, handler, 
+   esp = build_sigframe(tst, esp_top_of_frame, siginfo, siguc, handler,
                              flags, mask, restorer);
    frame = (struct sigframe *)esp;
 

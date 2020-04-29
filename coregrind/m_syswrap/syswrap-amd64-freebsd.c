@@ -299,9 +299,9 @@ PRE(sys_fake_sigreturn)
    VG_(sigframe_destroy)(tid);
 
    /* For unclear reasons, it appears we need the syscall to return
-      without changing %EAX.  Since %EAX is the return value, and can
+      without changing %RAX.  Since %RAX is the return value, and can
       denote either success or failure, we must set up so that the
-      driver logic copies it back unchanged.  Also, note %EAX is of
+      driver logic copies it back unchanged.  Also, note %RAX is of
       the guest registers written by VG_(sigframe_destroy). */
    rflags = LibVEX_GuestAMD64_get_rflags(&tst->arch.vex);
    SET_STATUS_from_SysRes( VG_(mk_SysRes_amd64_freebsd)( tst->arch.vex.guest_RAX,

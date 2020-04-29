@@ -709,7 +709,12 @@ PRE(sys_fake_sigreturn)
 
    ThreadState* tst;
    struct vki_ucontext *uc;
-   PRINT("sys_sigreturn ( )");
+   PRINT("sys_sigreturn ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(long, "sigreturn",
+                 struct vki_ucontext *, ucp);
+
+   PRE_MEM_READ( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
+   PRE_MEM_WRITE( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
 
    vg_assert(VG_(is_valid_tid)(tid));
    vg_assert(tid >= 1 && tid < VG_N_THREADS);
@@ -732,6 +737,15 @@ PRE(sys_fake_sigreturn)
 
    /* Restore register state from frame and remove it */
    VG_(sigframe_destroy)(tid);
+
+   /* For unclear reasons, it appears we need the syscall to return
+      without changing %EAX.  Since %EAX is the return value, and can
+      denote either success or failure, we must set up so that the
+      driver logic copies it back unchanged.  Also, note %EAX is of
+      the guest registers written by VG_(sigframe_destroy). */
+   int eflags = LibVEX_GuestX86_get_eflags(&tst->arch.vex);
+   SET_STATUS_from_SysRes( VG_(mk_SysRes_x86_freebsd)( tst->arch.vex.guest_EAX,
+       tst->arch.vex.guest_EDX, (eflags & 1) != 0 ? True : False) );
 
    /*
     * Signal handler might have changed the signal mask.  Respect that.
