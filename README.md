@@ -20,11 +20,13 @@ The secondary objectives are
 
 ## Credits
 
-I don't have a full history of everyone that has worked on this code. Obviously there is the upstream Valgrind team. When I started working on the code, it was based on the efforts of Phil Longstaff (https://bitbucket.org/plongstaff/valgrind-freebsd-git.git). This stalled for a bit, and then Ed Maste (https://github.com/FreeBSDFoundation/valgrind.git) took the baton. I restarted working on the code in late January 2020.
+I don't have a full history of everyone that has worked on this code. Obviously there is the upstream Valgrind team. When I started working on the code, it was based on the efforts of Phil Longstaff [Phil's repo](https://bitbucket.org/plongstaff/valgrind-freebsd-git.git). This stalled for a bit, and then Ed Maste [Ed's repo](https://github.com/FreeBSDFoundation/valgrind.git) took the baton. I restarted working on the code in late January 2020.
 
 Patches (from the FreeBSD bugzilla, https://bugs.freebsd.org/bugzilla/) have been merged from Julien Nadeau, Kubilay Kocak.
 
 Thanks to Nick Briggs for testing, analyzing and providing patches.
+
+A fair chunk of the history can be read in [this thread](https://sourceforge.net/p/valgrind/mailman/message/36089056/) from the Valgrind mailing list.
 
 ## Building the code
 
@@ -58,6 +60,8 @@ The regression suite produces the following results [2020-04-23]
 
 ## Bugzilla items
 
+# FreeBSD Bugzilla
+
 All of the patches in these items have been merged.
 
 [Bug 234631](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234631) - devel/valgrind: Fixes for FreeBSD 12.x support  
@@ -80,3 +84,7 @@ A few requests for missing syscalls
 [Bug 228973](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=228973) - devel/valgrind: 32-bit error on FreeBSD 11.1-RELEASE-p9 #0  
 [Bug 224878](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=224878) - devel/valgrind fails on i386  
 Duplicate items for 32bit support  
+
+# Valgrind Bugzilla
+
+[Bug 208531](https://bugs.kde.org/show_bug.cgi?id=208531) - a somewhat long and disheartening read
