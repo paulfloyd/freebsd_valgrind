@@ -2,4 +2,4 @@
 
 ../filter_stderr "$@" |
 
-gsed 's#/dev/pts/.*#[dev pts]#'
+gsed 's/Open file descriptor.*/Open file descriptor .../'
