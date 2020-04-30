@@ -786,12 +786,16 @@ PRE(sys_exit)
       if ( /* not alive */ VG_(threads)[t].status == VgTs_Empty )
          continue;
 
-      VG_(threads)[t].exitreason = VgSrc_ExitThread;
+      //VG_(threads)[t].exitreason = VgSrc_ExitThread;
       VG_(threads)[t].os_state.exitcode = ARG1;
 
-      if (t != tid)
-	 VG_(get_thread_out_of_syscall)(t);	/* unblock it, if blocked */
+     // if (t != tid)
+    // VG_(get_thread_out_of_syscall)(t);	/* unblock it, if blocked */
    }
+
+   VG_(nuke_all_threads_except)( tid, VgSrc_ExitProcess );
+   VG_(reap_threads)(tid);
+   VG_(threads)[tid].exitreason = VgSrc_ExitThread;
 
    /* We have to claim the syscall already succeeded. */
    SET_STATUS_Success(0);
