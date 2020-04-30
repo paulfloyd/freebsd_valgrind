@@ -91,7 +91,7 @@ int main(int argc, char **argv)
               (unsigned long long)oldrlim.rlim_max);
    }
 
-#if defined(VGO_freebsd) && defined(__clang__)
+#if defined(VGO_freebsd)
    // less than rather than equal to?
    newrlim.rlim_cur -= 4;
 #else
