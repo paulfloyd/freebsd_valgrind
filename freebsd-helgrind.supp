@@ -145,6 +145,11 @@
    fun:flockfile
 }
 {
+   HELGRIND-LIBC-PRINTF2
+   Helgrind:Race
+   fun:funlockfile
+}
+{
    HELGRIND-MUTEX-LOCK1
    Helgrind:Race
    fun:memset
