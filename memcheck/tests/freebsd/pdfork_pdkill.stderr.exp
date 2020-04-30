@@ -14,14 +14,17 @@ Syscall param pdfork(flags) contains uninitialised byte(s)
    ...
    by 0x........: main (pdfork_pdkill.c:91)
 
-FILE DESCRIPTORS: 3 open at exit.
-Open file descriptor 2: /usr/home/paulf/scratch/valgrind/memcheck/tests/freebsd/pdfork_pdkill.stderr.out
+FILE DESCRIPTORS: 4 open at exit.
+Open file descriptor ...
    <inherited from parent>
 
-Open file descriptor 1: /usr/home/paulf/scratch/valgrind/memcheck/tests/freebsd/pdfork_pdkill.stdout.out
+Open file descriptor ...
    <inherited from parent>
 
-Open file descriptor 0: [dev pts]
+Open file descriptor ...
+   <inherited from parent>
+
+Open file descriptor ...
    <inherited from parent>
 
 
