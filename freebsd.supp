@@ -32,3 +32,14 @@
    obj:/lib/libc.so.7
    fun:vfprintf_l
 }
+# clang only, should check that this is not a genuine error
+{
+   MEMCHECK-POSIX-FADVISE
+   Memcheck:Cond
+   fun:posix_fadvise
+}
+{
+   MEMCHECK-POSIX-FALLOCATE
+   Memcheck:Cond
+   fun:posix_fallocate
+}
