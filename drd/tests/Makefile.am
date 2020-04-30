@@ -238,6 +238,7 @@ EXTRA_DIST =                                        \
 	recursive_mutex.stderr.exp-linux            \
 	recursive_mutex.stderr.exp-darwin           \
 	recursive_mutex.stderr.exp-solaris          \
+	recursive_mutex.stderr.exp-freebsd          \
 	recursive_mutex.vgtest                      \
 	rwlock_race.stderr.exp	                    \
 	rwlock_race.stderr.exp2	                    \
