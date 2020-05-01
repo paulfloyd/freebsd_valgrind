@@ -506,7 +506,7 @@ static UInt local_sys_write_stderr (const HChar* buf, Int n )
                // but not r11
                // of course that doesn't mean that r11 is never clobbbered
       : /*rd*/    "r" (block)
-      : /*trash*/ "rax", "rdi", "rsi", "rdx", "memory", "cc", "rcx"//, "r11"
+      : /*trash*/ "rax", "rdi", "rsi", "rdx", "memory", "cc", "rcx", "r11"
    );
    if (block[0] < 0) 
       block[0] = -1;
