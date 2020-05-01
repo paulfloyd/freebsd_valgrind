@@ -60,6 +60,24 @@
    obj:/usr/local/lib*/gcc9/libgomp.so.1.0.0
 }
 {
+   DRD-LIBGOMP2
+   drd:ConflictingAccess
+   obj:/usr/lib/libomp.so
+}
+{
+   DRD-LIBGOMP3
+   drd:ConflictingAccess
+   fun:.omp_outlined*
+}
+{
+   DRD-LIBGOMP4
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   obj:/lib/libthr.so.3
+   obj:/lib/libthr.so.3
+   fun:pthread_setspecific
+}
+{
    DRD-UNWIND1
    drd:ConflictingAccess
    fun:_Unwind_GetCFA
@@ -72,5 +90,8 @@
    ...
    fun:_Unwind_ForcedUnwind
 }
-
-
+{
+   DRD-PTHREAD-ATTR1
+   drd:ConflictingAccess
+   fun:pthread_attr_get_np
+}

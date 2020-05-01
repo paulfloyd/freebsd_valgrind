@@ -9,6 +9,7 @@ EXTRA_DIST = \
 	statvfs.stderr.exp-x86 \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
+	pdfork_pdkill.stderr.exp-pts \
 	getfsstat.vgtest \
 	getfsstat.stderr.exp
 
