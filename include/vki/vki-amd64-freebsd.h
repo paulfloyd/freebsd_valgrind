@@ -200,10 +200,10 @@ struct vki_mcontext {
 	vki_register_t	r14;
 	vki_register_t	r15;
 	vki_register_t	trapno;
-	// @todo PJF missing fs and gs
+    // fs and gs
 	vki_register_t	addr;
 	vki_register_t	flags;
-	// @todo PJF missing es and ds
+    // es and ds
 	vki_register_t	err;
 	vki_register_t	rip;
 	vki_register_t	cs;
