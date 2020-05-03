@@ -316,6 +316,7 @@ EXTRA_DIST =                                        \
 	tc09_bad_unlock.stderr.exp-s390             \
 	tc09_bad_unlock.stderr.exp-solaris          \
 	tc09_bad_unlock.stderr.exp-freebsd          \
+	tc09_bad_unlock.stderr.exp-freebsd-clang    \
 	tc09_bad_unlock.vgtest                      \
 	tc10_rec_lock.stderr.exp                    \
 	tc10_rec_lock.vgtest                        \
