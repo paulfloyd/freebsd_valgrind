@@ -1173,6 +1173,28 @@ PRE(sys_sysarch)
    }
 }
 
+// int sendfile(int fd, int s, off_t offset, size_t nbytes,
+//         struct sf_hdtr *hdtr, off_t *sbytes, int flags);
+PRE(sys_sendfile)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_sendfile ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %llu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+         SARG1,SARG2,LOHI64(ARG3,ARG4),ARG5,ARG6,ARG7,SARG8);
+   PRE_REG_READ8(int, "sendfile",
+                 int, fd, int, s, unsigned int, offset_low,
+                 unsigned int, offset_high, size_t, nbytes,
+                 void *, hdtr, vki_off_t *, sbytes, int, flags);
+   if (ARG7 != 0)
+      PRE_MEM_WRITE( "sendfile(offset)", ARG7, sizeof(vki_off_t) );
+}
+
+POST(sys_sendfile)
+{
+   if (ARG7 != 0 ) {
+      POST_MEM_WRITE( ARG7, sizeof( vki_off_t ) );
+   }
+}
+
 // int posix_fallocate(int fd, off_t offset, off_t len);
 PRE(sys_posix_fallocate)
 {

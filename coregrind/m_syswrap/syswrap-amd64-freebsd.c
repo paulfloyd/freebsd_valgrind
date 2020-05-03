@@ -706,7 +706,29 @@ PRE(sys_sysarch)
    }
 }
 
-// @todo PJF should this be in generic?
+// int sendfile(int fd, int s, off_t offset, size_t nbytes,
+//         struct sf_hdtr *hdtr, off_t *sbytes, int flags);
+PRE(sys_sendfile)
+{
+   *flags |= SfMayBlock;
+
+   PRINT("sys_sendfile ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %lu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+         SARG1,SARG2,ARG3,ARG4,ARG5,ARG6,SARG7);
+   PRE_REG_READ7(int, "sendfile",
+                 int, fd, int, s, vki_off_t, offset, size_t, nbytes,
+                 void *, hdtr, vki_off_t *, sbytes, int, flags);
+
+   if (ARG6 != 0)
+      PRE_MEM_WRITE( "sendfile(offset)", ARG6, sizeof(vki_off_t) );
+}
+
+POST(sys_sendfile)
+{
+   if (ARG6 != 0 ) {
+      POST_MEM_WRITE( ARG6, sizeof( vki_off_t ) );
+   }
+}
+
 // int posix_fallocate(int fd, off_t offset, off_t len);
 PRE(sys_posix_fallocate)
 {
