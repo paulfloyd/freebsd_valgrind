@@ -521,8 +521,8 @@ void remote_close (void)
         to_gdb ? to_gdb : "NULL",
         shared_mem ? shared_mem : "NULL");
 
-   // @todo PJF this is not ideal
-   // if the guest eneters capability mode then the unlink calls will fail
+   // PJF this is not ideal
+   // if the guest enters capability mode then the unlink calls will fail
    // this may well also apply to Linux and seccomp
    // I don't have any thoughts on how to fix it, other than forking early on
    // having the child run the guest and the parent wait()ing and then
