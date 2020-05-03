@@ -918,7 +918,6 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
    After a possible SCSS change, update SKSS and the kernel itself.
    ------------------------------------------------------------------ */
 
-#if !defined(VGO_freebsd)
 // We need two levels of macro-expansion here to convert __NR_rt_sigreturn
 // to a number before converting it to a string... sigh.
 extern void my_sigreturn(void);
@@ -1055,8 +1054,14 @@ extern void my_sigreturn(void);
    "my_sigreturn:\n" \
    "ud2\n" \
    ".previous\n"
-// @todo PJF need to remove the outer FreeBSD conditionals
-// and do something (or nothing) here
+#elif defined(VGP_x86_freebsd) || defined(VGP_amd64_freebsd)
+/* Not used on FreeBSD */
+# define _MY_SIGRETURN(name) \
+    ".text\n" \
+    ".globl my_sigreturn\n" \
+    "my_sigreturn:\n" \
+    "ud2\n" \
+    ".previous\n"
 #else
 #  error Unknown platform
 #endif
@@ -1065,7 +1070,7 @@ extern void my_sigreturn(void);
 asm(
    MY_SIGRETURN(__NR_rt_sigreturn)
 );
-#endif
+
 
 
 static void handle_SCSS_change ( Bool force_update )
