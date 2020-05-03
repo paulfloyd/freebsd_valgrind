@@ -586,17 +586,19 @@ Addr setup_client_stack( void*  init_sp,
     * The PAGESIZES hack - PJF
     *
     * Normally a standalone application has a full auxv which, among
-    * many other things contains a vectorof integers (PAGESIZES)
+    * many other things contains a vector of integers (PAGESIZES)
     * of a platform dependent length (PAGESIZESLEN). On x86 the
-    * length is 2, on amd64 the length is 3 and there are other lengths
-    *  for unsupported platforms.
+    * length is 2, on amd64 the length is 3 (there are other lengths
+    * for architectures not supported on Valgrind).
     *
     * When the dynamic loader executes it will run a routine
     * static void init_pagesizes(Elf_Auxinfo **aux_info)
     * (see /usr/src/libexec/rtld-elf/rltd.c). If the PAGESIZES info is in
     * auxv, init_pagesizes will use that. However, normally this loop
     * does not copy 'pointered' elements (because that would generate
-    * 'Invalid reads' in the guest).
+    * 'Invalid reads' in the guest). This means that the auxv that
+    * Valgrind provides to ldrt *doesn't* normally contain
+    * PAGESIZES.
     *
     * So init_pagesizes falls back to using sysctlnametomib/sysctl
     * to read "hw.pagesizes". Unfortunately there seems to be a bug
@@ -642,17 +644,27 @@ Addr setup_client_stack( void*  init_sp,
         // case AT_CANARY:
 #if defined(VGP_x86_freebsd)
          case AT_PAGESIZESLEN:
-             // @todo PJF should print stomping messages here
              if (!VG_(is32on64)())
+             {
+                 VG_(debugLog)(2, "initimg",
+                                  "stomping auxv entry %llu\n",
+                                  (ULong)auxv->a_type);
                  auxv->a_type = AT_IGNORE;
+             }
              break;
          case AT_PAGESIZES:
              if (VG_(is32on64)())
              {
-
                  pagesizes = VG_(malloc)("initimg-freebsd.cpauxv.1", 2*sizeof(int));
                  pagesizes[0] = ((int*)auxv->u.a_ptr)[0];
                  pagesizes[1] = ((int*)auxv->u.a_ptr)[1];
+             }
+             else
+             {
+                 VG_(debugLog)(2, "initimg",
+                                  "stomping auxv entry %llu\n",
+                                  (ULong)auxv->a_type);
+                 auxv->a_type = AT_IGNORE;
              }
           break;
 #endif
