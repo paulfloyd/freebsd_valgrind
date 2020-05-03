@@ -497,14 +497,6 @@ static UInt local_sys_write_stderr (const HChar* buf, Int n )
       "popq  %%r15\n"           /* restore r15 */
       "addq  $256, %%rsp\n"     /* restore stack ptr */
       : /*wr*/
-               // @todo PJF
-               // "r" means that block is in a register
-               // "g" means register memory or immediate
-               // for the clobbered registers
-               // I did some tracing in GDB
-               // rcx was indeed changed on return from the syscall
-               // but not r11
-               // of course that doesn't mean that r11 is never clobbbered
       : /*rd*/    "r" (block)
       : /*trash*/ "rax", "rdi", "rsi", "rdx", "memory", "cc", "rcx", "r8", "r9", "r11"
    );
