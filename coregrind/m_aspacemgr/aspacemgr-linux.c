@@ -1492,7 +1492,7 @@ static void init_nsegment ( /*OUT*/NSegment* seg )
    seg->mode     = 0;
    seg->offset   = 0;
    seg->fnIdx    = -1;
-   // @todo PJF Martin  Jonston's fix
+   // @todo PJF Martin  Johnston's fix
 /*
    seg->hasR     = seg->hasW = seg->hasX = seg->hasT
                  = seg->isCH = seg->isFF = False;
@@ -1836,6 +1836,14 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
       init_resvn(&seg, aspacem_maxAddr+1, Addr_MAX);
       add_segment(&seg);
    }
+
+   /*
+    * @todo PJF for FreeBSD MAP_GUARD I may need to use the below
+    * init_resvn as well as (but not instead of?) the above increase
+    * to suggested_clstack_end
+    *
+    * A couple of the massif regtests fail because of this
+    */
 
    /* Create a 1-page reservation at the notional initial
       client/valgrind boundary.  This isn't strictly necessary, but
@@ -3850,15 +3858,11 @@ Bool VG_(get_changed_segments)(
    return !css_overflowed;
 }
 
-#endif // defined(VGO_darwin)
 
 /*------END-procmaps-parser-for-Darwin---------------------------*/
 
-// @todo PJF use consistently either #if/#elif or #if/#endif
-
-#if defined(VGO_freebsd)
 /*------BEGIN-procmaps-parser-for-Freebsd------------------------*/
-
+#elif defined(VGO_freebsd)
 
  /* Size of a smallish table used to read /proc/self/map entries. */
  #define M_PROCMAP_BUF 10485760	/* 10M */
@@ -3933,11 +3937,10 @@ static void parse_procselfmaps (
 }
 
 /*------END-procmaps-parser-for-Freebsd--------------------------*/
-# endif // defined(VGO_freebsd)
 
 /*------BEGIN-procmaps-parser-for-Solaris------------------------*/
 
-#if defined(VGO_solaris)
+#elif defined(VGO_solaris)
 
 /* Note: /proc/self/xmap contains extended information about already
    materialized mappings whereas /proc/self/rmap contains information about
