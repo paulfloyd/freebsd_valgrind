@@ -455,9 +455,7 @@
 #define	__NR_mknodat		498
 #endif
 
-// @todo PJF version specifics up here
-
-#define	__NR_openat		499
+#define	__NR_openat         499
 #define	__NR_readlinkat		500
 #define	__NR_renameat		501
 #define	__NR_symlinkat		502
@@ -467,14 +465,14 @@
 #define	__NR_jail_set		507
 #define	__NR_jail_remove	508
 #define	__NR___semctl		510
-#define	__NR_shmctl		512
+#define	__NR_shmctl         512
 #define	__NR__lpathconf		513
 /* 514 is obsolete cap_new */
 #define	__NR__cap_rights_get    515
 #define	__NR_cap_enter  	516
 #define	__NR_cap_getmode	517
-#define	__NR_pdfork		518
-#define	__NR_pdkill		519
+#define	__NR_pdfork         518
+#define	__NR_pdkill         519
 #define	__NR_pdgetpid		520
 #define	__NR_pselect    	522
 #define	__NR_getloginclass	523
@@ -502,8 +500,15 @@
 #define __NR_ppoll          545
 #define __NR_futimens		546
 #define __NR_utimensat		547
+
+#if (FREEBSD_VERS >= FREEBSD_11)
+
 #define __NR_fdatasync		550
+
+#endif // (FREEBSD_VERS >= FREEBSD_11)
+
 #if (FREEBSD_VERS >= FREEBSD_12)
+
 #define __NR_fstat          551
 #define __NR_fstatat		552
 #define __NR_fhstat         553
@@ -513,15 +518,16 @@
 #define __NR_getfsstat		557
 #define __NR_fhstatfs		558
 #define __NR_mknodat		559
-#define __NR_kevent		560
+#define __NR_kevent         560
 #define __NR_cpuset_getdomain	561
 #define __NR_cpuset_setdomain	562
 #define __NR_getrandom		563
 #define __NR_getfhat		564
-#define __NR_fhlink		565
+#define __NR_fhlink         565
 #define __NR_fhlinkat		566
 #define __NR_fhreadlink		567
-#endif
+
+#endif // (FREEBSD_VERS >= FREEBSD_12)
 
 #define __NR_fake_sigreturn	1000
 
