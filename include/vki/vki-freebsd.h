@@ -1203,8 +1203,6 @@ struct vki_pollfd {
 //----------------------------------------------------------------------
 // From sys/kevent.h
 //----------------------------------------------------------------------
-// @todo PJF conditional code that uses this!
-// I don't have this header ??!?
 struct vki_kevent11 {
 	vki_uintptr_t  ident;
 	vki_int16_t    filter;
