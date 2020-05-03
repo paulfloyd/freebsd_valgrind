@@ -245,11 +245,13 @@ struct vki_mcontext {
 	int	len;
 	int	fpformat;
 	int	ownedfp;
-	int	spare1[1];
+	int	flags;
 	struct _vki_fpstate fpstate __attribute__((aligned(16)));
 	int	fsbase;
 	int	gsbase;
-	int	spare2[6];
+	int xfpustate;
+	int xfpustate_len;
+	int	spare2[4];
 };
 
 struct vki_sigaction_base {
