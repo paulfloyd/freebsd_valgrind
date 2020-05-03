@@ -83,9 +83,7 @@ int main ( void )
 
 #  define PM(a,b,c) posix_memalign((void**)a, b, c)
 
-#if !defined(__FreeBSD__) || __FreeBSD__ >= 6
    res = PM(&p, -1,100);      assert(EINVAL == res);
-// @todo PJF this was commented out
    res = PM(&p, 0, 100);      assert(EINVAL == res);
    res = PM(&p, 1, 100);      assert(EINVAL == res);
    res = PM(&p, 2, 100);      assert(EINVAL == res);
@@ -105,7 +103,6 @@ int main ( void )
                                                 && 0 == (long)p % (4 * 1024 * 1024));
    res = PM(&p, 16 * 1024 * 1024, 100);   assert(0 == res 
                                                 && 0 == (long)p % (16 * 1024 * 1024));
-#endif
 #  endif
    
    return 0;
