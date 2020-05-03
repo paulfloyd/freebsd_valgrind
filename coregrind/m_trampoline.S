@@ -860,7 +860,16 @@ VG_(trampoline_stuff_start):
 
 .global VG_(x86_freebsd_SUBST_FOR_sigreturn)
 VG_(x86_freebsd_SUBST_FOR_sigreturn):
-	lea	0x14(%esp), %eax	/* args to sigreturn(ucontext_t *) */
+	/*
+	 * PJF this magic number is fairly flakey
+	 * If ever it is wrong sys_fake_sigreturn will fail
+	 * the sigreturn will be to some bogus EIP address and
+	 * the client will likely terminate with a SIGILL
+	 * In this case adding some printfs to sigframe_create
+	 * and sys_fake_sigreturn should help debugging to
+	 * find the right offset
+	 */
+	lea	0x1c(%esp), %eax	/* args to sigreturn(ucontext_t *) */
 	pushl	%eax
 	pushl	%eax			/* fake return addr */
 /*	movl	0x44(%eax), %gs	; restore %gs, not done by sigreturn */
