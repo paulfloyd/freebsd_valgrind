@@ -11,8 +11,6 @@ EXTRA_DIST = \
 	pdfork_pdkill.stderr.exp \
 	pdfork_pdkill.stderr.exp-pts \
 	getfsstat.vgtest \
-	getfsstat.stderr.exp
-	getfsstat.vgtest \
 	getfsstat.stderr.exp \
 	supponlyobj.vgtest \
 	supponlyobj.stderr.exp
