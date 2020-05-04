@@ -12,6 +12,10 @@ EXTRA_DIST = \
 	pdfork_pdkill.stderr.exp-pts \
 	getfsstat.vgtest \
 	getfsstat.stderr.exp
+	getfsstat.vgtest \
+	getfsstat.stderr.exp \
+	supponlyobj.vgtest \
+	supponlyobj.stderr.exp
 
 check_PROGRAMS = \
 	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so
