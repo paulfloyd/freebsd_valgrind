@@ -38,8 +38,8 @@ Uninitialised byte(s) found during client check request
    by 0x........: bar (varinfo3.c:43)
    by 0x........: foo (varinfo3.c:58)
    by 0x........: main (varinfo3.c:66)
- Location 0x........ is 0 bytes inside nonstatic_local_def[6],
- declared at varinfo3.c:51, in frame #2 of thread 1
+ Address 0x........ is on thread 1's stack
+ in frame #1, created by foo (varinfo3.c:49)
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (varinfo3.c:28)
@@ -53,6 +53,6 @@ Uninitialised byte(s) found during client check request
    by 0x........: bar (varinfo3.c:45)
    by 0x........: foo (varinfo3.c:58)
    by 0x........: main (varinfo3.c:66)
- Location 0x........ is 0 bytes inside nonstatic_local_undef[8],
- declared at varinfo3.c:53, in frame #2 of thread 1
+ Address 0x........ is on thread 1's stack
+ in frame #1, created by foo (varinfo3.c:49)
 

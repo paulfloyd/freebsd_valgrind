@@ -1,0 +1,21 @@
+Uninitialised byte(s) found during client check request
+   at 0x........: croak (varinfo2.c:28)
+   by 0x........: foo (varinfo2.c:41)
+   by 0x........: main (varinfo2.c:51)
+ Location 0x........ is 0 bytes inside var[7],
+ declared at varinfo2.c:39, in frame #0 of thread 1
+
+Uninitialised byte(s) found during client check request
+   at 0x........: croak (varinfo2.c:28)
+   by 0x........: foo (varinfo2.c:43)
+   by 0x........: main (varinfo2.c:51)
+ Address 0x........ is on thread 1's stack
+ in frame #0, created by foo (varinfo2.c:36)
+
+Uninitialised byte(s) found during client check request
+   at 0x........: croak (varinfo2.c:28)
+   by 0x........: foo (varinfo2.c:46)
+   by 0x........: main (varinfo2.c:51)
+ Address 0x........ is on thread 1's stack
+ in frame #0, created by foo (varinfo2.c:36)
+

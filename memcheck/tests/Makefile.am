@@ -319,15 +319,19 @@ EXTRA_DIST = \
 	unit_oset.stderr.exp unit_oset.stdout.exp unit_oset.vgtest \
 	varinfo1.vgtest varinfo1.stdout.exp varinfo1.stderr.exp \
 		varinfo1.stderr.exp-ppc64 \
+		varinfo1.stderr.exp-clang \
 	varinfo2.vgtest varinfo2.stdout.exp varinfo2.stderr.exp \
 		varinfo2.stderr.exp-ppc64 \
+		varinfo2.stderr.exp-clang \
 	varinfo3.vgtest varinfo3.stdout.exp varinfo3.stderr.exp \
 		varinfo3.stderr.exp-ppc64 \
 		varinfo3.stderr.exp-clang \
 	varinfo4.vgtest varinfo4.stdout.exp varinfo4.stderr.exp \
 		varinfo4.stderr.exp-ppc64 \
+		varinfo4.stderr.exp-clang \
 	varinfo5.vgtest varinfo5.stdout.exp varinfo5.stderr.exp \
 		varinfo5.stderr.exp-ppc64 \
+		varinfo5.stderr.exp-clang \
 	varinfo6.vgtest varinfo6.stdout.exp varinfo6.stderr.exp \
 		varinfo6.stderr.exp-ppc64 \
 	varinforestrict.vgtest varinforestrict.stderr.exp \
