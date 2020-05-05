@@ -4,48 +4,45 @@
 
 ## Tests in none
 
-97.0% good
+97.5% good
 
 ```
-== 202 tests, 6 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 202 tests, 5 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/coolo_sigaction               (stdout)
 none/tests/coolo_sigaction               (stderr)
 none/tests/faultstatus                   (stderr)
 none/tests/ioctl_moans                   (stderr)
 none/tests/pending                       (stdout)
 none/tests/pending                       (stderr)
-none/tests/rlimit_nofile                 (stderr)
 none/tests/sigstackgrowth                (stdout)
 none/tests/sigstackgrowth                (stderr)
-
 ```
 
-Most of these are signal issues.
+Most of these are signal issues.  
+
+none/tests/rlimit_nofile seems to behave differently when run in a console and in a terminal emulator like konsole.  
 
 ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.  
 
 ## Tests in memcheck
 
-96.6% good
+97.0% good
 
 ```
-== 235 tests, 8 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 235 tests, 7 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 memcheck/tests/addressable               (stderr)
 memcheck/tests/descr_belowsp             (stderr)
 memcheck/tests/dw4                       (stderr)
 memcheck/tests/gone_abrt_xml             (stderr)
-memcheck/tests/reach_thread_register     (stderr)
 memcheck/tests/sigaltstack               (stderr)
 memcheck/tests/varinfo5                  (stderr)
 memcheck/tests/x86/pushfpopf             (stderr)
-
 ```
 
 addressable - signal issue  
 descr_belowsp - SIGSEGV handling issue  
 d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD  
 gone_abrt_xml - differences in signal details  
-reach_thread_register - false positive leak  
 sigaltstack - SIGSEGV handling issue  
 varinfo5 - diff in source backannotation  
 x86/pushfpopf - not finding name of asm function  
@@ -53,9 +50,6 @@ x86/pushfpopf - not finding name of asm function
 ## Tests in massif, callgrind and cachegrind, dhat
 
 100% good
-
-
-== 37 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 
 ## Tests in gdbserver_tests
 
@@ -98,10 +92,9 @@ DRD - 90.6% good
 
 
 ```
-== 127 tests, 12 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 127 tests, 11 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 drd/tests/bar_bad                        (stderr)
 drd/tests/bar_bad_xml                    (stderr)
-drd/tests/circular_buffer                (stderr)
 drd/tests/concurrent_close               (stderr)
 drd/tests/dlopen                         (stdout)
 drd/tests/dlopen                         (stderr)
@@ -116,7 +109,6 @@ drd/tests/thread_name_xml                (stderr)
 
 bar_bad - one extra error message  
 bar_bad_xml - as above  
-circular_buffer - lots of errors related to rand  
 concurrent_close - runs OK standalone but not under perl regtest  
 dlopen - crash  
 pth_uninitialized_cond - sigbus in guest
@@ -126,27 +118,10 @@ drd/tests/tc09_bad_unlock - two missing error messages
 tc23_bogus_condwait - several exp files, not sure which is relevant for FreeBSD 
 thread_name_xml - hard to read diffs but thread_name was crashing  
 
-```
-== 6 tests, 0 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-```
 
 # x86 results
 
-Not so good  
-628 tests, 183 stderr failures, 15 stdout failures, 5 post faulures  
-Memcheck:  
-memcheck/tests/leak-segv-jmp  
-memcheck/tests/leak_cpp_interior  
-memcheck/tests/post-syscall  
-memcheck/tests/sendmsg  
-memcheck/tests/supp_unknown  
-memcheck/tests/test-plo-no  
-
-Massif:  
-Several new fails  
-
-None:  
-Also several new fails  
+Not so good, around 60 fails. Ongoing analysis.
 
 # Linux results
 
