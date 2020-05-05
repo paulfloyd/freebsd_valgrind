@@ -38,23 +38,24 @@ The following packages shoule be installed
 * GCC (optional, but currently gives the best results)
 * GNU sed (optional, but it is used in the regtest scripts)
 
-For best results, use GCC and just follow the instructions in the regular README.  
+Follow the instructions in the regular README to build Valgrind.
+
 After running configure you will need to run GNU make (gmake) rather than FreeBSD make (make).
 
-To build with clang,
+If you have both GCC and clang installed, the configure script will use GCC. If you'd rather use clang then run configure as follows:  
 
 ```
-  configure CFLAGS="-g -O0" CC=clang
+  configure CC=clang CXX=clang++
 ```
 
 ## Status
 
 The code should build and execute on FreeBSD 12.1 amd64 generating both amd64 and x86 executables. 12.1 i386, 11.3 amd64 and 11.3 i386 should all also work.
 
-The regression suite produces the following results [2020-04-23]
+The regression suite produces the following results [2020-05-04]
 
 ```
-== 712 tests, 87 stderr failures, 5 stdout failures, 1 stderrB failure, 3 stdoutB failures, 0 post failures ==
+== 714 tests, 19 stderr failures, 5 stdout failures, 1 stderrB failure, 3 stdoutB failures, 0 post failures ==
 ```
 
 
