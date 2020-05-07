@@ -36,7 +36,6 @@ memcheck/tests/dw4                       (stderr)
 memcheck/tests/gone_abrt_xml             (stderr)
 memcheck/tests/sigaltstack               (stderr)
 memcheck/tests/varinfo5                  (stderr)
-memcheck/tests/x86/pushfpopf             (stderr)
 ```
 
 addressable - signal issue  
@@ -45,7 +44,6 @@ d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only 
 gone_abrt_xml - differences in signal details  
 sigaltstack - SIGSEGV handling issue  
 varinfo5 - diff in source backannotation  
-x86/pushfpopf - not finding name of asm function  
 
 ## Tests in massif, callgrind and cachegrind, dhat
 
@@ -81,10 +79,10 @@ helgrind/tests/tc20_verifywrap           (stderr)
 helgrind/tests/tc23_bogus_condwait       (stderr)
 helgrind/tests/tls_threads               (stderr)
 ```
-pth_cond_destroy_busy - one missing race error
-tc20_verifywrap - C file doesn't compile. Either need to fix the C file or disable the test.
-tc23_bogus_condwait - a few extra dubious lock messages
-tls_threads - don't understand the error message
+pth_cond_destroy_busy - one missing race error  
+tc20_verifywrap - C file doesn't compile. Either need to fix the C file or disable the test.  
+tc23_bogus_condwait - a few extra dubious lock messages  
+tls_threads - don't understand the error message  
 
 ## Tests in drd
 
