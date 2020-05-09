@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	bar_bad.vgtest bar_bad.stdout.exp bar_bad.stderr.exp \
 		bar_bad.stderr.exp-destroy-hang \
 		bar_bad.stderr.exp-clang \
+		bar_bad.stderr.exp-freebsd-clang \
 	bar_trivial.vgtest bar_trivial.stdout.exp bar_trivial.stderr.exp \
 	free_is_write.vgtest free_is_write.stdout.exp \
 		free_is_write.stderr.exp free_is_write.stderr.exp-clang \
