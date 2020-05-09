@@ -25,7 +25,7 @@ Locks held: none
 
 This conflicts with a previous write of size 4 by thread #x
 Locks held: 1, at address 0x........
-   at 0x........: child_fn1 (locked_vs_unlocked3.c:28)
+   at 0x........: child_fn1 (locked_vs_unlocked3.c:27)
    by 0x........: mythread_wrapper (hg_intercepts.c:...)
    ...
  Address 0x........ is 0 bytes inside data symbol "x"

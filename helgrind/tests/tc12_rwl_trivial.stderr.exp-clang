@@ -16,13 +16,5 @@ Thread #x unlocked a not-locked lock at 0x........
  in frame #x, created by main (tc12_rwl_trivial.c:14)
 
 
-----------------------------------------------------------------
 
-Thread #x's call to pthread_rwlock_unlock failed
-   with error code 1 (EPERM: Operation not permitted)
-   at 0x........: pthread_rwlock_unlock_WRK (hg_intercepts.c:...)
-   ...
-   by 0x........: main (tc12_rwl_trivial.c:29)
-
-
-ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

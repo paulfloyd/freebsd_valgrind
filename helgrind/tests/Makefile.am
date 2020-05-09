@@ -55,6 +55,7 @@ EXTRA_DIST = \
 		locked_vs_unlocked3.stderr.exp \
 		locked_vs_unlocked3.stdout.exp \
 		locked_vs_unlocked3.stderr.exp-clang \
+		locked_vs_unlocked3.stderr.exp-freebsd-clang \
 	pth_barrier1.vgtest pth_barrier1.stdout.exp pth_barrier1.stderr.exp \
 		pth_barrier1.stderr.exp-clang \
 	pth_barrier2.vgtest pth_barrier2.stdout.exp pth_barrier2.stderr.exp \
@@ -68,6 +69,7 @@ EXTRA_DIST = \
 	pth_cond_destroy_busy.vgtest pth_cond_destroy_busy.stderr.exp \
 		pth_cond_destroy_busy.stderr.exp-ppc64 \
 		pth_cond_destroy_busy.stderr.exp-solaris \
+		pth_cond_destroy_busy.stderr.exp-clang \
 	pth_spinlock.vgtest pth_spinlock.stdout.exp pth_spinlock.stderr.exp \
 	rwlock_race.vgtest rwlock_race.stdout.exp rwlock_race.stderr.exp \
 		rwlock_race.stderr.exp-clang \
@@ -97,6 +99,7 @@ EXTRA_DIST = \
 	tc08_hbl2.vgtest tc08_hbl2.stdout.exp tc08_hbl2.stderr.exp \
 	tc09_bad_unlock.vgtest tc09_bad_unlock.stdout.exp \
 		tc09_bad_unlock.stderr.exp tc09_bad_unlock.stderr.exp-solaris \
+		tc09_bad_unlock.stderr.exp-clang \
 		tc09_bad_unlock.stderr.exp-freebsd-gcc \
 		tc09_bad_unlock.stderr.exp-freebsd-clang \
 	tc10_rec_lock.vgtest tc10_rec_lock.stdout.exp tc10_rec_lock.stderr.exp \
@@ -126,6 +129,7 @@ EXTRA_DIST = \
 		tc18_semabuse.stderr.exp-linux-mips32 \
 		tc18_semabuse.stderr.exp-linux-mips32-b \
 		tc18_semabuse.stderr.exp-solaris \
+		tc18_semabuse.stderr.exp-clang \
 		tc18_semabuse.stderr.exp-freebsd-gcc \
 		tc18_semabuse.stderr.exp-freebsd-clang \
 	tc19_shadowmem.vgtest tc19_shadowmem.stdout.exp \
@@ -136,6 +140,7 @@ EXTRA_DIST = \
 		tc20_verifywrap.stderr.exp \
 		tc20_verifywrap.stderr.exp-glibc-2.18 \
 		tc20_verifywrap.stderr.exp-glibc-2.21 \
+		tc20_verifywrap.stderr.exp-clang \
 		tc20_verifywrap.stderr.exp-mips32 \
 		tc20_verifywrap.stderr.exp-mips32-b \
 		tc20_verifywrap.stderr.exp-s390x \
@@ -147,9 +152,11 @@ EXTRA_DIST = \
 		tc22_exit_w_lock.stderr.exp-kfail-x86 \
 		tc22_exit_w_lock.stderr.exp-solaris \
 		tc22_exit_w_lock.stderr.exp-clang \
+		tc22_exit_w_lock.stderr.exp-freebsd-clang \
 	tc23_bogus_condwait.vgtest tc23_bogus_condwait.stdout.exp \
 		tc23_bogus_condwait.stderr.exp \
 		tc23_bogus_condwait.stderr.exp-mips32 \
+		tc23_bogus_condwait.stderr.exp-clang \
 	tc24_nonzero_sem.vgtest tc24_nonzero_sem.stdout.exp \
 		tc24_nonzero_sem.stderr.exp \
 	tls_threads.vgtest tls_threads.stdout.exp \
