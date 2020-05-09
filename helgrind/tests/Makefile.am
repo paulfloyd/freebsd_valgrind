@@ -30,6 +30,7 @@ EXTRA_DIST = \
 	hg01_all_ok.vgtest hg01_all_ok.stdout.exp hg01_all_ok.stderr.exp \
 	hg02_deadlock.vgtest hg02_deadlock.stdout.exp hg02_deadlock.stderr.exp \
 		hg02_deadlock.stderr.exp-clang \
+		hg02_deadlock.stderr.exp-clang-x86 \
 	hg03_inherit.vgtest hg03_inherit.stdout.exp hg03_inherit.stderr.exp \
 		hg03_inherit.stderr.exp-clang \
 	hg04_race.vgtest hg04_race.stdout.exp hg04_race.stderr.exp \
@@ -42,19 +43,23 @@ EXTRA_DIST = \
 		locked_vs_unlocked1_fwd.stderr.exp \
 		locked_vs_unlocked1_fwd.stdout.exp \
 		locked_vs_unlocked1_fwd.stderr.exp-clang \
+		locked_vs_unlocked1_fwd.stderr.exp-clang-x86 \
 	locked_vs_unlocked1_rev.vgtest \
 		locked_vs_unlocked1_rev.stderr.exp \
 		locked_vs_unlocked1_rev.stdout.exp \
+		locked_vs_unlocked1_rev.stderr.exp-clang \
 		locked_vs_unlocked1_rev.stderr.exp-clang \
 	locked_vs_unlocked2.vgtest \
 		locked_vs_unlocked2.stderr.exp \
 		locked_vs_unlocked2.stdout.exp \
 		locked_vs_unlocked2.stderr.exp-clang \
 		locked_vs_unlocked2.stderr.exp-freebsd-clang \
+		locked_vs_unlocked2.stderr.exp-freebsd-clang-x86 \
 	locked_vs_unlocked3.vgtest \
 		locked_vs_unlocked3.stderr.exp \
 		locked_vs_unlocked3.stdout.exp \
 		locked_vs_unlocked3.stderr.exp-clang \
+		locked_vs_unlocked3.stderr.exp-freebsd-clang \
 		locked_vs_unlocked3.stderr.exp-freebsd-clang \
 	pth_barrier1.vgtest pth_barrier1.stdout.exp pth_barrier1.stderr.exp \
 		pth_barrier1.stderr.exp-clang \
