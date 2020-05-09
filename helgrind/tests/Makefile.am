@@ -48,7 +48,7 @@ EXTRA_DIST = \
 	locked_vs_unlocked2.vgtest \
 		locked_vs_unlocked2.stderr.exp \
 		locked_vs_unlocked2.stdout.exp \
-		locked_vs_unlocked2.stderr.exp-freebsd \
+		locked_vs_unlocked2.stderr.exp-clang \
 	locked_vs_unlocked3.vgtest \
 		locked_vs_unlocked3.stderr.exp \
 		locked_vs_unlocked3.stdout.exp \
@@ -66,7 +66,6 @@ EXTRA_DIST = \
 	pth_cond_destroy_busy.vgtest pth_cond_destroy_busy.stderr.exp \
 		pth_cond_destroy_busy.stderr.exp-ppc64 \
 		pth_cond_destroy_busy.stderr.exp-solaris \
-		pth_cond_destroy_busy.stderr.exp-freebsd \
 	pth_spinlock.vgtest pth_spinlock.stdout.exp pth_spinlock.stderr.exp \
 	rwlock_race.vgtest rwlock_race.stdout.exp rwlock_race.stderr.exp \
 		rwlock_race.stderr.exp-clang \
@@ -139,7 +138,6 @@ EXTRA_DIST = \
 		tc20_verifywrap.stderr.exp-mips32-b \
 		tc20_verifywrap.stderr.exp-s390x \
 		tc20_verifywrap.stderr.exp-solaris \
-		tc20_verifywrap.stderr.exp-freebsd \
 	tc21_pthonce.vgtest tc21_pthonce.stdout.exp tc21_pthonce.stderr.exp \
 		tc21_pthonce.stderr.exp-clang \
 	tc22_exit_w_lock.vgtest tc22_exit_w_lock.stdout.exp \
@@ -150,7 +148,6 @@ EXTRA_DIST = \
 	tc23_bogus_condwait.vgtest tc23_bogus_condwait.stdout.exp \
 		tc23_bogus_condwait.stderr.exp \
 		tc23_bogus_condwait.stderr.exp-mips32 \
-		tc23_bogus_condwait.stderr.exp-freebsd \
 	tc24_nonzero_sem.vgtest tc24_nonzero_sem.stdout.exp \
 		tc24_nonzero_sem.stderr.exp \
 	tls_threads.vgtest tls_threads.stdout.exp \
