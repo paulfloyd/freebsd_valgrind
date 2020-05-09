@@ -3835,20 +3835,27 @@ PRE(sys_ioctl)
       * commands becomes very tiresome.
       */
    } else if (/* size == 0 || */ dir == _VKI_IOC_NONE) {
-	 static Int moans = 3;
-	 if (moans > 0 && !VG_(clo_xml)) {
-	    moans--;
-	    VG_(message)(Vg_UserMsg, 
-			 "Warning: noted but unhandled ioctl 0x%lx"
-			 " with no size/direction hints\n",
-			 ARG2); 
-	    VG_(message)(Vg_UserMsg, 
-			 "   This could cause spurious value errors"
-			 " to appear.\n");
-	    VG_(message)(Vg_UserMsg, 
-			 "   See README_MISSING_SYSCALL_OR_IOCTL for "
-			 "guidance on writing a proper wrapper.\n" );
-	 }
+      static UWord unknown_ioctl[10];
+      static Int moans = sizeof(unknown_ioctl) / sizeof(unknown_ioctl[0]);
+      if (moans > 0 && !VG_(clo_xml)) {
+         /* Check if have not already moaned for this request. */
+         UInt i;
+         for (i = 0; i < sizeof(unknown_ioctl)/sizeof(unknown_ioctl[0]); i++) {
+            if (unknown_ioctl[i] == ARG2)
+               break;
+            if (unknown_ioctl[i] == 0) {
+               unknown_ioctl[i] = ARG2;
+               moans--;
+               VG_(umsg)("Warning: noted but unhandled ioctl 0x%lx"
+                         " with no size/direction hints.\n", ARG2);
+               VG_(umsg)("   This could cause spurious value errors to appear.\n");
+               VG_(umsg)("   See README_MISSING_SYSCALL_OR_IOCTL for "
+                         "guidance on writing a proper wrapper.\n" );
+               //VG_(get_and_pp_StackTrace)(tid, VG_(clo_backtrace_size));
+               return;
+            }
+         }
+      }
    } else {
 	 if ((dir & _VKI_IOC_WRITE) && size > 0)
 	    PRE_MEM_READ( "ioctl(generic)", ARG3, size);
