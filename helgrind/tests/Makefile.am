@@ -48,19 +48,19 @@ EXTRA_DIST = \
 		locked_vs_unlocked1_rev.stderr.exp \
 		locked_vs_unlocked1_rev.stdout.exp \
 		locked_vs_unlocked1_rev.stderr.exp-clang \
-		locked_vs_unlocked1_rev.stderr.exp-clang \
+		locked_vs_unlocked1_rev.stderr.exp-clang-x86 \
 	locked_vs_unlocked2.vgtest \
 		locked_vs_unlocked2.stderr.exp \
 		locked_vs_unlocked2.stdout.exp \
 		locked_vs_unlocked2.stderr.exp-clang \
 		locked_vs_unlocked2.stderr.exp-freebsd-clang \
-		locked_vs_unlocked2.stderr.exp-freebsd-clang-x86 \
+		locked_vs_unlocked2.stderr.exp-x86-freebsd-clang \
 	locked_vs_unlocked3.vgtest \
 		locked_vs_unlocked3.stderr.exp \
 		locked_vs_unlocked3.stdout.exp \
 		locked_vs_unlocked3.stderr.exp-clang \
 		locked_vs_unlocked3.stderr.exp-freebsd-clang \
-		locked_vs_unlocked3.stderr.exp-freebsd-clang \
+		locked_vs_unlocked3.stderr.exp-x86-freebsd-clang \
 	pth_barrier1.vgtest pth_barrier1.stdout.exp pth_barrier1.stderr.exp \
 		pth_barrier1.stderr.exp-clang \
 	pth_barrier2.vgtest pth_barrier2.stdout.exp pth_barrier2.stderr.exp \
@@ -71,6 +71,7 @@ EXTRA_DIST = \
 		pth_destroy_cond.stdout.exp \
 		pth_destroy_cond.stderr.exp pth_destroy_cond.stderr.exp2 \
 		pth_destroy_cond.stderr.exp-clang \
+		pth_destroy_cond.stderr.exp-clang-x86 \
 	pth_cond_destroy_busy.vgtest pth_cond_destroy_busy.stderr.exp \
 		pth_cond_destroy_busy.stderr.exp-ppc64 \
 		pth_cond_destroy_busy.stderr.exp-solaris \
@@ -107,6 +108,7 @@ EXTRA_DIST = \
 		tc09_bad_unlock.stderr.exp-clang \
 		tc09_bad_unlock.stderr.exp-freebsd-gcc \
 		tc09_bad_unlock.stderr.exp-freebsd-clang \
+		tc09_bad_unlock.stderr.exp-x86-freebsd-clang \
 	tc10_rec_lock.vgtest tc10_rec_lock.stdout.exp tc10_rec_lock.stderr.exp \
 		tc10_rec_lock.stderr.exp-clang \
 	tc11_XCHG.vgtest tc11_XCHG.stdout.exp tc11_XCHG.stderr.exp \
@@ -117,11 +119,13 @@ EXTRA_DIST = \
 		tc12_rwl_trivial.stderr.exp-freebsd \
 		tc12_rwl_trivial.stderr.exp-clang \
 		tc12_rwl_trivial.stderr.exp-freebsd-clang \
+		tc12_rwl_trivial.stderr.exp-x86-freebsd \
 	tc13_laog1.vgtest tc13_laog1.stdout.exp tc13_laog1.stderr.exp \
 		tc13_laog1.stderr.exp-clang \
 	tc14_laog_dinphils.vgtest tc14_laog_dinphils.stdout.exp \
 		tc14_laog_dinphils.stderr.exp \
 		tc14_laog_dinphils.stderr.exp-clang \
+		tc14_laog_dinphils.stderr.exp-clang-x86 \
 	tc15_laog_lockdel.vgtest tc15_laog_lockdel.stdout.exp \
 		tc15_laog_lockdel.stderr.exp \
 		tc15_laog_lockdel.stderr.exp-freebsd \
@@ -138,10 +142,12 @@ EXTRA_DIST = \
 		tc18_semabuse.stderr.exp-clang \
 		tc18_semabuse.stderr.exp-freebsd-gcc \
 		tc18_semabuse.stderr.exp-freebsd-clang \
+		tc18_semabuse.stderr.exp-x86-freebsd-clang \
 	tc19_shadowmem.vgtest tc19_shadowmem.stdout.exp \
 		tc19_shadowmem.stderr.exp tc19_shadowmem.stderr.exp-mips32 \
 		tc19_shadowmem.stderr.exp-mips32-BE \
 		tc19_shadowmem.stderr.exp-clang \
+		tc19_shadowmem.stderr.exp-clang-x86 \
 	tc20_verifywrap.vgtest tc20_verifywrap.stdout.exp \
 		tc20_verifywrap.stderr.exp \
 		tc20_verifywrap.stderr.exp-glibc-2.18 \
@@ -159,6 +165,7 @@ EXTRA_DIST = \
 		tc22_exit_w_lock.stderr.exp-solaris \
 		tc22_exit_w_lock.stderr.exp-clang \
 		tc22_exit_w_lock.stderr.exp-freebsd-clang \
+		tc22_exit_w_lock.stderr.exp-x86-freebsd-clang \
 	tc23_bogus_condwait.vgtest tc23_bogus_condwait.stdout.exp \
 		tc23_bogus_condwait.stderr.exp \
 		tc23_bogus_condwait.stderr.exp-mips32 \
