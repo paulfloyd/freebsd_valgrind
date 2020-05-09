@@ -2,14 +2,14 @@
 
 Thread #x was created
    ...
-   by 0x........: pthread_create@* (hg_intercepts.c:...)
+   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (locked_vs_unlocked2.c:61)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create@* (hg_intercepts.c:...)
+   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (locked_vs_unlocked2.c:62)
 
 ----------------------------------------------------------------

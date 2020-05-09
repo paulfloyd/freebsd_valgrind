@@ -41,7 +41,15 @@ awk 'BEGIN{begin=1} {if ($0 == "More than 100 errors detected.  Subsequent error
 # sem_post.
 $sed \
  -e "s/sem_wait@\*/sem_wait/" \
- -e "s/sem_post@\*/sem_post/" |
+ -e "s/sem_post@\*/sem_post/" \
+ -e "s/sem_init@\*/sem_init/" |
+
+
+ # Remove version
+ $sed \
+ -e "s/pthread_create@\*/pthread_create/" \
+ -e "s/pthread_cond_timedwait@\*/pthread_cond_timedwait/" |
+
 
 # Remove "Helgrind, ..." line and the following copyright line;
 # also the standard postamble (does such a word exist?)

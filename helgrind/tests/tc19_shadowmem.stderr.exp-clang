@@ -9,14 +9,12 @@
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ---Thread-Announcement------------------------------------------
@@ -48,14 +46,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -83,14 +79,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -118,14 +112,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -153,14 +145,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -188,14 +178,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -223,14 +211,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -258,14 +244,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -293,14 +277,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -328,14 +310,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -363,14 +343,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -398,14 +376,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -433,14 +409,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -468,14 +442,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -503,14 +475,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -538,14 +508,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -573,14 +541,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -608,14 +574,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -643,14 +607,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -678,14 +640,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -713,14 +673,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -748,14 +706,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -783,14 +739,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -818,14 +772,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -853,14 +805,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -888,14 +838,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -923,14 +871,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -958,14 +904,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -993,14 +937,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1028,14 +970,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1063,14 +1003,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1098,14 +1036,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1133,14 +1069,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1168,14 +1102,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1203,14 +1135,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1238,14 +1168,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1273,14 +1201,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1308,14 +1234,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1343,14 +1267,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1378,14 +1300,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1413,14 +1333,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1448,14 +1366,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1483,14 +1399,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1518,14 +1432,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1553,14 +1465,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1588,14 +1498,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1623,14 +1531,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1658,14 +1564,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1693,14 +1597,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1728,14 +1630,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1763,14 +1663,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1798,14 +1696,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1833,14 +1729,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1868,14 +1762,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1903,14 +1795,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1938,14 +1828,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -1973,14 +1861,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2008,14 +1894,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2043,14 +1927,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2078,14 +1960,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2113,14 +1993,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2148,14 +2026,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2183,14 +2059,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2218,14 +2092,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2253,14 +2125,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2288,14 +2158,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2323,14 +2191,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2358,14 +2224,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2393,14 +2257,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2428,14 +2290,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2463,14 +2323,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2498,14 +2356,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2533,14 +2389,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2568,14 +2422,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2603,14 +2455,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2638,14 +2488,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2673,14 +2521,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2708,14 +2554,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2743,14 +2587,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2778,14 +2620,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2813,14 +2653,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2848,14 +2686,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2883,14 +2719,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2918,14 +2752,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2953,14 +2785,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -2988,14 +2818,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3023,14 +2851,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3058,14 +2884,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3093,14 +2917,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3128,14 +2950,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3163,14 +2983,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3198,14 +3016,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3233,14 +3049,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3268,14 +3082,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3303,14 +3115,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3338,14 +3148,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3373,14 +3181,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3408,14 +3214,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3443,14 +3247,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:173)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:172)
 
 ----------------------------------------------------------------
@@ -3483,14 +3285,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3518,14 +3318,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3573,14 +3371,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3608,14 +3404,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3663,14 +3457,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3698,14 +3490,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3753,14 +3543,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3788,14 +3576,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3843,14 +3629,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3878,14 +3662,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3933,14 +3715,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -3968,14 +3748,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4023,14 +3801,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4058,14 +3834,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4113,14 +3887,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4148,14 +3920,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4203,14 +3973,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4238,14 +4006,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4293,14 +4059,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4328,14 +4092,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4383,14 +4145,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4418,14 +4178,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4473,14 +4231,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4508,14 +4264,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4563,14 +4317,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4598,14 +4350,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4653,14 +4403,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4688,14 +4436,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4743,14 +4489,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4778,14 +4522,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4833,14 +4575,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4868,14 +4608,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4923,14 +4661,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -4958,14 +4694,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5013,14 +4747,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5048,14 +4780,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5103,14 +4833,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5138,14 +4866,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5193,14 +4919,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5228,14 +4952,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5283,14 +5005,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5318,14 +5038,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5373,14 +5091,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5408,14 +5124,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5463,14 +5177,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5498,14 +5210,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5553,14 +5263,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5588,14 +5296,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5643,14 +5349,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5678,14 +5382,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5733,14 +5435,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5768,14 +5468,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5823,14 +5521,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5858,14 +5554,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5913,14 +5607,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -5948,14 +5640,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6003,14 +5693,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6038,14 +5726,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6093,14 +5779,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6128,14 +5812,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6183,14 +5865,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6218,14 +5898,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6273,14 +5951,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6308,14 +5984,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6363,14 +6037,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6398,14 +6070,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6453,14 +6123,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6488,14 +6156,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6543,14 +6209,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6578,14 +6242,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6633,14 +6295,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6668,14 +6328,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6723,14 +6381,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6758,14 +6414,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6813,14 +6467,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6848,14 +6500,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6903,14 +6553,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6938,14 +6586,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -6993,14 +6639,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7028,14 +6672,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7083,14 +6725,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7118,14 +6758,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7173,14 +6811,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7208,14 +6844,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7263,14 +6897,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7298,14 +6930,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7353,14 +6983,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7388,14 +7016,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7443,14 +7069,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7478,14 +7102,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7533,14 +7155,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7568,14 +7188,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7623,14 +7241,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7658,14 +7274,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7713,14 +7327,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7748,14 +7360,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7803,14 +7413,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7838,14 +7446,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:204)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:203)
 
 ----------------------------------------------------------------
@@ -7898,14 +7504,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -7933,14 +7537,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8028,14 +7630,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8083,14 +7683,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8178,14 +7776,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8213,14 +7809,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8308,14 +7902,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8363,14 +7955,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8458,14 +8048,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8493,14 +8081,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8588,14 +8174,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8643,14 +8227,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8738,14 +8320,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8773,14 +8353,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8868,14 +8446,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -8923,14 +8499,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9018,14 +8592,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9053,14 +8625,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9148,14 +8718,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9203,14 +8771,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9298,14 +8864,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9333,14 +8897,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9428,14 +8990,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9483,14 +9043,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9578,14 +9136,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9613,14 +9169,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9708,14 +9262,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9763,14 +9315,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9858,14 +9408,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9893,14 +9441,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -9988,14 +9534,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10043,14 +9587,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10138,14 +9680,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10173,14 +9713,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10268,14 +9806,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10323,14 +9859,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10418,14 +9952,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10453,14 +9985,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10548,14 +10078,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10603,14 +10131,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10698,14 +10224,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10733,14 +10257,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10828,14 +10350,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10883,14 +10403,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -10978,14 +10496,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11013,14 +10529,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11108,14 +10622,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11163,14 +10675,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11258,14 +10768,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11293,14 +10801,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11388,14 +10894,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11443,14 +10947,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11538,14 +11040,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11573,14 +11073,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11668,14 +11166,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11723,14 +11219,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11818,14 +11312,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11853,14 +11345,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -11948,14 +11438,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12003,14 +11491,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12098,14 +11584,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12133,14 +11617,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12228,14 +11710,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12283,14 +11763,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12378,14 +11856,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12413,14 +11889,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12508,14 +11982,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12563,14 +12035,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12658,14 +12128,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12693,14 +12161,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12788,14 +12254,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12843,14 +12307,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12938,14 +12400,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -12973,14 +12433,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13068,14 +12526,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13123,14 +12579,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13218,14 +12672,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13253,14 +12705,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13348,14 +12798,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13403,14 +12851,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13498,14 +12944,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13533,14 +12977,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13628,14 +13070,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13683,14 +13123,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13778,14 +13216,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13813,14 +13249,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13908,14 +13342,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -13963,14 +13395,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14058,14 +13488,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14093,14 +13521,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14188,14 +13614,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14243,14 +13667,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14338,14 +13760,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14373,14 +13793,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14468,14 +13886,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14523,14 +13939,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:235)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:234)
 
 ----------------------------------------------------------------
@@ -14623,14 +14037,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -14658,14 +14070,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -14833,14 +14243,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -14928,14 +14336,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15103,14 +14509,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15158,14 +14562,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15333,14 +14735,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15428,14 +14828,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15603,14 +15001,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15638,14 +15034,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15813,14 +15207,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -15908,14 +15300,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16083,14 +15473,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16138,14 +15526,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16313,14 +15699,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16408,14 +15792,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16583,14 +15965,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16618,14 +15998,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16793,14 +16171,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -16888,14 +16264,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17063,14 +16437,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17118,14 +16490,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17293,14 +16663,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17388,14 +16756,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17563,14 +16929,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17598,14 +16962,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17773,14 +17135,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -17868,14 +17228,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18043,14 +17401,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18098,14 +17454,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18273,14 +17627,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18368,14 +17720,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18543,14 +17893,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18578,14 +17926,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18753,14 +18099,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -18848,14 +18192,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19023,14 +18365,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19078,14 +18418,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19253,14 +18591,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19348,14 +18684,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19523,14 +18857,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19558,14 +18890,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19733,14 +19063,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -19828,14 +19156,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20003,14 +19329,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20058,14 +19382,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20233,14 +19555,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20328,14 +19648,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20503,14 +19821,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20538,14 +19854,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20713,14 +20027,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20808,14 +20120,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -20983,14 +20293,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21038,14 +20346,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21213,14 +20519,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21308,14 +20612,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21483,14 +20785,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21518,14 +20818,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21693,14 +20991,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21788,14 +21084,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -21963,14 +21257,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22018,14 +21310,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22193,14 +21483,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22288,14 +21576,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22463,14 +21749,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22498,14 +21782,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22673,14 +21955,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22768,14 +22048,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22943,14 +22221,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -22998,14 +22274,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23173,14 +22447,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23268,14 +22540,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23443,14 +22713,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23478,14 +22746,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23653,14 +22919,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23748,14 +23012,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23923,14 +23185,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -23978,14 +23238,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24153,14 +23411,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24248,14 +23504,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24423,14 +23677,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24458,14 +23710,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24633,14 +23883,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24728,14 +23976,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24903,14 +24149,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -24958,14 +24202,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -25133,14 +24375,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -25228,14 +24468,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -25403,14 +24641,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -25438,14 +24674,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -25613,14 +24847,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------
@@ -25708,14 +24940,12 @@ Locks held: none
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:266)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
    by 0x........: main (tc19_shadowmem.c:265)
 
 ----------------------------------------------------------------

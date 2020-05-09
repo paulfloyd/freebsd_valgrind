@@ -1,42 +1,47 @@
 
 ---Thread-Announcement------------------------------------------
 
-Thread #x is the program's root thread
+Thread #x was created
+   ...
+   by 0x........: main (hg05_race2.c:29)
 
 ---Thread-Announcement------------------------------------------
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
-   by 0x........: main (tc01_simple_race.c:22)
+   by 0x........: main (hg05_race2.c:27)
 
 ----------------------------------------------------------------
 
 Possible data race during read of size 4 at 0x........ by thread #x
 Locks held: none
-   at 0x........: main (tc01_simple_race.c:28)
+   at 0x........: th (hg05_race2.c:17)
+   by 0x........: mythread_wrapper (hg_intercepts.c:...)
+   ...
 
 This conflicts with a previous write of size 4 by thread #x
 Locks held: none
-   at 0x........: child_fn (tc01_simple_race.c:14)
+   at 0x........: th (hg05_race2.c:17)
    by 0x........: mythread_wrapper (hg_intercepts.c:...)
    ...
- Location 0x........ is 0 bytes inside global var "x"
- declared at tc01_simple_race.c:9
+ Location 0x........ is 0 bytes inside foo.poot[5].plop[11],
+ declared at hg05_race2.c:24, in frame #x of thread x
 
 ----------------------------------------------------------------
 
 Possible data race during write of size 4 at 0x........ by thread #x
 Locks held: none
-   at 0x........: main (tc01_simple_race.c:28)
+   at 0x........: th (hg05_race2.c:17)
+   by 0x........: mythread_wrapper (hg_intercepts.c:...)
+   ...
 
 This conflicts with a previous write of size 4 by thread #x
 Locks held: none
-   at 0x........: child_fn (tc01_simple_race.c:14)
+   at 0x........: th (hg05_race2.c:17)
    by 0x........: mythread_wrapper (hg_intercepts.c:...)
    ...
- Location 0x........ is 0 bytes inside global var "x"
- declared at tc01_simple_race.c:9
+ Location 0x........ is 0 bytes inside foo.poot[5].plop[11],
+ declared at hg05_race2.c:24, in frame #x of thread x
 
 
 ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
