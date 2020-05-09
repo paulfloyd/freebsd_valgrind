@@ -50,6 +50,7 @@ EXTRA_DIST = \
 		locked_vs_unlocked2.stderr.exp \
 		locked_vs_unlocked2.stdout.exp \
 		locked_vs_unlocked2.stderr.exp-clang \
+		locked_vs_unlocked2.stderr.exp-freebsd-clang \
 	locked_vs_unlocked3.vgtest \
 		locked_vs_unlocked3.stderr.exp \
 		locked_vs_unlocked3.stdout.exp \
