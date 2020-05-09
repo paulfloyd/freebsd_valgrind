@@ -2340,7 +2340,7 @@ void shutdown_actions_NORETURN( ThreadId tid,
 */
 static void final_tidyup(ThreadId tid)
 {
-#if defined(VGO_linux) || defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
    Addr freeres_wrapper = VG_(client_freeres_wrapper);
 
    vg_assert(VG_(is_running_thread)(tid));
@@ -2354,9 +2354,12 @@ static void final_tidyup(ThreadId tid)
       to_run |= VG_RUN__GNU_CXX__FREERES;
    }
 
+#if !defined(VGO_freebsd)
+   // @todo PJF is there a FreeBSD libc freeres ?
    if (VG_(needs).libc_freeres && VG_(clo_run_libc_freeres)) {
       to_run |= VG_RUN__LIBC_FREERES;
    }
+#endif
 
    if (to_run == 0) {
       return; /* won't do it */
