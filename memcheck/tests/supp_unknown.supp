@@ -20,3 +20,11 @@
    fun:generic_start_main.isra.0
    fun:(below main)
 }
+{
+   FreeBSD GCC i386
+   Memcheck:Jump
+   obj:*
+   fun:_start1
+   fun:(below main)
+}
+
