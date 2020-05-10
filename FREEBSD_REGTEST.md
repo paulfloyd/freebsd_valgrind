@@ -4,14 +4,13 @@
 
 ## Tests in none
 
-97.5% good
+98.0% good
 
 ```
-== 202 tests, 5 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 202 tests, 4 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/coolo_sigaction               (stdout)
 none/tests/coolo_sigaction               (stderr)
 none/tests/faultstatus                   (stderr)
-none/tests/ioctl_moans                   (stderr)
 none/tests/pending                       (stdout)
 none/tests/pending                       (stderr)
 none/tests/sigstackgrowth                (stdout)
@@ -19,10 +18,6 @@ none/tests/sigstackgrowth                (stderr)
 ```
 
 Most of these are signal issues.  
-
-none/tests/rlimit_nofile seems to behave differently when run in a console and in a terminal emulator like konsole.  
-
-ioctl_moans - currently only have generic IOR/IOW handling. Plain IO moans.  
 
 ## Tests in memcheck
 
@@ -62,7 +57,6 @@ gdbserver_tests/mcsignopass              (stderr)
 gdbserver_tests/mcsignopass              (stdoutB)
 gdbserver_tests/mcsigpass                (stderr)
 gdbserver_tests/mcsigpass                (stdoutB)
-
 ```
 
 mcmain_pic - gdb complains that it can't find main_pic.c ???  
@@ -116,10 +110,13 @@ drd/tests/tc09_bad_unlock - two missing error messages
 tc23_bogus_condwait - several exp files, not sure which is relevant for FreeBSD 
 thread_name_xml - hard to read diffs but thread_name was crashing  
 
+# amd64 / clang results
 
-# x86 results
+36 fails.
 
-Not so good, around 60 fails. Ongoing analysis.
+# x86 / clang results
+
+46 fails. Ongoing analysis.
 
 # Linux results
 
