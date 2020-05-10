@@ -3708,13 +3708,13 @@ PRE(sys_sigwait)
    if (ARG1 != 0)
       PRE_MEM_READ(  "sigwait(set)",  ARG1, sizeof(vki_sigset_t));
    if (ARG2 != 0)
-      PRE_MEM_WRITE( "sigwait(sig)", ARG2, sizeof(int*));
+      PRE_MEM_WRITE( "sigwait(sig)", ARG2, sizeof(int));
 }
 
 POST(sys_sigwait)
 {
    if (ARG2 != 0)
-      POST_MEM_WRITE( ARG2, sizeof(int*));
+      POST_MEM_WRITE( ARG2, sizeof(int));
 }
 
 POST(sys_getcontext)
@@ -4197,24 +4197,60 @@ PRE(sys_cap_enter)
    }
 }
 
+static vki_sigset_t pdfork_saved_mask;
+
 // pid_t pdfork(int *fdp, int flags);
 PRE(sys_pdfork)
 {
+    Bool is_child;
+    Int child_pid;
+    vki_sigset_t mask;
+
    PRINT("sys_pdfork ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
    PRE_REG_READ2(long, "pdfork", int*, fdp, int, flags);
 
-   SET_STATUS_from_SysRes( ML_(do_fork)(tid) );
-   if (SUCCESS) {
-      /* Thread creation was successful; let the child have the chance
-         to run */
-      *flags |= SfYieldAfter;
+   /* Block all signals during fork, so that we can fix things up in
+      the child without being interrupted. */
+   VG_(sigfillset)(&mask);
+   VG_(sigprocmask)(VKI_SIG_SETMASK, &mask, &pdfork_saved_mask);
+
+   VG_(do_atfork_pre)(tid);
+
+   SET_STATUS_from_SysRes( VG_(do_syscall2)(__NR_pdfork, ARG1, ARG2) );
+
+   if (!SUCCESS) return;
+
+   // RES is 0 for child, non-0 (the child's PID) for parent.
+   is_child = ( RES == 0 ? True : False );
+   child_pid = ( is_child ? -1 : RES );
+
+   if (is_child)
+   {
+      VG_(do_atfork_child)(tid);
+
+      /* restore signal mask */
+      VG_(sigprocmask)(VKI_SIG_SETMASK, &pdfork_saved_mask, NULL);
+   } else {
+      VG_(do_atfork_parent)(tid);
+
+      PRINT("   fork: process %d created child %d\n", VG_(getpid)(), child_pid);
+
+      /* restore signal mask */
+      VG_(sigprocmask)(VKI_SIG_SETMASK, &pdfork_saved_mask, NULL);
    }
-   PRE_MEM_WRITE( "pdfork(fdp)", ARG1, sizeof(int) );
+
+   if (ARG1)
+   {
+      PRE_MEM_WRITE( "pdfork(fdp)", ARG1, sizeof(int) );
+   }
 }
 
 POST(sys_pdfork)
 {
-   POST_MEM_WRITE( ARG1, sizeof(int) );
+    if (ARG1)
+    {
+        POST_MEM_WRITE( ARG1, sizeof(int) );
+    }
 }
 
 //int pdkill(int fd, int signum)

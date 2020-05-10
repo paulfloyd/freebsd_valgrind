@@ -1,4 +1,4 @@
-parent: kill fd 0
+parent: kill fd 3
 Syscall param pdfork(fdp) points to unaddressable byte(s)
    ...
    by 0x........: main (pdfork_pdkill.c:86)
@@ -14,10 +14,7 @@ Syscall param pdfork(flags) contains uninitialised byte(s)
    ...
    by 0x........: main (pdfork_pdkill.c:91)
 
-FILE DESCRIPTORS: 4 open at exit.
-Open file descriptor ...
-   <inherited from parent>
-
+FILE DESCRIPTORS: 3 open at exit.
 Open file descriptor ...
    <inherited from parent>
 
