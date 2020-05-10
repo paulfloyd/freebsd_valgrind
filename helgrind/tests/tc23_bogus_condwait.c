@@ -18,9 +18,11 @@ static int my_sem_destroy(sem_t*);
 static int my_sem_wait(sem_t*); static int my_sem_post(sem_t*);
 void* rescue_me ( void* uu )
 {
+#if !defined(VGO_freebsd)    
   /* wait for, and unblock, the first wait */
   sleep(1);
   pthread_cond_signal( &cv );
+#endif
 
   /* wait for, and unblock, the second wait */
   sleep(1);

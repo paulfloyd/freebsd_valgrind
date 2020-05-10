@@ -170,6 +170,7 @@ EXTRA_DIST = \
 		tc23_bogus_condwait.stderr.exp \
 		tc23_bogus_condwait.stderr.exp-mips32 \
 		tc23_bogus_condwait.stderr.exp-clang \
+		tc23_bogus_condwait.stderr.exp-freebsd \
 	tc24_nonzero_sem.vgtest tc24_nonzero_sem.stdout.exp \
 		tc24_nonzero_sem.stderr.exp \
 	tls_threads.vgtest tls_threads.stdout.exp \
