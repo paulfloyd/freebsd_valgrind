@@ -3659,6 +3659,30 @@ PRE(sys___acl_aclcheck_fd)
    PRE_MEM_READ( "__acl_aclcheck_fd(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
+
+// ssize_t extattr_get_file(const char *path, int attrnamespace,
+//                          const char *attrname, void *data, size_t nbytes);
+PRE(sys_extattr_get_file)
+{
+    PRINT("sys_extattr_get_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+    PRE_REG_READ5(long, "extattr_get_file",
+                  const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
+    PRE_MEM_RASCIIZ("sys_extattr_get_file(path)", ARG1);
+    PRE_MEM_RASCIIZ("sys_extattr_get_file(attrname)", ARG3);
+    if (ARG4)
+    {
+        PRE_MEM_WRITE("sys_extattr_get_file(data)", ARG4, ARG5);
+    }
+}
+
+POST(sys_extattr_get_file)
+{
+    if (ARG4)
+    {
+        POST_MEM_WRITE(ARG4, ARG5);
+    }
+}
+
 PRE(sys___acl_get_link)
 {
    PRINT("sys___acl_get_link ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2,ARG3);
@@ -4897,7 +4921,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // BSDXY(__NR_extattrctl,		sys_extattrctl),		// 355
 
    // BSDXY(__NR_extattr_set_file,	sys_extattr_set_file),		// 356
-   // BSDXY(__NR_extattr_get_file,	sys_extattr_get_file),		// 357
+   BSDXY(__NR_extattr_get_file,	sys_extattr_get_file),		// 357
    // BSDXY(__NR_extattr_delete_file,	sys_extattr_delete_file),	// 358
    // BSDXY(__NR_aio_waitcomplete,	sys_aio_waitcomplete),		// 359
 

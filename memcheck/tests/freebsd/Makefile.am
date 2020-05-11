@@ -1,7 +1,7 @@
 
 include $(top_srcdir)/Makefile.tool-tests.am
 
-dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout
+dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout extattr
 
 EXTRA_DIST = \
 	statvfs.vgtest \
@@ -13,10 +13,12 @@ EXTRA_DIST = \
 	getfsstat.vgtest \
 	getfsstat.stderr.exp \
 	supponlyobj.vgtest \
-	supponlyobj.stderr.exp
+	supponlyobj.stderr.exp \
+	extattr.vgtest \
+	extattr.stderr.exp
 
 check_PROGRAMS = \
-	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so
+	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)

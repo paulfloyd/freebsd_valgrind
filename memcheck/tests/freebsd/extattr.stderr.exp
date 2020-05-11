@@ -1,0 +1,40 @@
+Syscall param extattr_get_file(attrnamespace) contains uninitialised byte(s)
+   at 0x........: extattr_get_file (in /...libc...)
+   by 0x........: main (extattr.c:23)
+
+Syscall param sys_extattr_get_file(data) points to unaddressable byte(s)
+   at 0x........: extattr_get_file (in /...libc...)
+   by 0x........: main (extattr.c:27)
+ Address 0x........ is 0 bytes inside a block of size 64 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (extattr.c:26)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (extattr.c:25)
+
+Syscall param sys_extattr_get_file(path) points to unaddressable byte(s)
+   at 0x........: extattr_get_file (in /...libc...)
+   by 0x........: main (extattr.c:31)
+ Address 0x........ is 0 bytes inside a block of size 6 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (extattr.c:30)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (extattr.c:29)
+
+Syscall param sys_extattr_get_file(attrname) points to unaddressable byte(s)
+   at 0x........: extattr_get_file (in /...libc...)
+   by 0x........: main (extattr.c:32)
+ Address 0x........ is 0 bytes inside a block of size 6 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (extattr.c:30)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (extattr.c:29)
+
+Syscall param extattr_get_file(nbytes) contains uninitialised byte(s)
+   at 0x........: extattr_get_file (in /...libc...)
+   by 0x........: main (extattr.c:34)
+

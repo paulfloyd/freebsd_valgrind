@@ -1262,6 +1262,7 @@
 /memcheck/tests/freebsd/getfsstat
 /memcheck/tests/freebsd/inlinfo
 /memcheck/tests/freebsd/inlinfo_nested.so
+/memcheck/tests/freebsd/extattr
 
 # /memcheck/tests/freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff
