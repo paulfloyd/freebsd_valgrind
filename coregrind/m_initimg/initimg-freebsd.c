@@ -122,6 +122,9 @@ static void load_client ( /*OUT*/ExeInfo* info,
 */
 static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
 {
+   vg_assert(origenv);
+   vg_assert(toolname);
+
    const HChar* preload_core    = "vgpreload_core";
    const HChar* ld_preload      = "LD_PRELOAD=";
    const HChar* v_launcher      = VALGRIND_LAUNCHER "=";
@@ -134,6 +137,7 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    Bool   ld_32_preload_done = False;
 #endif
    Int    vglib_len       = VG_(strlen)(VG_(libdir));
+   Bool   debug           = False;
 
    HChar** cpp;
    HChar** ret;
@@ -151,14 +155,9 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    Int preload_string_len    = preload_core_path_len + preload_tool_path_len;
    HChar* preload_string     = VG_(malloc)("initimg-freebsd.sce.1",
                                            preload_string_len);
-   vg_assert(origenv);
-   vg_assert(toolname);
-   vg_assert(preload_string);
-
    /* Determine if there's a vgpreload_<tool>_<platform>.so file, and setup
       preload_string. */
    preload_tool_path = VG_(malloc)("initimg-freebsd.sce.2", preload_tool_path_len);
-   vg_assert(preload_tool_path);
    VG_(snprintf)(preload_tool_path, preload_tool_path_len,
                  "%s/vgpreload_%s-%s.so", VG_(libdir), toolname, VG_PLATFORM);
    if (VG_(access)(preload_tool_path, True/*r*/, False/*w*/, False/*x*/) == 0) {
@@ -174,18 +173,22 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    VG_(debugLog)(2, "initimg", "  \"%s\"\n", preload_string);
 
    /* Count the original size of the env */
+   if (debug) VG_(printf)("\n\n");
    envc = 0;
-   for (cpp = origenv; cpp && *cpp; cpp++)
+   for (cpp = origenv; cpp && *cpp; cpp++) {
       envc++;
+      if (debug) VG_(printf)("XXXXXXXXX: BEFORE %s\n", *cpp);
+   }
 
    /* Allocate a new space */
    ret = VG_(malloc) ("initimg-freebsd.sce.3",
-                      sizeof(HChar *) * (envc+2+1)); /* 2 new entry + NULL */
-   vg_assert(ret);
+                      sizeof(HChar *) * (envc+2+1)); /* 2 new entries + NULL */
 
    /* copy it over */
-   for (cpp = ret; *origenv; )
+   for (cpp = ret; *origenv; ) {
+      if (debug) VG_(printf)("XXXXXXXXX: COPY   %s\n", *origenv);
       *cpp++ = *origenv++;
+   }
    *cpp = NULL;
    *(cpp + 1) = NULL;
    
@@ -196,7 +199,6 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
       if (VG_(memcmp)(*cpp, ld_preload, ld_preload_len) == 0) {
          Int len = VG_(strlen)(*cpp) + preload_string_len;
          HChar *cp = VG_(malloc)("initimg-freebsd.sce.4", len);
-         vg_assert(cp);
 
          VG_(snprintf)(cp, len, "%s%s:%s",
                        ld_preload, preload_string, (*cpp)+ld_preload_len);
@@ -205,17 +207,18 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
 
          ld_preload_done = True;
       }
+      if (debug) VG_(printf)("XXXXXXXXX: MASH   %s\n", *cpp);
    }
 
    /* Add the missing bits */
    if (!ld_preload_done) {
       Int len = ld_preload_len + preload_string_len;
       HChar *cp = VG_(malloc) ("initimg-freebsd.sce.5", len);
-      vg_assert(cp);
 
       VG_(snprintf)(cp, len, "%s%s", ld_preload, preload_string);
 
       ret[envc++] = cp;
+      if (debug) VG_(printf)("XXXXXXXXX: ADD    %s\n", cp);
    }
 
 #if defined(VGP_x86_freebsd)
@@ -263,6 +266,10 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
 
    VG_(free)(preload_string);
    ret[envc] = NULL;
+
+   for (i = 0; i < envc; i++) {
+      if (debug) VG_(printf)("XXXXXXXXX: FINAL  %s\n", ret[i]);
+   }
 
    return ret;
 }
@@ -443,7 +450,7 @@ Addr setup_client_stack( void*  init_sp,
       auxsize +                               /* auxv */
       VG_ROUNDUP(stringsize, sizeof(Word));   /* strings (aligned) */
 
-   if (0) VG_(printf)("clstack_end = %lx\n", clstack_end);
+   if (0) VG_(printf)("stacksize = %u\n", stacksize);
 
    /* client_SP is the client's stack pointer */
    client_SP = clstack_end - stacksize;
@@ -457,10 +464,6 @@ Addr setup_client_stack( void*  init_sp,
 
    /* The max stack size */
    clstack_max_size = VG_PGROUNDUP(clstack_max_size);
-
-   /* Record stack extent -- needed for stack-change code. */
-   VG_(clstk_start_base) = clstack_start;
-   VG_(clstk_end)  = clstack_end;
 
    if (0)
       VG_(printf)("stringsize=%u auxsize=%u stacksize=%u maxsize=0x%lx\n"
@@ -539,6 +542,11 @@ Addr setup_client_stack( void*  init_sp,
 
      vg_assert(ok);
      vg_assert(!sr_isError(res)); 
+
+     /* Record stack extent -- needed for stack-change code. */
+     VG_(clstk_start_base) = anon_start -inner_HACK;
+     VG_(clstk_end)  = VG_(clstk_start_base) + anon_size +inner_HACK -1;
+
    }
 
    /* ==================== create client stack ==================== */
@@ -549,14 +557,10 @@ Addr setup_client_stack( void*  init_sp,
    *ptr++ = argc + (have_exename ? 1 : 0);
 
    /* --- client argv --- */
-   if (info->interp_name) {
+   if (info->interp_name)
       *ptr++ = (Addr)copy_str(&strtab, info->interp_name);
-      VG_(free)(info->interp_name);
-   }
-   if (info->interp_args) {
+   if (info->interp_args)
       *ptr++ = (Addr)copy_str(&strtab, info->interp_args);
-      VG_(free)(info->interp_args);
-   }
 
    if (have_exename)
       *ptr++ = (Addr)copy_str(&strtab, VG_(args_the_exename));
@@ -890,6 +894,8 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
       setup_client_dataseg( dseg_max_size );
    }
 
+   VG_(free)(info.interp_name); info.interp_name = NULL;
+   VG_(free)(info.interp_args); info.interp_args = NULL;
    return iifii;
 }
 
