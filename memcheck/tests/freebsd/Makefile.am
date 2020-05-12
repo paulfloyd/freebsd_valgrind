@@ -1,7 +1,7 @@
 
 include $(top_srcdir)/Makefile.tool-tests.am
 
-dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout extattr
+dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout
 
 EXTRA_DIST = \
 	statvfs.vgtest \
