@@ -30,7 +30,6 @@
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
 #include "pub_core_vkiscnums.h"
-#include "pub_core_libcsetjmp.h"   // to keep _threadstate.h happy
 #include "pub_core_threadstate.h"
 #include "pub_core_aspacemgr.h"
 #include "pub_core_debuginfo.h"    // VG_(di_notify_*)
@@ -50,6 +49,7 @@
 #include "pub_core_options.h"
 #include "pub_core_scheduler.h"
 #include "pub_core_signals.h"
+#include "pub_core_stacks.h"
 #include "pub_core_syscall.h"
 #include "pub_core_syswrap.h"
 #include "pub_core_inner.h"
@@ -136,8 +136,8 @@ static void run_a_thread_NORETURN ( Word tidW )
 #endif
 
    VG_(debugLog)(1, "syswrap-freebsd", 
-                    "run_a_thread_NORETURN(tid=%llu): pre-thread_wrapper\n",
-                    (ULong)tidW);
+                    "run_a_thread_NORETURN(tid=%u): pre-thread_wrapper\n",
+                    tid);
 
    tst = VG_(get_ThreadState)(tid);
    vg_assert(tst);
@@ -159,11 +159,15 @@ static void run_a_thread_NORETURN ( Word tidW )
    src = thread_wrapper(tid);  
 
    VG_(debugLog)(1, "syswrap-freebsd", 
-                    "run_a_thread_NORETURN(tid=%llu): post-thread_wrapper\n",
-                    (ULong)tidW);
+                    "run_a_thread_NORETURN(tid=%u): post-thread_wrapper\n",
+                    tid);
 
    c = VG_(count_living_threads)();
    vg_assert(c >= 1); /* stay sane */
+
+   /* Deregister thread's stack. */
+   if (tst->os_state.stk_id != NULL_STK_ID)
+      VG_(deregister_stack)(tst->os_state.stk_id);
 
    // Tell the tool this thread is exiting
    VG_TRACK( pre_thread_ll_exit, tid );
@@ -182,9 +186,9 @@ static void run_a_thread_NORETURN ( Word tidW )
       );
       VG_(debugLog)(
          1, "syswrap-freebsd", 
-            "run_a_thread_NORETURN(tid=%llu): "
+            "run_a_thread_NORETURN(tid=%u): "
             "WARNING: exiting thread has err_disablement_level = %u\n",
-            (ULong)tidW, tst->err_disablement_level
+            tid, tst->err_disablement_level
       );
    }
    tst->err_disablement_level = 0;
@@ -192,21 +196,20 @@ static void run_a_thread_NORETURN ( Word tidW )
    if (c == 1) {
 
       VG_(debugLog)(1, "syswrap-freebsd", 
-                       "run_a_thread_NORETURN(tid=%llu): "
+                       "run_a_thread_NORETURN(tid=%u): "
                           "last one standing\n",
-                          (ULong)tidW);
+                          tid);
 
       /* We are the last one standing.  Keep hold of the lock and
          carry on to show final tool results, then exit the entire system. 
          Use the continuation pointer set at startup in m_main. */
       ( * VG_(address_of_m_main_shutdown_actions_NORETURN) ) (tid, src);
-
    } else {
 
       VG_(debugLog)(1, "syswrap-freebsd", 
-                       "run_a_thread_NORETURN(tid=%llu): "
+                       "run_a_thread_NORETURN(tid=%u): "
                           "not last one standing\n",
-                          (ULong)tidW);
+                          tid);
 
       /* OK, thread is dead, but others still exist.  Just exit. */
 

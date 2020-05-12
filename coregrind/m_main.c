@@ -3294,6 +3294,7 @@ asm("\n"
     "\tandl  $~15, %eax\n"
     /* install it, and collect the original one */
     "\txchgl %eax, %esp\n"
+    "\tsubl  $12, %esp\n"  /* Keep stack 16-byte aligned. */
     /* call _start_in_C_freebsd, passing it the startup %esp */
     "\tpushl %eax\n"
     "\tcall  _start_in_C_freebsd\n"
@@ -3301,6 +3302,24 @@ asm("\n"
     ".previous\n"
 );
 #elif defined(VGP_amd64_freebsd)
+
+// @todo PJF I don't really understand why this is done this way
+// other amd64 platforms just put the new stack address in rdi
+// then do an exchange so that the stack pointer points to the
+// new stack and rdi (which is the 1st argument in the amd64 sysv abi)
+// contains the old stack
+
+// instead for amd64 the same thing is done for rsi, the second
+// function argument and rdi is unchanged
+//
+// In gdb I see the initial rdp is 8+rsp
+// e.g.
+// rdi            0x7fffffffe3b0
+// rsp            0x7fffffffe3a8
+//
+// Maybe on FreeBSD the pointer to argc is 16byte aligned and can be 8 bytes above the
+// start of the stack?
+
 asm("\n"
     ".text\n"
     "\t.globl _start\n"
