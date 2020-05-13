@@ -73,7 +73,7 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    ThreadState* tst = VG_(get_ThreadState)(tid);
 
    VG_(debugLog)(1, "syswrap-linux", 
-                    "thread_wrapper(tid=%u): entry\n", 
+                    "thread_wrapper(tid=%u): entry\n",
                     tid);
 
    vg_assert(tst->status == VgTs_Init);

@@ -79,8 +79,8 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    ThreadState* tst = VG_(get_ThreadState)(tid);
 
    VG_(debugLog)(1, "syswrap-freebsd", 
-                    "thread_wrapper(tid=%llu): entry\n",
-                    (ULong)tidW);
+                    "thread_wrapper(tid=%u): entry\n",
+                    tid);
 
    vg_assert(tst->status == VgTs_Init);
 
@@ -89,7 +89,7 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
 
    if (0)
       VG_(printf)("thread tid %u started: stack = %p\n",
-          tid, (void*)&tid);
+                   tid, (void*)&tid);
 
    /* Make sure error reporting is enabled in the new thread. */
    tst->err_disablement_level = 0;
@@ -97,6 +97,8 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    VG_TRACK(pre_thread_first_insn, tid);
 
    tst->os_state.lwpid = VG_(gettid)();
+   /* Set the threadgroup for real.  This overwrites the provisional value set
+      in do_clone().  See comments in do_clone for background, also #226116. */
    tst->os_state.threadgroup = VG_(getpid)();
 
    /* Thread created with all signals blocked; scheduler will set the

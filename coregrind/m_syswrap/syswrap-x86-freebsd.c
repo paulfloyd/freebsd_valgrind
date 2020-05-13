@@ -268,7 +268,7 @@ static SysRes do_rfork ( ThreadId ptid,
       ctst->client_stack_highest_byte = (Addr)VG_PGROUNDUP(esp);
       ctst->client_stack_szB = ctst->client_stack_highest_byte - seg->start;
 
-      VG_(register_stack)(seg->start, ctst->client_stack_highest_byte);
+      ctst->os_state.stk_id = VG_(register_stack)(seg->start, ctst->client_stack_highest_byte);
 
       if (debug)
 	 VG_(printf)("tid %d: guessed client stack range %#lx-%#lx\n",
@@ -607,7 +607,7 @@ PRE(sys_thr_new)
    /* Linux has to guess, we don't */
    ctst->client_stack_highest_byte = (Addr)tp.stack_base + tp.stack_size;
    ctst->client_stack_szB = tp.stack_size;
-   VG_(register_stack)((Addr)tp.stack_base, (Addr)tp.stack_base + tp.stack_size);
+   ctst->os_state.stk_id = VG_(register_stack)((Addr)tp.stack_base, (Addr)tp.stack_base + tp.stack_size);
 
    /* Assume the clone will succeed, and tell any tool that wants to
       know that this thread has come into existence.  If the clone

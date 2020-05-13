@@ -31,7 +31,6 @@
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
 #include "pub_core_vkiscnums.h"
-#include "pub_core_libcsetjmp.h"    // to keep _threadstate.h happy
 #include "pub_core_threadstate.h"
 #include "pub_core_aspacemgr.h"
 #include "pub_core_debuglog.h"
@@ -182,7 +181,7 @@ PRE(sys_thr_new)
    /* Linux has to guess, we don't */
    ctst->client_stack_highest_byte = (Addr)tp.stack_base + tp.stack_size;
    ctst->client_stack_szB = tp.stack_size;
-   VG_(register_stack)((Addr)tp.stack_base, (Addr)tp.stack_base + tp.stack_size);
+   ctst->os_state.stk_id = VG_(register_stack)((Addr)tp.stack_base, (Addr)tp.stack_base + tp.stack_size);
 
    /* Assume the thr_new will succeed, and tell any tool that wants to
       know that this thread has come into existence.  If the thr_new

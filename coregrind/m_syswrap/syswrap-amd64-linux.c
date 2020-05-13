@@ -79,7 +79,7 @@ asm(
 "   pushq  %rdx\n"         // f to stack
 "   pushq  %rcx\n"         // arg1 to stack
 "   movq $0, %rax\n"       // zero all GP regs
-"   movq $0, %rbx\n" 
+"   movq $0, %rbx\n"
 "   movq $0, %rcx\n"
 "   movq $0, %rdx\n"
 "   movq $0, %rsi\n"
