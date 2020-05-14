@@ -4,7 +4,7 @@
 /*--- The address space manager: segment initialisation and        ---*/
 /*--- tracking, stack operations                                   ---*/
 /*---                                                              ---*/
-/*--- Implementation for Linux, FreeBSD and Darwin                 ---*/
+/*--- Implementation for Linux, Darwin, Solaris and FreeBSD        ---*/
 /*--------------------------------------------------------------------*/
 
 /*
@@ -1647,11 +1647,16 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    // --- Freebsd ------------------------------------------
 #elif defined(VGO_freebsd)
 
+
+   VG_(debugLog)(2, "aspacem",
+                    "        sp_at_startup = 0x%010lx (supplied)\n",
+                    sp_at_startup );
+
 # if VG_WORDSIZE == 4
 
    aspacem_maxAddr = VG_PGROUNDDN( sp_at_startup ) - 1;
 # else
-   aspacem_maxAddr = (Addr) (Addr)0x800000000 - 1; // 32G
+   aspacem_maxAddr = (Addr) (Addr)0x800000000UL - 1; // 32G
 #  ifdef ENABLE_INNER
    { Addr cse = VG_PGROUNDDN( sp_at_startup ) - 1;
      if (aspacem_maxAddr > cse)
@@ -1664,22 +1669,41 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    aspacem_vStart = VG_PGROUNDUP((aspacem_minAddr + aspacem_maxAddr + 1) / 2);
 
 #  ifdef ENABLE_INNER
-   aspacem_vStart -= 0x10000000; // 256M
+   //aspacem_vStart -= 0x10000000; // 256M
+   // @todo PJF try 512M
+   aspacem_vStart -= 0x10000000UL; // 512M
 #  endif // ENABLE_INNER
 
-   // starting with FreeBSD 11.1, the stack is created with a zone
+   // starting with FreeBSD 10.4, the stack is created with a zone
    // that is marked MAP_GUARD. This zone is reserved but unmapped,
    // and fills the space up to the end of the segment
    // see man mmap
 
-   // @todo PJF add conditionals for FreeBSD 11.1
-   // will mean adding detection of minor version
+   // Verson number from
+   // https://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/versions-10.html
 
-   // This was 16M but with the MAP_GUARD zone I've upped it to 80M
+   // On x86 (runing on an amd64 kernel) this is 0x3FE0000
+   // And on amd64 it is 0x1FFE0000 (536739840)
+   // There is less of an issue on amd64 as we just choose some arbitrary address rather then trying
+   // to squeeze in just below the host stack
 
+   // I don't know how to query this programmatically
+   // Some of this is in sys/vm/vm_map.c, sor instance vm_map_stack and vm_map_stack_locked
+   // These refer to the kernel global sgrowsiz, which seems to be the initial size
+   // of the user stack, 128k on my system
+   //
+   // This seems to be in the sysctl kern.sgrowsiz
+   // Then there is kern.maxssiz which is the total stack size (grow size + guard area)
+   // In other words guard are = maxssiz - sgrowsiz
 
-   suggested_clstack_end = aspacem_maxAddr - 80*1024*1024ULL
+#if (__FreeBSD_version >= 1003516)
+   suggested_clstack_end = aspacem_maxAddr - 64*1024*1024ULL
                                            + VKI_PAGE_SIZE;
+#else
+   suggested_clstack_end = aspacem_maxAddr - 16*1024*1024ULL
+                                           + VKI_PAGE_SIZE;
+
+#endif
 
    // --- Solaris ------------------------------------------
 #elif defined(VGO_solaris)
@@ -1843,6 +1867,7 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
     * to suggested_clstack_end
     *
     * A couple of the massif regtests fail because of this
+    *
     */
 
    /* Create a 1-page reservation at the notional initial
