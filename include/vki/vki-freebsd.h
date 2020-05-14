@@ -622,6 +622,7 @@ typedef struct vki_siginfo {
 #define VKI_BUS_ADRALN	1	/* invalid address alignment */
 #define VKI_BUS_ADRERR	2	/* non-existant physical address */
 #define VKI_BUS_OBJERR	3	/* object specific hardware error */
+#define VKI_BUS_OOMERR	100	/* Non-standard: No memory.  */
 
 /*
  * SIGTRAP si_codes

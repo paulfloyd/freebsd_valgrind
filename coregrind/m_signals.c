@@ -1917,6 +1917,14 @@ static void default_action(const vki_siginfo_t *info, ThreadId tid)
 	    case VKI_BUS_ADRALN: event = "Invalid address alignment"; break;
 	    case VKI_BUS_ADRERR: event = "Non-existent physical address"; break;
 	    case VKI_BUS_OBJERR: event = "Hardware error"; break;
+#if defined(VGO_freebsd)
+        // This si_code can be generated for both SIGBUS and SIGSEGV on FreeBSD
+        // This is undocumented
+        case VKI_SEGV_PAGE_FAULT:
+        // It should get replaced with this non-standard value, which is documented.
+        case VKI_BUS_OOMERR:
+            event = "Access not within mapped region";
+#endif
 	    }
 	    break;
 	 } /* switch (sigNo) */
@@ -2516,12 +2524,14 @@ void async_signalhandler ( Int sigNo,
    /* The thread isn't currently running, make it so before going on */
    VG_(acquire_BigLock)(tid, "async_signalhandler");
 
+   //VG_(printf)("********** async_signalhandler **********\n");
+
    info->si_code = sanitize_si_code(info->si_code);
 
    if (VG_(clo_trace_signals))
-      VG_(dmsg)("async signal handler: signal=%d, tid=%u, si_code=%d, "
+      VG_(dmsg)("async signal handler: signal=%d, vgtid=%u, tid=%u, si_code=%d, "
                 "exitreason %s\n",
-                sigNo, tid, info->si_code,
+                sigNo, VG_(gettid)(), tid, info->si_code,
                 VG_(name_of_VgSchedReturnCode)(tst->exitreason));
 
    /* See similar logic in VG_(poll_signals). */
