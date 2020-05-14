@@ -1,6 +1,6 @@
 <?xml version="1.0"?> <!-- -*- sgml -*- -->
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-          "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+          "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
 [ <!ENTITY % vg-entities SYSTEM "../../docs/xml/vg-entities.xml"> %vg-entities; ]>
 
 
@@ -689,7 +689,7 @@ triggered.</para>
             <option>%p</option> and <option>%q</option> format specifiers
             can be used to embed the process ID and/or the contents of an
             environment variable in the name, as is the case for the core
-            option <option><xref linkend="opt.log-file"/></option>.
+            option <option><link linkend="opt.log-file">--log-file</link></option>.
       </para>
     </listitem>
   </varlistentry>
