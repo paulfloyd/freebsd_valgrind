@@ -91,7 +91,7 @@ int main(int argc, char **argv)
               (unsigned long long)oldrlim.rlim_max);
    }
 
-#if defined(VGP_amd64_freebsd)
+#if defined(VGP_amd64_freebsd) && !defined(__clang__)
    // some other file open?
    newrlim.rlim_cur -= 4;
 #else
