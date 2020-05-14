@@ -569,116 +569,15 @@ Int VG_(sigtimedwait_zero)( const vki_sigset_t *set, vki_siginfo_t *info )
 
 #elif defined(VGO_freebsd)
 
-/*
- * This is a mess.  sigtimedwait() was added in FreeBSD-6.  However,
- * there was no 32 bit syscall version until FreeBSD-7.  So on older
- * platforms we have to check.
- */
-#  if __FreeBSD__ < 7
-static void sigtimedwait_zero_handler ( Int sig ) 
-{ 
-   vg_assert(sig != VKI_SIGILL);
-   vg_assert(sig != VKI_SIGSEGV);
-   vg_assert(sig != VKI_SIGBUS);
-   vg_assert(sig != VKI_SIGTRAP);
-   vg_assert(sig != VKI_SIGSYS);
-   /* do nothing */ 
-}
-#  endif
 
 Int VG_(sigtimedwait_zero)( const vki_sigset_t *set, 
                             vki_siginfo_t *info )
 {
-#  if __FreeBSD__ < 7
-  Int    i, ir;
-  SysRes sr;
-  vki_sigset_t pending, blocked, allbutone;
-  struct vki_sigaction sa, saved_sa;
-  Int osreldate;
-#  if defined(VGP_x86_freebsd)
-  Int is32on64;
-#  endif
-  Bool have_sigtimedwait_zero = True;
-#  endif
-  static const struct vki_timespec zero = { 0, 0 };
+   static const struct vki_timespec zero = { 0, 0 };
 
-#  if __FreeBSD__ < 7
-  osreldate = VG_(getosreldate)();
-  if (osreldate < 600000)
-     have_sigtimedwait_zero = False;
-#  if defined(VGP_x86_freebsd)
-  /* 32 bit emulation is busted, no sigtimedwait even though the kernel has it */
-  is32on64 = VG_(is32on64)();
-  if (is32on64 && osreldate < 700000)
-     have_sigtimedwait_zero = False;
-#  endif
-  if (have_sigtimedwait_zero) {
-#  endif
-     SysRes res = VG_(do_syscall3)(__NR_sigtimedwait, (UWord)set, (UWord)info, 
+   SysRes res = VG_(do_syscall3)(__NR_sigtimedwait, (UWord)set, (UWord)info,
                                    (UWord)&zero);
-     return sr_isError(res) ? -1 : sr_Res(res);
-#  if __FreeBSD__ < 7
-  }
-
-  /* Find out what's pending: FreeBSD sigpending */
-  sr = VG_(do_syscall1)(__NR_sigpending, (UWord)&pending);
-  vg_assert(!sr.isError);
-
-  /* don't try for signals not in 'set' */
-  /* pending = pending `intersect` set */
-  for (i = 0; i < _VKI_NSIG_WORDS; i++)
-     pending.sig[i] &= set->sig[i];
-
-  /* don't try for signals not blocked at the moment */
-  ir = VG_(sigprocmask)(VKI_SIG_SETMASK, NULL, &blocked);
-  vg_assert(ir == 0);
-
-  /* pending = pending `intersect` blocked */
-  for (i = 0; i < _VKI_NSIG_WORDS; i++)
-     pending.sig[i] &= blocked.sig[i];
-
-  /* decide which signal we're going to snarf */
-  for (i = 1; i < _VKI_NSIG; i++)
-     if (VG_(sigismember)(&pending,i))
-        break;
-
-  if (i == _VKI_NSIG)
-     return 0;
-
-  /* fetch signal i.
-     pre: i is blocked and pending
-     pre: we are the only thread running 
-  */
-  /* Set up alternative signal handler */
-  VG_(sigfillset)(&allbutone);
-  VG_(sigdelset)(&allbutone, i);
-  sa.sa_mask     = allbutone;
-  sa.ksa_handler = &sigtimedwait_zero_handler;
-  sa.sa_flags    = 0;
-  ir = VG_(sigaction)(i, &sa, &saved_sa);
-  vg_assert(ir == 0);
-
-  /* Switch signal masks and wait for the signal.  This should happen
-     immediately, since we've already established it is pending and
-     blocked. */
-  sr = VG_(do_syscall1)(__NR_sigsuspend, (UWord)&allbutone);
-  vg_assert(sr.isError);
-  if (0)
-     VG_(debugLog)(0, "libcsignal",
-                      "sigtimedwait_zero: sigsuspend got res %ld err %ld\n", 
-                      sr.res, sr.err);
-  vg_assert(sr.res == (UWord)-1);
-
-  /* Restore signal's handler to whatever it was before */
-  ir = VG_(sigaction)(i, &saved_sa, NULL);
-  vg_assert(ir == 0);
-
-  /* This is bogus - we could get more info from the sighandler. */
-  VG_(memset)( info, 0, sizeof(*info) );
-  info->si_signo = i;
-
-  return i;
-#  endif
+   return sr_isError(res) ? -1 : sr_Res(res);
 }
 
 #else

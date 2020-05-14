@@ -198,10 +198,8 @@ int main(int argc, char** argv, char** envp)
    char launcher_name[PATH_MAX+1];
    char* new_line;
    char** new_env;
-#if __FreeBSD__ >= 7
    int oid[4];
    vki_size_t len;
-#endif
 
    /* Start the debugging-log system ASAP.  First find out how many 
       "-d"s were specified.  This is a pre-scan of the command line.
@@ -273,7 +271,6 @@ int main(int argc, char** argv, char** envp)
       invocations of valgrind on child processes. */
    memset(launcher_name, 0, PATH_MAX+1);
 
-#if __FreeBSD__ >= 7
    oid[0] = CTL_KERN;
    oid[1] = KERN_PROC;
    oid[2] = KERN_PROC_PATHNAME;
@@ -286,19 +283,6 @@ int main(int argc, char** argv, char** envp)
       fprintf(stderr, "valgrind: continuing, however --trace-children=yes "
                       "will not work.\n");
    }
-#else
-   r = readlink("/proc/curproc/file", launcher_name, PATH_MAX);
-   if (r == -1) {
-      /* If /proc/self/exe can't be followed, don't give up.  Instead
-         continue with an empty string for VALGRIND_LAUNCHER.  In the
-         sys_execve wrapper, this is tested, and if found to be empty,
-         fail the execve. */
-      fprintf(stderr, "valgrind: warning (non-fatal): "
-                      "readlink(\"/proc/curproc/file\") failed.\n");
-      fprintf(stderr, "valgrind: continuing, however --trace-children=yes "
-                      "will not work.\n");
-   }
-#endif
 
    /* tediously augment the env: VALGRIND_LAUNCHER=launcher_name */
    new_line = malloc(strlen(VALGRIND_LAUNCHER) + 1 
