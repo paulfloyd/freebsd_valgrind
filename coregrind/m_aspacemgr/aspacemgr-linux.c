@@ -1679,15 +1679,14 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    // and fills the space up to the end of the segment
    // see man mmap
 
-   // Verson number from
+   // Version number from
    // https://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/versions-10.html
 
-   // On x86 (runing on an amd64 kernel) this is 0x3FE0000
+   // On x86 this is 0x3FE0000
    // And on amd64 it is 0x1FFE0000 (536739840)
    // There is less of an issue on amd64 as we just choose some arbitrary address rather then trying
    // to squeeze in just below the host stack
 
-   // I don't know how to query this programmatically
    // Some of this is in sys/vm/vm_map.c, sor instance vm_map_stack and vm_map_stack_locked
    // These refer to the kernel global sgrowsiz, which seems to be the initial size
    // of the user stack, 128k on my system
@@ -1697,10 +1696,10 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    // In other words guard are = maxssiz - sgrowsiz
 
 #if (__FreeBSD_version >= 1003516)
-   suggested_clstack_end = aspacem_maxAddr - 64*1024*1024ULL
+   suggested_clstack_end = aspacem_maxAddr - 64*1024*1024UL
                                            + VKI_PAGE_SIZE;
 #else
-   suggested_clstack_end = aspacem_maxAddr - 16*1024*1024ULL
+   suggested_clstack_end = aspacem_maxAddr - 16*1024*1024UL
                                            + VKI_PAGE_SIZE;
 
 #endif
