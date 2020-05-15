@@ -2355,9 +2355,13 @@ PRE(sys__umtx_op)
       PRE_REG_READ5(long, "_umtx_op_wait",
                     struct umtx *, obj, int, op, unsigned long, id,
                     void *, zero, struct vki_timespec *, timeout);
+      /*
       PRE_MEM_READ( "_umtx_op_wait(mtx)", ARG1, sizeof(struct vki_umtx) );
       if (ARG5)
 	 PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
+     */
+      if (ARG1)
+          PRE_MEM_READ( "_umtx_op_wait(val)", ARG1, sizeof(long) );
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_WAKE:
@@ -2709,63 +2713,67 @@ POST(sys_sigpending)
    rt_sig* wrappers
    ------------------------------------------------------------------ */
 
-static int sigformat[_VKI_NSIG];
-
-PRE(sys_sigaction4)
+//int sigaction(int sig, const struct sigaction * restrict act,
+//              struct sigaction * restrict oact);
+PRE(sys_sigaction)
 {
-   PRINT("sys_sigaction ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
+    vki_sigaction_toK_t   new, *newp;
+    vki_sigaction_fromK_t old, *oldp;
+
+   PRINT("sys_sigaction ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "sigaction",
-                 int, signum, const struct sigaction *, act,
-                 struct sigaction *, oldact);
+                 int, sign, const struct sigaction *, act,
+                 struct sigaction *, oact);
+
+   newp = oldp = NULL;
 
    if (ARG2 != 0) {
       struct vki_sigaction *sa = (struct vki_sigaction *)ARG2;
       PRE_MEM_READ( "sigaction(act->sa_handler)", (Addr)&sa->ksa_handler, sizeof(sa->ksa_handler));
       PRE_MEM_READ( "sigaction(act->sa_mask)", (Addr)&sa->sa_mask, sizeof(sa->sa_mask));
       PRE_MEM_READ( "sigaction(act->sa_flags)", (Addr)&sa->sa_flags, sizeof(sa->sa_flags));
-      if (ARG1 < _VKI_NSIG)
-	 sigformat[ARG1] = 4;
    }
-   if (ARG3 != 0)
-      PRE_MEM_WRITE( "sigaction(oldact)", ARG3, sizeof(struct vki_sigaction));
 
-   /* process the signal immediately. */
-   SET_STATUS_from_SysRes(
-      VG_(do_sys_sigaction)(ARG1, (const vki_sigaction_toK_t *)ARG2,
-                            (vki_sigaction_fromK_t *)ARG3)
-   );
-}
-
-POST(sys_sigaction4)
-{
-   vg_assert(SUCCESS);
-   if (RES == 0 && ARG3 != 0)
-      POST_MEM_WRITE( ARG3, sizeof(struct vki_sigaction));
-}
-
-/* Identical, but warns the signal handler to expect the different sigframe */
-PRE(sys_sigaction)
-{
-   PRINT("sys_sigaction6 ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "sigaction6",
-                 int, signum, const struct sigaction *, act,
-                 struct sigaction *, oldact);
-
-   if (ARG2 != 0) {
-      struct vki_sigaction *sa = (struct vki_sigaction *)ARG2;
-      PRE_MEM_READ( "sigaction6(act->sa_handler)", (Addr)&sa->ksa_handler, sizeof(sa->ksa_handler));
-      PRE_MEM_READ( "sigaction6(act->sa_mask)", (Addr)&sa->sa_mask, sizeof(sa->sa_mask));
-      PRE_MEM_READ( "sigaction6(act->sa_flags)", (Addr)&sa->sa_flags, sizeof(sa->sa_flags));
-      if (ARG1 < _VKI_NSIG)
-	 sigformat[ARG1] = 6;
+   if (ARG3 != 0) {
+      PRE_MEM_WRITE( "sigaction(oact)", ARG3, sizeof(struct vki_sigaction));
+      oldp = &old;
    }
-   if (ARG3 != 0)
-      PRE_MEM_WRITE( "sigaction6(oldact)", ARG3, sizeof(struct vki_sigaction));
 
-   SET_STATUS_from_SysRes(
-      VG_(do_sys_sigaction)(ARG1, (const vki_sigaction_toK_t *)ARG2,
-                            (vki_sigaction_fromK_t *)ARG3)
-   );
+   if (ARG2 != 0
+       && ! ML_(safe_to_deref)((void *)(Addr)ARG2,
+                               sizeof(struct vki_sigaction))) {
+      VG_(umsg)("Warning: bad act handler address %p in sigaction()\n",
+                (void *)(Addr)ARG2);
+      SET_STATUS_Failure ( VKI_EFAULT );
+   } else if ((ARG3 != 0
+               && ! ML_(safe_to_deref)((void *)(Addr)ARG3,
+                                       sizeof(struct vki_sigaction)))) {
+      VG_(umsg)("Warning: bad oact handler address %p in sigaction()\n",
+                (void *)(Addr)ARG3);
+      SET_STATUS_Failure ( VKI_EFAULT );
+   } else {
+      if (ARG2 != 0) {
+         struct vki_sigaction *oldnew =
+            (struct vki_sigaction *)(Addr)ARG2;
+
+         new.ksa_handler = oldnew->ksa_handler;
+         new.sa_flags = oldnew->sa_flags;
+         new.sa_mask = oldnew->sa_mask;
+         newp = &new;
+      }
+
+      SET_STATUS_from_SysRes( VG_(do_sys_sigaction)(ARG1, newp, oldp) );
+
+      if (ARG3 != 0 && SUCCESS && RES == 0) {
+         struct vki_sigaction *oldold =
+            (struct vki_sigaction *)(Addr)ARG3;
+
+         oldold->ksa_handler = oldp->ksa_handler;
+         oldold->sa_flags = oldp->sa_flags;
+         oldold->sa_mask = oldp->sa_mask;
+      }
+  }
 }
 
 POST(sys_sigaction)
@@ -4851,7 +4859,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // nosys								   295
 
    // nosys								   296
-   // freebsd 4 NR_fhstatfs                297
+   // freebsd 4 fhstatfs                   297
    BSDXY(__NR_fhopen,			sys_fhopen),			// 298
    BSDXY(__NR_fhstat,			sys_fhstat),			// 299
 
@@ -4877,13 +4885,12 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // BSDXY(__NR_aio_cancel,		sys_aio_cancel),		// 316
    // BSDXY(__NR_aio_error,		sys_aio_error),			// 317
-   // BSDXY(__NR_aio_read,		sys_aio_read),			// 318
-   // BSDXY(__NR_aio_write,		sys_aio_write),			// 319
-
-   // BSDXY(__NR_lio_listio,		sys_lio_listio),		// 320
+   // freebsd 6 aio_read                    318
+   // freebsd 6 aio_write                   319
+   // freebsd 6 lio_listio                  320
    BSDX_(__NR_yield,			sys_yield),			// 321
-   // nosys								   322
-   // nosys								   323
+   // obs thr_sleep                         322
+   // obs thr_wakeup                        323
 
    GENX_(__NR_mlockall,			sys_mlockall),			// 324
    BSDX_(__NR_munlockall,		sys_munlockall),		// 325
@@ -4900,17 +4907,17 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 // BSDXY(__NR_sched_rr_get_interval,	sys_sched_rr_get_interval),	// 334
    BSDX_(__NR_utrace,			sys_utrace),			// 335
 
-   // compat3 sendfile							   336
+   // freebsd 4 sendfile                    336
    BSDXY(__NR_kldsym,			sys_kldsym),			// 337
 // BSDX_(__NR_jail,			sys_jail),			// 338
    // unimpl pioctl							   339
 
    BSDXY(__NR_sigprocmask,		sys_sigprocmask),		// 340
    BSDX_(__NR_sigsuspend,		sys_sigsuspend),		// 341
-   BSDXY(__NR_sigaction4,		sys_sigaction4),		// 342
+   // freebsd 4 sigaction                      342
    BSDXY(__NR_sigpending,		sys_sigpending),		// 343
 
-//   BSDX_(__NR_sigreturn4,		sys_sigreturn4),			// 344
+   // freebsd sigreturn                        344
    BSDXY(__NR_sigtimedwait,		sys_sigtimedwait),		// 345
    BSDXY(__NR_sigwaitinfo,		sys_sigwaitinfo),		// 346
    BSDXY(__NR___acl_get_file,		sys___acl_get_file),		// 347

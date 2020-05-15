@@ -517,46 +517,6 @@ typedef union vki_sigval {
 	void *sival_ptr;
 } vki_sigval_t;
 
-#if 0 	/* freebsd6 */
-typedef struct vki_siginfo {
-	int si_signo;
-	int si_errno;
-	int si_code;
-	vki_pid_t si_pid;
-	vki_uid_t si_uid;
-	int si_status;
-	void *si_addr;
-	vki_sigval_t si_value;
-
-	union {
-
-		/* SIGILL, SIGFPE, SIGSEGV, SIGBUS */
-		struct {
-			int _trapno;	/* TRAP # which caused the signal */
-		} _sigfault;
-
-		/* POSIX.1b timers */
-		struct {
-			int _timerid;		/* timer id */
-			int _overrun;		/* overrun count */
-		} _timer;
-
-		struct {
-			int _mqd;
-		} _mesgq;
-
-		/* SIGPOLL */
-		struct {
-			long _band;	/* POLL_IN, POLL_OUT, POLL_MSG */
-		} _sigpoll;
-
-		struct {
-			long __spare1__;
-			int __spare2[7];
-		} __spare__;
-	} _sifields;
-} vki_siginfo_t;
-#endif
 typedef struct vki_siginfo {
 	int si_signo;
 	int si_errno;
