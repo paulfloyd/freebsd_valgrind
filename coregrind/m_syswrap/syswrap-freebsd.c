@@ -2277,7 +2277,7 @@ POST(sys_thr_kill)
 PRE(sys_thr_kill2)
 {
    PRINT("sys_thr_kill2 ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "tgkill", int, pid, long, tid, int, sig);
+   PRE_REG_READ3(long, "thr_kill2", int, pid, long, tid, int, sig);
    if (!ML_(client_signal_OK)(ARG3)) {
       SET_STATUS_Failure( VKI_EINVAL );
       return;
