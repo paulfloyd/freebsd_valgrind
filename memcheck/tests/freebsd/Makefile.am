@@ -15,10 +15,13 @@ EXTRA_DIST = \
 	supponlyobj.vgtest \
 	supponlyobj.stderr.exp \
 	extattr.vgtest \
-	extattr.stderr.exp
+	extattr.stderr.exp \
+	sigwait.vgtest \
+	sigwait.stdout.exp \
+	sigwait.stderr.exp
 
 check_PROGRAMS = \
-	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr
+	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
