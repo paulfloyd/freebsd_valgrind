@@ -1,0 +1,58 @@
+Invalid read of size 4
+   at 0x........: main (chflags.c:22)
+ Address 0x........ is 0 bytes inside a block of size 4 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:20)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:14)
+
+Invalid read of size 8
+   at 0x........: main (chflags.c:26)
+ Address 0x........ is 0 bytes inside a block of size 8 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:24)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:15)
+
+Invalid read of size 8
+   at 0x........: main (chflags.c:33)
+ Address 0x........ is 0 bytes inside a block of size 8 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:24)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:15)
+
+Invalid read of size 8
+   at 0x........: main (chflags.c:34)
+ Address 0x........ is 0 bytes inside a block of size 8 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:24)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:15)
+
+Syscall param chflags(path) points to unaddressable byte(s)
+   at 0x........: chflags (in /...libc...)
+   by 0x........: main (chflags.c:38)
+ Address 0x........ is 0 bytes inside a block of size 12 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:36)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (chflags.c:8)
+
+Syscall param chflags(path) points to unaddressable byte(s)
+   at 0x........: lchflags (in /...libc...)
+   by 0x........: main (chflags.c:39)
+ Address 0x........ is 0 bytes inside a block of size 12 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (chflags.c:36)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (chflags.c:8)
+

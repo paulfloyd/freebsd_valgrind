@@ -267,6 +267,7 @@ DECL_TEMPLATE(freebsd, sys_fexecve)
 
 DECL_TEMPLATE(freebsd, sys_posix_openpt)
 DECL_TEMPLATE(freebsd, sys_kenv)
+DECL_TEMPLATE(freebsd, sys_lchflags)
 DECL_TEMPLATE(freebsd, sys_uuidgen)
 DECL_TEMPLATE(freebsd, sys_thr_new)
 DECL_TEMPLATE(freebsd, sys_kmq_open)

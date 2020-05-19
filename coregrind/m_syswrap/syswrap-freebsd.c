@@ -2986,15 +2986,15 @@ ML_(linux_POST_sys_msgctl) ( ThreadId tid,
 PRE(sys_chflags)
 {
    PRINT("sys_chflags ( %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(long, "chown",
-                 const char *, path, vki_int32_t, flags);
+   PRE_REG_READ2(long, "chflags",
+                 const char *, path, unsigned long, flags);
    PRE_MEM_RASCIIZ( "chflags(path)", ARG1 );
 }
 
 PRE(sys_fchflags)
 {
    PRINT("sys_fchflags ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
-   PRE_REG_READ2(long, "fchflags", unsigned int, fildes, vki_int32_t, flags);
+   PRE_REG_READ2(long, "fchflags", unsigned int, fd, unsigned long, flags);
 }
 
 
@@ -3102,6 +3102,14 @@ POST(sys_kenv)
          break;
       }
    }
+}
+
+PRE(sys_lchflags)
+{
+   PRINT("sys_lchflags ( %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "lchglags",
+                 const char *, path, unsigned long, flags);
+   PRE_MEM_RASCIIZ( "chflags(path)", ARG1 );
 }
 
 PRE(sys_uuidgen)
@@ -4971,7 +4979,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // __mac_set_fd							   388
    // __mac_set_file							   389
    BSDXY(__NR_kenv,                     sys_kenv),                      // 390
-   // lchflags								   391
+   BSDX_(__NR_lchflags,                 sys_lchflags),                  // 391
 
    BSDXY(__NR_uuidgen,			sys_uuidgen),			// 392
    BSDXY(__NR_sendfile,			sys_sendfile),			// 393
