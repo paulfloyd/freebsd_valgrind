@@ -110,6 +110,13 @@ typedef unsigned int  UInt;
       }   \
       _rlval = sum;   \
    } while (0)
+   
+#if defined(__clang__)
+#define ATTRIBUTE_OPTNONE __attribute__((optnone))
+#else
+#define ATTRIBUTE_OPTNONE
+#endif
+
 
 
 /* Returns one, in a way that gcc probably can't constant fold out */
@@ -176,7 +183,7 @@ int one ( void )
 
 /* --------------- 0 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_0 ( void )
 {
    UInt r;
@@ -203,7 +210,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_0) ( UInt a1 )
 
 /* --------------- 1 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_1 ( UInt a1 )
 {
    UInt  r;
@@ -231,7 +238,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_1) ( UInt a1 )
 
 /* --------------- 2 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_2 ( UInt a1, UInt a2 )
 {
    UInt r = 0;
@@ -260,7 +267,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_2) ( UInt a1, UInt a2 )
 
 /* --------------- 3 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_3 ( UInt a1, UInt a2, UInt a3 )
 {
    UInt r;
@@ -290,7 +297,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_3) ( UInt a1, UInt a2, UInt a3 )
 
 /* --------------- 4 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_4 ( UInt a1, UInt a2, UInt a3, UInt a4 )
 {
    UInt r;
@@ -321,7 +328,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_4)
 
 /* --------------- 5 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_5 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5 )
 {
    UInt r;
@@ -353,7 +360,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_5)
 
 /* --------------- 6 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_6 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5, UInt a6 )
 {
    UInt r;
@@ -386,7 +393,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_6)
 
 /* --------------- 7 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_7 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5, UInt a6,
             UInt a7 )
 {
@@ -423,7 +430,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_7)
 
 /* --------------- 8 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_8 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5, UInt a6,
             UInt a7, UInt a8 )
 {
@@ -461,7 +468,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_8)
 
 /* --------------- 9 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_9 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5, UInt a6,
             UInt a7, UInt a8, UInt a9 )
 {
@@ -500,7 +507,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_9)
 
 /* --------------- 10 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_10 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5, UInt a6,
              UInt a7, UInt a8, UInt a9, UInt a10 )
 {
@@ -540,7 +547,7 @@ UInt I_WRAP_SONAME_FNNAME_ZU(NONE,fn_10)
 
 /* --------------- 11 --------------- */  
 
-__attribute__((optnone))
+ATTRIBUTE_OPTNONE
 UInt fn_11 ( UInt a1, UInt a2, UInt a3, UInt a4, UInt a5, UInt a6,
              UInt a7, UInt a8, UInt a9, UInt a10, UInt a11 )
 {
