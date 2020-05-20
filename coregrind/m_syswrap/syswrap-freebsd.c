@@ -970,10 +970,11 @@ PRE(sys_issetugid)
    PRE_REG_READ0(long, "issetugid");
 }
 
+// int revoke(const char *path);
 PRE(sys_revoke)
 {
-   PRINT("%s", "sys_vhangup ( )");
-   PRE_REG_READ0(long, "vhangup");
+   PRINT("sys_revoke ( %#" FMT_REGWORD "x(%s) )", ARG1, (char*)ARG1);
+   PRE_MEM_RASCIIZ( "revoke(path)", ARG1);
 }
 
 PRE(sys_undelete)
@@ -4486,92 +4487,92 @@ POST(sys_getrandom)
 #undef POST
 
 const SyscallTableEntry ML_(syscall_table)[] = {
-   // syscall (handled specially)					// 0
-   BSDX_(__NR_exit,			sys_exit),			// 1
-   BSDX_(__NR_fork,			sys_fork),			// 2
-   GENXY(__NR_read,			sys_read),			// 3
+   // syscall (handled specially)                       // 0
+   BSDX_(__NR_exit,             sys_exit),              // 1
+   BSDX_(__NR_fork,             sys_fork),              // 2
+   GENXY(__NR_read,             sys_read),              // 3
 
-   GENX_(__NR_write,			sys_write),			// 4
-   GENXY(__NR_open,			sys_open),			// 5
-   GENXY(__NR_close,			sys_close),			// 6
-   GENXY(__NR_wait4,			sys_wait4),			// 7
+   GENX_(__NR_write,            sys_write),             // 4
+   GENXY(__NR_open,             sys_open),              // 5
+   GENXY(__NR_close,            sys_close),             // 6
+   GENXY(__NR_wait4,            sys_wait4),             // 7
 
-   // 4.3 creat								   8
-   GENX_(__NR_link,			sys_link),			// 9
-   GENX_(__NR_unlink,			sys_unlink),			// 10
-   // obsol execv							   11
+   // 4.3 creat                                            8
+   GENX_(__NR_link,             sys_link),             	// 9
+   GENX_(__NR_unlink,           sys_unlink),            // 10
+   // obsol execv                                          11
 
-   GENX_(__NR_chdir,			sys_chdir),			// 12
-   GENX_(__NR_fchdir,			sys_fchdir),			// 13
-   GENX_(__NR_mknod,			sys_mknod),			// 14
-   GENX_(__NR_chmod,			sys_chmod),			// 15
+   GENX_(__NR_chdir,            sys_chdir),             // 12
+   GENX_(__NR_fchdir,           sys_fchdir),            // 13
+   GENX_(__NR_mknod,            sys_mknod),             // 14
+   GENX_(__NR_chmod,            sys_chmod),             // 15
 
-   GENX_(__NR_chown,			sys_chown),			// 16
-   GENX_(__NR_break,			sys_brk),			// 17
-   // freebsd 4 getfsstat                       18
-   // 4.3 lseek								   19
+   GENX_(__NR_chown,            sys_chown),             // 16
+   GENX_(__NR_break,            sys_brk),               // 17
+   // freebsd 4 getfsstat                                  18
+   // 4.3 lseek                                            19
 
-   GENX_(__NR_getpid,			sys_getpid),			// 20
-   BSDX_(__NR_mount,			sys_mount),			// 21
-   BSDX_(__NR_unmount,			sys_unmount),			// 22
-   GENX_(__NR_setuid,			sys_setuid),			// 23
+   GENX_(__NR_getpid,           sys_getpid),            // 20
+   BSDX_(__NR_mount,            sys_mount),             // 21
+   BSDX_(__NR_unmount,          sys_unmount),           // 22
+   GENX_(__NR_setuid,           sys_setuid),            // 23
 
-   GENX_(__NR_getuid,			sys_getuid),			// 24
-   GENX_(__NR_geteuid,			sys_geteuid),			// 25
-   BSDXY(__NR_ptrace,			sys_ptrace),			// 26
-   BSDXY(__NR_recvmsg,			sys_recvmsg),			// 27
+   GENX_(__NR_getuid,           sys_getuid),            // 24
+   GENX_(__NR_geteuid,          sys_geteuid),           // 25
+   BSDXY(__NR_ptrace,           sys_ptrace),            // 26
+   BSDXY(__NR_recvmsg,          sys_recvmsg),           // 27
 
-   BSDX_(__NR_sendmsg,			sys_sendmsg),			// 28
-   BSDXY(__NR_recvfrom,			sys_recvfrom),			// 29
-   BSDXY(__NR_accept,			sys_accept),			// 30
-   BSDXY(__NR_getpeername,		sys_getpeername),		// 31
+   BSDX_(__NR_sendmsg,          sys_sendmsg),           // 28
+   BSDXY(__NR_recvfrom,         sys_recvfrom),          // 29
+   BSDXY(__NR_accept,           sys_accept),            // 30
+   BSDXY(__NR_getpeername,      sys_getpeername),       // 31
 
-   BSDXY(__NR_getsockname,		sys_getsockname),		// 32
-   GENX_(__NR_access,			sys_access),			// 33
-   BSDX_(__NR_chflags,			sys_chflags),			// 34
-   BSDX_(__NR_fchflags,			sys_fchflags),			// 35
+   BSDXY(__NR_getsockname,      sys_getsockname),       // 32
+   GENX_(__NR_access,           sys_access),            // 33
+   BSDX_(__NR_chflags,          sys_chflags),           // 34
+   BSDX_(__NR_fchflags,         sys_fchflags),          // 35
 
-   GENX_(__NR_sync,			sys_sync),			// 36
-   GENX_(__NR_kill,			sys_kill),			// 37
-   // 4.3 stat								   38
-   GENX_(__NR_getppid,			sys_getppid),			// 39
+   GENX_(__NR_sync,             sys_sync),              // 36
+   GENX_(__NR_kill,             sys_kill),              // 37
+   // 4.3 stat                                             38
+   GENX_(__NR_getppid,          sys_getppid),           // 39
 
-   // 4.3 lstat								   40
-   GENXY(__NR_dup,			sys_dup),			// 41
-   BSDXY(__NR_pipe,			sys_pipe),			// 42
-   GENX_(__NR_getegid,			sys_getegid),			// 43
+   // 4.3 lstat                                            40
+   GENXY(__NR_dup,              sys_dup),               // 41
+   BSDXY(__NR_pipe,             sys_pipe),              // 42
+   GENX_(__NR_getegid,          sys_getegid),           // 43
 
-   // GENX_(__NR_profil,		sys_profil),			// 44
-// BSDX_(__NR_ktrace,			sys_ktrace),			// 45
-   // 4.3 sigaction							   46
-   GENX_(__NR_getgid,			sys_getgid),			// 47
+   // GENX_(__NR_profil,        sys_profil),            // 44
+// BSDX_(__NR_ktrace,           sys_ktrace),            // 45
+   // 4.3 sigaction                                        46
+   GENX_(__NR_getgid,           sys_getgid),            // 47
 
-   // 4.3 sigaction (int sigset)					   48
-   BSDXY(__NR_getlogin,			sys_getlogin),			// 49
-   BSDX_(__NR_setlogin,			sys_setlogin),			// 50
-   GENX_(__NR_acct,			sys_acct),			// 51
+   // 4.3 sigaction (int sigset)                           48
+   BSDXY(__NR_getlogin,         sys_getlogin),          // 49
+   BSDX_(__NR_setlogin,         sys_setlogin),          // 50
+   GENX_(__NR_acct,             sys_acct),              // 51
 
-   // 4.3 sigpending							   52
-   GENXY(__NR_sigaltstack,		sys_sigaltstack),		// 53
-   BSDXY(__NR_ioctl,			sys_ioctl),			// 54
-// BSDX_(__NR_reboot,			sys_reboot),			// 55
+   // 4.3 sigpending                                       52
+   GENXY(__NR_sigaltstack,      sys_sigaltstack),       // 53
+   BSDXY(__NR_ioctl,            sys_ioctl),             // 54
+// BSDX_(__NR_reboot,           sys_reboot),            // 55
 
-   BSDX_(__NR_revoke,			sys_revoke),			// 56
-   GENX_(__NR_symlink,			sys_symlink),			// 57
-   GENX_(__NR_readlink,			sys_readlink),			// 58
-   GENX_(__NR_execve,			sys_execve),			// 59
+   BSDX_(__NR_revoke,           sys_revoke),            // 56
+   GENX_(__NR_symlink,          sys_symlink),           // 57
+   GENX_(__NR_readlink,         sys_readlink),          // 58
+   GENX_(__NR_execve,           sys_execve),            // 59
 
-   GENX_(__NR_umask,			sys_umask),			// 60
-   GENX_(__NR_chroot,			sys_chroot),			// 61
-   // 4.3 fstat								   62
-   // 4.3 getgerninfo							   63
+   GENX_(__NR_umask,            sys_umask),             // 60
+   GENX_(__NR_chroot,           sys_chroot),            // 61
+   // 4.3 fstat                                            62
+   // 4.3 getgerninfo                                      63
 
-   // 4.3 getpagesize							   64
-   GENX_(__NR_msync,			sys_msync),			// 65
-   BSDX_(__NR_vfork,			sys_fork),			// 66
-   // obsol vread							   67
+   // 4.3 getpagesize                                      64
+   GENX_(__NR_msync,            sys_msync),             // 65
+   BSDX_(__NR_vfork,            sys_fork),              // 66
+   // obsol vread                                          67
 
-   // obsol vwrite							   68
+   // obsol vwrite                                         68
    // BSDX_(__NR_sbrk,			sys_sbrk),			// 69
    // BSDX_(__NR_sstk,			sys_sstk),			// 70
    // 4.3 mmap								   71
