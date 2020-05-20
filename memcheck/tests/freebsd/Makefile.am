@@ -21,9 +21,11 @@ EXTRA_DIST = \
 	sigwait.stderr.exp \
 	chflags.vgtest\
 	chflags.stderr.exp
+	get_set_login.vgtest \
+	get_set_login.stderr.exp
 
 check_PROGRAMS = \
-	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags
+	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
