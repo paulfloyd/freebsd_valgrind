@@ -1,9 +1,9 @@
 Syscall param revoke(path) points to unaddressable byte(s)
    at 0x........: revoke (in /...libc...)
-   by 0x........: main (revoke.c:13)
+   by 0x........: main (revoke.c:19)
  Address 0x........ is 0 bytes inside a block of size 11 free'd
    at 0x........: free (vg_replace_malloc.c:...)
-   by 0x........: main (revoke.c:12)
+   by 0x........: main (revoke.c:18)
  Block was alloc'd at
    at 0x........: malloc (vg_replace_malloc.c:...)
    ...
