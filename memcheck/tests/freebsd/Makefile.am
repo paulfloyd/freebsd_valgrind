@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	sigwait.stderr.exp \
 	chflags.vgtest\
 	chflags.stderr.exp \
+		chflags.stderr.exp-x86 \
 	get_set_login.vgtest \
 	get_set_login.stderr.exp \
 	revoke.vgtest \
