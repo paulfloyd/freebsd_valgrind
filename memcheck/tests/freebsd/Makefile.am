@@ -22,7 +22,7 @@ EXTRA_DIST = \
 	chflags.vgtest\
 	chflags.stderr.exp \
 	get_set_login.vgtest \
-	get_set_login.stderr.exp
+	get_set_login.stderr.exp \
 	revoke.vgtest \
 	revoke.stderr.exp
 
