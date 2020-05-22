@@ -4153,8 +4153,12 @@ PRE(sys_read)
    *flags |= SfMayBlock;
    PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %"
          FMT_REGWORD "u )", ARG1, ARG2, ARG3);
+
+   // @todo PJF 'count' is the third arg name on Linux (at least in the man page)
+   // but on macOS and Solaris it is 'nbyte' and on FreeBSD it is 'nbytes'
+
    PRE_REG_READ3(ssize_t, "read",
-                 unsigned int, fd, char *, buf, vki_size_t, count);
+                 int, fd, char *, buf, vki_size_t, count);
 
    if (!ML_(fd_allowed)(ARG1, "read", tid, False))
       SET_STATUS_Failure( VKI_EBADF );

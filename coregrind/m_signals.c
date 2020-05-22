@@ -526,6 +526,22 @@ typedef struct SigQueue {
         (srP)->misc.X86.r_ebp = (uc)->uc_mcontext.ebp;   \
       }
 
+#elif defined(VGP_amd64_freebsd)
+#  define VG_UCONTEXT_INSTR_PTR(uc)       ((uc)->uc_mcontext.rip)
+#  define VG_UCONTEXT_STACK_PTR(uc)       ((uc)->uc_mcontext.rsp)
+#  define VG_UCONTEXT_FRAME_PTR(uc)       ((uc)->uc_mcontext.rbp)
+#  define VG_UCONTEXT_SYSCALL_NUM(uc)     ((uc)->uc_mcontext.rax)
+#  define VG_UCONTEXT_SYSCALL_SYSRES(uc)                        \
+      /* Convert the value in uc_mcontext.rax into a SysRes. */ \
+      VG_(mk_SysRes_amd64_freebsd)( (uc)->uc_mcontext.rax, \
+     (uc)->uc_mcontext.rdx, ((uc)->uc_mcontext.rflags & 1) != 0 ? True : False )
+#  define VG_UCONTEXT_LINK_REG(uc)        0 /* No LR on amd64 either */
+#  define VG_UCONTEXT_TO_UnwindStartRegs(srP, uc)        \
+      { (srP)->r_pc = (uc)->uc_mcontext.rip;             \
+        (srP)->r_sp = (uc)->uc_mcontext.rsp;             \
+        (srP)->misc.AMD64.r_rbp = (uc)->uc_mcontext.rbp; \
+      }
+
 #elif defined(VGP_s390x_linux)
 
 #  define VG_UCONTEXT_INSTR_PTR(uc)       ((uc)->uc_mcontext.regs.psw.addr)
@@ -550,21 +566,6 @@ typedef struct SigQueue {
         (srP)->misc.S390X.r_f7 = (uc)->uc_mcontext.fpregs.fprs[7]; \
       }
 
-#elif defined(VGP_amd64_freebsd)
-#  define VG_UCONTEXT_INSTR_PTR(uc)       ((uc)->uc_mcontext.rip)
-#  define VG_UCONTEXT_STACK_PTR(uc)       ((uc)->uc_mcontext.rsp)
-#  define VG_UCONTEXT_FRAME_PTR(uc)       ((uc)->uc_mcontext.rbp)
-#  define VG_UCONTEXT_SYSCALL_NUM(uc)     ((uc)->uc_mcontext.rax)
-#  define VG_UCONTEXT_SYSCALL_SYSRES(uc)                        \
-      /* Convert the value in uc_mcontext.rax into a SysRes. */ \
-      VG_(mk_SysRes_amd64_freebsd)( (uc)->uc_mcontext.rax, \
-	 (uc)->uc_mcontext.rdx, ((uc)->uc_mcontext.rflags & 1) != 0 ? True : False )
-#  define VG_UCONTEXT_LINK_REG(uc)        0 /* No LR on amd64 either */
-#  define VG_UCONTEXT_TO_UnwindStartRegs(srP, uc)        \
-      { (srP)->r_pc = (uc)->uc_mcontext.rip;             \
-        (srP)->r_sp = (uc)->uc_mcontext.rsp;             \
-        (srP)->misc.AMD64.r_rbp = (uc)->uc_mcontext.rbp; \
-      }
 #elif defined(VGP_mips32_linux)
 #  define VG_UCONTEXT_INSTR_PTR(uc)   ((UWord)(((uc)->uc_mcontext.sc_pc)))
 #  define VG_UCONTEXT_STACK_PTR(uc)   ((UWord)((uc)->uc_mcontext.sc_regs[29]))
@@ -887,6 +888,7 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
       /* SA_ONSTACK: client setting is irrelevant here */
       /* We don't set a signal stack, so ignore */
 
+      // @todo PJF why this?
       /* always ask for SA_SIGINFO */
 #if defined(VGO_freebsd)
       if (skss_handler != VKI_SIG_IGN && skss_handler != VKI_SIG_DFL)
