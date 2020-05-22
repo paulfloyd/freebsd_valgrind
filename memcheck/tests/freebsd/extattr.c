@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/extattr.h>
 #include <string.h>
+#include <stdlib.h>
 
 int main()
 {

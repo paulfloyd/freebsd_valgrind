@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdlib.h>
  
  int main()
  {
@@ -30,10 +31,10 @@
      chflags(filename, UF_SYSTEM);
      lchflags(filename, UF_SYSTEM);
      
-      chflags(filename, *pflags);
+     chflags(filename, *pflags);
      lchflags(filename, *pflags);
      
-     free(filename);
+     free((void*)filename);
      
      chflags(filename, UF_SYSTEM);
      lchflags(filename, UF_SYSTEM);

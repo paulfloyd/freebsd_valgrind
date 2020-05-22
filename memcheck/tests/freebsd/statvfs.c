@@ -1,4 +1,5 @@
 #include <sys/statvfs.h>
+#include <stdlib.h>
 
 int main()
 {
