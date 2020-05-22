@@ -231,28 +231,28 @@ static void run_a_thread_NORETURN ( Word tidW )
          reallocation.  We need to make sure we don't touch the stack
          between marking it Empty and exiting.  Hence the
          assembler. */
-#if defined(VGP_x86_freebsd)	/* FreeBSD has args on the stack */
+#if defined(VGP_x86_freebsd)    /* FreeBSD has args on the stack */
       asm volatile (
-         "movl	%1, %0\n"	/* set tst->status = VgTs_Empty */
-         "movl	%2, %%eax\n"    /* set %eax = __NR_thr_exit */
-         "movl	%3, %%ebx\n"    /* set %ebx = tst->os_state.exitcode */
-	 "pushl	%%ebx\n"	/* arg on stack */
-	 "pushl	%%ebx\n"	/* fake return address */
-         "int	$0x80\n"	/* thr_exit(tst->os_state.exitcode) */
-	 "popl	%%ebx\n"	/* fake return address */
-	 "popl	%%ebx\n"	/* arg off stack */
+         "movl    %1, %0\n"    /* set tst->status = VgTs_Empty */
+         "movl    %2, %%eax\n"    /* set %eax = __NR_thr_exit */
+         "movl    %3, %%ebx\n"    /* set %ebx = tst->os_state.exitcode */
+         "pushl   %%ebx\n"    /* arg on stack */
+         "pushl   %%ebx\n"    /* fake return address */
+         "int     $0x80\n"    /* thr_exit(tst->os_state.exitcode) */
+         "popl    %%ebx\n"    /* fake return address */
+         "popl    %%ebx\n"    /* arg off stack */
          : "=m" (tst->status)
          : "n" (VgTs_Empty), "n" (__NR_thr_exit), "m" (tst->os_state.exitcode)
          : "eax", "ebx"
       );
 #elif defined(VGP_amd64_freebsd)
       asm volatile (
-         "movl	%1, %0\n"	/* set tst->status = VgTs_Empty */
-         "movq	%2, %%rax\n"    /* set %rax = __NR_thr_exit */
-         "movq	%3, %%rdi\n"    /* set %rdi = tst->os_state.exitcode */
-	 "pushq	%%rdi\n"	/* fake return address */
-         "syscall\n"		/* thr_exit(tst->os_state.exitcode) */
-	 "popq	%%rdi\n"	/* fake return address */
+         "movl   %1, %0\n"    /* set tst->status = VgTs_Empty */
+         "movq   %2, %%rax\n"    /* set %rax = __NR_thr_exit */
+         "movq   %3, %%rdi\n"    /* set %rdi = tst->os_state.exitcode */
+         "pushq  %%rdi\n"    /* fake return address */
+         "syscall\n"        /* thr_exit(tst->os_state.exitcode) */
+         "popq   %%rdi\n"    /* fake return address */
          : "=m" (tst->status)
          : "n" (VgTs_Empty), "n" (__NR_thr_exit), "m" (tst->os_state.exitcode)
          : "rax", "rdi"
@@ -759,7 +759,7 @@ PRE(sys_exit_group)
       if ( /* not alive */
            VG_(threads)[t].status == VgTs_Empty 
            ||
-	   /* not our group */
+       /* not our group */
            VG_(threads)[t].os_state.threadgroup != tst->os_state.threadgroup
          )
          continue;
@@ -768,7 +768,7 @@ PRE(sys_exit_group)
       VG_(threads)[t].os_state.exitcode = ARG1;
 
       if (t != tid)
-	 VG_(get_thread_out_of_syscall)(t);	/* unblock it, if blocked */
+         VG_(get_thread_out_of_syscall)(t);    /* unblock it, if blocked */
    }
 
    /* We have to claim the syscall already succeeded. */
@@ -795,7 +795,7 @@ PRE(sys_exit)
       VG_(threads)[t].os_state.exitcode = ARG1;
 
      // if (t != tid)
-    // VG_(get_thread_out_of_syscall)(t);	/* unblock it, if blocked */
+    // VG_(get_thread_out_of_syscall)(t);    /* unblock it, if blocked */
    }
 
    VG_(nuke_all_threads_except)( tid, VgSrc_ExitProcess );
@@ -1141,7 +1141,7 @@ POST(sys_getdirentries)
    if (RES > 0) {
       POST_MEM_WRITE( ARG2, RES );
       if ( ARG4 != 0 )
-	 POST_MEM_WRITE( ARG4, sizeof (long));
+     POST_MEM_WRITE( ARG4, sizeof (long));
    }
 }
 
@@ -1208,11 +1208,11 @@ PRE(sys_kevent)
 {
    /* struct kevent {
         uintptr_t ident;  -- identifier for this event
-	short     filter; -- filter for event
-	u_short   flags;  -- action flags for kqueue
-	u_int     fflags; -- filter flag value
-	intptr_t  data;   -- filter data value
-	void      *udata; -- opaque user data identifier
+        short     filter; -- filter for event
+        u_short   flags;  -- action flags for kqueue
+        u_int     fflags; -- filter flag value
+        intptr_t  data;   -- filter data value
+        void      *udata; -- opaque user data identifier
       };
       int kevent(int kq, const struct kevent *changelist, int nchanges,
                  struct kevent *eventlist, int nevents,
@@ -1222,8 +1222,8 @@ PRE(sys_kevent)
    PRINT("sys_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
    PRE_REG_READ6(long, "kevent",
                  int, fd, struct vki_kevent *, newev, int, num_newev,
-		 struct vki_kevent *, ret_ev, int, num_retev,
-		 struct timespec *, timeout);
+                 struct vki_kevent *, ret_ev, int, num_retev,
+                 struct timespec *, timeout);
    if (ARG2 != 0 && ARG3 != 0)
       PRE_MEM_READ( "kevent(changeevent)", ARG2, sizeof(struct vki_kevent)*ARG3 );
    if (ARG4 != 0 && ARG5 != 0)
@@ -1962,8 +1962,8 @@ PRE(sys_sched_setscheduler)
    PRE_REG_READ3(long, "sched_setscheduler", 
                  vki_pid_t, pid, int, policy, struct sched_param *, p);
    if (ARG3 != 0)
-      PRE_MEM_READ( "sched_setscheduler(p)", 
-		    ARG3, sizeof(struct vki_sched_param));
+      PRE_MEM_READ("sched_setscheduler(p)",
+                   ARG3, sizeof(struct vki_sched_param));
 }
 
 PRE(sys_sched_yield)
@@ -2340,7 +2340,7 @@ PRE(sys__umtx_op)
                     void *, zero, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_lock(mtx)", ARG1, sizeof(struct vki_umtx) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_lock(timespec)", ARG5, sizeof(struct vki_timespec) );
+         PRE_MEM_READ( "_umtx_op_lock(timespec)", ARG5, sizeof(struct vki_timespec) );
       PRE_MEM_WRITE( "_umtx_op_lock(mtx)", ARG1, sizeof(struct vki_umtx) );
       *flags |= SfMayBlock;
       break;
@@ -2359,8 +2359,8 @@ PRE(sys__umtx_op)
       /*
       PRE_MEM_READ( "_umtx_op_wait(mtx)", ARG1, sizeof(struct vki_umtx) );
       if (ARG5)
-	 PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
-     */
+     PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
+      */
       if (ARG1)
           PRE_MEM_READ( "_umtx_op_wait(val)", ARG1, sizeof(long) );
       *flags |= SfMayBlock;
@@ -2594,15 +2594,15 @@ POST(sys__umtx_op)
    case VKI_UMTX_OP_MUTEX_TRYLOCK:
    case VKI_UMTX_OP_MUTEX_LOCK:
    case VKI_UMTX_OP_MUTEX_UNLOCK:
-   case VKI_UMTX_OP_MUTEX_WAIT:		/* Sets/clears contested bits */
-   case VKI_UMTX_OP_MUTEX_WAKE:		/* Sets/clears contested bits */
+   case VKI_UMTX_OP_MUTEX_WAIT:        /* Sets/clears contested bits */
+   case VKI_UMTX_OP_MUTEX_WAKE:        /* Sets/clears contested bits */
       if (SUCCESS)
          POST_MEM_WRITE( ARG1, sizeof(struct vki_umutex) );
       break;
    case VKI_UMTX_OP_SET_CEILING:
       if (SUCCESS) {
          POST_MEM_WRITE( ARG1, sizeof(struct vki_umutex) );
-	 if (ARG4)
+         if (ARG4)
             POST_MEM_WRITE( ARG4, sizeof(vki_uint32_t) );
       }
       break;
@@ -2680,7 +2680,7 @@ PRE(sys_rtprio_thread)
    } else if (ARG1 == VKI_RTP_LOOKUP) {
       PRE_MEM_WRITE( "rtprio_thread(lookup)", ARG3, sizeof(struct vki_rtprio));
    } else {
-	/* PHK ?? */
+    /* PHK ?? */
    }
 }
 
@@ -2792,9 +2792,9 @@ PRE(sys_sigprocmask)
       PRE_MEM_WRITE( "sigprocmask(oldset)", ARG3, sizeof(vki_sigset_t));
 
    SET_STATUS_from_SysRes( 
-	       VG_(do_sys_sigprocmask) ( tid, ARG1 /*how*/, 
-					 (vki_sigset_t*) ARG2,
-					 (vki_sigset_t*) ARG3 )
+           VG_(do_sys_sigprocmask) ( tid, ARG1 /*how*/,
+                                    (vki_sigset_t*) ARG2,
+                                    (vki_sigset_t*) ARG3 )
    );
 
    if (SUCCESS)
@@ -2852,7 +2852,7 @@ POST(sys_sigwaitinfo)
       POST_MEM_WRITE( ARG2, sizeof(vki_siginfo_t) );
 }
 
-#if 0	/* not on freebsd 4.x */
+#if 0    /* not on freebsd 4.x */
 PRE(sys_rt_sigqueueinfo)
 {
    PRINT("sys_rt_sigqueueinfo(%" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x)", ARG1, ARG2, ARG3);
@@ -3117,7 +3117,7 @@ PRE(sys_uuidgen)
 {
    PRINT("sys_uuidgen ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(long, "uuidgen",
-		 struct vki_uuid *, store, int, count);
+         struct vki_uuid *, store, int, count);
    PRE_MEM_WRITE( "uuidgen(store)", ARG1, ARG2 * sizeof(struct vki_uuid));
 }
 
@@ -3265,26 +3265,26 @@ PRE(sys_semop)
 }
 
 struct ipc_perm7 {
-	unsigned short	cuid;	/* creator user id */
-	unsigned short	cgid;	/* creator group id */
-	unsigned short	uid;	/* user id */
-	unsigned short	gid;	/* group id */
-	unsigned short	mode;	/* r/w permission */
-	unsigned short	seq;	/* sequence # (to generate unique ipcid) */
-	vki_key_t	key;	/* user specified msg/sem/shm key */
+    unsigned short    cuid;    /* creator user id */
+    unsigned short    cgid;    /* creator group id */
+    unsigned short    uid;    /* user id */
+    unsigned short    gid;    /* group id */
+    unsigned short    mode;    /* r/w permission */
+    unsigned short    seq;    /* sequence # (to generate unique ipcid) */
+    vki_key_t    key;    /* user specified msg/sem/shm key */
 };
 
 struct semid_ds7 {
-	struct ipc_perm7 sem_perm;	/* operation permission struct */
-	struct sem	*sem_base;	/* pointer to first semaphore in set */
-	unsigned short	sem_nsems;	/* number of sems in set */
-	vki_time_t	sem_otime;	/* last operation time */
-	long		sem_pad1;	/* SVABI/386 says I need this here */
-	vki_time_t	sem_ctime;	/* last change time */
-    					/* Times measured in secs since */
-    					/* 00:00:00 GMT, Jan. 1, 1970 */
-	long		sem_pad2;	/* SVABI/386 says I need this here */
-	long		sem_pad3[4];	/* SVABI/386 says I need this here */
+    struct ipc_perm7 sem_perm;    /* operation permission struct */
+    struct sem    *sem_base;    /* pointer to first semaphore in set */
+    unsigned short    sem_nsems;    /* number of sems in set */
+    vki_time_t    sem_otime;    /* last operation time */
+    long        sem_pad1;    /* SVABI/386 says I need this here */
+    vki_time_t    sem_ctime;    /* last change time */
+                        /* Times measured in secs since */
+                        /* 00:00:00 GMT, Jan. 1, 1970 */
+    long        sem_pad2;    /* SVABI/386 says I need this here */
+    long        sem_pad3[4];    /* SVABI/386 says I need this here */
 };
 
 PRE(sys___semctl7)
@@ -3899,10 +3899,10 @@ PRE(sys_ioctl)
          }
       }
    } else {
-	 if ((dir & _VKI_IOC_WRITE) && size > 0)
-	    PRE_MEM_READ( "ioctl(generic)", ARG3, size);
-	 if ((dir & _VKI_IOC_READ) && size > 0)
-	    PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
+     if ((dir & _VKI_IOC_WRITE) && size > 0)
+        PRE_MEM_READ( "ioctl(generic)", ARG3, size);
+     if ((dir & _VKI_IOC_READ) && size > 0)
+        PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
    }
 }
 
@@ -3913,7 +3913,7 @@ POST(sys_ioctl)
   vg_assert(SUCCESS);
   if (size > 0 && (dir & _VKI_IOC_READ)
      && RES == 0 && ARG3 != (Addr)NULL)
-	 POST_MEM_WRITE(ARG3, size);
+     POST_MEM_WRITE(ARG3, size);
 }
 
 PRE(sys_ptrace)
@@ -4193,13 +4193,13 @@ PRE(sys_pselect)
    // XXX: this possibly understates how much memory is read.
    if (ARG2 != 0)
       PRE_MEM_READ( "pselect(readfds)",   
-		     ARG2, ARG1/8 /* __FD_SETSIZE/8 */ );
+             ARG2, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG3 != 0)
       PRE_MEM_READ( "pselect(writefds)",  
-		     ARG3, ARG1/8 /* __FD_SETSIZE/8 */ );
+             ARG3, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG4 != 0)
       PRE_MEM_READ( "pselect(exceptfds)", 
-		     ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
+             ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG5 != 0)
       PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
    if (ARG6 != 0) {
@@ -4498,13 +4498,14 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_wait4,            sys_wait4),             // 7
 
    // 4.3 creat                                            8
-   GENX_(__NR_link,             sys_link),             	// 9
+   GENX_(__NR_link,             sys_link),              // 9
    GENX_(__NR_unlink,           sys_unlink),            // 10
    // obsol execv                                          11
 
    GENX_(__NR_chdir,            sys_chdir),             // 12
    GENX_(__NR_fchdir,           sys_fchdir),            // 13
    GENX_(__NR_mknod,            sys_mknod),             // 14
+   // @todo PJF this is SYS_freebsd11_mknod since freebsd 12
    GENX_(__NR_chmod,            sys_chmod),             // 15
 
    GENX_(__NR_chown,            sys_chown),             // 16
@@ -4539,6 +4540,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // 4.3 lstat                                            40
    GENXY(__NR_dup,              sys_dup),               // 41
+   // @todo PJF this is now SYS_freebsd10_pipe
    BSDXY(__NR_pipe,             sys_pipe),              // 42
    GENX_(__NR_getegid,          sys_getegid),           // 43
 
@@ -4573,610 +4575,611 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // obsol vread                                          67
 
    // obsol vwrite                                         68
-   // BSDX_(__NR_sbrk,			sys_sbrk),			// 69
-   // BSDX_(__NR_sstk,			sys_sstk),			// 70
-   // 4.3 mmap								   71
+   // BSDX_(__NR_sbrk,sys_sbrk),                        // 69
+   // BSDX_(__NR_sstk,          sys_sstk),              // 70
+   // 4.3 mmap                                             71
 
-   // 4.2 vadvise							   72
-   GENXY(__NR_munmap,			sys_munmap),			// 73
-   GENXY(__NR_mprotect,			sys_mprotect),			// 74
-   GENX_(__NR_madvise,			sys_madvise),			// 75
+   // 4.2 vadvise                                          72
+   GENXY(__NR_munmap,           sys_munmap),            // 73
+   GENXY(__NR_mprotect,         sys_mprotect),          // 74
+   GENX_(__NR_madvise,          sys_madvise),           // 75
 
-   // obsol vhangup							   76
-   // obsol vlimit							   77
-   GENXY(__NR_mincore,			sys_mincore),			// 78
-   GENXY(__NR_getgroups,		sys_getgroups),			// 79
+   // obsol vhangup                                        76
+   // obsol vlimit                                         77
+   GENXY(__NR_mincore,          sys_mincore),           // 78
+   GENXY(__NR_getgroups,        sys_getgroups),         // 79
 
-   GENX_(__NR_setgroups,		sys_setgroups),			// 80
-   GENX_(__NR_getpgrp,			sys_getpgrp),			// 81
-   GENX_(__NR_setpgid,			sys_setpgid),			// 82
-   GENXY(__NR_setitimer,		sys_setitimer),			// 83
+   GENX_(__NR_setgroups,        sys_setgroups),         // 80
+   GENX_(__NR_getpgrp,          sys_getpgrp),           // 81
+   GENX_(__NR_setpgid,          sys_setpgid),           // 82
+   GENXY(__NR_setitimer,        sys_setitimer),         // 83
 
-   // 4.3 wait								   84
-// BSDX_(__NR_swapon,			sys_swapon),			// 85
-   GENXY(__NR_getitimer,		sys_getitimer),			// 86
-   // 4.3 gethostname							   87
+   // 4.3 wait                                             84
+// BSDX_(__NR_swapon,           sys_swapon),            // 85
+   GENXY(__NR_getitimer,        sys_getitimer),         // 86
+   // 4.3 gethostname                                      87
 
-   // 4.3 sethostname							   88
-   BSDX_(__NR_getdtablesize,		sys_getdtablesize),		// 89
-   GENXY(__NR_dup2,			sys_dup2),			// 90
-   // unimpl getdopt							   91
+   // 4.3 sethostname                                      88
+   BSDX_(__NR_getdtablesize,    sys_getdtablesize),     // 89
+   GENXY(__NR_dup2,             sys_dup2),              // 90
+   // unimpl getdopt                                       91
 
-   BSDXY(__NR_fcntl,			sys_fcntl),			// 92
-   GENX_(__NR_select,			sys_select),			// 93
-   // unimpl setdopt							   94
-   GENX_(__NR_fsync,			sys_fsync),			// 95
+   BSDXY(__NR_fcntl,            sys_fcntl),             // 92
+   GENX_(__NR_select,           sys_select),            // 93
+   // unimpl setdopt                                       94
+   GENX_(__NR_fsync,            sys_fsync),             // 95
 
-   GENX_(__NR_setpriority,		sys_setpriority),		// 96
-   BSDXY(__NR_socket,			sys_socket),			// 97
-   BSDX_(__NR_connect,			sys_connect),			// 98
-   // 4.3 accept							   99
+   GENX_(__NR_setpriority,      sys_setpriority),       // 96
+   BSDXY(__NR_socket,           sys_socket),            // 97
+   BSDX_(__NR_connect,          sys_connect),           // 98
+   // 4.3 accept                                           99
 
-   GENX_(__NR_getpriority,		sys_getpriority),		// 100
-   // 4.3 send								   101
-   // 4.3 recv								   102
-   // 4.3 sigreturn							   103
+   GENX_(__NR_getpriority,      sys_getpriority),       // 100
+   // 4.3 send                                             101
+   // 4.3 recv                                             102
+   // 4.3 sigreturn                                        103
 
-   BSDX_(__NR_bind,			sys_bind),			// 104
-   BSDX_(__NR_setsockopt,		sys_setsockopt),		// 105
-   BSDX_(__NR_listen,			sys_listen),			// 106
-   // obsol vtimes							   107
+   BSDX_(__NR_bind,             sys_bind),              // 104
+   BSDX_(__NR_setsockopt,       sys_setsockopt),        // 105
+   BSDX_(__NR_listen,           sys_listen),            // 106
+   // obsol vtimes                                         107
 
-   // 4.3 sigvec							   108
-   // 4.3 sigblock							   109
-   // 4.3 sigsetmask							   110
-   // 4.3 sigsuspend							   111
+   // 4.3 sigvec                                           108
+   // 4.3 sigblock                                         109
+   // 4.3 sigsetmask                                       110
+   // 4.3 sigsuspend                                       111
 
-   // 4.3 sigstack							   112
-   // 4.3 recvmsg							   113
-   // 4.3 sendmsg							   114
-   // 4.3 vtrace							   115
+   // 4.3 sigstack                                         112
+   // 4.3 recvmsg                                          113
+   // 4.3 sendmsg                                          114
+   // 4.3 vtrace                                           115
 
-   GENXY(__NR_gettimeofday,		sys_gettimeofday),		// 116
-   GENXY(__NR_getrusage,		sys_getrusage),			// 117
-   BSDXY(__NR_getsockopt,		sys_getsockopt),		// 118
-   // unimpl resuba							   119
+   GENXY(__NR_gettimeofday,     sys_gettimeofday),      // 116
+   GENXY(__NR_getrusage,        sys_getrusage),         // 117
+   BSDXY(__NR_getsockopt,       sys_getsockopt),        // 118
+   // unimpl resuba                                        119
 
-   GENXY(__NR_readv,			sys_readv),			// 120
-   GENX_(__NR_writev,			sys_writev),			// 121
-   GENX_(__NR_settimeofday,		sys_settimeofday),		// 122
-   GENX_(__NR_fchown,			sys_fchown),			// 123
+   GENXY(__NR_readv,            sys_readv),             // 120
+   GENX_(__NR_writev,           sys_writev),            // 121
+   GENX_(__NR_settimeofday,     sys_settimeofday),      // 122
+   GENX_(__NR_fchown,           sys_fchown),            // 123
 
-   GENX_(__NR_fchmod,			sys_fchmod),			// 124
-   // 4.3 recvfrom							   125
-   GENX_(__NR_setreuid,			sys_setreuid),			// 126
-   GENX_(__NR_setregid,			sys_setregid),			// 127
+   GENX_(__NR_fchmod,           sys_fchmod),            // 124
+   // 4.3 recvfrom                                         125
+   GENX_(__NR_setreuid,         sys_setreuid),          // 126
+   GENX_(__NR_setregid,         sys_setregid),          // 127
 
-   GENX_(__NR_rename,			sys_rename),			// 128
-   // 4.3 truncate							   129
-   // 4.3 ftruncate							   130
-   GENX_(__NR_flock,			sys_flock),			// 131
+   GENX_(__NR_rename,           sys_rename),            // 128
+   // 4.3 truncate                                         129
+   // 4.3 ftruncate                                        130
+   GENX_(__NR_flock,            sys_flock),             // 131
 
-   BSDX_(__NR_mkfifo,			sys_mkfifo),			// 132
-   BSDX_(__NR_sendto,			sys_sendto),			// 133
-   BSDX_(__NR_shutdown,			sys_shutdown),			// 134
-   BSDXY(__NR_socketpair,		sys_socketpair),		// 135
+   BSDX_(__NR_mkfifo,           sys_mkfifo),            // 132
+   BSDX_(__NR_sendto,           sys_sendto),            // 133
+   BSDX_(__NR_shutdown,         sys_shutdown),          // 134
+   BSDXY(__NR_socketpair,       sys_socketpair),        // 135
 
-   GENX_(__NR_mkdir,			sys_mkdir),			// 136
-   GENX_(__NR_rmdir,			sys_rmdir),			// 137
-   GENX_(__NR_utimes,			sys_utimes),			// 138
-   // 4.2 sigreturn							   139
+   GENX_(__NR_mkdir,            sys_mkdir),             // 136
+   GENX_(__NR_rmdir,            sys_rmdir),             // 137
+   GENX_(__NR_utimes,           sys_utimes),            // 138
+   // 4.2 sigreturn                                        139
 
-// BSDXY(__NR_adjtime,			sys_adjtime),			// 140
-   // 4.3 getpeername							   141
-   // 4.3 gethostid							   142
-   // 4.3 sethostid							   143
+// BSDXY(__NR_adjtime,          sys_adjtime),           // 140
+   // 4.3 getpeername                                      141
+   // 4.3 gethostid                                        142
+   // 4.3 sethostid                                        143
 
-   // 4.3 getrlimit							   144
-   // 4.3 setrlimit							   145
-   // 4.3 killpg							   146
-   GENX_(__NR_setsid,			sys_setsid),			// 147
+   // 4.3 getrlimit`                                       144
+   // 4.3 setrlimit                                        145
+   // 4.3 killpg                                           146
+   GENX_(__NR_setsid,           sys_setsid),            // 147
 
-   BSDX_(__NR_quotactl,			sys_quotactl),			// 148
-   // 4.3 quota								   149
-   // 4.3 getsockname							   150
-   // bsd/os sem_lock							   151
+   BSDX_(__NR_quotactl,         sys_quotactl),          // 148
+   // 4.3 quota                                            149
+   // 4.3 getsockname                                      150
+   // bsd/os sem_lock                                      151
 
-   // bsd/os sem_wakeup							   152
-   // bsd/os asyncdaemon						   153
-   // nosys								   154
-   // BSDXY(__NR_nfssvc,		sys_nfssvc),			// 155
+   // bsd/os sem_wakeup                                    152
+   // bsd/os asyncdaemon                                   153
+   // nosys                                                154
+   // BSDXY(__NR_nfssvc,        sys_nfssvc),            // 155
 
-   // 4.3 getdirentries							   156
-   // freebsd 4 statfs                              157
-   // freebsd 4 fstatfs                             158
-   // nosys								   159
+   // 4.3 getdirentries                                    156
+   // freebsd 4 statfs                                     157
+   // freebsd 4 fstatfs                                    158
+   // nosys                                                159
 
-// BSDXY(__NR_lgetfh,			sys_lgetfh),			// 160
-// BSDXY(__NR_getfh,			sys_getfh),			// 161
-   BSDXY(__NR_getdomainname,		sys_getdomainname),		// 162
-   BSDX_(__NR_setdomainname,		sys_setdomainname),		// 163
+// BSDXY(__NR_lgetfh,           sys_lgetfh),            // 160
+// BSDXY(__NR_getfh,            sys_getfh),             // 161
+   BSDXY(__NR_getdomainname,    sys_getdomainname),     // 162
+   BSDX_(__NR_setdomainname,    sys_setdomainname),     // 163
 
-   BSDXY(__NR_uname,			sys_uname),			// 164
-   BSDX_(__NR_sysarch,			sys_sysarch),			// 165
-// BSDXY(__NR_rtprio,			sys_rtprio),			// 166
-   // nosys								   167
+   BSDXY(__NR_uname,            sys_uname),             // 164
+   BSDX_(__NR_sysarch,          sys_sysarch),           // 165
+// BSDXY(__NR_rtprio,           sys_rtprio),            // 166
+   // nosys                                                167
 
-   // nosys								   168
-// BSDXY(__NR_semsys,			sys_semsys),			// 169
-// BSDXY(__NR_msgsys,			sys_msgsys),			// 170
-// BSDXY(__NR_shmsys,			sys_shmsys),			// 171
+   // nosys                                                168
+// BSDXY(__NR_semsys,           sys_semsys),            // 169
+// BSDXY(__NR_msgsys,           sys_msgsys),            // 170
+// BSDXY(__NR_shmsys,           sys_shmsys),            // 171
 
-   // nosys								   172
-   BSDXY(__NR_pread6,			sys_pread),			// 173
-   BSDX_(__NR_pwrite6,			sys_pwrite),			// 174
-   // nosys								   175
+   // nosys                                                172
+   // @todo PJF no longer in FreeBSD 12
+   BSDXY(__NR_pread6,           sys_pread),             // 173
+   BSDX_(__NR_pwrite6,          sys_pwrite),            // 174
+   // nosys                                                175
 
-   // BSDXY(__NR_ntp_adjtime,		sys_ntp_adjtime),		// 176
-   // bsd/os sfork							   177
-   // bsd/os getdescriptor						   178
-   // bsd/os setdescriptor						   179
+   // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
+   // bsd/os sfork                                         177
+   // bsd/os getdescriptor                                 178
+   // bsd/os setdescriptor                                 179
 
-   // nosys								   180
-   GENX_(__NR_setgid,			sys_setgid),			// 181
-   BSDX_(__NR_setegid,			sys_setegid),			// 182
-   BSDX_(__NR_seteuid,			sys_seteuid),			// 183
+   // nosys                                                180
+   GENX_(__NR_setgid,           sys_setgid),            // 181
+   BSDX_(__NR_setegid,          sys_setegid),           // 182
+   BSDX_(__NR_seteuid,          sys_seteuid),           // 183
 
-   // unimpl lfs_bmapv							   184
-   // unimpl lfs_markv							   185
-   // unimpl lfs_segclean						   186
-   // unimpl lfs_segwait						   187
+   // unimpl lfs_bmapv                                     184
+   // unimpl lfs_markv                                     185
+   // unimpl lfs_segclean                                  186
+   // unimpl lfs_segwait                                   187
 
  #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_stat,	sys_stat),			// 188
-   BSDXY(__NR_freebsd11_fstat,	sys_freebsd11_fstat),	// 189
-   BSDXY(__NR_freebsd11_lstat,	sys_lstat),			// 190
+   BSDXY(__NR_freebsd11_stat,   sys_stat),              // 188
+   BSDXY(__NR_freebsd11_fstat,  sys_freebsd11_fstat),   // 189
+   BSDXY(__NR_freebsd11_lstat,  sys_lstat),             // 190
  #else
-   BSDXY(__NR_stat,             sys_stat),			// 188
-   BSDXY(__NR_fstat,			sys_fstat),			// 189
-   BSDXY(__NR_lstat,			sys_lstat),			// 190
+   BSDXY(__NR_stat,             sys_stat),              // 188
+   BSDXY(__NR_fstat,            sys_fstat),             // 189
+   BSDXY(__NR_lstat,            sys_lstat),             // 190
  #endif
-   BSDX_(__NR_pathconf,			sys_pathconf),			// 191
+   BSDX_(__NR_pathconf,         sys_pathconf),          // 191
 
-   BSDX_(__NR_fpathconf,		sys_fpathconf),			// 192
-   // nosys								   193
-   GENXY(__NR_getrlimit,		sys_getrlimit),			// 194
-   GENX_(__NR_setrlimit,		sys_setrlimit),			// 195
+   BSDX_(__NR_fpathconf,        sys_fpathconf),         // 192
+   // nosys                                                193
+   GENXY(__NR_getrlimit,        sys_getrlimit),         // 194
+   GENX_(__NR_setrlimit,        sys_setrlimit),         // 195
 
-   BSDXY(__NR_getdirentries,		sys_getdirentries),		// 196
-   BSDX_(__NR_mmap6,			sys_mmap7),			// 197
-   // __syscall (handled specially)					// 198
-   BSDX_(__NR_lseek6,			sys_lseek),			// 199
+   BSDXY(__NR_getdirentries,    sys_getdirentries),     // 196
+   BSDX_(__NR_mmap6,            sys_mmap7),             // 197
+   // __syscall (handled specially)                     // 198
+   BSDX_(__NR_lseek6,           sys_lseek),             // 199
 
-   BSDX_(__NR_truncate,			sys_truncate),			// 200
-   BSDX_(__NR_ftruncate,		sys_ftruncate),			// 201
-   BSDXY(__NR___sysctl,			sys___sysctl),			// 202
-   GENX_(__NR_mlock,			sys_mlock),			// 203
+   BSDX_(__NR_truncate,         sys_truncate),          // 200
+   BSDX_(__NR_ftruncate,        sys_ftruncate),         // 201
+   BSDXY(__NR___sysctl,         sys___sysctl),          // 202
+   GENX_(__NR_mlock,            sys_mlock),             // 203
 
-   GENX_(__NR_munlock,			sys_munlock),			// 204
-   BSDX_(__NR_undelete,			sys_undelete),			// 205
-   BSDX_(__NR_futimes,			sys_futimes),			// 206
-   GENX_(__NR_getpgid,			sys_getpgid),			// 207
+   GENX_(__NR_munlock,          sys_munlock),           // 204
+   BSDX_(__NR_undelete,         sys_undelete),          // 205
+   BSDX_(__NR_futimes,          sys_futimes),           // 206
+   GENX_(__NR_getpgid,          sys_getpgid),           // 207
 
-   // netbsd newreboot							   208
-   GENXY(__NR_poll,             sys_poll),			// 209
-   BSDX_(__NR_lkmnosys0,		sys_lkmnosys0),			// 210
-   BSDX_(__NR_lkmnosys1,		sys_lkmnosys1),			// 211
+   // netbsd newreboot                                     208
+   GENXY(__NR_poll,             sys_poll),              // 209
+   BSDX_(__NR_lkmnosys0,        sys_lkmnosys0),         // 210
+   BSDX_(__NR_lkmnosys1,        sys_lkmnosys1),         // 211
 
-   BSDX_(__NR_lkmnosys2,		sys_lkmnosys2),			// 212
-   BSDX_(__NR_lkmnosys3,		sys_lkmnosys3),			// 213
-   BSDX_(__NR_lkmnosys4,		sys_lkmnosys4),			// 214
-   BSDX_(__NR_lkmnosys5,		sys_lkmnosys5),			// 215
+   BSDX_(__NR_lkmnosys2,        sys_lkmnosys2),         // 212
+   BSDX_(__NR_lkmnosys3,        sys_lkmnosys3),         // 213
+   BSDX_(__NR_lkmnosys4,        sys_lkmnosys4),         // 214
+   BSDX_(__NR_lkmnosys5,        sys_lkmnosys5),         // 215
 
-   BSDX_(__NR_lkmnosys6,		sys_lkmnosys6),			// 216
-   BSDX_(__NR_lkmnosys7,		sys_lkmnosys7),			// 217
-   BSDX_(__NR_lkmnosys8,		sys_lkmnosys8),			// 218
-// BSDXY(__NR_nfs_fhopen,		sys_nfs_fhopen),		// 219
+   BSDX_(__NR_lkmnosys6,        sys_lkmnosys6),         // 216
+   BSDX_(__NR_lkmnosys7,        sys_lkmnosys7),         // 217
+   BSDX_(__NR_lkmnosys8,        sys_lkmnosys8),         // 218
+// BSDXY(__NR_nfs_fhopen,       sys_nfs_fhopen),        // 219
 
-   BSDXY(__NR___semctl7,		sys___semctl7),			// 220
-   BSDX_(__NR_semget,			sys_semget),			// 221
-   BSDX_(__NR_semop,			sys_semop),			// 222
-   // unimpl semconfig							   223
+   BSDXY(__NR___semctl7,        sys___semctl7),         // 220
+   BSDX_(__NR_semget,           sys_semget),            // 221
+   BSDX_(__NR_semop,            sys_semop),             // 222
+   // unimpl semconfig                                     223
 
-// BSDXY(__NR_msgctl,			sys_msgctl),			// 224
-// BSDX_(__NR_msgget,			sys_msgget),			// 225
-// BSDX_(__NR_msgsnd,			sys_msgsnd),			// 226
-// BSDXY(__NR_msgrcv,			sys_msgrcv),			// 227
+// BSDXY(__NR_msgctl,           sys_msgctl),            // 224
+// BSDX_(__NR_msgget,           sys_msgget),            // 225
+// BSDX_(__NR_msgsnd,           sys_msgsnd),            // 226
+// BSDXY(__NR_msgrcv,           sys_msgrcv),            // 227
 
-   BSDXY(__NR_shmat,			sys_shmat),				// 228
-   BSDXY(__NR_shmctl7,			sys_shmctl7),			// 229
-   BSDXY(__NR_shmdt,			sys_shmdt),				// 230
-   BSDX_(__NR_shmget,			sys_shmget),			// 231
+   BSDXY(__NR_shmat,            sys_shmat),             // 228
+   BSDXY(__NR_shmctl7,          sys_shmctl7),           // 229
+   BSDXY(__NR_shmdt,            sys_shmdt),             // 230
+   BSDX_(__NR_shmget,           sys_shmget),            // 231
 
-   BSDXY(__NR_clock_gettime,		sys_clock_gettime),		// 232
-   BSDX_(__NR_clock_settime,		sys_clock_settime),		// 233
-   BSDXY(__NR_clock_getres,		sys_clock_getres),		// 234
-   // unimpl timer_create						   235
+   BSDXY(__NR_clock_gettime,    sys_clock_gettime),     // 232
+   BSDX_(__NR_clock_settime,    sys_clock_settime),     // 233
+   BSDXY(__NR_clock_getres,     sys_clock_getres),      // 234
+   // unimpl timer_create                                  235
 
-   // unimpl timer_delete						   236
-   // unimpl timer_settime						   237
-   // unimpl timer_gettime						   238
-   // unimpl timer_getoverrun						   239
+   // unimpl timer_delete                                  236
+   // unimpl timer_settime                                 237
+   // unimpl timer_gettime                                 238
+   // unimpl timer_getoverrun                              239
 
-   GENXY(__NR_nanosleep,		sys_nanosleep),			// 240
-   // nosys								   241
-   // nosys								   242
-   // nosys								   243
+   GENXY(__NR_nanosleep,        sys_nanosleep),         // 240
+   // nosys                                                241
+   // nosys                                                242
+   // nosys                                                243
 
-   // nosys								   244
-   // nosys								   245
-   // nosys								   246
-   // nosys								   247
+   // nosys                                                244
+   // nosys                                                245
+   // nosys                                                246
+   // nosys                                                247
 
-// BSDXY(__NR_ntp_gettime,		sys_ntp_gettime),		// 248
-   // nosys								   249
-   BSDXY(__NR_minherit,			sys_minherit),			// 250
-   BSDX_(__NR_rfork,			sys_rfork),			// 251
+// BSDXY(__NR_ntp_gettime,      sys_ntp_gettime),       // 248
+   // nosys                                                249
+   BSDXY(__NR_minherit,         sys_minherit),          // 250
+   BSDX_(__NR_rfork,            sys_rfork),             // 251
 
-   GENXY(__NR_openbsd_poll,		sys_poll),			// 252
-   BSDX_(__NR_issetugid,		sys_issetugid),			// 253
-   GENX_(__NR_lchown,			sys_lchown),			// 254
-   // nosys								   255
+   GENXY(__NR_openbsd_poll,     sys_poll),              // 252
+   BSDX_(__NR_issetugid,        sys_issetugid),         // 253
+   GENX_(__NR_lchown,           sys_lchown),            // 254
+   // nosys                                                255
 
-   // nosys								   256
-   // nosys								   257
-   // nosys								   258
-   // nosys								   259
+   // nosys                                                256
+   // nosys                                                257
+   // nosys                                                258
+   // nosys                                                259
  
-   // nosys								   260
-   // nosys								   261
-   // nosys								   262
-   // nosys								   263
+   // nosys                                                260
+   // nosys                                                261
+   // nosys                                                262
+   // nosys                                                263
 
-   // nosys								   264
-   // nosys								   265
-   // nosys								   266
-   // nosys								   267
+   // nosys                                                264
+   // nosys                                                265
+   // nosys                                                266
+   // nosys                                                267
 
-   // nosys								   268
-   // nosys								   269
-   // nosys								   270
-   // nosys								   271
+   // nosys                                                268
+   // nosys                                                269
+   // nosys                                                270
+   // nosys                                                271
 
-   GENXY(__NR_getdents,			sys_getdents),			// 272
-   // nosys								   273
-   BSDX_(__NR_lchmod,			sys_lchmod),			// 274
-   GENX_(__NR_netbsd_lchown,		sys_lchown),			// 275
+   GENXY(__NR_getdents,         sys_getdents),          // 272
+   // nosys                                                273
+   BSDX_(__NR_lchmod,           sys_lchmod),            // 274
+   GENX_(__NR_netbsd_lchown,    sys_lchown),            // 275
 
-   BSDX_(__NR_lutimes,			sys_lutimes),			// 276
-   // netbsd msync							   277
-   // netbsd stat							   278
-   // netbsd fstat							   279
+   BSDX_(__NR_lutimes,          sys_lutimes),           // 276
+   // netbsd msync                                         277
+   // netbsd stat                                          278
+   // netbsd fstat                                         279
 
-   // netbsd lstat 							   280
-   // nosys								   281
-   // nosys								   282
-   // nosys								   283
+   // netbsd lstat                                         280
+   // nosys                                                281
+   // nosys                                                282
+   // nosys                                                283
 
-   // nosys								   284
-   // nosys								   285
-   // nosys								   286
-   // nosys								   287
+   // nosys                                                284
+   // nosys                                                285
+   // nosys                                                286
+   // nosys                                                287
 
-   // nosys								   288
-   // nosys								   289
-   // nosys								   290
-   // nosys								   291
+   // nosys                                                288
+   // nosys                                                289
+   // nosys                                                290
+   // nosys                                                291
 
-   // nosys								   292
-   // nosys								   293
-   // nosys								   294
-   // nosys								   295
+   // nosys                                                292
+   // nosys                                                293
+   // nosys                                                294
+   // nosys                                                295
 
-   // nosys								   296
-   // freebsd 4 fhstatfs                   297
-   BSDXY(__NR_fhopen,			sys_fhopen),			// 298
-   BSDXY(__NR_fhstat,			sys_fhstat),			// 299
+   // nosys                                                296
+   // freebsd 4 fhstatfs                                   297
+   BSDXY(__NR_fhopen,           sys_fhopen),            // 298
+   BSDXY(__NR_fhstat,           sys_fhstat),            // 299
 
-// BSDX_(__NR_modnext,			sys_modnext),			// 300
-   BSDXY(__NR_modstat,			sys_modstat),			// 301
-// BSDX_(__NR_modfnext,			sys_modfnext),			// 302
-   BSDX_(__NR_modfind,			sys_modfind),			// 303
+// BSDX_(__NR_modnext,          sys_modnext),           // 300
+   BSDXY(__NR_modstat,          sys_modstat),           // 301
+// BSDX_(__NR_modfnext,         sys_modfnext),          // 302
+   BSDX_(__NR_modfind,          sys_modfind),           // 303
 
-   BSDX_(__NR_kldload,			sys_kldload),			// 304
-   BSDX_(__NR_kldunload,		sys_kldunload),			// 305
-   BSDX_(__NR_kldfind,			sys_kldfind),			// 306
-   BSDX_(__NR_kldnext,			sys_kldnext),			// 307
+   BSDX_(__NR_kldload,          sys_kldload),           // 304
+   BSDX_(__NR_kldunload,        sys_kldunload),         // 305
+   BSDX_(__NR_kldfind,          sys_kldfind),           // 306
+   BSDX_(__NR_kldnext,          sys_kldnext),           // 307
 
-// BSDXY(__NR_kldstat,			sys_kldstat),			// 308
-// BSDX_(__NR_kldfirstmod,		sys_kldfirstmod),		// 309
-   GENX_(__NR_getsid,			sys_getsid),			// 310
-   BSDX_(__NR_setresuid,		sys_setresuid),			// 311
+// BSDXY(__NR_kldstat,          sys_kldstat),           // 308
+// BSDX_(__NR_kldfirstmod,      sys_kldfirstmod),       // 309
+   GENX_(__NR_getsid,           sys_getsid),            // 310
+   BSDX_(__NR_setresuid,        sys_setresuid),         // 311
 
-   BSDX_(__NR_setresgid,		sys_setresgid),			// 312
-   // obsol signanosleep						   313
-   // BSDXY(__NR_aio_return,		sys_aio_return),		// 314
-   // BSDXY(__NR_aio_suspend,		sys_aio_suspend),		// 315
+   BSDX_(__NR_setresgid,        sys_setresgid),         // 312
+   // obsol signanosleep                                   313
+   // BSDXY(__NR_aio_return,    sys_aio_return),        // 314
+   // BSDXY(__NR_aio_suspend,   sys_aio_suspend),       // 315
 
-   // BSDXY(__NR_aio_cancel,		sys_aio_cancel),		// 316
-   // BSDXY(__NR_aio_error,		sys_aio_error),			// 317
-   // freebsd 6 aio_read                    318
-   // freebsd 6 aio_write                   319
-   // freebsd 6 lio_listio                  320
-   BSDX_(__NR_yield,			sys_yield),			// 321
-   // obs thr_sleep                         322
-   // obs thr_wakeup                        323
+   // BSDXY(__NR_aio_cancel,    sys_aio_cancel),        // 316
+   // BSDXY(__NR_aio_error,     sys_aio_error),         // 317
+   // freebsd 6 aio_read                                   318
+   // freebsd 6 aio_write                                  319
+   // freebsd 6 lio_listio                                 320
+   BSDX_(__NR_yield,            sys_yield),             // 321
+   // obs thr_sleep                                        322
+   // obs thr_wakeup                                       323
 
-   GENX_(__NR_mlockall,			sys_mlockall),			// 324
-   BSDX_(__NR_munlockall,		sys_munlockall),		// 325
-   BSDXY(__NR___getcwd,			sys___getcwd),			// 326
-// BSDXY(__NR_sched_setparam,		sys_sched_setparam),		// 327
+   GENX_(__NR_mlockall,         sys_mlockall),          // 324
+   BSDX_(__NR_munlockall,       sys_munlockall),        // 325
+   BSDXY(__NR___getcwd,         sys___getcwd),          // 326
+// BSDXY(__NR_sched_setparam,   sys_sched_setparam),    // 327
 
-// BSDXY(__NR_sched_getparam,		sys_sched_getparam),		// 328
-// BSDX_(__NR_sched_setscheduler,	sys_sched_setscheduler),	// 329
-// BSDX_(__NR_sched_getscheduler,	sys_sched_getscheduler),	// 330
-   BSDX_(__NR_sched_yield,		sys_sched_yield),		// 331
+// BSDXY(__NR_sched_getparam,   sys_sched_getparam),    // 328
+// BSDX_(__NR_sched_setscheduler, sys_sched_setscheduler), // 329
+// BSDX_(__NR_sched_getscheduler, sys_sched_getscheduler), // 330
+   BSDX_(__NR_sched_yield,      sys_sched_yield),       // 331
 
-   BSDX_(__NR_sched_get_priority_max,	sys_sched_get_priority_max),	// 332
-   BSDX_(__NR_sched_get_priority_min,	sys_sched_get_priority_min),	// 333
-// BSDXY(__NR_sched_rr_get_interval,	sys_sched_rr_get_interval),	// 334
-   BSDX_(__NR_utrace,			sys_utrace),			// 335
+   BSDX_(__NR_sched_get_priority_max, sys_sched_get_priority_max), // 332
+   BSDX_(__NR_sched_get_priority_min, sys_sched_get_priority_min), // 333
+// BSDXY(__NR_sched_rr_get_interval, sys_sched_rr_get_interval), // 334
+   BSDX_(__NR_utrace,           sys_utrace),            // 335
 
-   // freebsd 4 sendfile                    336
-   BSDXY(__NR_kldsym,			sys_kldsym),			// 337
-// BSDX_(__NR_jail,			sys_jail),			// 338
-   // unimpl pioctl							   339
+   // freebsd 4 sendfile                                   336
+   BSDXY(__NR_kldsym,           sys_kldsym),            // 337
+// BSDX_(__NR_jail,             sys_jail),              // 338
+   // unimpl pioctl                                        339
 
-   BSDXY(__NR_sigprocmask,		sys_sigprocmask),		// 340
-   BSDX_(__NR_sigsuspend,		sys_sigsuspend),		// 341
-   // freebsd 4 sigaction                      342
-   BSDXY(__NR_sigpending,		sys_sigpending),		// 343
+   BSDXY(__NR_sigprocmask,      sys_sigprocmask),       // 340
+   BSDX_(__NR_sigsuspend,       sys_sigsuspend),        // 341
+   // freebsd 4 sigaction                                  342
+   BSDXY(__NR_sigpending,       sys_sigpending),        // 343
 
-   // freebsd sigreturn                        344
-   BSDXY(__NR_sigtimedwait,		sys_sigtimedwait),		// 345
-   BSDXY(__NR_sigwaitinfo,		sys_sigwaitinfo),		// 346
-   BSDXY(__NR___acl_get_file,		sys___acl_get_file),		// 347
+   // freebsd sigreturn                                    344
+   BSDXY(__NR_sigtimedwait,     sys_sigtimedwait),      // 345
+   BSDXY(__NR_sigwaitinfo,      sys_sigwaitinfo),       // 346
+   BSDXY(__NR___acl_get_file,   sys___acl_get_file),    // 347
 
-   BSDX_(__NR___acl_set_file,		sys___acl_set_file),		// 348
-   BSDXY(__NR___acl_get_fd,		sys___acl_get_fd),		// 349
-   BSDX_(__NR___acl_set_fd,		sys___acl_set_fd),		// 350
-   BSDX_(__NR___acl_delete_file,	sys___acl_delete_file),		// 351
+   BSDX_(__NR___acl_set_file,   sys___acl_set_file),    // 348
+   BSDXY(__NR___acl_get_fd,     sys___acl_get_fd),      // 349
+   BSDX_(__NR___acl_set_fd,     sys___acl_set_fd),      // 350
+   BSDX_(__NR___acl_delete_file, sys___acl_delete_file), // 351
 
-   BSDX_(__NR___acl_delete_fd,		sys___acl_delete_fd),		// 352
-   BSDX_(__NR___acl_aclcheck_file,	sys___acl_aclcheck_file),	// 353
-   BSDX_(__NR___acl_aclcheck_fd,	sys___acl_aclcheck_fd),		// 354
-   // BSDXY(__NR_extattrctl,		sys_extattrctl),		// 355
+   BSDX_(__NR___acl_delete_fd,  sys___acl_delete_fd),   // 352
+   BSDX_(__NR___acl_aclcheck_file, sys___acl_aclcheck_file), // 353
+   BSDX_(__NR___acl_aclcheck_fd, sys___acl_aclcheck_fd), // 354
+   // BSDXY(__NR_extattrctl,    sys_extattrctl),        // 355
 
-   // BSDXY(__NR_extattr_set_file,	sys_extattr_set_file),		// 356
-   BSDXY(__NR_extattr_get_file,	sys_extattr_get_file),		// 357
-   // BSDXY(__NR_extattr_delete_file,	sys_extattr_delete_file),	// 358
-   // BSDXY(__NR_aio_waitcomplete,	sys_aio_waitcomplete),		// 359
+   // BSDXY(__NR_extattr_set_file, sys_extattr_set_file), // 356
+   BSDXY(__NR_extattr_get_file, sys_extattr_get_file),  // 357
+   // BSDXY(__NR_extattr_delete_file, sys_extattr_delete_file), // 358
+   // BSDXY(__NR_aio_waitcomplete, sys_aio_waitcomplete), // 359
 
-   BSDXY(__NR_getresuid,		sys_getresuid),			// 360
-   BSDXY(__NR_getresgid,		sys_getresgid),			// 361
-   BSDX_(__NR_kqueue,			sys_kqueue),			// 362
-   BSDXY(__NR_kevent,			sys_kevent),			// 363
+   BSDXY(__NR_getresuid,        sys_getresuid),         // 360
+   BSDXY(__NR_getresgid,        sys_getresgid),         // 361
+   BSDX_(__NR_kqueue,           sys_kqueue),            // 362
+   BSDXY(__NR_kevent,           sys_kevent),            // 363
 
-   // nosys								   364
-   // nosys								   365
-   // nosys								   366
-   // nosys								   367
+   // nosys                                                364
+   // nosys                                                365
+   // nosys                                                366
+   // nosys                                                367
 
-   // nosys								   368
-   // nosys								   369
-   // lkmressys								   370
-   // extattr_set_fd							   371
+   // nosys                                                368
+   // nosys                                                369
+   // lkmressys                                            370
+   // extattr_set_fd                                       371
 
-   // extattr_get_fd							   372
-   // extattr_delete_fd							   373
-   // __setugid								   374
-   // nfsclnt								   375
+   // extattr_get_fd                                       372
+   // extattr_delete_fd                                    373
+   // __setugid                                            374
+   // nfsclnt                                              375
 
-   BSDX_(__NR_eaccess,			sys_eaccess),			// 376
-   // afs_syscall							   377
-   // nmount								   378
-   // kse_exit								   379
+   BSDX_(__NR_eaccess,          sys_eaccess),           // 376
+   // afs_syscall                                          377
+   // nmount                                               378
+   // kse_exit                                             379
 
-   // kse_wakeup							   380
-   // kse_create							   381
-   // kse_thr_interrupt							   382
-   // kse_release							   383
+   // kse_wakeup                                           380
+   // kse_create                                           381
+   // kse_thr_interrupt                                    382
+   // kse_release                                          383
 
-   // __mac_get_proc							   384
-   // __mac_set_proc							   385
-   // __mac_get_fd							   386
-   // __mac_get_file							   387
+   // __mac_get_proc                                       384
+   // __mac_set_proc                                       385
+   // __mac_get_fd                                         386
+   // __mac_get_file                                       387
 
-   // __mac_set_fd							   388
-   // __mac_set_file							   389
-   BSDXY(__NR_kenv,                     sys_kenv),                      // 390
-   BSDX_(__NR_lchflags,                 sys_lchflags),                  // 391
+   // __mac_set_fd                                         388
+   // __mac_set_file                                       389
+   BSDXY(__NR_kenv,             sys_kenv),              // 390
+   BSDX_(__NR_lchflags,         sys_lchflags),          // 391
 
-   BSDXY(__NR_uuidgen,			sys_uuidgen),			// 392
-   BSDXY(__NR_sendfile,			sys_sendfile),			// 393
-   // mac_syscall							   394
+   BSDXY(__NR_uuidgen,          sys_uuidgen),           // 392
+   BSDXY(__NR_sendfile,         sys_sendfile),          // 393
+   // mac_syscall                                          394
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_getfsstat,  sys_freebsd11_getfsstat),   // 395
-   BSDXY(__NR_freebsd11_statfs, 	sys_statfs),                // 396
-   BSDXY(__NR_freebsd11_fstatfs,	sys_fstatfs),               // 397
-   BSDXY(__NR_freebsd11_fhstatfs,   sys_fhstatfs),               // 398
+   BSDXY(__NR_freebsd11_getfsstat, sys_freebsd11_getfsstat), // 395
+   BSDXY(__NR_freebsd11_statfs, sys_statfs),            // 396
+   BSDXY(__NR_freebsd11_fstatfs, sys_fstatfs),          // 397
+   BSDXY(__NR_freebsd11_fhstatfs, sys_fhstatfs),        // 398
 #else
-   BSDXY(__NR_getfsstat,            sys_getfsstat),             			// 395
-   BSDXY(__NR_statfs,               sys_statfs),                        // 396
-   BSDXY(__NR_fstatfs,          	sys_fstatfs),			// 397
-   BSDXY(__NR_fhstatfs,         	sys_fhstatfs),			// 398
+   BSDXY(__NR_getfsstat,        sys_getfsstat),         // 395
+   BSDXY(__NR_statfs,           sys_statfs),            // 396
+   BSDXY(__NR_fstatfs,          sys_fstatfs),           // 397
+   BSDXY(__NR_fhstatfs,         sys_fhstatfs),          // 398
 #endif
 
-   // nosys								   399
+   // nosys                                                399
 
-   // ksem_close							   400
-   // ksem_post								   401
-   // ksem_wait								   402
-   // ksem_trywait							   403
+   // ksem_close                                           400
+   // ksem_post                                            401
+   // ksem_wait                                            402
+   // ksem_trywait                                         403
 
-   // ksem_init								   404
-   // ksem_open								   405
-   // ksem_unlink							   406
-   // ksem_getvalue							   407
+   // ksem_init                                            404
+   // ksem_open                                            405
+   // ksem_unlink                                          406
+   // ksem_getvalue                                        407
 
-   // ksem_destroy							   408
-   // __mac_get_pid							   409
-   // __mac_get_link							   410
-   // __mac_set_link							   411
+   // ksem_destroy                                         408
+   // __mac_get_pid                                        409
+   // __mac_get_link                                       410
+   // __mac_set_link                                       411
 
-   // extattr_set_link							   412
-   // extattr_get_link							   413
-   // extattr_delete_link						   414
-   // __mac_execve							   415
+   // extattr_set_link                                     412
+   // extattr_get_link                                     413
+   // extattr_delete_link                                  414
+   // __mac_execve                                         415
 
-   BSDXY(__NR_sigaction,		sys_sigaction),			// 416
-   BSDX_(__NR_sigreturn,		sys_sigreturn),			// 417
-   // __xstat								   418
-   // __xfstat								   419
+   BSDXY(__NR_sigaction,        sys_sigaction),         // 416
+   BSDX_(__NR_sigreturn,        sys_sigreturn),         // 417
+   // __xstat                                              418
+   // __xfstat                                             419
 
-   // __xlstat								   420
-   BSDXY(__NR_getcontext,		sys_getcontext),		// 421
-   BSDX_(__NR_setcontext,		sys_setcontext),		// 422
-   BSDXY(__NR_swapcontext,		sys_swapcontext),		// 423
+   // __xlstat                                             420
+   BSDXY(__NR_getcontext,       sys_getcontext),        // 421
+   BSDX_(__NR_setcontext,       sys_setcontext),        // 422
+   BSDXY(__NR_swapcontext,      sys_swapcontext),       // 423
 
-   // swapoff								   424
-   BSDXY(__NR___acl_get_link,		sys___acl_get_link),		// 425
-   BSDX_(__NR___acl_set_link,		sys___acl_set_link),		// 426
-   BSDX_(__NR___acl_delete_link,	sys___acl_delete_link),		// 427
+   // swapoff                                              424
+   BSDXY(__NR___acl_get_link,   sys___acl_get_link),    // 425
+   BSDX_(__NR___acl_set_link,   sys___acl_set_link),    // 426
+   BSDX_(__NR___acl_delete_link, sys___acl_delete_link), // 427
 
-   BSDX_(__NR___acl_aclcheck_link,	sys___acl_aclcheck_link),	// 428
-   BSDXY(__NR_sigwait,          	sys_sigwait),               // 429
-   // thr_create							   430
-   BSDX_(__NR_thr_exit,			sys_thr_exit),			// 431
+   BSDX_(__NR___acl_aclcheck_link, sys___acl_aclcheck_link), // 428
+   BSDXY(__NR_sigwait,          sys_sigwait),           // 429
+   // thr_create                                           430
+   BSDX_(__NR_thr_exit,         sys_thr_exit),          // 431
 
-   BSDXY(__NR_thr_self, 		sys_thr_self),			// 432
-   BSDXY(__NR_thr_kill,                 sys_thr_kill),			// 433
-   BSDXY(__NR__umtx_lock,		sys__umtx_lock),		// 434
-   BSDXY(__NR__umtx_unlock,		sys__umtx_unlock),		// 435
+   BSDXY(__NR_thr_self,         sys_thr_self),          // 432
+   BSDXY(__NR_thr_kill,         sys_thr_kill),          // 433
+   BSDXY(__NR__umtx_lock,       sys__umtx_lock),        // 434
+   BSDXY(__NR__umtx_unlock,     sys__umtx_unlock),      // 435
 
-   // jail_attach							   436
-   // extattr_list_fd							   437
-   // extattr_list_file							   438
-   // extattr_list_link							   439
+   // jail_attach                                          436
+   // extattr_list_fd                                      437
+   // extattr_list_file                                    438
+   // extattr_list_link                                    439
 
-   // kse_switchin							   440
-   // ksem_timedwait							   441
-   // thr_suspend							   442
-   BSDX_(__NR_thr_wake,			sys_thr_wake),			// 443
-   // kldunloadf							   444
-   // audit								   445
-   // auditon								   446
-   // getauid								   447
+   // kse_switchin                                         440
+   // ksem_timedwait                                       441
+   // thr_suspend                                          442
+   BSDX_(__NR_thr_wake,         sys_thr_wake),          // 443
+   // kldunloadf                                           444
+   // audit                                                445
+   // auditon                                              446
+   // getauid                                              447
 
-   // setauid								   448
-   // getaudit								   449
-   // setaudit								   450
-   // getaudit_addr							   451
+   // setauid                                              448
+   // getaudit                                             449
+   // setaudit                                             450
+   // getaudit_addr                                        451
 
-   // setaudit_addr							   452
-   // auditctl								   453
-   BSDXY(__NR__umtx_op,			sys__umtx_op),			// 454
-   BSDX_(__NR_thr_new,			sys_thr_new),			// 455
+   // setaudit_addr                                        452
+   // auditctl                                             453
+   BSDXY(__NR__umtx_op,         sys__umtx_op),          // 454
+   BSDX_(__NR_thr_new,          sys_thr_new),           // 455
 
-   // sigqueue								   456
-   BSDXY(__NR_kmq_open,         sys_kmq_open),			// 457
-   BSDX_(__NR_kmq_setattr,      sys_kmq_setattr),        // 458
+   // sigqueue                                             456
+   BSDXY(__NR_kmq_open,         sys_kmq_open),          // 457
+   BSDX_(__NR_kmq_setattr,      sys_kmq_setattr),       // 458
    BSDXY(__NR_kmq_timedreceive, sys_kmq_timedreceive),  // 459
 
-   BSDX_(__NR_kmq_timedsend,	sys_kmq_timedsend),     // 460
+   BSDX_(__NR_kmq_timedsend,    sys_kmq_timedsend),     // 460
    BSDX_(__NR_kmq_notify,       sys_kmq_notify),        // 461
-   BSDX_(__NR_kmq_unlink,        sys_mq_unlink),			// 462
-   // abort2								   463
+   BSDX_(__NR_kmq_unlink,       sys_mq_unlink),         // 462
+   // abort2                                               463
 
-   BSDX_(__NR_thr_set_name,		sys_thr_set_name),		// 464
-   // aio_fsync								   465
-   BSDXY(__NR_rtprio_thread,		sys_rtprio_thread),		// 466
-   // nosys								   467
+   BSDX_(__NR_thr_set_name,     sys_thr_set_name),      // 464
+   // aio_fsync                                            465
+   BSDXY(__NR_rtprio_thread,    sys_rtprio_thread),     // 466
+   // nosys                                                467
 
-   // nosys								   468
-   // __getpath_fromfd							   469
-   // __getpath_fromaddr						   470
-   // sctp_peeloff							   471
+   // nosys                                                468
+   // __getpath_fromfd                                     469
+   // __getpath_fromaddr                                   470
+   // sctp_peeloff                                         471
 
-   // sctp_generic_sendmsg						   472
-   // sctp_generic_sendmsg_iov						   473
-   // sctp_generic_recvmsg						   474
-   BSDXY(__NR_pread,			sys_pread7),			// 475
+   // sctp_generic_sendmsg                                 472
+   // sctp_generic_sendmsg_iov                             473
+   // sctp_generic_recvmsg                                 474
+   BSDXY(__NR_pread,            sys_pread7),            // 475
 
-   BSDX_(__NR_pwrite,			sys_pwrite7),			// 476
-   BSDX_(__NR_mmap,			sys_mmap7),			// 477
-   BSDX_(__NR_lseek,			sys_lseek7),			// 478
-   BSDX_(__NR_truncate7,		sys_truncate7),			// 479
+   BSDX_(__NR_pwrite,           sys_pwrite7),           // 476
+   BSDX_(__NR_mmap,             sys_mmap7),             // 477
+   BSDX_(__NR_lseek,            sys_lseek7),            // 478
+   BSDX_(__NR_truncate7,        sys_truncate7),         // 479
 
-   BSDX_(__NR_ftruncate7,		sys_ftruncate7),		// 480
-   BSDXY(__NR_thr_kill2,                sys_thr_kill2),			// 481
-   BSDXY(__NR_shm_open,			sys_shm_open),			// 482
-   BSDX_(__NR_shm_unlink,		sys_shm_unlink),		// 483
+   BSDX_(__NR_ftruncate7,       sys_ftruncate7),        // 480
+   BSDXY(__NR_thr_kill2,        sys_thr_kill2),         // 481
+   BSDXY(__NR_shm_open,         sys_shm_open),          // 482
+   BSDX_(__NR_shm_unlink,       sys_shm_unlink),        // 483
 
-   // cpuset								   484
-   // cpuset_setid							   485
-   // cpuset_getid							   486
+   // cpuset                                               484
+   // cpuset_setid                                         485
+   // cpuset_getid                                         486
 
-   BSDXY(__NR_cpuset_getaffinity,	sys_cpuset_getaffinity),	// 487
-   BSDX_(__NR_cpuset_setaffinity,	sys_cpuset_setaffinity),	// 488
-   BSDX_(__NR_faccessat,		sys_faccessat),			// 489
-   BSDX_(__NR_fchmodat,			sys_fchmodat),			// 490
-   BSDX_(__NR_fchownat,			sys_fchownat),			// 491
+   BSDXY(__NR_cpuset_getaffinity, sys_cpuset_getaffinity), // 487
+   BSDX_(__NR_cpuset_setaffinity, sys_cpuset_setaffinity), // 488
+   BSDX_(__NR_faccessat,        sys_faccessat),         // 489
+   BSDX_(__NR_fchmodat,         sys_fchmodat),          // 490
+   BSDX_(__NR_fchownat,         sys_fchownat),          // 491
 
-   // fexecve								   492
-   BSDXY(__NR_fstatat,			sys_fstatat),			// 493
-   BSDX_(__NR_futimesat,		sys_futimesat),			// 494
-   BSDX_(__NR_linkat,			sys_linkat),			// 495
+   // fexecve                                              492
+   BSDXY(__NR_fstatat,          sys_fstatat),           // 493
+   BSDX_(__NR_futimesat,        sys_futimesat),         // 494
+   BSDX_(__NR_linkat,           sys_linkat),            // 495
 
-   BSDX_(__NR_mkdirat,			sys_mkdirat),			// 496
-   BSDX_(__NR_mkfifoat,			sys_mkfifoat),			// 497
-   BSDX_(__NR_mknodat,			sys_mknodat),			// 498
-   BSDXY(__NR_openat,			sys_openat),			// 499
+   BSDX_(__NR_mkdirat,          sys_mkdirat),           // 496
+   BSDX_(__NR_mkfifoat,         sys_mkfifoat),          // 497
+   BSDX_(__NR_mknodat,          sys_mknodat),           // 498
+   BSDXY(__NR_openat,           sys_openat),            // 499
 
-   BSDX_(__NR_readlinkat,		sys_readlinkat),		// 500
-   BSDX_(__NR_renameat,			sys_renameat),			// 501
-   BSDX_(__NR_symlinkat,		sys_symlinkat),			// 502
-   BSDX_(__NR_unlinkat,			sys_unlinkat),			// 503
+   BSDX_(__NR_readlinkat,       sys_readlinkat),        // 500
+   BSDX_(__NR_renameat,         sys_renameat),          // 501
+   BSDX_(__NR_symlinkat,        sys_symlinkat),         // 502
+   BSDX_(__NR_unlinkat,         sys_unlinkat),          // 503
 
    BSDX_(__NR_posix_openpt,     sys_posix_openpt),      // 504
-   // gssd_syscall                              505
-   BSDXY(__NR_jail_get,			sys_jail_get),			// 506
-   BSDX_(__NR_jail_set,			sys_jail_set),			// 507
-   BSDX_(__NR_jail_remove,		sys_jail_remove),		// 508
-   // closefrom                             	509
-   BSDXY(__NR___semctl,			sys___semctl),			// 510
-   // msgctl                                	511
-   BSDXY(__NR_shmctl,			sys_shmctl),			// 512
-    // lpathconf                                513
+   // gssd_syscall                                         505
+   BSDXY(__NR_jail_get,         sys_jail_get),          // 506
+   BSDX_(__NR_jail_set,         sys_jail_set),          // 507
+   BSDX_(__NR_jail_remove,      sys_jail_remove),       // 508
+   // closefrom                                            509
+   BSDXY(__NR___semctl,         sys___semctl),          // 510
+   // msgctl                                               511
+   BSDXY(__NR_shmctl,           sys_shmctl),            // 512
+    // lpathconf                                           513
     /* 514 is obsolete cap_new */
-    // __cap_rights_get                         515
+    // __cap_rights_get                                    515
     BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
-    // cap_getmode                              517
-    BSDXY(__NR_pdfork,          sys_pdfork),         // 518
-    BSDX_(__NR_pdkill,          sys_pdkill),        // 519
-    BSDXY(__NR_pdgetpid,        sys_pdgetpid),      // 520
-    BSDXY(__NR_pselect, sys_pselect),                   // 522
-    // getloginclass                            523
-    // setloginclass                            524
-    // rctl_get_racct                           525
-    // rctl_get_rules                           526
-    // rctl_get_limits                          527
-    // rctl_add_rule                            528
-    // rctl_remove_rule                         529
+    // cap_getmode                                         517
+    BSDXY(__NR_pdfork,          sys_pdfork),            // 518
+    BSDX_(__NR_pdkill,          sys_pdkill),            // 519
+    BSDXY(__NR_pdgetpid,        sys_pdgetpid),          // 520
+    BSDXY(__NR_pselect,         sys_pselect),           // 522
+    // getloginclass                                       523
+    // setloginclass                                       524
+    // rctl_get_racct                                      525
+    // rctl_get_rules                                      526
+    // rctl_get_limits                                     527
+    // rctl_add_rule                                       528
+    // rctl_remove_rule                                    529
     BSDX_(__NR_posix_fallocate, sys_posix_fallocate),   // 530
     BSDX_(__NR_posix_fadvise,   sys_posix_fadvise),     // 531
-    // wait6                                    532
+    // wait6                                               532
     BSDXY(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
     BSDXY(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
-    // cap_ioctls_get                           535
+    // cap_ioctls_get                                      535
     BSDX_(__NR_cap_fcntls_limit, sys_cap_fcntls_limit), // 536
-    // cap_fcntls_get                           537
-    // bindat                                   538
-    // connectat                                539
-    // chflagsat                                540
-   BSDXY(__NR_accept4,          sys_accept4),          //541
-   BSDXY(__NR_pipe2,			sys_pipe2),     	    // 542
-    // aio_mlock                            	543
-    // procctl                                  544
+    // cap_fcntls_get                                      537
+    // bindat                                              538
+    // connectat                                           539
+    // chflagsat                                           540
+   BSDXY(__NR_accept4,          sys_accept4),           // 541
+   BSDXY(__NR_pipe2,            sys_pipe2),             // 542
+    // aio_mlock                                           543
+    // procctl                                             544
 
     // 544 is the highest syscall on FreeBSD 9
 
 #if (FREEBSD_VERS >= FREEBSD_10)
 
    BSDXY(__NR_ppoll,            sys_ppoll),             // 545
-    // futimens                                 546
-    // utimensat                                547
+    // futimens                                            546
+    // utimensat                                           547
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
@@ -5185,39 +5188,38 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
     /* 548 is obsolete numa_getaffinity */
     /* 549 is obsolete numa_setaffinity */
-    // fdatasync                                550
+    // fdatasync                                           550
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_fstat,			sys_fstat),			// 551
-    // fstatat                                  552
-    // fhstat                                   553
-    // getdirentries                            554
-    BSDXY(__NR_statfs,          sys_statfs),        // 555
-    BSDXY(__NR_fstatfs,         sys_fstatfs),       // 556
-    BSDXY(__NR_getfsstat,       sys_getfsstat),     // 557
-    BSDXY(__NR_fhstatfs,        sys_fhstatfs),      // 558
-    // mknodat                                  559
-    // kevent                                   560
-    // cpuset_getdomain                         561
-    // cpuset_setdomain                         562
-   BSDXY(__NR_getrandom,			sys_getrandom),			// 563
-    // getfhat                                  564
-    // fhlink                                   565
-    // fhlinkat                                 566
-    // fhreadlink                               567
+   BSDXY(__NR_fstat,            sys_fstat),             // 551
+    // fstatat                                             552
+    // fhstat                                              553
+    // getdirentries                                       554
+    BSDXY(__NR_statfs,          sys_statfs),            // 555
+    BSDXY(__NR_fstatfs,         sys_fstatfs),           // 556
+    BSDXY(__NR_getfsstat,       sys_getfsstat),         // 557
+    BSDXY(__NR_fhstatfs,        sys_fhstatfs),          // 558
+    // mknodat                                             559
+    // kevent                                              560
+    // cpuset_getdomain                                    561
+    // cpuset_setdomain                                    562
+   BSDXY(__NR_getrandom,        sys_getrandom),         // 563
+    // getfhat                                             564
+    // fhlink                                              565
+    // fhlinkat                                            566
+    // fhreadlink                                          567
 #endif // FREEBSD_VERS >= FREEBSD_12
-   BSDX_(__NR_fake_sigreturn,		sys_fake_sigreturn),		// 1000, fake sigreturn
+   BSDX_(__NR_fake_sigreturn,   sys_fake_sigreturn),    // 1000, fake sigreturn
 
 };
 
 const UInt ML_(syscall_table_size) =
-	    sizeof(ML_(syscall_table)) / sizeof(ML_(syscall_table)[0]);
+        sizeof(ML_(syscall_table)) / sizeof(ML_(syscall_table)[0]);
 
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/
 /*--------------------------------------------------------------------*/
 
 #endif // defined(VGO_freebsd)
-
