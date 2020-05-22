@@ -47,6 +47,9 @@ endif
 if VGCONF_OS_IS_SOLARIS
 SUBDIRS += solaris
 endif
+if VGCONF_OS_IS_FREEBSD
+SUBDIRS += freebsd
+endif
 
 # Platform-specific tests
 if VGCONF_PLATFORMS_INCLUDE_AMD64_LINUX

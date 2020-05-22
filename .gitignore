@@ -1974,6 +1974,16 @@
 /none/tests/solaris/stack_prot
 /none/tests/solaris/threads_exitall
 
+# /none/tests/freebsd/
+/none/tests/freebsd/*.stderr.diff
+/none/tests/freebsd/*.stderr.out
+/none/tests/freebsd/*.stdout.diff
+/none/tests/freebsd/*.stdout.out
+/none/tests/freebsd/.deps
+/none/tests/freebsd/Makefile
+/none/tests/freebsd/Makefile.in
+/none/tests/freebsd/auxv
+
 # /none/tests/x86/
 /none/tests/x86/*.dSYM
 /none/tests/x86/*.stderr.diff

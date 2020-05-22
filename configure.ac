@@ -4954,6 +4954,7 @@ AC_CONFIG_FILES([
    none/tests/linux/Makefile
    none/tests/darwin/Makefile
    none/tests/solaris/Makefile
+   none/tests/freebsd/Makefile
    none/tests/amd64-linux/Makefile
    none/tests/x86-linux/Makefile
    none/tests/amd64-darwin/Makefile
