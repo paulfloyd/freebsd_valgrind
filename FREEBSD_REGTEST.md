@@ -103,7 +103,7 @@ bar_bad - one extra error message
 bar_bad_xml - as above  
 concurrent_close - runs OK standalone but not under perl regtest  
 dlopen - crash  
-pth_uninitialized_cond - sigbus in guest
+pth_uninitialized_cond - sigbus in guest  
 sigaltstack - sigsegv in guest  
 std_list - lots of errors related to setlocale  
 drd/tests/tc09_bad_unlock - two missing error messages  
