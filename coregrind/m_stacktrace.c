@@ -281,6 +281,26 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
    i = 1;
    if (do_stats) stats.nr++;
 
+   // Does this apply to macOS 10.14 and earlier?
+#  if defined(VGO_freebsd)
+   if (VG_(is_valid_tid)(tid_if_known) &&
+      VG_(is_in_syscall)(tid_if_known) &&
+      i < max_n_ips) {
+      /* On FreeBSD, all the system call stubs have no function
+       * prolog.  So instead of top of the stack being a new
+       * frame comprising a saved BP and a return address, we
+       * just have the return address in the caller's frame.
+       * Adjust for this by recording the return address.
+       */
+      if (debug)
+         VG_(printf)("     in syscall, use XSP-1\n");
+      ips[i] = *(Addr *)uregs.xsp - 1;
+      if (sps) sps[i] = uregs.xsp;
+      if (fps) fps[i] = uregs.xbp;
+      i++;
+   }
+#  endif
+
    while (True) {
 
       if (i >= max_n_ips)
@@ -573,16 +593,18 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
       VG_(printf)("     ipsS[%d]=%#08lx rbp %#08lx rsp %#08lx\n",
                   i-1, ips[i-1], uregs.xbp, uregs.xsp);
 
-#  if defined(VGO_darwin)
+#  if defined(VGO_darwin) || defined(VGO_freebsd)
    if (VG_(is_valid_tid)(tid_if_known) &&
       VG_(is_in_syscall)(tid_if_known) &&
       i < max_n_ips) {
-      /* On Darwin, all the system call stubs have no function
+      /* On Darwin and FreeBSD, all the system call stubs have no function
        * prolog.  So instead of top of the stack being a new
        * frame comprising a saved BP and a return address, we
        * just have the return address in the caller's frame.
        * Adjust for this by recording the return address.
        */
+      if (debug)
+         VG_(printf)("     in syscall, use XSP-1\n");
       ips[i] = *(Addr *)uregs.xsp - 1;
       if (sps) sps[i] = uregs.xsp;
       if (fps) fps[i] = uregs.xbp;
@@ -636,35 +658,6 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
          continue;
       }
 
-#if defined(VGO_freebsd)
-      const NSegment *seg;
-      const HChar *filename = NULL;
-      int match = 0;
-
-      seg = VG_(am_find_nsegment)(uregs.xip);
-      if (seg != NULL) {
-         filename = VG_(am_get_filename)(seg);
-      }
-      if (filename != NULL && VG_(strstr)(filename, "/libc.so")) {
-         match = 1;
-      }
-      if (match == 1 && fp_min <= uregs.xsp &&
-	  uregs.xsp <= fp_max - 1 * sizeof(UWord)) {
-         /* fp looks sane, so use it. */
-         uregs.xip = (((UWord*)uregs.xsp)[0]);
-         if (0 == uregs.xip || 1 == uregs.xip) break;
-         if (fps) fps[i] = uregs.xsp;
-         uregs.xsp = uregs.xsp + sizeof(Addr) /*ra*/;
-         if (sps) sps[i] = uregs.xsp;
-         ips[i++] = uregs.xip - 1; /* -1: refer to calling insn, not the RA */
-         if (debug)
-            VG_(printf)("     ipsFF[%d]=%#08lx rbp %#08lx rsp %#08lx\n",
-                        i-1, ips[i-1], uregs.xbp, uregs.xsp);
-         uregs.xip = uregs.xip - 1; /* as per comment at the head of this loop */
-         RECURSIVE_MERGE(cmrf,ips,i);
-         continue;
-      }
-#endif
 
       /* If VG_(use_CF_info) fails, it won't modify ip/sp/fp, so
          we can safely try the old-fashioned method. */

@@ -42,6 +42,14 @@
    obj:/libexec/ld-elf*.so.1
 }
 {
+   DRD-MANY3
+   drd:ConflictingAccess
+   obj:/lib/libthr.so.3
+   obj:/lib/libthr.so.3
+   obj:/lib/libthr.so.3   
+   obj:/libexec/ld-elf*.so.1
+}
+{
    DRD-UNWIND1
    drd:ConflictingAccess
    ...
