@@ -12,12 +12,14 @@ EXTRA_DIST = \
 	pdfork_pdkill.stderr.exp-pts \
 	getfsstat.vgtest \
 	getfsstat.stderr.exp \
+		getfsstat.stderr.exp-x86 \
 	supponlyobj.vgtest \
 	supponlyobj.stderr.exp \
 	extattr.vgtest \
 	extattr.stderr.exp \
 	sigwait.vgtest \
 	sigwait.stdout.exp \
+		sigwait.stdout.exp-x86 \
 	sigwait.stderr.exp \
 	chflags.vgtest\
 	chflags.stderr.exp \
