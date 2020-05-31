@@ -223,6 +223,11 @@ typedef __vki_fd_set		vki_fd_set;
 #define ELF_NOTE_GNU "GNU"
 #endif
 
+// This is not defined on FreeBSD 10.4
+#if !defined(NT_FREEBSD_ABI_TAG)
+#define NT_FREEBSD_ABI_TAG 1
+#endif
+
 //----------------------------------------------------------------------
 // From sys/syslimits.h
 //----------------------------------------------------------------------
