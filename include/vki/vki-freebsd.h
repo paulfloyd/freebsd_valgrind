@@ -228,6 +228,9 @@ typedef __vki_fd_set		vki_fd_set;
 #define NT_FREEBSD_ABI_TAG 1
 #endif
 
+#define VKI_ELF_NOTE_ROUNDSIZE 4
+
+
 //----------------------------------------------------------------------
 // From sys/syslimits.h
 //----------------------------------------------------------------------

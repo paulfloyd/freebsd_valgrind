@@ -4705,9 +4705,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 // BSDXY(__NR_shmsys,           sys_shmsys),            // 171
 
    // nosys                                                172
-   // @todo PJF no longer in FreeBSD 12
-   BSDXY(__NR_pread6,           sys_pread),             // 173
-   BSDX_(__NR_pwrite6,          sys_pwrite),            // 174
+#if (FREEBSD_VERS <= FREEBSD_10)
+   BSDXY(__NR_freebsd6_pread,   sys_freebsd6_pread),    // 173
+   BSDX_(__NR_freebsd6_pwrite,  sys_freebsd6_pwrite),   // 174
+#endif
    // nosys                                                175
 
    // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
@@ -5095,9 +5096,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // sctp_generic_sendmsg                                 472
    // sctp_generic_sendmsg_iov                             473
    // sctp_generic_recvmsg                                 474
-   BSDXY(__NR_pread,            sys_pread7),            // 475
+   BSDXY(__NR_pread,            sys_pread),             // 475
 
-   BSDX_(__NR_pwrite,           sys_pwrite7),           // 476
+   BSDX_(__NR_pwrite,           sys_pwrite),            // 476
    BSDX_(__NR_mmap,             sys_mmap7),             // 477
    BSDX_(__NR_lseek,            sys_lseek7),            // 478
    BSDX_(__NR_truncate7,        sys_truncate7),         // 479

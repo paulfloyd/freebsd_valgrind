@@ -154,8 +154,10 @@
 #define	__NR_semsys		169
 #define	__NR_msgsys		170
 #define	__NR_shmsys		171
-#define	__NR_pread6		173
-#define	__NR_pwrite6		174
+#if (FREEBSD_VERS <= FREEBSD_10)
+#define	__NR_freebsd6_pread 173
+#define	__NR_frebsd6_pwrite	174
+#endif
 #define	__NR_ntp_adjtime	176
 #define	__NR_setgid		181
 #define	__NR_setegid		182

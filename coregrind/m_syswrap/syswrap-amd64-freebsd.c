@@ -543,18 +543,40 @@ PRE(sys_lseek7)
                  unsigned int, whence);
 }
 
-PRE(sys_pread)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_pread)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %lu, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_freebsd6_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %lu, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "read",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  int, pad, unsigned long, off);
 
+   if (!ML_(fd_allowed)(ARG1, "freebsd6_pread", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+   else
+      PRE_MEM_WRITE( "freebsd6_pread(buf)", ARG2, ARG3 );
+}
+
+POST(sys_freebsd6_pread)
+{
+   vg_assert(SUCCESS);
+   POST_MEM_WRITE( ARG2, RES );
+}
+#endif
+
+PRE(sys_pread)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "pread",
+                 unsigned int, fd, char *, buf, vki_size_t, count,
+                 unsigned long, off);
+
    if (!ML_(fd_allowed)(ARG1, "read", tid, False))
       SET_STATUS_Failure( VKI_EBADF );
    else
-      PRE_MEM_WRITE( "read(buf)", ARG2, ARG3 );
+      PRE_MEM_WRITE( "pread(buf)", ARG2, ARG3 );
 }
 
 POST(sys_pread)
@@ -563,54 +585,36 @@ POST(sys_pread)
    POST_MEM_WRITE( ARG2, RES );
 }
 
-PRE(sys_pread7)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
-   PRE_REG_READ4(ssize_t, "read",
-                 unsigned int, fd, char *, buf, vki_size_t, count,
-                 unsigned long, off);
-
-   if (!ML_(fd_allowed)(ARG1, "read", tid, False))
-      SET_STATUS_Failure( VKI_EBADF );
-   else
-      PRE_MEM_WRITE( "read(buf)", ARG2, ARG3 );
-}
-
-POST(sys_pread7)
-{
-   vg_assert(SUCCESS);
-   POST_MEM_WRITE( ARG2, RES );
-}
-
-PRE(sys_pwrite)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_freebsd6_pwrite ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", SARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "write",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  int, pad, unsigned long, off);
    /* check to see if it is allowed.  If not, try for an exemption from
       --sim-hints=enable-outer (used for self hosting). */
-   ok = ML_(fd_allowed)(ARG1, "write", tid, False);
+   ok = ML_(fd_allowed)(ARG1, "freebsd6_pwrite", tid, False);
    if (!ok && ARG1 == 2/*stderr*/
            && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
       ok = True;
    if (!ok)
       SET_STATUS_Failure( VKI_EBADF );
    else
-      PRE_MEM_READ( "write(buf)", ARG2, ARG3 );
+      PRE_MEM_READ( "freebsd6_pwrite(buf)", ARG2, ARG3 );
 }
+#endif
 
-PRE(sys_pwrite7)
+PRE(sys_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
-   PRE_REG_READ4(ssize_t, "write",
-                 unsigned int, fd, const char *, buf, vki_size_t, count,
-                 unsigned long, off);
+   PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "pwrite",
+                 int, fd, const char *, buf, vki_size_t, nbytes,
+                 vki_off_t, offset);
    /* check to see if it is allowed.  If not, try for an exemption from
       --sim-hints=enable-outer (used for self hosting). */
    ok = ML_(fd_allowed)(ARG1, "write", tid, False);
@@ -620,7 +624,7 @@ PRE(sys_pwrite7)
    if (!ok)
       SET_STATUS_Failure( VKI_EBADF );
    else
-      PRE_MEM_READ( "write(buf)", ARG2, ARG3 );
+      PRE_MEM_READ( "pwrite(buf)", ARG2, ARG3 );
 }
 
 PRE(sys_ftruncate)

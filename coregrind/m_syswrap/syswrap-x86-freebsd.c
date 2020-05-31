@@ -1005,15 +1005,37 @@ PRE(sys_lseek7)
                  unsigned int, offset_high, unsigned int, whence);
 }
 
-PRE(sys_pread)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_pread)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG5, ARG6);
+   PRINT("sys_freebsd6_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG5, ARG6);
    PRE_REG_READ6(ssize_t, "read",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  int, pad, unsigned int, off_low, unsigned int, off_high);
 
-   if (!ML_(fd_allowed)(ARG1, "read", tid, False))
+   if (!ML_(fd_allowed)(ARG1, "freebsd6_pread", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+   else
+      PRE_MEM_WRITE( "freebsd6_pread(buf)", ARG2, ARG3 );
+}
+
+POST(sys_freebsd6_pread)
+{
+   vg_assert(SUCCESS);
+   POST_MEM_WRITE( ARG2, RES );
+}
+#endif
+
+PRE(sys_pread)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRE_REG_READ5(ssize_t, "read",
+                 unsigned int, fd, char *, buf, vki_size_t, count,
+                 unsigned int, off_low, unsigned int, off_high);
+
+   if (!ML_(fd_allowed)(ARG1, "pread", tid, False))
       SET_STATUS_Failure( VKI_EBADF );
    else
       PRE_MEM_WRITE( "read(buf)", ARG2, ARG3 );
@@ -1025,57 +1047,40 @@ POST(sys_pread)
    POST_MEM_WRITE( ARG2, RES );
 }
 
-PRE(sys_pread7)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
-   PRE_REG_READ5(ssize_t, "read",
-                 unsigned int, fd, char *, buf, vki_size_t, count,
-                 unsigned int, off_low, unsigned int, off_high);
 
-   if (!ML_(fd_allowed)(ARG1, "read", tid, False))
-      SET_STATUS_Failure( VKI_EBADF );
-   else
-      PRE_MEM_WRITE( "read(buf)", ARG2, ARG3 );
-}
-
-POST(sys_pread7)
-{
-   vg_assert(SUCCESS);
-   POST_MEM_WRITE( ARG2, RES );
-}
-
-PRE(sys_pwrite)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG5, ARG6);
-   PRE_REG_READ6(ssize_t, "write",
+   PRINT("sys_freebsd6_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG5, ARG6);
+   PRE_REG_READ6(ssize_t, "freebsd6_pwrite",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  int, pad, unsigned int, off_low, unsigned int, off_high);
    /* check to see if it is allowed.  If not, try for an exemption from
       --sim-hints=enable-outer (used for self hosting). */
-   ok = ML_(fd_allowed)(ARG1, "write", tid, False);
+   ok = ML_(fd_allowed)(ARG1, "freebsd6_pwrite", tid, False);
    if (!ok && ARG1 == 2/*stderr*/
            && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
       ok = True;
    if (!ok)
       SET_STATUS_Failure( VKI_EBADF );
    else
-      PRE_MEM_READ( "write(buf)", ARG2, ARG3 );
+      PRE_MEM_READ( "freebsd6_write(buf)", ARG2, ARG3 );
 }
+#endif
 
-PRE(sys_pwrite7)
+PRE(sys_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_write ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
    PRE_REG_READ5(ssize_t, "write",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  unsigned int, off_low, unsigned int, off_high);
    /* check to see if it is allowed.  If not, try for an exemption from
       --sim-hints=enable-outer (used for self hosting). */
-   ok = ML_(fd_allowed)(ARG1, "write", tid, False);
+   ok = ML_(fd_allowed)(ARG1, "pwrite", tid, False);
    if (!ok && ARG1 == 2/*stderr*/
            && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
       ok = True;
