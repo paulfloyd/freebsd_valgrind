@@ -119,6 +119,7 @@ typedef
       Int o_arg3;
       Int o_arg4;
       Int o_arg5;
+      // @todo PJF this can either be a register or a stack
       Int o_arg6;
       Int s_arg7;
       Int s_arg8;

@@ -588,18 +588,9 @@ void getSyscallArgsFromGuestState ( /*OUT*/SyscallArgs*       canonical,
       canonical->sysno = gst->guest_RAX;
       break;
    }
+
    // stack[0] is a (fake) return address
-   if (canonical->klass != VG_FREEBSD_SYSCALL0 && canonical->klass != VG_FREEBSD_SYSCALL198) {
-      // stack[0] is return address
-      canonical->arg1  = gst->guest_RDI;
-      canonical->arg2  = gst->guest_RSI;
-      canonical->arg3  = gst->guest_RDX;
-      canonical->arg4  = gst->guest_R10;
-      canonical->arg5  = gst->guest_R8;
-      canonical->arg6  = gst->guest_R9;
-      canonical->arg7  = stack[1];
-      canonical->arg8  = stack[2];
-   } else {
+   if (canonical->klass == VG_FREEBSD_SYSCALL0 || canonical->klass == VG_FREEBSD_SYSCALL198) {
       // stack[0] is return address
       canonical->arg1  = gst->guest_RSI;
       canonical->arg2  = gst->guest_RDX;
@@ -609,6 +600,16 @@ void getSyscallArgsFromGuestState ( /*OUT*/SyscallArgs*       canonical,
       canonical->arg6  = stack[1];
       canonical->arg7  = stack[2];
       canonical->arg8  = stack[3];
+   } else {
+      // stack[0] is return address
+      canonical->arg1  = gst->guest_RDI;
+      canonical->arg2  = gst->guest_RSI;
+      canonical->arg3  = gst->guest_RDX;
+      canonical->arg4  = gst->guest_R10;
+      canonical->arg5  = gst->guest_R8;
+      canonical->arg6  = gst->guest_R9;
+      canonical->arg7  = stack[1];
+      canonical->arg8  = stack[2];
    }
 
 #elif defined(VGP_arm_linux)
@@ -971,39 +972,34 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
    switch (canonical->klass) {
    case VG_FREEBSD_SYSCALL0:
       gst->guest_RAX = __NR_syscall;
-      gst->guest_RDI = canonical->sysno;
-      gst->guest_RSI = canonical->arg1;
-      gst->guest_RDX = canonical->arg2;
-      gst->guest_R10 = canonical->arg3;
-      gst->guest_R8  = canonical->arg4;
-      gst->guest_R9  = canonical->arg5;
-      stack[1]       = canonical->arg6;
-      stack[2]       = canonical->arg7;
-      stack[3]       = canonical->arg8;
       break;
    case VG_FREEBSD_SYSCALL198:
       gst->guest_RAX = __NR___syscall;
-      gst->guest_RDI = canonical->sysno;
-      gst->guest_RSI = canonical->arg1;
-      gst->guest_RDX = canonical->arg2;
-      gst->guest_R10 = canonical->arg3;
-      gst->guest_R8  = canonical->arg4;
-      gst->guest_R9  = canonical->arg5;
-      stack[1]       = canonical->arg6;
-      stack[2]       = canonical->arg7;
-      stack[3]       = canonical->arg8;
       break;
    default:
       gst->guest_RAX = canonical->sysno;
-      gst->guest_RDI = canonical->arg1;
-      gst->guest_RSI = canonical->arg2;
-      gst->guest_RDX = canonical->arg3;
-      gst->guest_R10 = canonical->arg4;
-      gst->guest_R8  = canonical->arg5;
-      gst->guest_R9  = canonical->arg6;
-      stack[1]       = canonical->arg7;
-      stack[2]       = canonical->arg8;
       break;
+   }
+
+   if (canonical->klass == VG_FREEBSD_SYSCALL0 || canonical->klass == VG_FREEBSD_SYSCALL198) {
+       gst->guest_RDI = canonical->sysno;
+       gst->guest_RSI = canonical->arg1;
+       gst->guest_RDX = canonical->arg2;
+       gst->guest_R10 = canonical->arg3;
+       gst->guest_R8  = canonical->arg4;
+       gst->guest_R9  = canonical->arg5;
+       stack[1]       = canonical->arg6;
+       stack[2]       = canonical->arg7;
+       stack[3]       = canonical->arg8;
+   } else {
+       gst->guest_RDI = canonical->arg1;
+       gst->guest_RSI = canonical->arg2;
+       gst->guest_RDX = canonical->arg3;
+       gst->guest_R10 = canonical->arg4;
+       gst->guest_R8  = canonical->arg5;
+       gst->guest_R9  = canonical->arg6;
+       stack[1]       = canonical->arg7;
+       stack[2]       = canonical->arg8;
    }
 
 #elif defined(VGP_arm_linux)
@@ -1833,6 +1829,23 @@ void getSyscallArgLayout ( /*OUT*/SyscallArgLayout* layout )
 #endif
 }
 
+#if defined(VGP_amd64_freebsd)
+static
+void getSyscallArgLayout_0_198 ( /*OUT*/SyscallArgLayout* layout )
+{
+   VG_(bzero_inline)(layout, sizeof(*layout));
+   layout->o_sysno  = OFFSET_amd64_RDI;
+   layout->o_arg1   = OFFSET_amd64_RSI;
+   layout->o_arg2   = OFFSET_amd64_RDX;
+   layout->o_arg3   = OFFSET_amd64_R10;
+   layout->o_arg4   = OFFSET_amd64_R8;
+   layout->o_arg5   = OFFSET_amd64_R9;
+   layout->o_arg6   = sizeof(UWord) * 1;
+   layout->s_arg7   = sizeof(UWord) * 2;
+   layout->s_arg8   = sizeof(UWord) * 3;
+}
+#endif
+
 
 /* ---------------------------------------------------------------------
    The main driver logic
@@ -2138,7 +2151,23 @@ void VG_(client_syscall) ( ThreadId tid, UInt trc )
       action.  This info is needed so that the scalar syscall argument
       checks (PRE_REG_READ calls) know which bits of the guest state
       they need to inspect. */
+#if defined(VGP_amd64_freebsd)
+   // PJF - somewhat unfortunate uglificaton of the code, but the current code handles two
+   // types of syscall with different register use
+   // I'm not certain that both are currently used, but mixing them up is certainly
+   // not good. I've avoided modifying the existing function (I could have added
+   // a FreeBSD amd64-ony flag to it for this purpiose).
+   if (sci->orig_args.klass == VG_FREEBSD_SYSCALL0 || sci->orig_args.klass == VG_FREEBSD_SYSCALL198) {
+       getSyscallArgLayout_0_198( &layout );
+    } else {
+#endif
+
    getSyscallArgLayout( &layout );
+
+#if defined(VGP_amd64_freebsd)
+   }
+#endif
+
 
    /* Make sure the tmp signal mask matches the real signal mask;
       sigsuspend may change this. */
