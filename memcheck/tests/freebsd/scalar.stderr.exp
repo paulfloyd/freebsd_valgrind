@@ -1,0 +1,32 @@
+---------------------------------------------------------
+  3:                SYS_read 1+3s 0m
+---------------------------------------------------------
+Syscall param (syscallno) contains uninitialised byte(s)
+   ...
+
+Syscall param read(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param read(count) contains uninitialised byte(s)
+   ...
+
+Syscall param read(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+  4:               SYS_write 3s 1m
+---------------------------------------------------------
+Syscall param write(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param write(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param write(count) contains uninitialised byte(s)
+   ...
+
+Syscall param write(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+

@@ -1267,6 +1267,7 @@
 /memcheck/tests/freebsd/chflags
 /memcheck/tests/freebsd/get_set_login
 /memcheck/tests/freebsd/revoke
+/memcheck/tests/freebsd/scalar
 
 # /memcheck/tests/freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff
