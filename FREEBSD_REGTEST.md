@@ -1,13 +1,17 @@
-# regtest status for FreeBSD
+### regtest status for FreeBSD
+
+All tests are on FreeBSD 12.1.
 
 ** note ** run 'kldload mqueuefs' before running the tests, otherwise none/tests/mq will fail
 
-## Tests in none
+## amd64 / GCC results
+
+# Tests in none
 
 98.0% good
 
 ```
-== 202 tests, 4 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 205 tests, 4 stderr failures, 3 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 none/tests/coolo_sigaction               (stdout)
 none/tests/coolo_sigaction               (stderr)
 none/tests/faultstatus                   (stderr)
@@ -19,106 +23,141 @@ none/tests/sigstackgrowth                (stderr)
 
 Most of these are signal issues.  
 
-## Tests in memcheck
+# Tests in memcheck
 
-97.0% good
+99.8% good
 
 ```
-== 235 tests, 7 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-memcheck/tests/addressable               (stderr)
+== 244 tests, 3 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 memcheck/tests/descr_belowsp             (stderr)
-memcheck/tests/dw4                       (stderr)
 memcheck/tests/gone_abrt_xml             (stderr)
 memcheck/tests/sigaltstack               (stderr)
-memcheck/tests/varinfo5                  (stderr)
 ```
 
-addressable - signal issue  
-descr_belowsp - SIGSEGV handling issue  
-d4w - reading address returned by sbrk(0) is Unaddressable for the exp but only Uninitialized for FreeBSD  
-gone_abrt_xml - differences in signal details  
+descr_belowsp - missing info on stack guard in message. See issue #101__
+gone_abrt_xml - differences in signal details. See issue 102  
 sigaltstack - SIGSEGV handling issue  
-varinfo5 - diff in source backannotation  
 
 ## Tests in massif, callgrind and cachegrind, dhat
 
 100% good
 
-## Tests in gdbserver_tests
+# Tests in gdbserver_tests
 
-85.7% good
+90% good
 
 ```
-== 21 tests, 2 stderr failures, 1 stdout failure, 1 stderrB failure, 3 stdoutB failures, 0 post failures ==
-gdbserver_tests/mcmain_pic               (stdout)
-gdbserver_tests/mcmain_pic               (stdoutB)
-gdbserver_tests/mcmain_pic               (stderrB)
+== 20 tests, 2 stderr failures, 1 stdout failure, 1 stderrB failure, 3 stdoutB failures, 0 post failures ==
 gdbserver_tests/mcsignopass              (stderr)
 gdbserver_tests/mcsignopass              (stdoutB)
 gdbserver_tests/mcsigpass                (stderr)
 gdbserver_tests/mcsigpass                (stdoutB)
 ```
 
-mcmain_pic - gdb complains that it can't find main_pic.c ???  
 mcsignopass - guest terminating with SIGSEGV  
 mcsigpass - guest getting SIGSEGV rather than SIGBUS  
 
-## Tests in helgrind
+# Tests in helgrind
 
-Helgrind - 92.9% good
+Helgrind - 94.5% good
+
 ```
-== 56 tests, 4 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 55 tests, 3 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 helgrind/tests/pth_cond_destroy_busy     (stderr)
-helgrind/tests/tc20_verifywrap           (stderr)
-helgrind/tests/tc23_bogus_condwait       (stderr)
+helgrind/tests/pth_destroy_cond          (stderr)
 helgrind/tests/tls_threads               (stderr)
+
 ```
 pth_cond_destroy_busy - one missing race error  
-tc20_verifywrap - C file doesn't compile. Either need to fix the C file or disable the test.  
-tc23_bogus_condwait - a few extra dubious lock messages  
+pth_destroy_cond - ???  
 tls_threads - don't understand the error message  
 
-## Tests in drd
+# Tests in drd
 
-DRD - 90.6% good
-
+DRD - 96.8% good
 
 ```
-== 127 tests, 11 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-drd/tests/bar_bad                        (stderr)
-drd/tests/bar_bad_xml                    (stderr)
-drd/tests/concurrent_close               (stderr)
+== 126 tests, 4 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 drd/tests/dlopen                         (stdout)
 drd/tests/dlopen                         (stderr)
-drd/tests/pth_detached3                  (stderr)
-drd/tests/recursive_mutex                (stderr)
 drd/tests/sigaltstack                    (stderr)
 drd/tests/std_list                       (stderr)
-drd/tests/tc09_bad_unlock                (stderr)
 drd/tests/tc23_bogus_condwait            (stderr)
-drd/tests/thread_name_xml                (stderr)
 ```
 
-bar_bad - one extra error message  
-bar_bad_xml - as above  
-concurrent_close - runs OK standalone but not under perl regtest  
-dlopen - crash  
-pth_uninitialized_cond - sigbus in guest  
+dlopen - crash, may need som hooks for dlopen. See issue #57  
 sigaltstack - sigsegv in guest  
 std_list - lots of errors related to setlocale  
-drd/tests/tc09_bad_unlock - two missing error messages  
-tc23_bogus_condwait - several exp files, not sure which is relevant for FreeBSD 
-thread_name_xml - hard to read diffs but thread_name was crashing  
+tc23_bogus_condwait - several exp files, not sure which is relevant for FreeBSD  
 
-# amd64 / clang results
+## amd64 / clang results
 
-36 fails.
+As amd64 / GCC except the following extra failures
 
-# x86 / clang results
+# Tests in none
+
+```
+none/tests/amd64/ssse3_misaligned
+```
+See issue #46
+
+# Tests in memcheck
+
+```
+memcheck/tests/amd64/insn-pmovmskb       (stderr)
+memcheck/tests/clientperm                (stderr)
+memcheck/tests/leak-cases-full           (stderr)
+memcheck/tests/leak-cases-summary        (stderr)
+memcheck/tests/leak-cycle                (stderr)
+memcheck/tests/lks                       (stderr)
+memcheck/tests/origin5-bz2               (stderr)
+memcheck/tests/signal2                   (stdout)
+memcheck/tests/signal2                   (stderr)
+memcheck/tests/varinfo6                  (stderr)
+
+```
+
+insn-pmovmskb - See issue #47  
+clientperm - clang optimization issue  
+leak* and lks - problem with client requests. See issue #89  
+origin5-bz2/varinfo6 - missing line number. See issue #70  
+signal2 - SIGSEGV in guest received by host  
+
+# Tests in drd
+
+```
+drd/tests/atomic_var                     (stderr)
+drd/tests/omp_matinv                     (stderr)
+drd/tests/omp_matinv_racy                (stderr)
+drd/tests/omp_prime_racy                 (stderr)
+drd/tests/tc04_free_lock                 (stderr)
+drd/tests/tc23_bogus_condwait            (stderr)
+```
+
+Not fully analyzed.
+
+## x86 / GCC results
+
+As amd66 / gcc except the following extra failures
+
+# Tests in none
+
+```
+none/tests/fdleak_cmesg
+none/tests/manytreads
+none/tests/pth_self_kill_15_other
+```
+
+Not analyzed.  
+Several amd64 testcases failing because of signals either don't run or pass.
+
+# Tests in memcheck
+
+## x86 / clang results
 
 46 fails. Ongoing analysis.
 
-# Linux results
+## Linux results
 
 (Debug build)
 
