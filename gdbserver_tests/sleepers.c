@@ -23,9 +23,9 @@ static pid_t gettid_sys()
    return getpid();
 #endif
 }
+
 // will be invoked from gdb.
-static void whoami(char *msg) __attribute__((unused));
-static void whoami(char *msg)
+void whoami(char *msg)
 {
    fprintf(stderr, "pid %ld Thread %ld %s\n", (long) getpid(), (long) gettid_sys(),
            msg);
