@@ -1693,7 +1693,7 @@ static Bool is_signal_from_kernel(ThreadId tid, int signum, int si_code)
     // Full support for POSIX signal information first appeared in FreeBSD 7.0.
     // The codes SI_USER and SI_KERNEL can be generated as of FreeBSD 8.1.  The
     // code SI_LWP can be	generated as of	FreeBSD	9.0.
-    if (si_code == VKI_SI_USER)
+    if (si_code == VKI_SI_USER || si_code == VKI_SI_LWP)
         return False;
 
    // It looks like there's no reliable way to say where the signal came from
