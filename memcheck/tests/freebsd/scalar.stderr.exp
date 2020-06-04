@@ -178,3 +178,216 @@ Syscall param chown(path) points to unaddressable byte(s)
 ---------------------------------------------------------
  20:              SYS_getpid 0s 0m
 ---------------------------------------------------------
+---------------------------------------------------------
+ 21:               SYS_mount 4s 2m
+---------------------------------------------------------
+Syscall param mount(type) contains uninitialised byte(s)
+   ...
+
+Syscall param mount(path) contains uninitialised byte(s)
+   ...
+
+Syscall param mount(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param mount(data) contains uninitialised byte(s)
+   ...
+
+Syscall param mount(type) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param mount(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+ 22:             SYS_unmount 1s 1m
+---------------------------------------------------------
+Syscall param unmount(path) contains uninitialised byte(s)
+   ...
+
+Syscall param unmount(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+ 23:              SYS_setuid 1s 0m
+---------------------------------------------------------
+Syscall param setuid(uid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 24:              SYS_getuid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 25:             SYS_geteuid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 26:              SYS_ptrace 4s 0m
+---------------------------------------------------------
+Syscall param ptrace(request) contains uninitialised byte(s)
+   ...
+
+Syscall param ptrace(pid) contains uninitialised byte(s)
+   ...
+
+Syscall param ptrace(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param ptrace(data) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 27:             SYS_recvmsg 3s 0m
+---------------------------------------------------------
+Syscall param recvmsg(s) contains uninitialised byte(s)
+   ...
+
+Syscall param recvmsg(msg) contains uninitialised byte(s)
+   ...
+
+Syscall param recvmsg(flags) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 28:             SYS_sendmsg 3s 0m
+---------------------------------------------------------
+Syscall param sendmsg(s) contains uninitialised byte(s)
+   ...
+
+Syscall param sendmsg(msg) contains uninitialised byte(s)
+   ...
+
+Syscall param sendmsg(flags) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 29:            SYS_recvfrom 5s 0m
+---------------------------------------------------------
+Syscall param recvfrom(s) contains uninitialised byte(s)
+   ...
+
+Syscall param recvfrom(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param recvfrom(len) contains uninitialised byte(s)
+   ...
+
+Syscall param recvfrom(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param recvfrom(from) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 30:              SYS_accept 3s 0m
+---------------------------------------------------------
+Syscall param accept(s) contains uninitialised byte(s)
+   ...
+
+Syscall param accept(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param accept(*addrlen) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 31:         SYS_getpeername 3s 1m
+---------------------------------------------------------
+Syscall param getpeername(s) contains uninitialised byte(s)
+   ...
+
+Syscall param getpeername(name) contains uninitialised byte(s)
+   ...
+
+Syscall param getpeername(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param socketcall.getpeername(namelen_in) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+ 32:         SYS_getsockname 3s 1m
+---------------------------------------------------------
+Syscall param getsockname(s) contains uninitialised byte(s)
+   ...
+
+Syscall param getsockname(name) contains uninitialised byte(s)
+   ...
+
+Syscall param getsockname(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param socketcall.getsockname(namelen_in) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+ 25:             SYS_geteuid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 34:             SYS_chflags 2s 1m
+---------------------------------------------------------
+Syscall param chflags(path) contains uninitialised byte(s)
+   ...
+
+Syscall param chflags(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param chflags(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+ 35:            SYS_fchflags 2s 0m
+---------------------------------------------------------
+Syscall param fchflags(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param fchflags(flags) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 36:                SYS_sync 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 37:                SYS_kill 2s 0m
+---------------------------------------------------------
+Syscall param kill(pid) contains uninitialised byte(s)
+   ...
+
+Syscall param kill(signal) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 39:             SYS_getppid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 41:                 SYS_dup 1s 0m
+---------------------------------------------------------
+Syscall param dup(oldfd) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+ 42:      SYS_freebsd10_pipe 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 43:             SYS_getegid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 44:              SYS_profil ni
+---------------------------------------------------------
+---------------------------------------------------------
+ 45:              SYS_ktrace ni
+---------------------------------------------------------
+---------------------------------------------------------
+ 47:              SYS_getgid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 49:            SYS_getlogin 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+ 49:            SYS_getlogin 1s 1m
+---------------------------------------------------------

@@ -303,7 +303,7 @@ Int VG_(pipe) ( Int fd[2] )
    SysRes res = VG_(do_syscall1)(__NR_pipe, (UWord)fd);
    return sr_isError(res) ? -1 : 0;
 #  elif defined(VGO_freebsd)
-   SysRes res = VG_(do_syscall0)(__NR_pipe);
+   SysRes res = VG_(do_syscall0)(__NR_freebsd10_pipe);
    if (!sr_isError(res)) {
       fd[0] = sr_Res(res);
       fd[1] = sr_ResHI(res);

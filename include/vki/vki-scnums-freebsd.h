@@ -79,7 +79,7 @@
 #define __NR_getppid             39
 /* old lstat                     40 */
 #define __NR_dup                 41
-#define __NR_pipe                42
+#define __NR_freebsd10_pipe      42
 #define __NR_getegid             43
 #define __NR_profil              44
 #define __NR_ktrace              45

@@ -562,8 +562,8 @@ PRE(sys_sendmsg)
 PRE(sys_recvmsg)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_recvmsg ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "recvmsg", int, s, struct msghdr *, msg, int, flags);
+   PRINT("sys_recvmsg ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",SARG1,ARG2,SARG3);
+   PRE_REG_READ3(vki_ssize_t, "recvmsg", int, s, struct msghdr *, msg, int, flags);
    ML_(generic_PRE_sys_recvmsg)(tid, "recvmsg", (struct vki_msghdr *)ARG2);
 }
 
@@ -806,13 +806,10 @@ PRE(sys_exit)
    SET_STATUS_Success(0);
 }
 
-
 PRE(sys_getlogin)
 {
-   PRINT("sys_getlogin ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
-   PRE_REG_READ2(long, "getlogin",
-                 char *, buf, int, len);
-   PRE_MEM_WRITE( "getlogin(buf, len)", ARG1, ARG2 );
+   PRINT("sys_getlogin ( )");
+   PRE_REG_READ0(char *, "getlogin");
 }
 
 POST(sys_getlogin)
@@ -4539,12 +4536,12 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // 4.3 lstat                                            40
    GENXY(__NR_dup,              sys_dup),               // 41
-   // @todo PJF this is now SYS_freebsd10_pipe
-   BSDXY(__NR_pipe,             sys_pipe),              // 42
+
+   BSDXY(__NR_freebsd10_pipe,   sys_pipe),              // 42
    GENX_(__NR_getegid,          sys_getegid),           // 43
 
-   // GENX_(__NR_profil,        sys_profil),            // 44
-// BSDX_(__NR_ktrace,           sys_ktrace),            // 45
+   GENX_(__NR_profil,           sys_ni_syscall),        // 44
+   GENX_(__NR_ktrace,           sys_ni_syscall),        // 45
    // 4.3 sigaction                                        46
    GENX_(__NR_getgid,           sys_getgid),            // 47
 
