@@ -3166,7 +3166,7 @@ POST(sys_shmdt)
 
 PRE(sys_shmctl)
 {
-   PRINT("sys_shmctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
+   PRINT("sys_shmctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,SARG2,ARG3);
    PRE_REG_READ3(long, "shmctl",
                  int, shmid, int, cmd, struct vki_shmid_ds *, buf);
    switch (ARG2 /* cmd */) {
@@ -3182,9 +3182,9 @@ PRE(sys_shmctl)
 }
 
 
-PRE(sys_shmctl7)
+PRE(sys_freebsd7_shmctl)
 {
-   PRINT("sys_shmctl7 ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
+   PRINT("sys_freebsd7_shmctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,SARG2,ARG3);
    PRE_REG_READ3(long, "shmctl",
                  int, shmid, int, cmd, struct vki_shmid_ds7 *, buf);
    switch (ARG2 /* cmd */) {
@@ -3206,7 +3206,7 @@ POST(sys_shmctl)
    }
 }
 
-POST(sys_shmctl7)
+POST(sys_freebsd7_shmctl)
 {
    if (ARG2 == VKI_IPC_STAT) {
       POST_MEM_WRITE( ARG3, sizeof(struct vki_shmid_ds7) );
@@ -3287,7 +3287,7 @@ struct semid_ds7 {
     long        sem_pad3[4];    /* SVABI/386 says I need this here */
 };
 
-PRE(sys___semctl7)
+PRE(sys_freebsd7___semctl)
 {
    switch (ARG3) {
    case VKI_IPC_INFO:
@@ -3318,7 +3318,7 @@ PRE(sys___semctl7)
    ML_(generic_PRE_sys_semctl)(tid, ARG1,ARG2,ARG3,ARG4);
 }
 
-POST(sys___semctl7)
+POST(sys_freebsd7___semctl)
 {
    ML_(generic_POST_sys_semctl)(tid, RES,ARG1,ARG2,ARG3,ARG4);
 }
@@ -4504,8 +4504,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    GENX_(__NR_chdir,            sys_chdir),             // 12
    GENX_(__NR_fchdir,           sys_fchdir),            // 13
-   GENX_(__NR_mknod,            sys_mknod),             // 14
-   // @todo PJF this is SYS_freebsd11_mknod since freebsd 12
+   GENX_(__NR_freebsd11_mknod,  sys_mknod),             // 14
    GENX_(__NR_chmod,            sys_chmod),             // 15
 
    GENX_(__NR_chown,            sys_chown),             // 16
@@ -4743,12 +4742,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENX_(__NR_setrlimit,        sys_setrlimit),         // 195
 
    BSDXY(__NR_getdirentries,    sys_getdirentries),     // 196
-   BSDX_(__NR_mmap6,            sys_mmap7),             // 197
+#if (FREEBSD_VERS <= FREEBSD_10)
+   BSDX_(__NR_freebsd6_mmap,    sys_freebsd6_mmap),     // 197
+#endif
    // __syscall (handled specially)                     // 198
-   BSDX_(__NR_lseek6,           sys_lseek),             // 199
-
-   BSDX_(__NR_truncate,         sys_truncate),          // 200
-   BSDX_(__NR_ftruncate,        sys_ftruncate),         // 201
+#if (FREEBSD_VERS <= FREEBSD_10)
+   BSDX_(__NR_freebsd6_lseek,    sys_freebsd6_lseek),    // 199
+   BSDX_(__NR_freebsd6_truncate, sys_freebsd6_truncate), // 200
+   BSDX_(__NR_freebsd6_ftruncate, sys_freebsd6_ftruncate), // 201
+#endif
    BSDXY(__NR___sysctl,         sys___sysctl),          // 202
    GENX_(__NR_mlock,            sys_mlock),             // 203
 
@@ -4772,7 +4774,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_lkmnosys8,        sys_lkmnosys8),         // 218
 // BSDXY(__NR_nfs_fhopen,       sys_nfs_fhopen),        // 219
 
-   BSDXY(__NR___semctl7,        sys___semctl7),         // 220
+   BSDXY(__NR_freebsd7___semctl, sys_freebsd7___semctl), // 220
    BSDX_(__NR_semget,           sys_semget),            // 221
    BSDX_(__NR_semop,            sys_semop),             // 222
    // unimpl semconfig                                     223
@@ -4783,7 +4785,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 // BSDXY(__NR_msgrcv,           sys_msgrcv),            // 227
 
    BSDXY(__NR_shmat,            sys_shmat),             // 228
-   BSDXY(__NR_shmctl7,          sys_shmctl7),           // 229
+   BSDXY(__NR_freebsd7_shmctl,  sys_freebsd7_shmctl),   // 229
    BSDXY(__NR_shmdt,            sys_shmdt),             // 230
    BSDX_(__NR_shmget,           sys_shmget),            // 231
 
@@ -4812,7 +4814,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_minherit,         sys_minherit),          // 250
    BSDX_(__NR_rfork,            sys_rfork),             // 251
 
-   GENXY(__NR_openbsd_poll,     sys_poll),              // 252
+   // openbsd_poll                                      // 252
    BSDX_(__NR_issetugid,        sys_issetugid),         // 253
    GENX_(__NR_lchown,           sys_lchown),            // 254
    // nosys                                                255
@@ -4840,7 +4842,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_getdents,         sys_getdents),          // 272
    // nosys                                                273
    BSDX_(__NR_lchmod,           sys_lchmod),            // 274
-   GENX_(__NR_netbsd_lchown,    sys_lchown),            // 275
+   // netbsd_lchown                                     // 275
 
    BSDX_(__NR_lutimes,          sys_lutimes),           // 276
    // netbsd msync                                         277
@@ -5099,11 +5101,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_pread,            sys_pread),             // 475
 
    BSDX_(__NR_pwrite,           sys_pwrite),            // 476
-   BSDX_(__NR_mmap,             sys_mmap7),             // 477
-   BSDX_(__NR_lseek,            sys_lseek7),            // 478
-   BSDX_(__NR_truncate7,        sys_truncate7),         // 479
-
-   BSDX_(__NR_ftruncate7,       sys_ftruncate7),        // 480
+   BSDX_(__NR_mmap,             sys_mmap),              // 477
+   BSDX_(__NR_lseek,            sys_lseek),             // 478
+   BSDX_(__NR_truncate,         sys_truncate),          // 479
+   BSDX_(__NR_ftruncate,        sys_ftruncate),         // 480
    BSDXY(__NR_thr_kill2,        sys_thr_kill2),         // 481
    BSDXY(__NR_shm_open,         sys_shm_open),          // 482
    BSDX_(__NR_shm_unlink,       sys_shm_unlink),        // 483

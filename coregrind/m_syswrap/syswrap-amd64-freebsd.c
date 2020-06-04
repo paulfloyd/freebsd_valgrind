@@ -492,13 +492,13 @@ PRE(sys_swapcontext)
    *flags |= SfPollAfter;
 }
 
-
+#if (FREEBSD_VERS <= FREEBSD_10)
 /* This is here because on x86 the off_t is passed in 2 regs. Don't ask about pad.  */
 
 /* caddr_t mmap(caddr_t addr, size_t len, int prot, int flags, int fd, int pad, off_t pos); */
 /*              ARG1           ARG2       ARG3      ARG4       ARG5    ARG6     ARG7 */
 
-PRE(sys_mmap)
+PRE(sys_freebsd6_mmap)
 {
    SysRes r;
 
@@ -511,9 +511,10 @@ PRE(sys_mmap)
    r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG7 );
    SET_STATUS_from_SysRes(r);
 }
+#endif
 
 /* FreeBSD-7 introduces a "regular" version of mmap etc. */
-PRE(sys_mmap7)
+PRE(sys_mmap)
 {
    SysRes r;
 
@@ -527,15 +528,17 @@ PRE(sys_mmap7)
    SET_STATUS_from_SysRes(r);
 }
 
-PRE(sys_lseek)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_lseek)
 {
-   PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_freebsd6_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(long, "lseek",
                  unsigned int, fd, int, pad, unsigned long, offset,
                  unsigned int, whence);
 }
+#endif
 
-PRE(sys_lseek7)
+PRE(sys_lseek)
 {
    PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(long, "lseek",
@@ -627,15 +630,17 @@ PRE(sys_pwrite)
       PRE_MEM_READ( "pwrite(buf)", ARG2, ARG3 );
 }
 
-PRE(sys_ftruncate)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_ftruncate)
 {
    *flags |= SfMayBlock;
    PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG3);
    PRE_REG_READ3(long, "ftruncate", unsigned int, fd, int, pad,
 		  unsigned int, length);
 }
+#endif
 
-PRE(sys_ftruncate7)
+PRE(sys_ftruncate)
 {
    *flags |= SfMayBlock;
    PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
@@ -643,7 +648,8 @@ PRE(sys_ftruncate7)
 		  unsigned long, length);
 }
 
-PRE(sys_truncate)
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_truncate)
 {
    *flags |= SfMayBlock;
    PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG3);
@@ -651,8 +657,9 @@ PRE(sys_truncate)
                  const char *, path, int, pad, unsigned int, length);
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
 }
+#endif
 
-PRE(sys_truncate7)
+PRE(sys_truncate)
 {
    *flags |= SfMayBlock;
    PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);

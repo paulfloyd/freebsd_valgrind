@@ -185,8 +185,11 @@ SysRes VG_(mknod) ( const HChar* pathname, Int mode, UWord dev )
    /* ARM64 wants to use __NR_mknodat rather than __NR_mknod. */
    SysRes res = VG_(do_syscall4)(__NR_mknodat,
                                  VKI_AT_FDCWD, (UWord)pathname, mode, dev);
-#  elif defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_freebsd)
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_mknod,
+                                 (UWord)pathname, mode, dev);
+#  elif defined(VGO_freebsd)
+   SysRes res = VG_(do_syscall3)(__NR_freebsd11_mknod,
                                  (UWord)pathname, mode, dev);
 #  elif defined(VGO_solaris)
    SysRes res = VG_(do_syscall4)(__NR_mknodat,
