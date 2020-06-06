@@ -1435,7 +1435,6 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
       OFFSET_x86_EDX, sizeof(UInt) );
    // GrP fixme sets defined for entire eflags, not just bit c
-   // DDD: this breaks exp-ptrcheck.
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
       offsetof(VexGuestX86State, guest_CC_DEP1), sizeof(UInt) );
    
@@ -1455,7 +1454,6 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
       OFFSET_amd64_RDX, sizeof(ULong) );
    // GrP fixme sets defined for entire eflags, not just bit c
-   // DDD: this breaks exp-ptrcheck.
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
       offsetof(VexGuestAMD64State, guest_CC_DEP1), sizeof(ULong) );
 #elif defined(VGP_x86_darwin)

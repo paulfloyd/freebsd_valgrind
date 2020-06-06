@@ -440,6 +440,12 @@ PRE(sys_vfork)
    }
 }
 
+PRE(sys_sbrk)
+{
+   PRINT("sys_sbrk ( %#" FMT_REGWORD "x )",ARG1);
+   PRE_REG_READ1(void*, "sbrk", vki_intptr_t, incr);
+}
+
 // int socket(int domain, int type, int protocol);
 PRE(sys_socket)
 {
@@ -460,9 +466,9 @@ POST(sys_socket)
 PRE(sys_setsockopt)
 {
    PRINT("sys_setsockopt ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",SARG1,SARG2,SARG3,ARG4,ARG5);
-   PRE_REG_READ5(long, "setsockopt",
+   PRE_REG_READ5(int, "setsockopt",
                  int, s, int, level, int, optname,
-                 const void *, optval, int, optlen);
+                 const void *, optval, vki_socklen_t, optlen);
    ML_(generic_PRE_sys_setsockopt)(tid, ARG1,ARG2,ARG3,ARG4,ARG5);
 }
 
@@ -634,11 +640,31 @@ PRE(sys_socketpair)
                  int, d, int, type, int, protocol, int *, sv);
    ML_(generic_PRE_sys_socketpair)(tid, ARG1,ARG2,ARG3,ARG4);
 }
+
 POST(sys_socketpair)
 {
    vg_assert(SUCCESS);
    ML_(generic_POST_sys_socketpair)(tid, VG_(mk_SysRes_Success)(RES),
                                          ARG1,ARG2,ARG3,ARG4);
+}
+
+// int adjtime(const struct timeval *delta, struct timeval *olddelta);
+PRE(sys_adjtime)
+{
+   PRINT("sys_adjtime ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(int, "adjtime",
+                 const struct vki_timeval *, delta, struct vki_timeval *, olddelta);
+   PRE_MEM_READ("adjtime(delta)", ARG1, sizeof(struct vki_timeval));
+   if (ARG2) {
+      PRE_MEM_WRITE("adjtime(olddelta)", ARG1, sizeof(struct vki_timeval));
+   }
+}
+
+POST(sys_adjtime)
+{
+   if (ARG2) {
+      POST_MEM_WRITE(ARG1, sizeof(struct vki_timeval));
+   }
 }
 
 /* ---------------------------------------------------------------------
@@ -971,6 +997,7 @@ PRE(sys_issetugid)
 PRE(sys_revoke)
 {
    PRINT("sys_revoke ( %#" FMT_REGWORD "x(%s) )", ARG1, (char*)ARG1);
+   PRE_REG_READ1(long, "revoke", const char *, path);
    PRE_MEM_RASCIIZ( "revoke(path)", ARG1);
 }
 
@@ -1176,6 +1203,14 @@ PRE(sys_utrace)
    PRINT("sys_utrace ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "utrace", const void *, buf, vki_size_t, len);
    PRE_MEM_READ( "utrace(buf,len)", ARG2, ARG3 );
+}
+
+// int swapon(const char *special);
+PRE(sys_swapon)
+{
+   PRINT("sys_swapon ( %#" FMT_REGWORD "x(%s) )", ARG1,(char*)ARG1);
+   PRE_REG_READ1(int, "swapon", const char*, special );
+   PRE_MEM_RASCIIZ( "swapon(special)", ARG1 );
 }
 
 PRE(sys_getdtablesize)
@@ -3415,10 +3450,10 @@ PRE(sys_mkdirat)
 
 PRE(sys_mkfifoat)
 {
-  PRINT("sys_mkfifoat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3 );
-   PRE_REG_READ3(long, "mkfifoat",
-                 int, dfd, const char *, pathname, int, mode);
-   PRE_MEM_RASCIIZ( "mkfifoat(pathname)", ARG2 );
+   PRINT("sys_mkfifoat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3 );
+   PRE_REG_READ3(int, "mkfifoat",
+                 int, fd, const char *, path, vki_mode_t, mode);
+   PRE_MEM_RASCIIZ( "mkfifoat(path)", ARG2 );
 }
 
 PRE(sys_mknodat)
@@ -4571,8 +4606,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // obsol vread                                          67
 
    // obsol vwrite                                         68
-   // BSDX_(__NR_sbrk,sys_sbrk),                        // 69
-   // BSDX_(__NR_sstk,          sys_sstk),              // 70
+   BSDX_(__NR_sbrk,             sys_sbrk),              // 69
+   // no implemented sstk,                              // 70
    // 4.3 mmap                                             71
 
    // 4.2 vadvise                                          72
@@ -4591,7 +4626,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_setitimer,        sys_setitimer),         // 83
 
    // 4.3 wait                                             84
-// BSDX_(__NR_swapon,           sys_swapon),            // 85
+   BSDX_(__NR_swapon,           sys_swapon),            // 85
    GENXY(__NR_getitimer,        sys_getitimer),         // 86
    // 4.3 gethostname                                      87
 
@@ -4660,7 +4695,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENX_(__NR_utimes,           sys_utimes),            // 138
    // 4.2 sigreturn                                        139
 
-// BSDXY(__NR_adjtime,          sys_adjtime),           // 140
+   BSDXY(__NR_adjtime,          sys_adjtime),           // 140
    // 4.3 getpeername                                      141
    // 4.3 gethostid                                        142
    // 4.3 sethostid                                        143
