@@ -19,7 +19,7 @@
 #   first arg
 #      the alternative load address
 #   all the rest of the args
-#      the gcc invokation to do the final link, that
+#      the compiler invocation to do the final link, that
 #      the build system would have done, left to itself
 #
 # We just let the script 'die' if something is wrong, rather than do
@@ -27,24 +27,30 @@
 # directly.  It is only run as part of the build process, with 
 # carefully constrained inputs.
 #
-# Linux specific complications:
+# FreeBSD specific complications:
 #
-# - need to support both old GNU ld and gold: use -Ttext= to
-#   set the text segment address.
+# - in the initial version of this file, the linker(s) it was targeted
+#   at supported only -Ttext to load the code at an alternative address,
+#   and did not require removing the build notes in order to function
+#   correctly, so the work done by configure to determine what should go
+#   into the FLAG_T_TEXT was ignored.
 #
-# - need to pass --build-id=none (that is, -Wl,--build-id=none to
-#   gcc) if it accepts it, to ensure the linker doesn't add a
-#   notes section which ends up at the default load address and
-#   so defeats our attempts to keep that address clear for the
-#   client.  However, older linkers don't support this flag, so it
-#   is tested for by configure.in and is shipped to us as part of
-#   argv[2 ..].
-#
+# - LLVM's ld.lld, for at least versions 8.0 (shipping with FreeBSD 12.1)
+#   and 9.0 support the -Ttext option and behave as desired.  As of
+#   LLVM ld.lld version 10.0 a breaking change made -Ttext unusable,
+#   however the --image-base option has the desired semantics.
+#   It turns out that ld.lld has supported --image-base since at least
+#   as far back as version 8.0.
 #
 # So: what we actually do:
 # 
 #   pass the specified command to the linker as-is, except, add
-#   "-static" and "-Ttext=<argv[1]>" to it.
+#   "-static" and the value of FLAG_T_TEXT as determined by configure.
+#   Previously we did this by adding these options after the first
+#   word of the rest of the arguments, which works in the common case
+#   when it's something like "gcc". But the linker invocation itself
+#   might be multiple words, say if it's "ccache gcc". So we now put
+#   the new options at the end instead.
 #
 
 use warnings;
@@ -55,27 +61,15 @@ die "Not enough arguments"
     if (($#ARGV + 1) < 5);
 
 my $ala = $ARGV[0];
+shift; # Remove $ala from @ARGV
 
 # check for plausible-ish alt load address
 die "Bogus alt-load address"
     if (length($ala) < 3 || index($ala, "0x") != 0);
 
-# The cc invokation to do the final link
-my $cc = $ARGV[1];
+my $cmd = join(" ", @ARGV, "-static -Wl,@FLAG_T_TEXT@=$ala");
 
-# and the 'restargs' are argv[2 ..]
-
-# so, build up the complete command here:
-# 'cc' -static -Ttext='ala' 'restargs'
-
-my $cmd="$cc -static -Wl,-Ttext=$ala";
-
-# Add the rest of the parameters
-foreach my $n (2 .. $#ARGV) {
-   $cmd = "$cmd $ARGV[$n]";
-}
-
-#print "link_tool_exe_linux: $cmd\n";
+#print "link_tool_exe_freebsd: $cmd\n";
 
 
 # Execute the command:
