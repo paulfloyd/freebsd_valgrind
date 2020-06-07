@@ -2921,101 +2921,6 @@ PRE(sys_sigsuspend)
    }
 }
 
-#if 0
-/* ---------------------------------------------------------------------
-   linux msg* wrapper helpers
-   ------------------------------------------------------------------ */
-
-void
-ML_(linux_PRE_sys_msgsnd) ( ThreadId tid,
-                            UWord arg0, UWord arg1, UWord arg2, UWord arg3 )
-{
-   /* int msgsnd(int msqid, struct msgbuf *msgp, size_t msgsz, int msgflg); */
-   struct vki_msgbuf *msgp = (struct vki_msgbuf *)arg1;
-   PRE_MEM_READ( "msgsnd(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
-   PRE_MEM_READ( "msgsnd(msgp->mtext)", (Addr)&msgp->mtext, arg2 );
-}
-
-void
-ML_(linux_PRE_sys_msgrcv) ( ThreadId tid,
-                            UWord arg0, UWord arg1, UWord arg2,
-                            UWord arg3, UWord arg4 )
-{
-   /* ssize_t msgrcv(int msqid, struct msgbuf *msgp, size_t msgsz,
-                     long msgtyp, int msgflg); */
-   struct vki_msgbuf *msgp = (struct vki_msgbuf *)arg1;
-   PRE_MEM_WRITE( "msgrcv(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
-   PRE_MEM_WRITE( "msgrcv(msgp->mtext)", (Addr)&msgp->mtext, arg2 );
-}
-void
-ML_(linux_POST_sys_msgrcv) ( ThreadId tid,
-                             UWord res,
-                             UWord arg0, UWord arg1, UWord arg2,
-                             UWord arg3, UWord arg4 )
-{
-   struct vki_msgbuf *msgp = (struct vki_msgbuf *)arg1;
-   POST_MEM_WRITE( (Addr)&msgp->mtype, sizeof(msgp->mtype) );
-   POST_MEM_WRITE( (Addr)&msgp->mtext, res );
-}
-
-void
-ML_(linux_PRE_sys_msgctl) ( ThreadId tid,
-                            UWord arg0, UWord arg1, UWord arg2 )
-{
-   /* int msgctl(int msqid, int cmd, struct msqid_ds *buf); */
-   switch (arg1 /* cmd */) {
-   case VKI_IPC_INFO:
-   case VKI_MSG_INFO:
-   case VKI_IPC_INFO|VKI_IPC_64:
-   case VKI_MSG_INFO|VKI_IPC_64:
-      PRE_MEM_WRITE( "msgctl(IPC_INFO, buf)",
-                     arg2, sizeof(struct vki_msginfo) );
-      break;
-   case VKI_IPC_STAT:
-   case VKI_MSG_STAT:
-      PRE_MEM_WRITE( "msgctl(IPC_STAT, buf)",
-                     arg2, sizeof(struct vki_msqid_ds) );
-      break;
-   case VKI_IPC_STAT|VKI_IPC_64:
-   case VKI_MSG_STAT|VKI_IPC_64:
-      PRE_MEM_WRITE( "msgctl(IPC_STAT, arg.buf)",
-                     arg2, sizeof(struct vki_msqid64_ds) );
-      break;
-   case VKI_IPC_SET:
-      PRE_MEM_READ( "msgctl(IPC_SET, arg.buf)",
-                    arg2, sizeof(struct vki_msqid_ds) );
-      break;
-   case VKI_IPC_SET|VKI_IPC_64:
-      PRE_MEM_READ( "msgctl(IPC_SET, arg.buf)",
-                    arg2, sizeof(struct vki_msqid64_ds) );
-      break;
-   }
-}
-void
-ML_(linux_POST_sys_msgctl) ( ThreadId tid,
-                             UWord res,
-                             UWord arg0, UWord arg1, UWord arg2 )
-{
-   switch (arg1 /* cmd */) {
-   case VKI_IPC_INFO:
-   case VKI_MSG_INFO:
-   case VKI_IPC_INFO|VKI_IPC_64:
-   case VKI_MSG_INFO|VKI_IPC_64:
-      POST_MEM_WRITE( arg2, sizeof(struct vki_msginfo) );
-      break;
-   case VKI_IPC_STAT:
-   case VKI_MSG_STAT:
-      POST_MEM_WRITE( arg2, sizeof(struct vki_msqid_ds) );
-      break;
-   case VKI_IPC_STAT|VKI_IPC_64:
-   case VKI_MSG_STAT|VKI_IPC_64:
-      POST_MEM_WRITE( arg2, sizeof(struct vki_msqid64_ds) );
-      break;
-   }
-}
-
-#endif
-
 PRE(sys_chflags)
 {
    PRINT("sys_chflags ( %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
@@ -3196,6 +3101,34 @@ POST(sys_shmdt)
    ML_(generic_POST_sys_shmdt)(tid, RES,ARG1);
 }
 
+// int msgctl(int msqid, int cmd, struct msqid_ds_old *buf);
+PRE(sys_freebsd7_msgctl)
+{
+   PRINT("sys_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
+
+   PRE_REG_READ3(int, "msgctl", int, msqid, int, cmd, struct msqid_ds_old *, buf);
+
+   switch (ARG2 /* cmd */) {
+   case VKI_IPC_STAT:
+      PRE_MEM_WRITE( "msgctl(IPC_STAT, buf)",
+                     ARG3, sizeof(struct vki_msqid_ds_old) );
+      break;
+   case VKI_IPC_SET:
+      PRE_MEM_READ( "msgctl(IPC_SET, buf)",
+                    ARG3, sizeof(struct vki_msqid_ds_old) );
+      break;
+   }
+}
+
+POST(sys_freebsd7_msgctl)
+{
+   switch (ARG2 /* cmd */) {
+   case VKI_IPC_STAT:
+      POST_MEM_WRITE( ARG3, sizeof(struct vki_msqid_ds_old) );
+      break;
+   }
+}
+
 PRE(sys_shmctl)
 {
    PRINT("sys_shmctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,SARG2,ARG3);
@@ -3218,15 +3151,15 @@ PRE(sys_freebsd7_shmctl)
 {
    PRINT("sys_freebsd7_shmctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,SARG2,ARG3);
    PRE_REG_READ3(long, "shmctl",
-                 int, shmid, int, cmd, struct vki_shmid_ds7 *, buf);
+                 int, shmid, int, cmd, struct vki_shmid_ds_old *, buf);
    switch (ARG2 /* cmd */) {
    case VKI_IPC_STAT:
       PRE_MEM_WRITE( "shmctl7(IPC_STAT, buf)",
-                     ARG3, sizeof(struct vki_shmid_ds7) );
+                     ARG3, sizeof(struct vki_shmid_ds_old) );
       break;
    case VKI_IPC_SET:
       PRE_MEM_READ( "shmctl7(IPC_SET, buf)",
-                    ARG3, sizeof(struct vki_shmid_ds7) );
+                    ARG3, sizeof(struct vki_shmid_ds_old) );
       break;
    }
 }
@@ -3241,7 +3174,7 @@ POST(sys_shmctl)
 POST(sys_freebsd7_shmctl)
 {
    if (ARG2 == VKI_IPC_STAT) {
-      POST_MEM_WRITE( ARG3, sizeof(struct vki_shmid_ds7) );
+      POST_MEM_WRITE( ARG3, sizeof(struct vki_shmid_ds_old) );
    }
 }
 
@@ -3305,6 +3238,74 @@ struct ipc_perm7 {
     unsigned short    seq;    /* sequence # (to generate unique ipcid) */
     vki_key_t    key;    /* user specified msg/sem/shm key */
 };
+
+/* ---------------------------------------------------------------------
+   msg* wrappers
+   ------------------------------------------------------------------ */
+
+PRE(sys_msgget)
+{
+   PRINT("sys_msgget ( %" FMT_REGWORD"d, %" FMT_REGWORD"d )",ARG1,ARG2);
+   PRE_REG_READ2(int, "msgget", key_t, key, int, msgflg);
+}
+
+// int msgsnd(int msqid, struct msgbuf *msgp, size_t msgsz, int msgflg);
+PRE(sys_msgsnd)
+{
+   PRINT("sys_msgsnd ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", ARG1,ARG2,ARG3,ARG4 );
+   PRE_REG_READ4(int, "msgsnd", int, msqid, struct msgbuf *, msgp, size_t, msgsz, int, msgflg);
+   struct vki_msgbuf *msgp = (struct vki_msgbuf *)ARG2;
+   PRE_MEM_READ( "msgsnd(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
+   PRE_MEM_READ( "msgsnd(msgp->mtext)", (Addr)&msgp->mtext, ARG3 );
+}
+
+// ssize_t msgrcv(int msqid, struct msgbuf *msgp, size_t msgsz, long msgtyp, int msgflg);
+PRE(sys_msgrcv)
+{
+   *flags |= SfMayBlock;
+
+   PRINT("sys_msgrcv ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", ARG1,ARG2,ARG3,ARG4,ARG5 );
+   PRE_REG_READ5(ssize_t, "msgrcv", int, msqid, struct msgbuf *, msgp, size_t, msgsz,
+      long, msgtyp, int, msgflg);
+   struct vki_msgbuf *msgp = (struct vki_msgbuf *)ARG2;
+   PRE_MEM_WRITE( "msgrcv(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
+   PRE_MEM_WRITE( "msgrcv(msgp->mtext)", (Addr)&msgp->mtext, ARG3 );
+}
+
+POST(sys_msgrcv)
+{
+   struct vki_msgbuf *msgp = (struct vki_msgbuf *)ARG2;
+   POST_MEM_WRITE( (Addr)&msgp->mtype, sizeof(msgp->mtype) );
+   POST_MEM_WRITE( (Addr)&msgp->mtext, RES );
+}
+
+// int msgctl(int msqid, int cmd, struct msqid_ds *buf);
+PRE(sys_msgctl)
+{
+   PRINT("sys_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
+
+   PRE_REG_READ3(int, "msgctl", int, msqid, int, cmd, struct msqid_ds *, buf);
+
+   switch (ARG2 /* cmd */) {
+   case VKI_IPC_STAT:
+      PRE_MEM_WRITE( "msgctl(IPC_STAT, buf)",
+                     ARG3, sizeof(struct vki_msqid_ds) );
+      break;
+   case VKI_IPC_SET:
+      PRE_MEM_READ( "msgctl(IPC_SET, buf)",
+                    ARG3, sizeof(struct vki_msqid_ds) );
+      break;
+   }
+}
+
+POST(sys_msgctl)
+{
+   switch (ARG2 /* cmd */) {
+   case VKI_IPC_STAT:
+      POST_MEM_WRITE( ARG3, sizeof(struct vki_msqid_ds) );
+      break;
+   }
+}
 
 struct semid_ds7 {
     struct ipc_perm7 sem_perm;    /* operation permission struct */
@@ -3936,6 +3937,67 @@ PRE(sys_ioctl)
      if ((dir & _VKI_IOC_READ) && size > 0)
         PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
    }
+
+   // The block below is from Ryan Stone
+   // https://bitbucket.org/rysto32/valgrind-freebsd/commits/5323c22be9f6c71a00e842c3ddfa1fa8a7feb279
+   // however it drags in hundreds of lines of headers into vki-freebsd.h.
+   // How stable are these structures? -> maintainability is a concern
+   // Also there are no testcases for this.
+   // Hence #if 0
+#if 0
+   /* Handle specific ioctls which pass structures which may have pointers to other
+      buffers */
+   switch (ARG2 /* request */) {
+   case VKI_SIOCGIFMEDIA:
+      if (ARG3) {
+         struct vki_ifmediareq* imr = (struct vki_ifmediareq*)ARG3;
+         if (imr->ifm_ulist) {
+            PRE_MEM_WRITE("ioctl(SIOCGIFMEDIA).ifm_ulist",
+                          (Addr)(imr->ifm_ulist), imr->ifm_count * sizeof(int));
+         }
+      }
+      break;
+
+   case VKI_PCIOCGETCONF:
+      if (ARG3) {
+         struct vki_pci_conf_io* pci = (struct vki_pci_conf_io*)ARG3;
+         PRE_MEM_READ("ioctl(PCIOCGETCONF).patterns",
+                      (Addr)(pci->patterns), pci->pat_buf_len);
+         PRE_MEM_WRITE("ioctl(PCIOCGETCONF).matches",
+                      (Addr)(pci->matches), pci->match_buf_len);
+      }
+      break;
+
+   case VKI_CAMIOCOMMAND:
+      if (ARG3) {
+         union vki_ccb* ccb = (union vki_ccb*)ARG3;
+         if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
+             PRE_MEM_WRITE("ioctl(CAMIOCOMMAND:XPT_DEV_MATCH).matches",
+                           (Addr)(ccb->cdm.matches), ccb->cdm.match_buf_len);
+         } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
+            struct vki_ccb_scsiio* scsiio = (struct vki_ccb_scsiio*)ccb;
+            if (scsiio->dxfer_len) {
+               if ((scsiio->ccb_h.flags & VKI_CAM_DIR_MASK) == VKI_CAM_DIR_IN) {
+                  PRE_MEM_WRITE("ioctl(CAMIOCOMMAND:XPT_SCSI_IO).data_ptr",
+                                (Addr)(scsiio->data_ptr), scsiio->dxfer_len);
+               } else if ((scsiio->ccb_h.flags & VKI_CAM_DIR_MASK) == VKI_CAM_DIR_OUT) {
+                  PRE_MEM_READ("ioctl(CAMIOCOMMAND:XPT_SCSI_IO).data_ptr",
+                               (Addr)(scsiio->data_ptr), scsiio->dxfer_len);
+               }
+            }
+         } else if (ccb->ccb_h.func_code == VKI_XPT_GDEV_TYPE ||
+                    ccb->ccb_h.func_code == VKI_XPT_PATH_INQ ||
+                    ccb->ccb_h.func_code == VKI_XPT_GET_TRAN_SETTINGS) {
+            // do nothing
+         } else {
+            VG_(message)(Vg_UserMsg,
+                "Warning: unhandled ioctl CAMIOCOMMAND function 0x%lx\n",
+                ccb->ccb_h.func_code);
+         }
+      }
+      break;
+   }
+#endif
 }
 
 POST(sys_ioctl)
@@ -3946,6 +4008,44 @@ POST(sys_ioctl)
   if (size > 0 && (dir & _VKI_IOC_READ)
      && RES == 0 && ARG3 != (Addr)NULL)
      POST_MEM_WRITE(ARG3, size);
+
+#if 0
+   /* Handle specific ioctls which pass structures which may have pointers to other
+      buffers */
+   switch (ARG2 /* request */) {
+   case VKI_SIOCGIFMEDIA:
+      if (ARG3) {
+         struct vki_ifmediareq* imr = (struct vki_ifmediareq*)ARG3;
+         if (imr->ifm_ulist) {
+            POST_MEM_WRITE((Addr)(imr->ifm_ulist), imr->ifm_count * sizeof(int));
+         }
+      }
+      break;
+
+   case VKI_PCIOCGETCONF:
+      if (ARG3) {
+         struct vki_pci_conf_io* pci = (struct vki_pci_conf_io*)ARG3;
+         POST_MEM_WRITE((Addr)(pci->matches), pci->num_matches * sizeof(struct vki_pci_conf));
+      }
+      break;
+
+   case VKI_CAMIOCOMMAND:
+      if (ARG3) {
+         union vki_ccb* ccb = (union vki_ccb*)ARG3;
+         if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
+             POST_MEM_WRITE((Addr)(ccb->cdm.matches), ccb->cdm.num_matches*sizeof(struct vki_dev_match_result));
+         } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
+            struct vki_ccb_scsiio* scsiio = (struct vki_ccb_scsiio*)ccb;
+            if (scsiio->dxfer_len) {
+               if ((scsiio->ccb_h.flags & VKI_CAM_DIR_MASK) == VKI_CAM_DIR_IN) {
+                  POST_MEM_WRITE((Addr)(scsiio->data_ptr), scsiio->dxfer_len);
+               }
+            }
+         }
+      }
+      break;
+   }
+#endif
 }
 
 PRE(sys_ptrace)
@@ -4811,10 +4911,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_semop,            sys_semop),             // 222
    // unimpl semconfig                                     223
 
-// BSDXY(__NR_msgctl,           sys_msgctl),            // 224
-// BSDX_(__NR_msgget,           sys_msgget),            // 225
-// BSDX_(__NR_msgsnd,           sys_msgsnd),            // 226
-// BSDXY(__NR_msgrcv,           sys_msgrcv),            // 227
+   BSDXY(__NR_freebsd7_msgctl,  sys_freebsd7_msgctl),   // 224
+   BSDX_(__NR_msgget,           sys_msgget),            // 225
+   BSDX_(__NR_msgsnd,           sys_msgsnd),            // 226
+   BSDXY(__NR_msgrcv,           sys_msgrcv),            // 227
 
    BSDXY(__NR_shmat,            sys_shmat),             // 228
    BSDXY(__NR_freebsd7_shmctl,  sys_freebsd7_shmctl),   // 229
@@ -5173,7 +5273,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_jail_remove,      sys_jail_remove),       // 508
    // closefrom                                            509
    BSDXY(__NR___semctl,         sys___semctl),          // 510
-   // msgctl                                               511
+   BSDXY(__NR_msgctl,           sys_msgctl),            // 511
    BSDXY(__NR_shmctl,           sys_shmctl),            // 512
     // lpathconf                                           513
     /* 514 is obsolete cap_new */

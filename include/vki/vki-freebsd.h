@@ -1027,14 +1027,14 @@ struct vki_termios {
  * We actually have a 16 bit "base" ioctl, which may or may not be decoded
  * into number/group
  */
-#define	_VKI_IOC_BASEBITS	16
+#define _VKI_IOC_BASEBITS	16
 #define _VKI_IOC_NRBITS		8	/* "num" on freebsd */
 #define _VKI_IOC_TYPEBITS	8	/* "group" on freebsd */
 
 #define _VKI_IOC_SIZEBITS	13
 #define _VKI_IOC_DIRBITS	3
 
-#define	_VKI_IOC_BASEMASK	((1ul << _VKI_IOC_BASEBITS)-1)
+#define _VKI_IOC_BASEMASK	((1ul << _VKI_IOC_BASEBITS)-1)
 #define _VKI_IOC_NRMASK		((1ul << _VKI_IOC_NRBITS)-1)
 #define _VKI_IOC_TYPEMASK	((1ul << _VKI_IOC_TYPEBITS)-1)
 #define _VKI_IOC_SIZEMASK	((1ul << _VKI_IOC_SIZEBITS)-1)
@@ -1142,9 +1142,6 @@ extern unsigned int __vki_invalid_size_argument_for_IOC;
 #define	VKI_TIOCSBRK	_VKI_IO('t', 123)
 
 
-
-
-
 //----------------------------------------------------------------------
 // From sys/filio.h
 //----------------------------------------------------------------------
@@ -1156,6 +1153,30 @@ extern unsigned int __vki_invalid_size_argument_for_IOC;
 #define VKI_FIOASYNC	_VKI_IOW('f', 125, int)
 #define VKI_FIOSETOWN	_VKI_IOW('f', 124, int)
 #define VKI_FIOGETOWN	_VKI_IOW('f', 123, int)
+
+// See syswrap-freebsd.c PRE/POST(sys_ioctl)
+#if 0
+//----------------------------------------------------------------------
+// From net/if.h
+//----------------------------------------------------------------------
+#define	VKI_IFNAMSIZ	16
+
+struct vki_ifmediareq {
+   char    ifm_name[VKI_IFNAMSIZ];
+   int     ifm_current;
+   int     ifm_mask;
+   int     ifm_status;
+   int     ifm_active;
+   int     ifm_count;
+   int     *ifm_ulist;
+};
+
+
+//----------------------------------------------------------------------
+// From sys/sockio.h
+//----------------------------------------------------------------------
+#define VKI_SIOCGIFMEDIA  _VKI_IOWR('i', 56, struct vki_ifmediareq)
+#endif
 
 //----------------------------------------------------------------------
 // From sys/poll.h
@@ -1309,6 +1330,17 @@ struct vki_utsname {
 #define VKI_IPC_STAT 2     /* get ipc_perm options */
 #define VKI_IPC_INFO 3     /* see ipcs */
 
+struct vki_ipc_perm_old
+{
+   unsigned short	cuid;
+   unsigned short	cgid;
+   unsigned short	uid;
+   unsigned short	gid;
+   unsigned short	mode;
+   unsigned short	seq;
+   vki_key_t	key;
+};
+
 struct vki_ipc_perm
 {
 	vki_uid_t	cuid;
@@ -1316,17 +1348,6 @@ struct vki_ipc_perm
 	vki_uid_t	uid;
 	vki_gid_t	gid;
 	vki_mode_t	mode;
-	unsigned short	seq;
-	vki_key_t	key;
-};
-
-struct vki_ipc_perm7
-{
-	unsigned short	cuid;
-	unsigned short	cgid;
-	unsigned short	uid;
-	unsigned short	gid;
-	unsigned short	mode;
 	unsigned short	seq;
 	vki_key_t	key;
 };
@@ -1616,23 +1637,41 @@ struct vki_dirent {
 #define VKI_MSGCTL              14
 #endif
 
-struct vki_msqid_ds {
-	struct vki_ipc_perm msg_perm;
-	struct vki_msg *msg_first;		/* first message on queue,unused  */
-	struct vki_msg *msg_last;		/* last message in queue,unused */
-	vki_uint32_t msg_cbytes;	/* current number of bytes on queue */
-	vki_uint32_t msg_qnum;	/* number of messages in queue */
-	vki_uint32_t msg_qbytes;	/* max number of bytes on queue */
-	vki_pid_t	msg_lspid;	/* pid of last msgsnd */
-	vki_pid_t	msg_lrpid;	/* last receive pid */
-	vki_time_t	msg_stime;	/* last msgsnd time */
+typedef unsigned long vki_msglen_t;
+typedef unsigned long vki_msgqnum_t;
+
+struct vki_msqid_ds_old {
+   struct vki_ipc_perm_old msg_perm;
+   struct vki_msg *msg_first;
+   struct vki_msg *msg_last;
+   vki_msglen_t msg_cbytes;
+   vki_msgqnum_t msg_qnum;
+   vki_msglen_t msg_qbytes;
+   vki_pid_t	msg_lspid;
+   vki_pid_t	msg_lrpid;
+   vki_time_t	msg_stime;
 	vki_uint32_t	msg_pad1;
-	vki_time_t	msg_rtime;	/* last msgrcv time */
+   vki_time_t	msg_rtime;
 	vki_uint32_t	msg_pad2;
-	vki_time_t 	msg_ctime;	/* last change time */
+   vki_time_t 	msg_ctime;
 	vki_uint32_t	msg_pad3;
 	vki_uint32_t	msg_pad4[4];
 };
+
+struct vki_msqid_ds {
+   struct vki_ipc_perm msg_perm;
+   struct vki_msg *msg_first;
+   struct vki_msg *msg_last;
+   vki_msglen_t msg_cbytes;
+   vki_msgqnum_t msg_qnum;
+   vki_msglen_t msg_qbytes;
+   vki_pid_t	msg_lspid;
+   vki_pid_t	msg_lrpid;
+   vki_time_t	msg_stime;
+   vki_time_t	msg_rtime;
+   vki_time_t 	msg_ctime;
+};
+
 
 struct vki_msgbuf {
 	long mtype;         /* type of message */
@@ -1644,6 +1683,19 @@ struct vki_msgbuf {
 // From sys/shm.h
 //----------------------------------------------------------------------
 
+struct vki_shmid_ds_old {
+   struct vki_ipc_perm_old	shm_perm;	/* operation perms */
+   int			shm_segsz;	/* size of segment (bytes) */
+   vki_pid_t		shm_lpid;	/* pid of last operator */
+   vki_pid_t		shm_cpid;	/* pid of creator */
+   short			shm_nattch;	/* no. of current attaches */
+   vki_time_t		shm_atime;	/* last attach time */
+   vki_time_t		shm_dtime;	/* last detach time */
+   vki_time_t		shm_ctime;	/* last change time */
+   void			*shm_internal;	/* sysv stupidity */
+};
+
+
 struct vki_shmid_ds {
 	struct vki_ipc_perm	shm_perm;	/* operation perms */
 	vki_size_t		shm_segsz;	/* size of segment (bytes) */
@@ -1653,18 +1705,6 @@ struct vki_shmid_ds {
 	vki_time_t		shm_atime;	/* last attach time */
 	vki_time_t		shm_dtime;	/* last detach time */
 	vki_time_t		shm_ctime;	/* last change time */
-};
-
-struct vki_shmid_ds7 {
-	struct vki_ipc_perm7	shm_perm;	/* operation perms */
-	int			shm_segsz;	/* size of segment (bytes) */
-	vki_pid_t		shm_lpid;	/* pid of last operator */
-	vki_pid_t		shm_cpid;	/* pid of creator */
-	short			shm_nattch;	/* no. of current attaches */
-	vki_time_t		shm_atime;	/* last attach time */
-	vki_time_t		shm_dtime;	/* last detach time */
-	vki_time_t		shm_ctime;	/* last change time */
-	void			*shm_internal;	/* sysv stupidity */
 };
 
 #define VKI_SHMLBA  VKI_PAGE_SIZE
@@ -2200,6 +2240,744 @@ struct vki_kld_sym_lookup {
    };
 
 #  define VKI_INIT_ARCH_ELF_STATE { }
+
+#endif
+
+// See syswrap-freebsd.c PRE/POST(sys_ioctl)
+#if 0
+
+//----------------------------------------------------------------------
+// From sys/pciio.h
+//----------------------------------------------------------------------
+
+typedef unsigned long vki_u_long;
+typedef unsigned int vki_u_int;
+#define VKI_PCI_MAXNAMELEN  16
+
+typedef enum {
+        VKI_PCI_GETCONF_LAST_DEVICE,
+        VKI_PCI_GETCONF_LIST_CHANGED,
+        VKI_PCI_GETCONF_MORE_DEVS,
+        VKI_PCI_GETCONF_ERROR
+} vki_pci_getconf_status;
+
+typedef enum {
+        VKI_PCI_GETCONF_NO_MATCH            = 0x0000,
+        VKI_PCI_GETCONF_MATCH_DOMAIN        = 0x0001,
+        VKI_PCI_GETCONF_MATCH_BUS           = 0x0002,
+        VKI_PCI_GETCONF_MATCH_DEV           = 0x0004,
+        VKI_PCI_GETCONF_MATCH_FUNC          = 0x0008,
+        VKI_PCI_GETCONF_MATCH_NAME          = 0x0010,
+        VKI_PCI_GETCONF_MATCH_UNIT          = 0x0020,
+        VKI_PCI_GETCONF_MATCH_VENDOR        = 0x0040,
+        VKI_PCI_GETCONF_MATCH_DEVICE        = 0x0080,
+        VKI_PCI_GETCONF_MATCH_CLASS         = 0x0100
+} vki_pci_getconf_flags;
+
+struct vki_pcisel {
+        vki_uint32_t   pc_domain;      /* domain number */
+        vki_uint8_t    pc_bus;         /* bus number */
+        vki_uint8_t    pc_dev;         /* device on this bus */
+        vki_uint8_t    pc_func;        /* function on this device */
+};
+
+struct vki_pci_conf {
+        struct vki_pcisel   pc_sel;         /* domain+bus+slot+function */
+        vki_uint8_t    pc_hdr;         /* PCI header type */
+        vki_uint16_t   pc_subvendor;   /* card vendor ID */
+        vki_uint16_t   pc_subdevice;   /* card device ID, assigned by
+                                           card vendor */
+        vki_uint16_t   pc_vendor;      /* chip vendor ID */
+        vki_uint16_t   pc_device;      /* chip device ID, assigned by
+                                           chip vendor */
+        vki_uint8_t    pc_class;       /* chip PCI class */
+        vki_uint8_t    pc_subclass;    /* chip PCI subclass */
+        vki_uint8_t    pc_progif;      /* chip PCI programming interface */
+        vki_uint8_t    pc_revid;       /* chip revision ID */
+        char        pd_name[VKI_PCI_MAXNAMELEN + 1];  /* device name */
+        vki_u_long     pd_unit;        /* device unit number */
+};
+
+struct vki_pci_match_conf {
+        struct vki_pcisel       pc_sel;         /* domain+bus+slot+function */
+        char                pd_name[VKI_PCI_MAXNAMELEN + 1];  /* device name */
+        vki_u_long             pd_unit;        /* Unit number */
+        vki_uint16_t           pc_vendor;      /* PCI Vendor ID */
+        vki_uint16_t           pc_device;      /* PCI Device ID */
+        vki_uint8_t            pc_class;       /* PCI class */
+        vki_pci_getconf_flags   flags;          /* Matching expression */
+};
+
+struct vki_pci_conf_io {
+        vki_uint32_t           pat_buf_len;    /* pattern buffer length */
+        vki_uint32_t           num_patterns;   /* number of patterns */
+        struct vki_pci_match_conf   *patterns;      /* pattern buffer */
+        vki_uint32_t           match_buf_len;  /* match buffer length */
+        vki_uint32_t           num_matches;    /* number of matches returned */
+        struct vki_pci_conf     *matches;       /* match buffer */
+        vki_uint32_t           offset;         /* offset into device list */
+        vki_uint32_t           generation;     /* device list generation */
+        vki_pci_getconf_status  status;         /* request status */
+};
+
+#define VKI_PCIOCGETCONF    _VKI_IOWR('p', 5, struct vki_pci_conf_io)
+
+//----------------------------------------------------------------------
+// From cam/cam.h
+//----------------------------------------------------------------------
+
+#define VKI_CAM_MAX_CDBLEN 16
+
+typedef unsigned int vki_path_id_t;
+typedef unsigned int vki_target_id_t;
+typedef unsigned int vki_lun_id_t;
+
+typedef struct {
+        vki_uint32_t priority;
+        vki_uint32_t generation;
+        int       index;
+} vki_cam_pinfo;
+
+
+//----------------------------------------------------------------------
+// From sys/ata.h
+//----------------------------------------------------------------------
+
+struct vki_ata_params {
+/*000*/ vki_u_int16_t   config;         /* configuration info */
+/*001*/ vki_u_int16_t   cylinders;              /* # of cylinders */
+/*002*/ vki_u_int16_t   specconf;               /* specific configuration */
+/*003*/ vki_u_int16_t   heads;                  /* # heads */
+        vki_u_int16_t   obsolete4;
+        vki_u_int16_t   obsolete5;
+/*006*/ vki_u_int16_t   sectors;                /* # sectors/track */
+/*007*/ vki_u_int16_t   vendor7[3];
+/*010*/ vki_u_int8_t    serial[20];             /* serial number */
+/*020*/ vki_u_int16_t   retired20;
+        vki_u_int16_t   retired21;
+        vki_u_int16_t   obsolete22;
+/*023*/ vki_u_int8_t    revision[8];            /* firmware revision */
+/*027*/ vki_u_int8_t    model[40];              /* model name */
+/*047*/ vki_u_int16_t   sectors_intr;           /* sectors per interrupt */
+/*048*/ vki_u_int16_t   usedmovsd;              /* double word read/write? */
+/*049*/ vki_u_int16_t   capabilities1;
+/*050*/ vki_u_int16_t   capabilities2;
+/*051*/ vki_u_int16_t   retired_piomode;        /* PIO modes 0-2 */
+/*052*/ vki_u_int16_t   retired_dmamode;        /* DMA modes */
+/*053*/ vki_u_int16_t   atavalid;               /* fields valid */
+/*054*/ vki_u_int16_t   current_cylinders;
+/*055*/ vki_u_int16_t   current_heads;
+/*056*/ vki_u_int16_t   current_sectors;
+/*057*/ vki_u_int16_t   current_size_1;
+/*058*/ vki_u_int16_t   current_size_2;
+/*059*/ vki_u_int16_t   multi;
+/*060*/ vki_u_int16_t   lba_size_1;
+        vki_u_int16_t   lba_size_2;
+        vki_u_int16_t   obsolete62;
+/*063*/ vki_u_int16_t   mwdmamodes;             /* multiword DMA modes */
+/*064*/ vki_u_int16_t   apiomodes;              /* advanced PIO modes */
+
+/*065*/ vki_u_int16_t   mwdmamin;               /* min. M/W DMA time/word ns */
+/*066*/ vki_u_int16_t   mwdmarec;               /* rec. M/W DMA time ns */
+/*067*/ vki_u_int16_t   pioblind;               /* min. PIO cycle w/o flow */
+/*068*/ vki_u_int16_t   pioiordy;               /* min. PIO cycle IORDY flow */
+/*069*/ vki_u_int16_t   support3;
+        vki_u_int16_t   reserved70;
+/*071*/ vki_u_int16_t   rlsovlap;               /* rel time (us) for overlap */
+/*072*/ vki_u_int16_t   rlsservice;             /* rel time (us) for service */
+        vki_u_int16_t   reserved73;
+        vki_u_int16_t   reserved74;
+/*075*/ vki_u_int16_t   queue;
+/*76*/  vki_u_int16_t   satacapabilities;
+/*77*/  vki_u_int16_t   satacapabilities2;
+/*78*/  vki_u_int16_t   satasupport;
+/*79*/  vki_u_int16_t   sataenabled;
+/*080*/ vki_u_int16_t   version_major;
+/*081*/ vki_u_int16_t   version_minor;
+
+        struct {
+/*082/085*/ vki_u_int16_t   command1;
+/*083/086*/ vki_u_int16_t   command2;
+/*084/087*/ vki_u_int16_t   extension;
+        } __packed support, enabled;
+
+/*088*/ vki_u_int16_t   udmamodes;              /* UltraDMA modes */
+/*089*/ vki_u_int16_t   erase_time;
+/*090*/ vki_u_int16_t   enhanced_erase_time;
+/*091*/ vki_u_int16_t   apm_value;
+/*092*/ vki_u_int16_t   master_passwd_revision;
+/*093*/ vki_u_int16_t   hwres;
+/*094*/ vki_u_int16_t   acoustic;
+/*095*/ vki_u_int16_t   stream_min_req_size;
+/*096*/ vki_u_int16_t   stream_transfer_time;
+/*097*/ vki_u_int16_t   stream_access_latency;
+/*098*/ vki_u_int32_t   stream_granularity;
+/*100*/ vki_u_int16_t   lba_size48_1;
+        vki_u_int16_t   lba_size48_2;
+        vki_u_int16_t   lba_size48_3;
+        vki_u_int16_t   lba_size48_4;
+        vki_u_int16_t   reserved104;
+/*105*/ vki_u_int16_t   max_dsm_blocks;
+/*106*/ vki_u_int16_t   pss;
+/*107*/ vki_u_int16_t   isd;
+/*108*/ vki_u_int16_t   wwn[4];
+        vki_u_int16_t   reserved112[5];
+/*117*/ vki_u_int16_t   lss_1;
+/*118*/ vki_u_int16_t   lss_2;
+/*119*/ vki_u_int16_t   support2;
+/*120*/ vki_u_int16_t   enabled2;
+        vki_u_int16_t   reserved121[6];
+/*127*/ vki_u_int16_t   removable_status;
+/*128*/ vki_u_int16_t   security_status;
+        vki_u_int16_t   reserved129[31];
+/*160*/ vki_u_int16_t   cfa_powermode1;
+        vki_u_int16_t   reserved161;
+/*162*/ vki_u_int16_t   cfa_kms_support;
+/*163*/ vki_u_int16_t   cfa_trueide_modes;
+/*164*/ vki_u_int16_t   cfa_memory_modes;
+        vki_u_int16_t   reserved165[4];
+/*169*/ vki_u_int16_t   support_dsm;
+        vki_u_int16_t   reserved170[6];
+/*176*/ vki_u_int8_t    media_serial[60];
+/*206*/ vki_u_int16_t   sct;
+        vki_u_int16_t   reserved206[2];
+/*209*/ vki_u_int16_t   lsalign;
+/*210*/ vki_u_int16_t   wrv_sectors_m3_1;
+        vki_u_int16_t   wrv_sectors_m3_2;
+/*212*/ vki_u_int16_t   wrv_sectors_m2_1;
+        vki_u_int16_t   wrv_sectors_m2_2;
+/*214*/ vki_u_int16_t   nv_cache_caps;
+/*215*/ vki_u_int16_t   nv_cache_size_1;
+        vki_u_int16_t   nv_cache_size_2;
+/*217*/ vki_u_int16_t   media_rotation_rate;
+        vki_u_int16_t   reserved218;
+/*219*/ vki_u_int16_t   nv_cache_opt;
+/*220*/ vki_u_int16_t   wrv_mode;
+        vki_u_int16_t   reserved221;
+/*222*/ vki_u_int16_t   transport_major;
+/*223*/ vki_u_int16_t   transport_minor;
+        vki_u_int16_t   reserved224[31];
+/*255*/ vki_u_int16_t   integrity;
+} __packed;
+
+//----------------------------------------------------------------------
+// From sys/callout.h
+//----------------------------------------------------------------------
+
+struct vki_callout_handle {
+        struct vki_callout *callout;
+};
+
+
+//----------------------------------------------------------------------
+// From cam/scsi/scsi_all.h
+//----------------------------------------------------------------------
+
+struct vki_scsi_sense_data
+{
+        vki_u_int8_t error_code;
+        vki_u_int8_t segment;
+        vki_u_int8_t flags;
+        vki_u_int8_t info[4];
+        vki_u_int8_t extra_len;
+        vki_u_int8_t cmd_spec_info[4];
+        vki_u_int8_t add_sense_code;
+        vki_u_int8_t add_sense_code_qual;
+        vki_u_int8_t fru;
+        vki_u_int8_t sense_key_spec[3];
+        vki_u_int8_t extra_bytes[14];
+#define VKI_SSD_FULL_SIZE sizeof(struct vki_scsi_sense_data)
+};
+
+struct vki_scsi_inquiry_data
+{
+        vki_uint8_t device;
+        vki_uint8_t dev_qual2;
+        vki_uint8_t version;
+        vki_uint8_t response_format;
+        vki_uint8_t additional_length;
+        vki_uint8_t spc3_flags;
+        vki_uint8_t spc2_flags;
+        vki_uint8_t flags;
+#define VKI_SID_VENDOR_SIZE   8
+        char     vendor[VKI_SID_VENDOR_SIZE];
+#define VKI_SID_PRODUCT_SIZE  16
+        char     product[VKI_SID_PRODUCT_SIZE];
+#define VKI_SID_REVISION_SIZE 4
+        char     revision[VKI_SID_REVISION_SIZE];
+#define VKI_SID_VENDOR_SPECIFIC_0_SIZE      20
+        vki_uint8_t vendor_specific0[VKI_SID_VENDOR_SPECIFIC_0_SIZE];
+        vki_uint8_t spi3data;
+        vki_uint8_t reserved2;
+        /*
+         * Version Descriptors, stored 2 byte values.
+         */
+        vki_uint8_t version1[2];
+        vki_uint8_t version2[2];
+        vki_uint8_t version3[2];
+        vki_uint8_t version4[2];
+        vki_uint8_t version5[2];
+        vki_uint8_t version6[2];
+        vki_uint8_t version7[2];
+        vki_uint8_t version8[2];
+
+        vki_uint8_t reserved3[22];
+
+#define VKI_SID_VENDOR_SPECIFIC_1_SIZE      160
+        vki_uint8_t vendor_specific1[VKI_SID_VENDOR_SPECIFIC_1_SIZE];
+};
+
+//----------------------------------------------------------------------
+// From sys/queue.h
+//----------------------------------------------------------------------
+
+#define SLIST_ENTRY(type)                                               \
+struct {                                                                \
+        struct type *sle_next;  /* next element */                      \
+}
+
+#define LIST_ENTRY(type)                                                \
+struct {                                                                \
+        struct type *le_next;   /* next element */                      \
+        struct type **le_prev;  /* address of previous next element */  \
+}
+
+#define STAILQ_ENTRY(type)                                              \
+struct {                                                                \
+        struct type *stqe_next; /* next element */                      \
+}
+
+struct qm_trace {
+        unsigned long    lastline;
+        unsigned long    prevline;
+        const char      *lastfile;
+        const char      *prevfile;
+};
+
+#define TRACEBUF        struct qm_trace trace;
+
+#define TAILQ_ENTRY(type)                                               \
+struct {                                                                \
+        struct type *tqe_next;  /* next element */                      \
+        struct type **tqe_prev; /* address of previous next element */  \
+        TRACEBUF                                                        \
+}
+
+
+//----------------------------------------------------------------------
+// From cam/cam_ccb.h
+//----------------------------------------------------------------------
+
+#define VKI_CAM_VERSION       0x15    /* Hex value for current version */
+
+typedef union {
+        LIST_ENTRY(vki_ccb_hdr) le;
+        SLIST_ENTRY(vki_ccb_hdr) sle;
+        TAILQ_ENTRY(vki_ccb_hdr) tqe;
+        STAILQ_ENTRY(vki_ccb_hdr) stqe;
+} vki_camq_entry;
+
+typedef enum {
+/* Function code flags are bits greater than 0xff */
+        VKI_XPT_FC_QUEUED           = 0x100,
+                                /* Non-immediate function code */
+        VKI_XPT_FC_USER_CCB         = 0x200,
+        VKI_XPT_FC_XPT_ONLY         = 0x400,
+                                /* Only for the transport layer device */
+        VKI_XPT_FC_DEV_QUEUED       = 0x800 | VKI_XPT_FC_QUEUED,
+                                /* Passes through the device queues */
+/* Common function commands: 0x00->0x0F */
+        VKI_XPT_NOOP                = 0x00,
+                                /* Execute Nothing */
+        VKI_XPT_SCSI_IO             = 0x01 | VKI_XPT_FC_DEV_QUEUED,
+                                /* Execute the requested I/O operation */
+        VKI_XPT_GDEV_TYPE           = 0x02,
+                                /* Get type information for specified device */
+        VKI_XPT_GDEVLIST            = 0x03,
+                                /* Get a list of peripheral devices */
+        VKI_XPT_PATH_INQ            = 0x04,
+                                /* Path routing inquiry */
+        VKI_XPT_REL_SIMQ            = 0x05,
+                                /* Release a frozen device queue */
+        VKI_XPT_SASYNC_CB           = 0x06,
+                                /* Set Asynchronous Callback Parameters */
+        VKI_XPT_SDEV_TYPE           = 0x07,
+                                /* Set device type information */
+        VKI_XPT_SCAN_BUS            = 0x08 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB
+                                       | VKI_XPT_FC_XPT_ONLY,
+                                /* (Re)Scan the SCSI Bus */
+        VKI_XPT_DEV_MATCH           = 0x09 | VKI_XPT_FC_XPT_ONLY,
+                                /* Get EDT entries matching the given pattern */
+        VKI_XPT_DEBUG               = 0x0a,
+                                /* Turn on debugging for a bus, target or lun */
+        VKI_XPT_PATH_STATS          = 0x0b,
+                                /* Path statistics (error counts, etc.) */
+        VKI_XPT_GDEV_STATS          = 0x0c,
+                                /* Device statistics (error counts, etc.) */
+        VKI_XPT_FREEZE_QUEUE        = 0x0d,
+                                /* Freeze device queue */
+/* SCSI Control Functions: 0x10->0x1F */
+        VKI_XPT_ABORT               = 0x10,
+                                /* Abort the specified CCB */
+        VKI_XPT_RESET_BUS           = 0x11 | VKI_XPT_FC_XPT_ONLY,
+                                /* Reset the specified SCSI bus */
+        VKI_XPT_RESET_DEV           = 0x12 | VKI_XPT_FC_DEV_QUEUED,
+                                /* Bus Device Reset the specified SCSI device */
+        VKI_XPT_TERM_IO             = 0x13,
+                                /* Terminate the I/O process */
+        VKI_XPT_SCAN_LUN            = 0x14 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB
+                                       | VKI_XPT_FC_XPT_ONLY,
+                                /* Scan Logical Unit */
+        VKI_XPT_GET_TRAN_SETTINGS   = 0x15,
+                                /*
+                                 * Get default/user transfer settings
+                                 * for the target
+                                 */
+        VKI_XPT_SET_TRAN_SETTINGS   = 0x16,
+                                /*
+                                 * Set transfer rate/width
+                                 * negotiation settings
+                                 */
+        VKI_XPT_CALC_GEOMETRY       = 0x17,
+                                /*
+                                 * Calculate the geometry parameters for
+                                 * a device give the sector size and
+                                 * volume size.
+                                 */
+        VKI_XPT_ATA_IO              = 0x18 | VKI_XPT_FC_DEV_QUEUED,
+                                /* Execute the requested ATA I/O operation */
+        VKI_XPT_GET_SIM_KNOB        = 0x18,
+                                /*
+                                 * Get SIM specific knob values.
+                                 */
+
+        VKI_XPT_SET_SIM_KNOB        = 0x19,
+                                /*
+                                 * Set SIM specific knob values.
+                                 */
+/* HBA engine commands 0x20->0x2F */
+        VKI_XPT_ENG_INQ             = 0x20 | VKI_XPT_FC_XPT_ONLY,
+                                /* HBA engine feature inquiry */
+        VKI_XPT_ENG_EXEC            = 0x21 | VKI_XPT_FC_DEV_QUEUED,
+                                /* HBA execute engine request */
+
+/* Target mode commands: 0x30->0x3F */
+        VKI_XPT_EN_LUN              = 0x30,
+                                /* Enable LUN as a target */
+        VKI_XPT_TARGET_IO           = 0x31 | VKI_XPT_FC_DEV_QUEUED,
+                                /* Execute target I/O request */
+        VKI_XPT_ACCEPT_TARGET_IO    = 0x32 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB,
+                                /* Accept Host Target Mode CDB */
+        VKI_XPT_CONT_TARGET_IO      = 0x33 | VKI_XPT_FC_DEV_QUEUED,
+                                /* Continue Host Target I/O Connection */
+        VKI_XPT_IMMED_NOTIFY        = 0x34 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB,
+                                /* Notify Host Target driver of event (obsolete) */
+        VKI_XPT_NOTIFY_ACK          = 0x35,
+                                /* Acknowledgement of event (obsolete) */
+        VKI_XPT_IMMEDIATE_NOTIFY    = 0x36 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB,
+                                /* Notify Host Target driver of event */
+        VKI_XPT_NOTIFY_ACKNOWLEDGE  = 0x37 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB,
+                                /* Acknowledgement of event */
+
+/* Vendor Unique codes: 0x80->0x8F */
+        VKI_XPT_VUNIQUE             = 0x80
+} vki_xpt_opcode;
+
+
+/* CAM CCB flags */
+typedef enum {
+        VKI_CAM_CDB_POINTER         = 0x00000001,/* The CDB field is a pointer    */
+        VKI_CAM_QUEUE_ENABLE        = 0x00000002,/* SIM queue actions are enabled */
+        VKI_CAM_CDB_LINKED          = 0x00000004,/* CCB contains a linked CDB     */
+        VKI_CAM_NEGOTIATE           = 0x00000008,/*
+                                              * Perform transport negotiation
+                                              * with this command.
+                                              */
+        VKI_CAM_SCATTER_VALID       = 0x00000010,/* Scatter/gather list is valid  */
+        VKI_CAM_DIS_AUTOSENSE       = 0x00000020,/* Disable autosense feature     */
+        VKI_CAM_DIR_RESV            = 0x00000000,/* Data direction (00:reserved)  */
+        VKI_CAM_DIR_IN              = 0x00000040,/* Data direction (01:DATA IN)   */
+        VKI_CAM_DIR_OUT             = 0x00000080,/* Data direction (10:DATA OUT)  */
+        VKI_CAM_DIR_NONE            = 0x000000C0,/* Data direction (11:no data)   */
+        VKI_CAM_DIR_MASK            = 0x000000C0,/* Data direction Mask           */
+        VKI_CAM_SOFT_RST_OP         = 0x00000100,/* Use Soft reset alternative    */
+        VKI_CAM_ENG_SYNC            = 0x00000200,/* Flush resid bytes on complete */
+        VKI_CAM_DEV_QFRZDIS         = 0x00000400,/* Disable DEV Q freezing        */
+        VKI_CAM_DEV_QFREEZE         = 0x00000800,/* Freeze DEV Q on execution     */
+        VKI_CAM_HIGH_POWER          = 0x00001000,/* Command takes a lot of power  */
+        VKI_CAM_SENSE_PTR           = 0x00002000,/* Sense data is a pointer       */
+        VKI_CAM_SENSE_PHYS          = 0x00004000,/* Sense pointer is physical addr*/
+        VKI_CAM_TAG_ACTION_VALID    = 0x00008000,/* Use the tag action in this ccb*/
+        VKI_CAM_PASS_ERR_RECOVER    = 0x00010000,/* Pass driver does err. recovery*/
+        VKI_CAM_DIS_DISCONNECT      = 0x00020000,/* Disable disconnect            */
+        VKI_CAM_SG_LIST_PHYS        = 0x00040000,/* SG list has physical addrs.   */
+        VKI_CAM_MSG_BUF_PHYS        = 0x00080000,/* Message buffer ptr is physical*/
+        VKI_CAM_SNS_BUF_PHYS        = 0x00100000,/* Autosense data ptr is physical*/
+        VKI_CAM_DATA_PHYS           = 0x00200000,/* SG/Buffer data ptrs are phys. */
+        VKI_CAM_CDB_PHYS            = 0x00400000,/* CDB poiner is physical        */
+        VKI_CAM_ENG_SGLIST          = 0x00800000,/* SG list is for the HBA engine */
+
+/* Phase cognizant mode flags */
+        VKI_CAM_DIS_AUTOSRP         = 0x01000000,/* Disable autosave/restore ptrs */
+        VKI_CAM_DIS_AUTODISC        = 0x02000000,/* Disable auto disconnect       */
+        VKI_CAM_TGT_CCB_AVAIL       = 0x04000000,/* Target CCB available          */
+        VKI_CAM_TGT_PHASE_MODE      = 0x08000000,/* The SIM runs in phase mode    */
+        VKI_CAM_MSGB_VALID          = 0x10000000,/* Message buffer valid          */
+        VKI_CAM_STATUS_VALID        = 0x20000000,/* Status buffer valid           */
+        VKI_CAM_DATAB_VALID         = 0x40000000,/* Data buffer valid             */
+
+/* Host target Mode flags */
+        VKI_CAM_SEND_SENSE          = 0x08000000,/* Send sense data with status   */
+        VKI_CAM_TERM_IO             = 0x10000000,/* Terminate I/O Message sup.    */
+        VKI_CAM_DISCONNECT          = 0x20000000,/* Disconnects are mandatory     */
+        VKI_CAM_SEND_STATUS         = 0x40000000 /* Send status after data phase  */
+} vki_ccb_flags;
+
+typedef union {
+        void            *ptr;
+        vki_u_long      field;
+        vki_uint8_t     bytes[sizeof(vki_uintptr_t)];
+} vki_ccb_priv_entry;
+
+#define VKI_IOCDBLEN  VKI_CAM_MAX_CDBLEN  /* Space for CDB bytes/pointer */
+#define VKI_CCB_PERIPH_PRIV_SIZE    2   /* size of peripheral private area */
+#define VKI_CCB_SIM_PRIV_SIZE       2   /* size of sim private area */
+
+typedef union {
+    vki_ccb_priv_entry entries[VKI_CCB_PERIPH_PRIV_SIZE];
+    vki_uint8_t        bytes[VKI_CCB_PERIPH_PRIV_SIZE * sizeof(vki_ccb_priv_entry)];
+} vki_ccb_ppriv_area;
+
+typedef union {
+    vki_ccb_priv_entry entries[VKI_CCB_SIM_PRIV_SIZE];
+    vki_uint8_t        bytes[VKI_CCB_SIM_PRIV_SIZE * sizeof(vki_ccb_priv_entry)];
+} vki_ccb_spriv_area;
+
+union vki_ccb;
+struct vki_cam_periph;
+
+struct vki_ccb_hdr {
+        vki_cam_pinfo   pinfo;          /* Info for priority scheduling */
+        vki_camq_entry  xpt_links;      /* For chaining in the XPT layer */
+        vki_camq_entry  sim_links;      /* For chaining in the SIM layer */
+        vki_camq_entry  periph_links;   /* For chaining in the type driver */
+        vki_uint32_t    retry_count;
+        void         (*cbfcnp)(struct vki_cam_periph *, union vki_ccb *);
+                                        /* Callback on completion function */
+        vki_xpt_opcode  func_code;      /* XPT function code */
+        vki_uint32_t    status;         /* Status returned by CAM subsystem */
+        struct      vki_cam_path *path; /* Compiled path for this ccb */
+        vki_path_id_t   path_id;        /* Path ID for the request */
+        vki_target_id_t target_id;      /* Target device ID */
+        vki_lun_id_t    target_lun;     /* Target LUN number */
+        vki_uint32_t    flags;          /* ccb_flags */
+        vki_ccb_ppriv_area  periph_priv;
+        vki_ccb_spriv_area  sim_priv;
+        vki_uint32_t    timeout;        /* Timeout value */
+
+        /*
+         * Deprecated, only for use by non-MPSAFE SIMs.  All others must
+         * allocate and initialize their own callout storage.
+         */
+        struct      vki_callout_handle timeout_ch;
+};
+
+typedef union {
+        vki_u_int8_t  *cdb_ptr;             /* Pointer to the CDB bytes to send */
+                                        /* Area for the CDB send */
+        vki_u_int8_t  cdb_bytes[VKI_IOCDBLEN];
+} vki_cdb_t;
+
+
+/*
+ * SCSI I/O Request CCB used for the XPT_SCSI_IO and XPT_CONT_TARGET_IO
+ * function codes.
+ */
+struct vki_ccb_scsiio {
+        struct     vki_ccb_hdr ccb_h;
+        union      vki_ccb *next_ccb;   /* Ptr for next CCB for action */
+        vki_u_int8_t   *req_map;        /* Ptr to mapping info */
+        vki_u_int8_t   *data_ptr;       /* Ptr to the data buf/SG list */
+        vki_u_int32_t  dxfer_len;       /* Data transfer length */
+                                        /* Autosense storage */
+        struct     vki_scsi_sense_data sense_data;
+        vki_u_int8_t   sense_len;       /* Number of bytes to autosense */
+        vki_u_int8_t   cdb_len;         /* Number of bytes for the CDB */
+        vki_u_int16_t  sglist_cnt;      /* Number of SG list entries */
+        vki_u_int8_t   scsi_status;     /* Returned SCSI status */
+        vki_u_int8_t   sense_resid;     /* Autosense resid length: 2's comp */
+        vki_u_int32_t  resid;           /* Transfer residual length: 2's comp */
+        vki_cdb_t      cdb_io;          /* Union for CDB bytes/pointer */
+        vki_u_int8_t   *msg_ptr;        /* Pointer to the message buffer */
+        vki_u_int16_t  msg_len;         /* Number of bytes for the Message */
+        vki_u_int8_t   tag_action;      /* What to do for tag queueing */
+        /*
+         * The tag action should be either the define below (to send a
+         * non-tagged transaction) or one of the defined scsi tag messages
+         * from scsi_message.h.
+         */
+        vki_u_int      tag_id;          /* tag id from initator (target mode) */
+        vki_u_int      init_id;         /* initiator id of who selected */
+};
+
+typedef enum {
+        VKI_CAM_DEV_MATCH_LAST,
+        VKI_CAM_DEV_MATCH_MORE,
+        VKI_CAM_DEV_MATCH_LIST_CHANGED,
+        VKI_CAM_DEV_MATCH_SIZE_ERROR,
+        VKI_CAM_DEV_MATCH_ERROR
+} vki_ccb_dev_match_status;
+
+
+struct vki_dev_match_pattern;
+
+typedef enum {
+        VKI_DEV_MATCH_PERIPH,
+        VKI_DEV_MATCH_DEVICE,
+        VKI_DEV_MATCH_BUS
+} vki_dev_match_type;
+
+#define VKI_DEV_IDLEN       16          /* ASCII string len for device names */
+
+struct vki_periph_match_result {
+        char                    periph_name[VKI_DEV_IDLEN];
+        vki_uint32_t            unit_number;
+        vki_path_id_t           path_id;
+        vki_target_id_t         target_id;
+        vki_lun_id_t            target_lun;
+};
+
+typedef enum {
+        VKI_PROTO_UNKNOWN,
+        VKI_PROTO_UNSPECIFIED,
+        VKI_PROTO_SCSI,     /* Small Computer System Interface */
+        VKI_PROTO_ATA,      /* AT Attachment */
+        VKI_PROTO_ATAPI,    /* AT Attachment Packetized Interface */
+        VKI_PROTO_SATAPM,   /* SATA Port Multiplier */
+} vki_cam_proto;
+
+typedef enum {
+        VKI_DEV_RESULT_NOFLAG               = 0x00,
+        VKI_DEV_RESULT_UNCONFIGURED         = 0x01
+} vki_dev_result_flags;
+
+
+struct vki_device_match_result {
+        vki_path_id_t                   path_id;
+        vki_target_id_t                 target_id;
+        vki_lun_id_t                    target_lun;
+        vki_cam_proto                   protocol;
+        struct vki_scsi_inquiry_data    inq_data;
+        struct vki_ata_params           ident_data;
+        vki_dev_result_flags            flags;
+};
+
+struct vki_bus_match_result {
+        vki_path_id_t   path_id;
+        char            dev_name[VKI_DEV_IDLEN];
+        vki_uint32_t    unit_number;
+        vki_uint32_t    bus_id;
+};
+
+union vki_match_result {
+        struct vki_periph_match_result      periph_result;
+        struct vki_device_match_result      device_result;
+        struct vki_bus_match_result         bus_result;
+};
+
+struct vki_dev_match_result {
+        vki_dev_match_type          type;
+        union vki_match_result      result;
+};
+
+typedef enum {
+        VKI_CAM_DEV_POS_NONE        = 0x000,
+        VKI_CAM_DEV_POS_BUS         = 0x001,
+        VKI_CAM_DEV_POS_TARGET      = 0x002,
+        VKI_CAM_DEV_POS_DEVICE      = 0x004,
+        VKI_CAM_DEV_POS_PERIPH      = 0x008,
+        VKI_CAM_DEV_POS_PDPTR       = 0x010,
+        VKI_CAM_DEV_POS_TYPEMASK    = 0xf00,
+        VKI_CAM_DEV_POS_EDT         = 0x100,
+        VKI_CAM_DEV_POS_PDRV        = 0x200
+} vki_dev_pos_type;
+
+struct vki_ccb_dm_cookie {
+        void    *bus;
+        void    *target;
+        void    *device;
+        void    *periph;
+        void    *pdrv;
+};
+
+struct vki_ccb_dev_position {
+        vki_u_int                generations[4];
+#define VKI_CAM_BUS_GENERATION      0x00
+#define VKI_CAM_TARGET_GENERATION   0x01
+#define VKI_CAM_DEV_GENERATION      0x02
+#define VKI_CAM_PERIPH_GENERATION   0x03
+        vki_dev_pos_type        position_type;
+        struct vki_ccb_dm_cookie cookie;
+};
+
+struct vki_ccb_dev_match {
+        struct vki_ccb_hdr              ccb_h;
+        vki_ccb_dev_match_status        status;
+        vki_uint32_t                    num_patterns;
+        vki_uint32_t                    pattern_buf_len;
+        struct vki_dev_match_pattern    *patterns;
+        vki_uint32_t                    num_matches;
+        vki_uint32_t                    match_buf_len;
+        struct vki_dev_match_result     *matches;
+        struct vki_ccb_dev_position     pos;
+};
+
+/*
+ * Union of all CCB types for kernel space allocation.  This union should
+ * never be used for manipulating CCBs - its only use is for the allocation
+ * and deallocation of raw CCB space and is the return type of xpt_ccb_alloc
+ * and the argument to xpt_ccb_free.
+ */
+union vki_ccb {
+/* Only letting out ones currently handled */
+        struct  vki_ccb_hdr             ccb_h;  /* For convenience */
+        struct  vki_ccb_scsiio          csio;
+#if 0
+        struct  ccb_getdev              cgd;
+        struct  ccb_getdevlist          cgdl;
+        struct  ccb_pathinq             cpi;
+        struct  ccb_relsim              crs;
+        struct  ccb_setasync            csa;
+        struct  ccb_setdev              csd;
+        struct  ccb_pathstats           cpis;
+        struct  ccb_getdevstats         cgds;
+#endif
+        struct  vki_ccb_dev_match       cdm;
+#if 0
+        struct  ccb_trans_settings      cts;
+        struct  ccb_calc_geometry       ccg;
+        struct  ccb_sim_knob            knob;
+        struct  ccb_abort               cab;
+        struct  ccb_resetbus            crb;
+        struct  ccb_resetdev            crd;
+        struct  ccb_termio              tio;
+        struct  ccb_accept_tio          atio;
+        struct  ccb_scsiio              ctio;
+        struct  ccb_en_lun              cel;
+        struct  ccb_immed_notify        cin;
+        struct  ccb_notify_ack          cna;
+        struct  ccb_immediate_notify    cin1;
+        struct  ccb_notify_acknowledge  cna2;
+        struct  ccb_eng_inq             cei;
+        struct  ccb_eng_exec            cee;
+        struct  ccb_rescan              crcn;
+        struct  ccb_debug               cdbg;
+        struct  ccb_ataio               ataio;
+#endif
+        char make_union_right_size[0x4A8];
+};
+
+#define VKI_CAMIOCOMMAND    _VKI_IOWR(VKI_CAM_VERSION, 2, union vki_ccb)
 
 #endif
 /*--------------------------------------------------------------------*/
