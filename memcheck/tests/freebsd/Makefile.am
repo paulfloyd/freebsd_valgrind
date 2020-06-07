@@ -30,10 +30,12 @@ EXTRA_DIST = \
 	revoke.vgtest \
 	revoke.stderr.exp \
 	scalar.vgtest \
-	scalar.stderr.exp
+	scalar.stderr.exp \
+	capsicum.vgtest \
+	capsicum.stderr.exp
 
 check_PROGRAMS = \
-	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login revoke scalar
+	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login revoke scalar capsicum
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)

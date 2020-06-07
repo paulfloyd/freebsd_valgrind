@@ -299,9 +299,9 @@ DECL_TEMPLATE(freebsd, sys___semctl)
 DECL_TEMPLATE(freebsd, sys_msgctl)
 DECL_TEMPLATE(freebsd, sys_shmctl)
 // lpathconf
-// ___cap_rights_get
+DECL_TEMPLATE(freebsd, sys_cap_rights_get)
 DECL_TEMPLATE(freebsd, sys_cap_enter)
-// cap_getmode
+DECL_TEMPLATE(freebsd, sys_cap_getmode)
 DECL_TEMPLATE(freebsd, sys_pdfork)
 DECL_TEMPLATE(freebsd, sys_pdkill)
 DECL_TEMPLATE(freebsd, sys_pdgetpid)

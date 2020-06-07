@@ -2243,6 +2243,20 @@ struct vki_kld_sym_lookup {
 
 #endif
 
+//----------------------------------------------------------------------
+// From sys/caprights.h
+//----------------------------------------------------------------------
+
+#define VKI_CAP_RIGHTS_VERSION_00   0
+#define VKI_CAP_RIGHTS_VERSION      VKI_CAP_RIGHTS_VERSION_00
+
+struct vki_cap_rights {
+        vki_uint64_t        cr_rights[VKI_CAP_RIGHTS_VERSION + 2];
+};
+
+typedef struct vki_cap_rights       vki_cap_rights_t;
+
+
 // See syswrap-freebsd.c PRE/POST(sys_ioctl)
 #if 0
 

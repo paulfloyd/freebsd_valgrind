@@ -4356,9 +4356,24 @@ POST(sys_pselect)
    }
 }
 
+// note extra 1st argument for the internal function which is not present
+// in the public interface
+// int __cap_rights_get(int version, int fd, cap_rights_t *rights);
+PRE(sys_cap_rights_get)
+{
+   PRINT("sys_cap_rights_get ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3);
+   PRE_REG_READ3(long, "cap_rights_get", int, version, int, fd, vki_cap_rights_t*, rights);
+   PRE_MEM_WRITE("cap_rights_get(rights)", ARG3, sizeof(vki_cap_rights_t));
+}
+
+POST(sys_cap_rights_get)
+{
+   POST_MEM_WRITE(ARG2, sizeof(vki_cap_rights_t));
+}
+
 PRE(sys_cap_enter)
 {
-   PRINT("sys_cap_enter ( )");
+   PRINT("%s", "sys_cap_enter ( )");
    PRE_REG_READ0(long, "cap_enter");
    static Bool warning_given = False;
    if (!warning_given) {
@@ -4369,6 +4384,19 @@ PRE(sys_cap_enter)
          "         Please consider disabling capability by using the RUNNING_ON_VALGRIND mechanism.\n"
          "         See http://valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.clientreq\n");
    }
+}
+
+// int cap_getmode(u_int *modep);
+PRE(sys_cap_getmode)
+{
+   PRINT("sys_cap_getmode ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "cap_enter", u_int*, modep);
+   PRE_MEM_WRITE("cap_getmode(modep)", ARG1, sizeof(u_int));
+}
+
+POST(sys_cap_getmode)
+{
+   POST_MEM_WRITE(ARG1, sizeof(u_int));
 }
 
 static vki_sigset_t pdfork_saved_mask;
@@ -4457,67 +4485,34 @@ PRE(sys_pdkill)
 PRE(sys_pdgetpid)
 {
    PRINT("pdgetpid ( %" FMT_REGWORD "d, %#lx )", SARG1, ARG2);
-   PRE_REG_READ2(long, "pdgetpid",
+   PRE_REG_READ2(int, "pdgetpid",
                  int, fd, pid_t*, pidp);
-   if (ARG2 != 0)
-   {
-       PRE_MEM_WRITE( "pdgetpid(fd, pidp))", ARG2, sizeof(vki_pid_t) );
-   }
+   PRE_MEM_WRITE( "pdgetpid(pidp))", ARG2, sizeof(vki_pid_t) );
 }
 
 POST(sys_pdgetpid)
 {
-   if (ARG2 != 0)
-   {
-      POST_MEM_WRITE( ARG2, sizeof(vki_pid_t) );
-   }
+   POST_MEM_WRITE( ARG2, sizeof(vki_pid_t) );
 }
-
-
-#define VKI_CAP_RIGHTS_VERSION_00   0
-#define VKI_CAP_RIGHTS_VERSION VKI_CAP_RIGHTS_VERSION_00
-
-struct vki_cap_rights {
-    vki_uint64_t cr_rights[VKI_CAP_RIGHTS_VERSION + 2];
-};
 
 //int cap_rights_limit(int fd, const cap_rights_t *rights);
 PRE(sys_cap_rights_limit)
 {
    PRINT("cap_rights_limit ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
-   PRE_REG_READ2(long, "cap_rights_limit",
-                 int, fd, void*, rights);
-   if (ARG2 != 0)
-   {
-       PRE_MEM_WRITE( "cap_rights_limit(fd, rights))", ARG2, sizeof(struct vki_cap_rights) );
-   }
-}
-
-POST(sys_cap_rights_limit)
-{
-   if (ARG2 != 0)
-   {
-      POST_MEM_WRITE( ARG2, sizeof(struct vki_cap_rights) );
-   }
+   PRE_REG_READ2(int, "cap_rights_limit",
+                 int, fd, const cap_rights_t *, rights);
+   PRE_MEM_READ( "cap_rights_limit(rights)", ARG2, sizeof(struct vki_cap_rights) );
 }
 
 // int cap_ioctls_limit(int fd, const unsigned long *cmds, size_t ncmds);
 PRE(sys_cap_ioctls_limit)
 {
    PRINT("cap_ioctls_limit ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
-   PRE_REG_READ3(long, "cap_ioctls_limit",
+   PRE_REG_READ3(int, "cap_ioctls_limit",
                  int, fd, unsigned long*, rights, vki_size_t, ncmds);
-   if (ARG2 != 0 && ARG3 <= 256 )
+   if (ARG3 <= 256 )
    {
-       PRE_MEM_WRITE( "cap_ioctls_limit(fd, rights))", ARG2, ARG3*sizeof(long) );
-   }
-}
-
-POST(sys_cap_ioctls_limit)
-{
-   if (ARG2 != 0)
-   {
-      POST_MEM_WRITE( ARG2, ARG3*sizeof(unsigned long) );
+       PRE_MEM_READ( "cap_ioctls_limit(cmds))", ARG2, ARG3*sizeof(long) );
    }
 }
 
@@ -4879,7 +4874,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #endif
    // __syscall (handled specially)                     // 198
 #if (FREEBSD_VERS <= FREEBSD_10)
-   BSDX_(__NR_freebsd6_lseek,    sys_freebsd6_lseek),    // 199
+   BSDX_(__NR_freebsd6_lseek,    sys_freebsd6_lseek),   // 199
    BSDX_(__NR_freebsd6_truncate, sys_freebsd6_truncate), // 200
    BSDX_(__NR_freebsd6_ftruncate, sys_freebsd6_ftruncate), // 201
 #endif
@@ -5277,9 +5272,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_shmctl,           sys_shmctl),            // 512
     // lpathconf                                           513
     /* 514 is obsolete cap_new */
-    // __cap_rights_get                                    515
+    BSDXY(__NR___cap_rights_get, sys_cap_rights_get),   // 515
     BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
-    // cap_getmode                                         517
+    BSDXY(__NR_cap_getmode,     sys_cap_getmode),       // 517
     BSDXY(__NR_pdfork,          sys_pdfork),            // 518
     BSDX_(__NR_pdkill,          sys_pdkill),            // 519
     BSDXY(__NR_pdgetpid,        sys_pdgetpid),          // 520
@@ -5294,8 +5289,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     BSDX_(__NR_posix_fallocate, sys_posix_fallocate),   // 530
     BSDX_(__NR_posix_fadvise,   sys_posix_fadvise),     // 531
     // wait6                                               532
-    BSDXY(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
-    BSDXY(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
+    BSDX_(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
+    BSDX_(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
     // cap_ioctls_get                                      535
     BSDX_(__NR_cap_fcntls_limit, sys_cap_fcntls_limit), // 536
     // cap_fcntls_get                                      537
