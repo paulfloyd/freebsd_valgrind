@@ -2258,6 +2258,20 @@ struct vki_cap_rights {
 
 typedef struct vki_cap_rights       vki_cap_rights_t;
 
+//----------------------------------------------------------------------
+// From ufs/ufs/quota.h
+//----------------------------------------------------------------------
+
+#define VKI_Q_QUOTAON       0x0100
+#define VKI_Q_QUOTAOFF      0x0200
+#define VKI_Q_GETQUOTA32    0x0300
+#define VKI_Q_SETQUOTA32    0x0400
+#define VKI_Q_SETUSE32      0x0500
+#define VKI_Q_SYNC          0x0600
+#define VKI_Q_GETQUOTA      0x0700
+#define VKI_Q_SETQUOTA      0x0800
+#define VKI_Q_SETUSE        0x0900
+#define VKI_Q_GETQUOTASIZE  0x0A00
 
 // See syswrap-freebsd.c PRE/POST(sys_ioctl)
 #if 0

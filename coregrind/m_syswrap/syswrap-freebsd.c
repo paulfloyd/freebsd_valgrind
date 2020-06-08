@@ -863,10 +863,35 @@ PRE(sys_mkfifo)
 PRE(sys_quotactl)
 {
    PRINT("sys_quotactl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3, ARG4);
-   PRE_REG_READ4(int, "quotactl",
-                 const char *, path, int, cmd, int, id,
-                 void *, addr);
-   PRE_MEM_RASCIIZ( "quotactl(path)", ARG1 );
+   switch (ARG2) {
+   case VKI_Q_QUOTAON:
+   case VKI_Q_SETQUOTA:
+   case VKI_Q_SETUSE:
+
+   case VKI_Q_GETQUOTASIZE:
+      PRE_REG_READ4(int, "quotactl",
+                    const char *, path, int, cmd, int, id,
+                    void *, addr);
+      PRE_MEM_RASCIIZ( "quotactl(path)", ARG1 );
+      break;
+   case VKI_Q_GETQUOTA:
+      // @todo PJF strictly this one does not read id but I don't know how to
+      // check just args 1, 2 and 4, probably needs a
+      if (VG_(tdict).track_pre_reg_read) { \
+         PRRSN;
+         PRA1("quotactl",const char*,path);
+         PRA2("quotactl",int,cmd);
+         PRA4("quotactl",void*,addr);
+      }
+      break;
+   case VKI_Q_QUOTAOFF:
+   case VKI_Q_SYNC:
+      PRE_REG_READ2(int, "quotactl",
+                    const char *, path, int, cmd);
+      break;
+   default:
+      break;
+   }
 }
 
 // int lgetfh(const char *path, fhandle_t *fhp);

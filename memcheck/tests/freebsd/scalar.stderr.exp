@@ -1114,6 +1114,71 @@ Syscall param adjtime(delta) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+147:              SYS_setsid 0s 0m
+---------------------------------------------------------
+---------------------------------------------------------
+148:            SYS_quotactl (Q_QUOTAOFF) 2s 0m
+---------------------------------------------------------
+Syscall param quotactl(path) contains uninitialised byte(s)
+   ...
+
+Syscall param quotactl(cmd) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+148:            SYS_quotactl (Q_QUOTAON) 4s 2m
+---------------------------------------------------------
+Syscall param quotactl(path) contains uninitialised byte(s)
+   ...
+
+Syscall param quotactl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param quotactl(id) contains uninitialised byte(s)
+   ...
+
+Syscall param quotactl(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param quotactl(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+160:              SYS_lgetfh 2s 2m
+---------------------------------------------------------
+Syscall param lgetfh(path) contains uninitialised byte(s)
+   ...
+
+Syscall param lgetfh(fhp) contains uninitialised byte(s)
+   ...
+
+Syscall param lgetfh(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param lgetfh(fhp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+161:               SYS_getfh 2s 2m
+---------------------------------------------------------
+Syscall param getfh(path) contains uninitialised byte(s)
+   ...
+
+Syscall param getfh(fhp) contains uninitialised byte(s)
+   ...
+
+Syscall param getfh(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param getfh(fhp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
 Syscall param mkfifo(pathname) contains uninitialised byte(s)
@@ -1123,6 +1188,29 @@ Syscall param mkfifo(mode) contains uninitialised byte(s)
    ...
 
 Syscall param mkfifo(pathname) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+564:             SYS_getfhat 4s 2m
+---------------------------------------------------------
+Syscall param getfh(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param getfh(path) contains uninitialised byte(s)
+   ...
+
+Syscall param getfh(fhp) contains uninitialised byte(s)
+   ...
+
+Syscall param getfh(flag) contains uninitialised byte(s)
+   ...
+
+Syscall param getfhat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param getfhat(fhp) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

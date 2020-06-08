@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
+#include <ufs/ufs/quota.h>
 #include "scalar.h"
 #include "config.h"
 #include "../../memcheck.h"
@@ -537,37 +538,50 @@ int main(void)
    
    /* 4.3 killpg                  146 */
    
-   /*
-   
-   GENX_(__NR_setsid,           sys_setsid),            // 147
+   /* SYS_setsid                  147 */
+   GO(SYS_setsid, "0s 0m");
+   SY(SYS_setsid); SUCC;
 
-   BSDX_(__NR_quotactl,         sys_quotactl),          // 148
+   /* SYS_quotactl                148 */
+   GO(SYS_quotactl, "(Q_QUOTAOFF) 2s 0m");
+   SY(SYS_quotactl, x0, x0+Q_QUOTAOFF, x0, x0); FAIL;
    
-   // 4.3 quota                                            149
+   GO(SYS_quotactl, "(Q_QUOTAON) 4s 2m");
+   SY(SYS_quotactl, x0, x0+Q_QUOTAON, x0, x0); FAIL;
    
-   // 4.3 getsockname                                      150
    
-   // bsd/os sem_lock                                      151
+   /* 4.3 quota                   149 */
+   
+   /* 4.3 getsockname             150 */
+   
+   /* bsd/os sem_lock             151 */
 
-   // bsd/os sem_wakeup                                    152
+   /* bsd/os sem_wakeup           152 */
    
-   // bsd/os asyncdaemon                                   153
+   /* bsd/os asyncdaemon          153 */
    
-   // nosys                                                154
+   /* SYS_nlm_syscall             154 */
    
    // BSDXY(__NR_nfssvc,        sys_nfssvc),            // 155
 
-   // 4.3 getdirentries                                    156
+   /* 4.3 getdirentries           156 */
    
-   // freebsd 4 statfs                                     157
+   /* freebsd 4 statfs            157 */
    
-   // freebsd 4 fstatfs                                    158
+   /* freebsd 4 fstatfs           158 */
    
-   // nosys                                                159
+   /* nosys                       159 */
 
-// BSDXY(__NR_lgetfh,           sys_lgetfh),            // 160
+   /* SYS_lgetfh                  160 */
+   GO(SYS_lgetfh, "2s 2m");
+   SY(SYS_lgetfh, x0, x0); FAIL;
 
-// BSDXY(__NR_getfh,            sys_getfh),             // 161
+   /* SYS_getfh                   161 */
+   GO(SYS_getfh, "2s 2m");
+   SY(SYS_getfh, x0, x0); FAIL;
+
+
+   /*
 
    BSDXY(__NR_getdomainname,    sys_getdomainname),     // 162
    
@@ -1191,7 +1205,14 @@ int main(void)
     
    BSDXY(__NR_getrandom,        sys_getrandom),         // 563
    
-    // getfhat                                             564
+   */
+   
+   /* SYS_getfhat                 160 */
+   GO(SYS_getfhat, "4s 2m");
+   SY(SYS_getfhat, x0, x0, x0, x0); FAIL;
+   
+   /*
+
     
     // fhlink                                              565
     
