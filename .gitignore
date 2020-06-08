@@ -965,7 +965,7 @@
 /memcheck/tests/zeropage
 
 # /memcheck/tests/amd64/
-/memcheck/tests/amd64/*.diff
+/memcheck/tests/amd64/*.diff*
 /memcheck/tests/amd64/*.dSYM
 /memcheck/tests/amd64/*.out
 /memcheck/tests/amd64/.deps
@@ -1269,8 +1269,9 @@
 /memcheck/tests/freebsd/revoke
 /memcheck/tests/freebsd/scalar
 /memcheck/tests/freebsd/capsicum
+/memcheck/tests/freebsd/getfh
 
-# /memcheck/tests/freebsd
+# /memcheck/tests/amd64-freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff
 /memcheck/tests/amd64-freebsd/*.stderr.out
 /memcheck/tests/amd64-freebsd/*.stdout.diff

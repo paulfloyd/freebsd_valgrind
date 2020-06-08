@@ -986,6 +986,8 @@ struct vki_statfs {
         char      f_mntonname[VKI_MNAMELEN];
 };
 
+typedef struct vki_fhandle  vki_fhandle_t;
+
 //----------------------------------------------------------------------
 // From sys/ttycom.h
 //----------------------------------------------------------------------

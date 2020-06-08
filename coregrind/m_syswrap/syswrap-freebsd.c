@@ -860,14 +860,41 @@ PRE(sys_mkfifo)
 }
 
 /* int quotactl(const char *path, int cmd, int id, void *addr); */
-
 PRE(sys_quotactl)
 {
-   PRINT("sys_quotactl (%#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3, ARG4);
-   PRE_REG_READ4(long, "quotactl",
+   PRINT("sys_quotactl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3, ARG4);
+   PRE_REG_READ4(int, "quotactl",
                  const char *, path, int, cmd, int, id,
                  void *, addr);
    PRE_MEM_RASCIIZ( "quotactl(path)", ARG1 );
+}
+
+// int lgetfh(const char *path, fhandle_t *fhp);
+PRE(sys_lgetfh)
+{
+   PRINT("sys_lgetfh ( %#" FMT_REGWORD "x, %" FMT_REGWORD "x ", ARG1, ARG2);
+   PRE_REG_READ2(int, "lgetfh", const char*, path, vki_fhandle_t*, fhp);
+   PRE_MEM_RASCIIZ( "lgetfh(path)", ARG1 );
+   PRE_MEM_WRITE("lgetfh(fhp)", ARG2, sizeof(vki_fhandle_t));
+}
+
+POST(sys_lgetfh)
+{
+   POST_MEM_WRITE(ARG2, sizeof(vki_fhandle_t));
+}
+
+// int getfh(const char *path, fhandle_t *fhp);
+PRE(sys_getfh)
+{
+   PRINT("sys_getfh ( %#" FMT_REGWORD "x, %" FMT_REGWORD "x ", ARG1, ARG2);
+   PRE_REG_READ2(int, "getfh", const char*, path, vki_fhandle_t*, fhp);
+   PRE_MEM_RASCIIZ( "getfh(path)", ARG1 );
+   PRE_MEM_WRITE("getfh(fhp)", ARG2, sizeof(vki_fhandle_t));
+}
+
+POST(sys_getfh)
+{
+   POST_MEM_WRITE(ARG2, sizeof(vki_fhandle_t));
 }
 
 /* int getdomainname(char *domainname, int len); */
@@ -4608,6 +4635,20 @@ POST(sys_getrandom)
    POST_MEM_WRITE( ARG1, ARG2 );
 }
 
+// int getfhat(int fd, const char *path, fhandle_t *fhp, int flag);
+PRE(sys_getfhat)
+{
+   PRINT("sys_getfhat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "x, %" FMT_REGWORD "d ", SARG1, ARG2, ARG3, SARG4);
+   PRE_REG_READ4(int, "getfh", int, fd, const char*, path, vki_fhandle_t*, fhp, int, flag);
+   PRE_MEM_RASCIIZ( "getfhat(path)", ARG2 );
+   PRE_MEM_WRITE("getfhat(fhp)", ARG3, sizeof(vki_fhandle_t));
+}
+
+POST(sys_getfhat)
+{
+   POST_MEM_WRITE(ARG3, sizeof(vki_fhandle_t));
+}
+
 #endif
 
 #undef PRE
@@ -4807,7 +4848,13 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // bsd/os sem_wakeup                                    152
    // bsd/os asyncdaemon                                   153
-   // nosys                                                154
+
+   // no idea what the following syscall does
+   // SYS_nlm_syscall                                      154
+
+   // a somewhat complicated NFS API
+   // takes a flag and a void* that can point to one of
+   // three different types of struct depending on the flag
    // BSDXY(__NR_nfssvc,        sys_nfssvc),            // 155
 
    // 4.3 getdirentries                                    156
@@ -4815,8 +4862,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // freebsd 4 fstatfs                                    158
    // nosys                                                159
 
-// BSDXY(__NR_lgetfh,           sys_lgetfh),            // 160
-// BSDXY(__NR_getfh,            sys_getfh),             // 161
+   BSDXY(__NR_lgetfh,           sys_lgetfh),            // 160
+   BSDXY(__NR_getfh,            sys_getfh),             // 161
    BSDXY(__NR_getdomainname,    sys_getdomainname),     // 162
    BSDX_(__NR_setdomainname,    sys_setdomainname),     // 163
 
@@ -5335,7 +5382,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     // cpuset_getdomain                                    561
     // cpuset_setdomain                                    562
    BSDXY(__NR_getrandom,        sys_getrandom),         // 563
-    // getfhat                                             564
+   BSDXY(__NR_getfhat,          sys_getfhat),           // 564
     // fhlink                                              565
     // fhlinkat                                            566
     // fhreadlink                                          567

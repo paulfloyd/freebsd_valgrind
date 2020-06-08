@@ -84,6 +84,7 @@ DECL_TEMPLATE(freebsd, sys_socketpair)
 DECL_TEMPLATE(freebsd, sys_adjtime)
 DECL_TEMPLATE(freebsd, sys_quotactl)
 DECL_TEMPLATE(freebsd, sys_nfssvc)
+DECL_TEMPLATE(freebsd, sys_lgetfh)
 DECL_TEMPLATE(freebsd, sys_getfh)
 DECL_TEMPLATE(freebsd, sys_getdomainname)
 DECL_TEMPLATE(freebsd, sys_setdomainname)
@@ -348,7 +349,7 @@ DECL_TEMPLATE(freebsd, sys_kevent)
 // cpuset_getdomain
 // cpuset_setdomain
 DECL_TEMPLATE(freebsd, sys_getrandom)
-// getfhat
+DECL_TEMPLATE(freebsd, sys_getfhat)
 // fhlink
 // fhlinkat
 // fhreadlink
