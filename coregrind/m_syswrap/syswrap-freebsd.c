@@ -1348,30 +1348,48 @@ POST(sys_kqueue)
    }
 }
 
+// int kevent(int kq, const struct kevent *changelist, int nchanges,
+//           struct kevent *eventlist, int nevents,
+//           const struct timespec *timeout);
+#if (FREEBSD_VERS >= FREEBSD_12)
+PRE(sys_freebsd11_kevent)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_freebsd11_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
+   PRE_REG_READ6(long, "kevent",
+                 int, fd, struct vki_kevent_freebsd11 *, newev, int, num_newev,
+                 struct vki_kevent_freebsd11 *, ret_ev, int, num_retev,
+                 struct timespec *, timeout);
+   if (ARG2 != 0 && ARG3 != 0)
+      PRE_MEM_READ( "kevent(changeevent)", ARG2, sizeof(struct vki_kevent_freebsd11)*ARG3 );
+   if (ARG4 != 0 && ARG5 != 0)
+      PRE_MEM_WRITE( "kevent(events)", ARG4, sizeof(struct vki_kevent_freebsd11)*ARG5);
+   if (ARG6 != 0)
+      PRE_MEM_READ( "kevent(timeout)",
+                    ARG6, sizeof(struct vki_timespec));
+}
+
+POST(sys_freebsd11_kevent)
+{
+   vg_assert(SUCCESS);
+   if ((Word)RES != -1) {
+      if (ARG4 != 0)
+         POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent_freebsd11)*RES) ;
+   }
+}
+#else
 PRE(sys_kevent)
 {
-   /* struct kevent {
-        uintptr_t ident;  -- identifier for this event
-        short     filter; -- filter for event
-        u_short   flags;  -- action flags for kqueue
-        u_int     fflags; -- filter flag value
-        intptr_t  data;   -- filter data value
-        void      *udata; -- opaque user data identifier
-      };
-      int kevent(int kq, const struct kevent *changelist, int nchanges,
-                 struct kevent *eventlist, int nevents,
-                 const struct timespec *timeout);
-   */
    *flags |= SfMayBlock;
    PRINT("sys_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
    PRE_REG_READ6(long, "kevent",
-                 int, fd, struct vki_kevent *, newev, int, num_newev,
-                 struct vki_kevent *, ret_ev, int, num_retev,
+                 int, fd, struct vki_kevent_freebsd11 *, newev, int, num_newev,
+                 struct vki_kevent_freebsd11 *, ret_ev, int, num_retev,
                  struct timespec *, timeout);
    if (ARG2 != 0 && ARG3 != 0)
-      PRE_MEM_READ( "kevent(changeevent)", ARG2, sizeof(struct vki_kevent)*ARG3 );
+      PRE_MEM_READ( "kevent(changeevent)", ARG2, sizeof(struct vki_kevent_freebsd11)*ARG3 );
    if (ARG4 != 0 && ARG5 != 0)
-      PRE_MEM_WRITE( "kevent(events)", ARG4, sizeof(struct vki_kevent)*ARG5);
+      PRE_MEM_WRITE( "kevent(events)", ARG4, sizeof(struct vki_kevent_freebsd11)*ARG5);
    if (ARG6 != 0)
       PRE_MEM_READ( "kevent(timeout)",
                     ARG6, sizeof(struct vki_timespec));
@@ -1382,9 +1400,10 @@ POST(sys_kevent)
    vg_assert(SUCCESS);
    if ((Word)RES != -1) {
       if (ARG4 != 0)
-         POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent)*RES) ;
+         POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent_freebsd11)*RES) ;
    }
 }
+#endif
 
 PRE(sys___getcwd)
 {
@@ -4729,6 +4748,33 @@ POST(sys_fhstatfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
+PRE(sys_kevent)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
+   PRE_REG_READ6(long, "kevent",
+                 int, fd, struct vki_kevent *, newev, int, num_newev,
+                 struct vki_kevent *, ret_ev, int, num_retev,
+                 struct timespec *, timeout);
+   if (ARG2 != 0 && ARG3 != 0)
+      PRE_MEM_READ( "kevent(changeevent)", ARG2, sizeof(struct vki_kevent)*ARG3 );
+   if (ARG4 != 0 && ARG5 != 0)
+      PRE_MEM_WRITE( "kevent(events)", ARG4, sizeof(struct vki_kevent)*ARG5);
+   if (ARG6 != 0)
+      PRE_MEM_READ( "kevent(timeout)",
+                    ARG6, sizeof(struct vki_timespec));
+}
+
+POST(sys_kevent)
+{
+   vg_assert(SUCCESS);
+   if ((Word)RES != -1) {
+      if (ARG4 != 0)
+         POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent)*RES) ;
+   }
+}
+
+
 
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
@@ -5238,7 +5284,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_getresuid,        sys_getresuid),         // 360
    BSDXY(__NR_getresgid,        sys_getresgid),         // 361
    BSDX_(__NR_kqueue,           sys_kqueue),            // 362
+#if (FREEBSD_VERS >= FREEBSD_12)
+   BSDXY(__NR_freebsd11_kevent, sys_freebsd11_kevent),  // 363
+#else
    BSDXY(__NR_kevent,           sys_kevent),            // 363
+#endif
 
    // nosys                                                364
    // nosys                                                365

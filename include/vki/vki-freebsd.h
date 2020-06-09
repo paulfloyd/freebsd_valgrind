@@ -1193,9 +1193,9 @@ struct vki_pollfd {
 };
 
 //----------------------------------------------------------------------
-// From sys/kevent.h
+// From sys/event.h
 //----------------------------------------------------------------------
-struct vki_kevent11 {
+struct vki_kevent_freebsd11 {
 	vki_uintptr_t  ident;
 	vki_int16_t    filter;
 	vki_uint16_t   flags;

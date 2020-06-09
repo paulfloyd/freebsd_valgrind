@@ -224,6 +224,11 @@ DECL_TEMPLATE(freebsd, sys_aio_waitcomplete)
 DECL_TEMPLATE(freebsd, sys_getresuid)
 DECL_TEMPLATE(freebsd, sys_getresgid)
 DECL_TEMPLATE(freebsd, sys_kqueue)
+#if (FREEBSD_VERS >= FREEBSD_12)
+DECL_TEMPLATE(freebsd, sys_freebsd11_kevent)
+#else
+DECL_TEMPLATE(freebsd, sys_kevent)
+#endif
 DECL_TEMPLATE(freebsd, sys_sendfile)
 #if (FREEBSD_VERS >= FREEBSD_12)
 DECL_TEMPLATE(freebsd, sys_freebsd11_getfsstat)
