@@ -113,10 +113,10 @@ valkyriedir  = $(top_builddir)/docs/vg-html
 downloadsdir = $(top_builddir)/docs/downloads
 vgdir        = $(top_builddir)/docs/valgrind
 
-if VGCONF_OS_IS_LINUX
-XML_CATALOG_FILES = /etc/xml/catalog
-else
+if VGCONF_OS_IS_FREEBSD
 XML_CATALOG_FILES = /usr/local/share/xml/catalog
+else
+XML_CATALOG_FILES = /etc/xml/catalog
 endif
 
 # file to log print output to
