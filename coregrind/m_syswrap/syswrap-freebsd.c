@@ -3604,13 +3604,23 @@ PRE(sys_mkfifoat)
    PRE_MEM_RASCIIZ( "mkfifoat(path)", ARG2 );
 }
 
-PRE(sys_mknodat)
+#if (FREEBSD_VERS >= FREEBSD_12)
+PRE(sys_freebsd11_mknodat)
 {
-  PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+   PRINT("sys_freebsd11_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
    PRE_REG_READ4(long, "mknodat",
                  int, dfd, const char *, pathname, int, mode, unsigned, dev);
    PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
 }
+#else
+PRE(sys_mknodat)
+{
+   PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+   PRE_REG_READ4(long, "mknodat",
+                 int, dfd, const char *, pathname, int, mode, unsigned, dev);
+   PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
+}
+#endif
 
 PRE(sys_fchownat)
 {
@@ -4803,7 +4813,14 @@ POST(sys_kevent)
    }
 }
 
-
+// int mknodat(int fd, const char *path, mode_t mode, dev_t dev);
+PRE(sys_mknodat)
+{
+  PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+   PRE_REG_READ4(long, "mknodat",
+                 int, fd, const char *, path, vki_mode_t, mode, vki_dev_t, dev);
+   PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
+}
 
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
@@ -5496,7 +5513,13 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    BSDX_(__NR_mkdirat,          sys_mkdirat),           // 496
    BSDX_(__NR_mkfifoat,         sys_mkfifoat),          // 497
+
+#if (FREEBSD_VERS >= FREEBSD_12)
+   BSDX_(__NR_freebsd11_mknodat, sys_freebsd11_mknodat), // 498
+#else
    BSDX_(__NR_mknodat,          sys_mknodat),           // 498
+#endif
+
    BSDXY(__NR_openat,           sys_openat),            // 499
 
    BSDX_(__NR_readlinkat,       sys_readlinkat),        // 500
@@ -5573,7 +5596,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
     BSDXY(__NR_fstatfs,         sys_fstatfs),           // 556
     BSDXY(__NR_getfsstat,       sys_getfsstat),         // 557
     BSDXY(__NR_fhstatfs,        sys_fhstatfs),          // 558
-    // mknodat                                             559
+    BSDX_(__NR_mknodat,         sys_mknodat),           // 559
     // kevent                                              560
     // cpuset_getdomain                                    561
     // cpuset_setdomain                                    562

@@ -70,8 +70,9 @@ DECL_TEMPLATE(freebsd, sys_revoke)
 DECL_TEMPLATE(freebsd, sys_sbrk)
 DECL_TEMPLATE(freebsd, sys_sstk)
 DECL_TEMPLATE(freebsd, sys_swapon)
-DECL_TEMPLATE(freebsd, sys_getdtablesize)
-DECL_TEMPLATE(freebsd, sys_socket)
+DECL_TEMPLATE(freebsd, sys_getdtablesize) // 90
+DECL_TEMPLATE(freebsd, sys_fcntl) // 92
+DECL_TEMPLATE(freebsd, sys_socket) // 97
 DECL_TEMPLATE(freebsd, sys_connect)
 DECL_TEMPLATE(freebsd, sys_bind)
 DECL_TEMPLATE(freebsd, sys_setsockopt)
@@ -287,14 +288,14 @@ DECL_TEMPLATE(freebsd, sys_faccessat)
 DECL_TEMPLATE(freebsd, sys_fchmodat)
 DECL_TEMPLATE(freebsd, sys_fchownat)
 DECL_TEMPLATE(freebsd, sys_fexecve)
-
-DECL_TEMPLATE(freebsd, sys_posix_openpt)
-DECL_TEMPLATE(freebsd, sys_kenv)
-DECL_TEMPLATE(freebsd, sys_lchflags)
-DECL_TEMPLATE(freebsd, sys_uuidgen)
-DECL_TEMPLATE(freebsd, sys__umtx_op)
-DECL_TEMPLATE(freebsd, sys_thr_new)
-DECL_TEMPLATE(freebsd, sys_kmq_open)
+//SYS_freebsd11_fstatat
+DECL_TEMPLATE(freebsd, sys_posix_openpt) // 504
+DECL_TEMPLATE(freebsd, sys_kenv) // 390
+DECL_TEMPLATE(freebsd, sys_lchflags) // 391
+DECL_TEMPLATE(freebsd, sys_uuidgen) // 392
+DECL_TEMPLATE(freebsd, sys__umtx_op) // 454
+DECL_TEMPLATE(freebsd, sys_thr_new) // 455
+DECL_TEMPLATE(freebsd, sys_kmq_open) // 457
 DECL_TEMPLATE(freebsd, sys_kmq_setattr)
 DECL_TEMPLATE(freebsd, sys_kmq_timedreceive)
 DECL_TEMPLATE(freebsd, sys_kmq_timedsend)
@@ -306,14 +307,20 @@ DECL_TEMPLATE(freebsd, sys__umtx_unlock)
 DECL_TEMPLATE(freebsd, sys_jail_attach)
 DECL_TEMPLATE(freebsd, sys_thr_wake)
 
-DECL_TEMPLATE(freebsd, sys_fcntl)
 DECL_TEMPLATE(freebsd, sys_ioctl)
 DECL_TEMPLATE(freebsd, sys_mq_open)
 DECL_TEMPLATE(freebsd, sys_mq_unlink)
 DECL_TEMPLATE(freebsd, sys_futimesat)
 DECL_TEMPLATE(freebsd, sys_linkat)
-DECL_TEMPLATE(freebsd, sys_mkdirat)
-DECL_TEMPLATE(freebsd, sys_mkfifoat)
+DECL_TEMPLATE(freebsd, sys_mkdirat) // 496
+DECL_TEMPLATE(freebsd, sys_mkfifoat) // 497
+
+#if (FREEBSD_VERS >= FREEBSD_12)
+DECL_TEMPLATE(freebsd, sys_freebsd11_mknodat) // 498
+#else
+DECL_TEMPLATE(freebsd, sys_mknodat) // 498
+#endif
+
 DECL_TEMPLATE(freebsd, sys_openat)
 DECL_TEMPLATE(freebsd, sys_readlinkat)
 DECL_TEMPLATE(freebsd, sys_renameat)
