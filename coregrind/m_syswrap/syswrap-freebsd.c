@@ -875,8 +875,6 @@ PRE(sys_quotactl)
       PRE_MEM_RASCIIZ( "quotactl(path)", ARG1 );
       break;
    case VKI_Q_GETQUOTA:
-      // @todo PJF strictly this one does not read id but I don't know how to
-      // check just args 1, 2 and 4, probably needs a
       if (VG_(tdict).track_pre_reg_read) { \
          PRRSN;
          PRA1("quotactl",const char*,path);
@@ -962,36 +960,20 @@ POST(sys_freebsd4_uname)
 }
 #endif
 
-PRE(sys_lstat)
-{
-   PRINT("sys_lstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(long, "lstat", char *, file_name, struct stat *, buf);
-   PRE_MEM_RASCIIZ( "lstat(file_name)", ARG1 );
-   PRE_MEM_WRITE( "lstat(buf)", ARG2, sizeof(struct vki_stat) );
-}
+#if (FREEBSD_VERS >= FREEBSD_12)
 
-POST(sys_lstat)
-{
-   vg_assert(SUCCESS);
-   if (RES == 0) {
-      POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
-   }
-}
-
-PRE(sys_stat)
+PRE(sys_freebsd11_stat)
 {
    PRINT("sys_stat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(long, "stat", char *, file_name, struct stat *, buf);
+   PRE_REG_READ2(long, "stat", char *, file_name, struct freebsd11_stat *, buf);
    PRE_MEM_RASCIIZ( "stat(file_name)", ARG1 );
-   PRE_MEM_WRITE( "stat(buf)", ARG2, sizeof(struct vki_stat) );
+   PRE_MEM_WRITE( "stat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
-POST(sys_stat)
+POST(sys_freebsd11_stat)
 {
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
-
-#if (FREEBSD_VERS >= FREEBSD_12)
 
 PRE(sys_freebsd11_fstat)
 {
@@ -1005,7 +987,37 @@ POST(sys_freebsd11_fstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
+PRE(sys_freebsd11_lstat)
+{
+   PRINT("sys_lstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "lstat", char *, file_name, struct freebsd11_stat *, buf);
+   PRE_MEM_RASCIIZ( "lstat(file_name)", ARG1 );
+   PRE_MEM_WRITE( "lstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+POST(sys_freebsd11_lstat)
+{
+   vg_assert(SUCCESS);
+   if (RES == 0) {
+      POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
+   }
+}
+
 #else
+
+PRE(sys_stat)
+{
+   PRINT("sys_stat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "stat", char *, file_name, struct stat *, buf);
+   PRE_MEM_RASCIIZ( "stat(file_name)", ARG1 );
+   PRE_MEM_WRITE( "stat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+POST(sys_stat)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
 
 PRE(sys_fstat)
 {
@@ -1017,6 +1029,22 @@ PRE(sys_fstat)
 POST(sys_fstat)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+PRE(sys_lstat)
+{
+   PRINT("sys_lstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "lstat", char *, file_name, struct stat *, buf);
+   PRE_MEM_RASCIIZ( "lstat(file_name)", ARG1 );
+   PRE_MEM_WRITE( "lstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+POST(sys_lstat)
+{
+   vg_assert(SUCCESS);
+   if (RES == 0) {
+      POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
+   }
 }
 
 #endif
@@ -4982,9 +5010,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl lfs_segwait                                   187
 
  #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_stat,   sys_stat),              // 188
+   BSDXY(__NR_freebsd11_stat,   sys_freebsd11_stat),    // 188
    BSDXY(__NR_freebsd11_fstat,  sys_freebsd11_fstat),   // 189
-   BSDXY(__NR_freebsd11_lstat,  sys_lstat),             // 190
+   BSDXY(__NR_freebsd11_lstat,  sys_freebsd11_lstat),   // 190
  #else
    BSDXY(__NR_stat,             sys_stat),              // 188
    BSDXY(__NR_fstat,            sys_fstat),             // 189
