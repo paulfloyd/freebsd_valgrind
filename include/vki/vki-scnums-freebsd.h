@@ -285,6 +285,7 @@
 /* obs netbsd_lchown             275 */
 #define __NR_lutimes             276
 /* obs netbsd_msync              277 */
+
 #if (FREEBSD_VERS >= FREEBSD_12)
 #define __NR_freebsd11_nstat     278
 #define __NR_freebsd11_nfstat    279
@@ -301,11 +302,11 @@
 
 #define __NR_fhopen              298
 
-#if (FREEBSD_VERS < FREEBSD_12)
+#if (FREEBSD_VERS >= FREEBSD_12)
+#define __NR_freebsd11_fhstat    299
+#else
 #define __NR_fhstat              299
 #endif
-
-#define __NR_freeebsd11_fhstat   299
 
 #define __NR_modnext             300
 #define __NR_modstat             301

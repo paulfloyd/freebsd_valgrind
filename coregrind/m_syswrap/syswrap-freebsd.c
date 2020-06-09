@@ -1567,18 +1567,34 @@ POST(sys_fhopen)
    }
 }
 
+#if (FREEBSD_VERS >= FREEBSD12)
+PRE(sys_freebsd11_fhstat)
+{
+   PRINT("sys_freebsd11_fhstat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fhstat", struct fhandle *, fhp, struct freebd11_stat *, buf);
+   PRE_MEM_READ( "fhstat(fhp)", ARG1, sizeof(struct vki_fhandle) );
+   PRE_MEM_WRITE( "fhstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+
+POST(sys_freebsd11_fhstat)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
+}
+#else
 PRE(sys_fhstat)
 {
    PRINT("sys_fhstat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
    PRE_REG_READ2(long, "fhstat", struct fhandle *, fhp, struct stat *, buf);
    PRE_MEM_READ( "fhstat(fhp)", ARG1, sizeof(struct vki_fhandle) );
-   PRE_MEM_WRITE( "fhstat(buf)", ARG2, sizeof(struct vki_stat) );
+   PRE_MEM_WRITE( "fhstat(buf)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
 POST(sys_fhstat)
 {
-   POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
+
+#endif
 
 
 /* ---------------------------------------------------------------------
@@ -4669,6 +4685,19 @@ POST(sys_fstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
+PRE(sys_fhstat)
+{
+   PRINT("sys_fhstat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
+   PRE_REG_READ2(long, "fhstat", struct fhandle *, fhp, struct stat *, buf);
+   PRE_MEM_READ( "fhstat(fhp)", ARG1, sizeof(struct vki_fhandle) );
+   PRE_MEM_WRITE( "fhstat(buf)", ARG2, sizeof(struct vki_stat) );
+}
+
+POST(sys_fhstat)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
+}
+
 // ssize_t getdirentries(int fd, char *buf, size_t nbytes, off_t *basep);
 PRE(sys_getdirentries)
 {
@@ -5205,7 +5234,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // nosys                                                296
    // freebsd 4 fhstatfs                                   297
    BSDXY(__NR_fhopen,           sys_fhopen),            // 298
+#if (FREEBSD_VERS >= FREEBSD_12)
+   BSDXY(__NR_freebsd11_fhstat, sys_freebsd11_fhstat),  // 299
+#else
    BSDXY(__NR_fhstat,           sys_fhstat),            // 299
+#endif
 
 // BSDX_(__NR_modnext,          sys_modnext),           // 300
    BSDXY(__NR_modstat,          sys_modstat),           // 301
@@ -5534,7 +5567,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #if (FREEBSD_VERS >= FREEBSD_12)
    BSDXY(__NR_fstat,            sys_fstat),             // 551
     // fstatat                                             552
-    // fhstat                                              553
+    BSDXY(__NR_fhstat,          sys_fhstat),            // 553
     BSDXY(__NR_getdirentries,   sys_getdirentries),     // 554
     BSDXY(__NR_statfs,          sys_statfs),            // 555
     BSDXY(__NR_fstatfs,         sys_fstatfs),           // 556
