@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <ufs/ufs/quota.h>
+#include <machine/sysarch.h>
 #include "scalar.h"
 #include "config.h"
 #include "../../memcheck.h"
@@ -580,16 +581,38 @@ int main(void)
    GO(SYS_getfh, "2s 2m");
    SY(SYS_getfh, x0, x0); FAIL;
 
+#if (FREEBSD_VERS <= FREEBSD_10)
+   /* SYS_getdomainname          162 */
+   GO(SYS_freebsd4_getdomainname, "2s 1m");
+   SY(SYS_freebsd4_getdomainname, x0, x0); FAIL;
+   
+   /* SYS_setdomainname           163 */
+   GO(SYS_freebsd4_setdomainname, "2s 0m");
+   SY(SYS_freebsd4_setdomainname, x0, x0); FAIL;
 
+   /* SYS_uname                   164 */
+   GO(SYS_freebsd4_uname, "1s 1m");
+   SY(SYS_freebsd4_uname, x0); FAIL;
+#endif
+   
+   /* SYS_sysarch                 165 */
+#if defined (VGP_x86_freebsd)
+   GO(SYS_sysarch, "2s 1m");
+   SY(SYS_sysarch, x0+I386_GET_GSBASE, x0); FAIL;
+   
+   GO(SYS_sysarch, "2s 0m");
+   SY(SYS_sysarch, x0+I386_SET_GSBASE, x0); FAIL;
+#elif defined(VGP_amd64_freebsd)
+   GO(SYS_sysarch, "2s 1m");
+   SY(SYS_sysarch, x0+AMD64_GET_FSBASE, x0); SUCC;
+   
+   GO(SYS_sysarch, "2s 0m");
+   SY(SYS_sysarch, x0+AMD64_SET_FSBASE, x0); FAIL;
+#else
+#error "freebsd platform not defined"
+#endif
+   
    /*
-
-   BSDXY(__NR_getdomainname,    sys_getdomainname),     // 162
-   
-   BSDX_(__NR_setdomainname,    sys_setdomainname),     // 163
-
-   BSDXY(__NR_uname,            sys_uname),             // 164
-   
-   BSDX_(__NR_sysarch,          sys_sysarch),           // 165
    
 // BSDXY(__NR_rtprio,           sys_rtprio),            // 166
 
@@ -604,10 +627,12 @@ int main(void)
 // BSDXY(__NR_shmsys,           sys_shmsys),            // 171
 
    // nosys                                                172
+   
 #if (FREEBSD_VERS <= FREEBSD_10)
    BSDXY(__NR_freebsd6_pread,   sys_freebsd6_pread),    // 173
    BSDX_(__NR_freebsd6_pwrite,  sys_freebsd6_pwrite),   // 174
 #endif
+
    // nosys                                                175
 
    // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
@@ -1106,7 +1131,7 @@ int main(void)
    /* not getting an error with fd */
    /* need to investigate */
    GO(SYS_mkfifoat, "3s 1m");
-   SY(SYS_mkfifo, x0, x0, x0); FAIL;
+   SY(SYS_mkfifoat, x0, x0, x0); FAIL;
 
    /*
    
@@ -1207,7 +1232,7 @@ int main(void)
    
    */
    
-   /* SYS_getfhat                 160 */
+   /* SYS_getfhat                 564 */
    GO(SYS_getfhat, "4s 2m");
    SY(SYS_getfhat, x0, x0, x0, x0); FAIL;
    

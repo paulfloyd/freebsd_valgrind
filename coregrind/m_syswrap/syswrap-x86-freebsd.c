@@ -1146,42 +1146,59 @@ PRE(sys_sysarch)
    switch (ARG1) {
    case VKI_I386_SET_GSBASE:
       PRINT("sys_i386_set_gsbase ( %#lx )", ARG2);
-      PRE_REG_READ1(int, "i386_set_gsbase", void *, base)
 
-      /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
-      tst = VG_(get_ThreadState)(tid);
-      p = (void**)ARG2;
-      tst->arch.vex.guest_GS = (1 << 3) | 3;   /* GSEL(GUGS_SEL, SEL_UPL) */
-      /* "do" the syscall ourselves; the kernel never sees it */
-      idx = 1;
-      SET_STATUS_from_SysRes( sys_set_thread_area( tid, &idx, *p ) );
+      if (ARG2) {
+         /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
+         tst = VG_(get_ThreadState)(tid);
+         p = (void**)ARG2;
+         tst->arch.vex.guest_GS = (1 << 3) | 3;   /* GSEL(GUGS_SEL, SEL_UPL) */
+         /* "do" the syscall ourselves; the kernel never sees it */
+         idx = 1;
+         SET_STATUS_from_SysRes( sys_set_thread_area( tid, &idx, *p ) );
+      } else {
+         // ????
+         SET_STATUS_Failure( VKI_EINVAL );
+      }
 
       break;
    case VKI_I386_GET_GSBASE:
       PRINT("sys_i386_get_gsbase ( %#lx )", ARG2);
-      PRE_REG_READ1(int, "i386_get_gsbase", void *, basep)
       PRE_MEM_WRITE( "i386_get_gsbase(basep)", ARG2, sizeof(void *) );
 
       /* "do" the syscall ourselves; the kernel never sees it */
       SET_STATUS_from_SysRes( sys_get_thread_area( tid, 2, (void **)ARG2 ) );
 
       if (SUCCESS) {
-	 POST_MEM_WRITE( ARG2, sizeof(void *) );
+    //POST_MEM_WRITE( ARG2, sizeof(void *) );
       }
       break;
    case VKI_I386_GET_XFPUSTATE:
       PRINT("sys_i386_get_xfpustate ( %#lx )", ARG2);
-      PRE_REG_READ1(int, "i386_get_xfpustate", void *, basep)
       PRE_MEM_WRITE( "i386_get_xfpustate(basep)", ARG2, sizeof(void *) );
       
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
       SET_STATUS_Success2( tst->arch.vex.guest_FPTAG[0], tst->arch.vex.guest_FPTAG[0] );
-      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      //POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    default:
       VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %lu", ARG1);
       VG_(unimplemented) ("unhandled sysarch cmd");
+      break;
+   }
+}
+
+POST(sys_sysarch)
+{
+   switch (ARG1) {
+   case VKI_AMD64_SET_FSBASE:
+      break;
+   case VKI_AMD64_GET_FSBASE:
+      break;
+   case VKI_AMD64_GET_XFPUSTATE:
+      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      break;
+   default:
       break;
    }
 }

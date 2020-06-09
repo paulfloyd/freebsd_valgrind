@@ -922,16 +922,17 @@ POST(sys_getfh)
    POST_MEM_WRITE(ARG2, sizeof(vki_fhandle_t));
 }
 
+#if (FREEBSD_VERS <= FREEBSD_10)
 /* int getdomainname(char *domainname, int len); */
-PRE(sys_getdomainname)
+PRE(sys_freebsd4_getdomainname)
 {
-   PRINT("sys_getdomainname ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
+   PRINT("sys_freebsd4_getdomainname ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(long, "getdomainname",
                  char *, buf, int, len);
    PRE_MEM_WRITE( "getdomainname(buf, len)", ARG1, ARG2 );
 }
 
-POST(sys_getdomainname)
+POST(sys_freebsd4_getdomainname)
 {
    if (ARG1 != 0) {
       POST_MEM_WRITE( ARG1, ARG2 );
@@ -939,26 +940,27 @@ POST(sys_getdomainname)
 }
 
 /* int setdomainname(char *domainname, int len); */
-PRE(sys_setdomainname)
+PRE(sys_freebsd4_setdomainname)
 {
-   PRINT("sys_setdomainname ( %#" FMT_REGWORD "x )",ARG1);
+   PRINT("sys_freebsd4_setdomainname ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(long, "setdomainname", char *, buf);
    PRE_MEM_RASCIIZ( "setdomainname(buf)", ARG1 );
 }
 
-PRE(sys_uname)
+PRE(sys_freebsd4_uname)
 {
-   PRINT("sys_uname ( %#" FMT_REGWORD "x )", ARG1);
+   PRINT("sys_freebsd4_uname ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(long, "uname", struct utsname *, buf);
    PRE_MEM_WRITE( "uname(buf)", ARG1, sizeof(struct vki_utsname) );
 }
 
-POST(sys_uname)
+POST(sys_freebsd4_uname)
 {
    if (ARG1 != 0) {
       POST_MEM_WRITE( ARG1, sizeof(struct vki_utsname) );
    }
 }
+#endif
 
 PRE(sys_lstat)
 {
@@ -1200,15 +1202,43 @@ POST(sys___sysctl)
    }
 }
 
-/* int getdirentries(int fd, char *buf, u_int count, long *basep); */
+
+// int getdirentries(int fd, char *buf, int nbytes, long *basep);
+#if (FREEBSD_VERS >= FREEBSD_12)
+PRE(sys_freebsd11_getdirentries)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_freebsd11_getdirentries ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
+   PRE_REG_READ4(int, "getdirentries",
+                 int, fd, char *, buf,
+                 int, nbytes,
+                 long *, basep);
+   PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
+   if (ARG4)
+      PRE_MEM_WRITE( "getdirentries(basep)", ARG4, sizeof(long) );
+}
+
+POST(sys_freebsd11_getdirentries)
+{
+   vg_assert(SUCCESS);
+   if (RES > 0) {
+      POST_MEM_WRITE( ARG2, RES );
+      if ( ARG4 != 0 )
+         POST_MEM_WRITE( ARG4, sizeof (long));
+   }
+}
+#else
 PRE(sys_getdirentries)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_getdents ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "getdirentries",
-                 unsigned int, fd, struct dirent *, dirp,
-                 unsigned int, count);
-   PRE_MEM_WRITE( "getdirentries(dirp)", ARG2, ARG3 );
+   PRINT("sys_getdirentries ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
+   PRE_REG_READ4(int, "getdirentries",
+                 int, fd, char *, buf,
+                 int, nbytes,
+                 long *, basep);
+   PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
+   if (ARG4)
+      PRE_MEM_WRITE( "getdirentries(basep)", ARG4, sizeof(long) );
 }
 
 POST(sys_getdirentries)
@@ -1217,9 +1247,11 @@ POST(sys_getdirentries)
    if (RES > 0) {
       POST_MEM_WRITE( ARG2, RES );
       if ( ARG4 != 0 )
-     POST_MEM_WRITE( ARG4, sizeof (long));
+         POST_MEM_WRITE( ARG4, sizeof (long));
    }
 }
+#endif
+
 
 PRE(sys_seteuid)
 {
@@ -3503,7 +3535,7 @@ PRE(sys_mkdirat)
 
 PRE(sys_mkfifoat)
 {
-   PRINT("sys_mkfifoat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3 );
+   PRINT("sys_mkfifoat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,ARG2,(ARG2?(char*)ARG2:"NULL"),ARG3 );
    PRE_REG_READ3(int, "mkfifoat",
                  int, fd, const char *, path, vki_mode_t, mode);
    PRE_MEM_RASCIIZ( "mkfifoat(path)", ARG2 );
@@ -4442,7 +4474,7 @@ PRE(sys_cap_enter)
 PRE(sys_cap_getmode)
 {
    PRINT("sys_cap_getmode ( %#" FMT_REGWORD "x )", ARG1);
-   PRE_REG_READ1(int, "cap_enter", u_int*, modep);
+   PRE_REG_READ1(int, "cap_getmode", u_int*, modep);
    PRE_MEM_WRITE("cap_getmode(modep)", ARG1, sizeof(u_int));
 }
 
@@ -4588,6 +4620,30 @@ PRE(sys_fstat)
 POST(sys_fstat)
 {
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
+}
+
+// ssize_t getdirentries(int fd, char *buf, size_t nbytes, off_t *basep);
+PRE(sys_getdirentries)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_getdirentries ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", SARG1,ARG2,ARG3,ARG4);
+   PRE_REG_READ4(ssize_t, "getdirentries",
+                 int, fd, char *, buf,
+                 size_t, nbytes,
+                 off_t, basep);
+   PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
+   if (ARG4)
+      PRE_MEM_WRITE("getdirentries(buf)", ARG4, sizeof (vki_off_t));
+}
+
+POST(sys_getdirentries)
+{
+   vg_assert(SUCCESS);
+   if (RES > 0) {
+      POST_MEM_WRITE( ARG2, RES );
+      if ( ARG4 != 0 )
+         POST_MEM_WRITE( ARG4, sizeof (vki_off_t));
+   }
 }
 
 PRE(sys_statfs)
@@ -4889,11 +4945,12 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    BSDXY(__NR_lgetfh,           sys_lgetfh),            // 160
    BSDXY(__NR_getfh,            sys_getfh),             // 161
-   BSDXY(__NR_getdomainname,    sys_getdomainname),     // 162
-   BSDX_(__NR_setdomainname,    sys_setdomainname),     // 163
-
-   BSDXY(__NR_uname,            sys_uname),             // 164
-   BSDX_(__NR_sysarch,          sys_sysarch),           // 165
+#if (FREEBSD_VERS <= FREEBSD_10)
+   BSDXY(__NR_freebsd4_getdomainname, sys_freebsd4_getdomainname), // 162
+   BSDX_(__NR_freebsd4_setdomainname, sys_freebsd4_setdomainname), // 163
+   BSDXY(__NR_freebsd4_uname,   sys_freebsd4_uname),    // 164
+#endif
+   BSDXY(__NR_sysarch,          sys_sysarch),           // 165
 // BSDXY(__NR_rtprio,           sys_rtprio),            // 166
    // nosys                                                167
 
@@ -4939,8 +4996,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // nosys                                                193
    GENXY(__NR_getrlimit,        sys_getrlimit),         // 194
    GENX_(__NR_setrlimit,        sys_setrlimit),         // 195
-
+#if (FREEBSD_VERS >= FREEBSD_12)
+   BSDXY(__NR_freebsd11_getdirentries, sys_freebsd11_getdirentries), // 196
+#else
    BSDXY(__NR_getdirentries,    sys_getdirentries),     // 196
+#endif
 #if (FREEBSD_VERS <= FREEBSD_10)
    BSDX_(__NR_freebsd6_mmap,    sys_freebsd6_mmap),     // 197
 #endif
@@ -5397,7 +5457,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_fstat,            sys_fstat),             // 551
     // fstatat                                             552
     // fhstat                                              553
-    // getdirentries                                       554
+    BSDXY(__NR_getdirentries,   sys_getdirentries),     // 554
     BSDXY(__NR_statfs,          sys_statfs),            // 555
     BSDXY(__NR_fstatfs,         sys_fstatfs),           // 556
     BSDXY(__NR_getfsstat,       sys_getfsstat),         // 557

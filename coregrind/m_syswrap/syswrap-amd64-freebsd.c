@@ -668,6 +668,7 @@ PRE(sys_truncate)
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
 }
 
+// int sysarch(int number, void *args);
 PRE(sys_sysarch)
 {
    ThreadState *tst;
@@ -679,39 +680,56 @@ PRE(sys_sysarch)
    switch (ARG1) {
    case VKI_AMD64_SET_FSBASE:
       PRINT("sys_amd64_set_fsbase ( %#lx )", ARG2);
-      PRE_REG_READ1(long, "amd64_set_fsbase", void *, base)
 
-      /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
-      tst = VG_(get_ThreadState)(tid);
-      p = (void**)ARG2;
-      tst->arch.vex.guest_FS_CONST = (UWord)*p;
-      /* "do" the syscall ourselves; the kernel never sees it */
-      SET_STATUS_Success2((ULong)*p, tst->arch.vex.guest_RDX );
+      if (ARG2) {
+         /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
+         tst = VG_(get_ThreadState)(tid);
+         p = (void**)ARG2;
+         tst->arch.vex.guest_FS_CONST = (UWord)*p;
+         /* "do" the syscall ourselves; the kernel never sees it */
+         SET_STATUS_Success2((ULong)*p, tst->arch.vex.guest_RDX );
+      } else {
+         // ????
+         SET_STATUS_Failure( VKI_EINVAL );
+      }
 
       break;
    case VKI_AMD64_GET_FSBASE:
       PRINT("sys_amd64_get_fsbase ( %#lx )", ARG2);
-      PRE_REG_READ1(int, "amd64_get_fsbase", void *, basep)
       PRE_MEM_WRITE( "amd64_get_fsbase(basep)", ARG2, sizeof(void *) );
 
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
       SET_STATUS_Success2( tst->arch.vex.guest_FS_CONST, tst->arch.vex.guest_RDX );
-      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      //POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    case VKI_AMD64_GET_XFPUSTATE:
       PRINT("sys_amd64_get_xfpustate ( %#lx )", ARG2);
-      PRE_REG_READ1(int, "amd64_get_xfpustate", void *, basep)
       PRE_MEM_WRITE( "amd64_get_xfpustate(basep)", ARG2, sizeof(void *) );
       
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
       SET_STATUS_Success2( tst->arch.vex.guest_FPTAG[0], tst->arch.vex.guest_FPTAG[0] );
-      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      //POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    default:
       VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %lu", ARG1);
       VG_(unimplemented) ("unhandled sysarch cmd");
+      break;
+   }
+}
+
+POST(sys_sysarch)
+{
+   switch (ARG1) {
+   case VKI_AMD64_SET_FSBASE:
+      break;
+   case VKI_AMD64_GET_FSBASE:
+      break;
+   case VKI_AMD64_GET_XFPUSTATE:
+      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      break;
+   default:
       break;
    }
 }

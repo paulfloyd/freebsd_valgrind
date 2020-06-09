@@ -1179,15 +1179,40 @@ Syscall param getfh(fhp) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+165:             SYS_sysarch 2s 1m
+---------------------------------------------------------
+Syscall param sysarch(number) contains uninitialised byte(s)
+   ...
+
+Syscall param sysarch(args) contains uninitialised byte(s)
+   ...
+
+Syscall param amd64_get_fsbase(basep) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+165:             SYS_sysarch 2s 0m
+---------------------------------------------------------
+Syscall param sysarch(number) contains uninitialised byte(s)
+   ...
+
+Syscall param sysarch(args) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
-Syscall param mkfifo(pathname) contains uninitialised byte(s)
+Syscall param mkfifoat(fd) contains uninitialised byte(s)
    ...
 
-Syscall param mkfifo(mode) contains uninitialised byte(s)
+Syscall param mkfifoat(path) contains uninitialised byte(s)
    ...
 
-Syscall param mkfifo(pathname) points to unaddressable byte(s)
+Syscall param mkfifoat(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param mkfifoat(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

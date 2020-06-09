@@ -86,9 +86,11 @@ DECL_TEMPLATE(freebsd, sys_quotactl)
 DECL_TEMPLATE(freebsd, sys_nfssvc)
 DECL_TEMPLATE(freebsd, sys_lgetfh)
 DECL_TEMPLATE(freebsd, sys_getfh)
-DECL_TEMPLATE(freebsd, sys_getdomainname)
-DECL_TEMPLATE(freebsd, sys_setdomainname)
-DECL_TEMPLATE(freebsd, sys_uname)
+#if (FREEBSD_VERS <= FREEBSD_10)
+DECL_TEMPLATE(freebsd, sys_freebsd4_getdomainname)
+DECL_TEMPLATE(freebsd, sys_freebsd4_setdomainname)
+DECL_TEMPLATE(freebsd, sys_freebsd4_uname)
+#endif
 DECL_TEMPLATE(freebsd, sys_sysarch)
 DECL_TEMPLATE(freebsd, sys_rtprio)
 DECL_TEMPLATE(freebsd, sys_semsys)
@@ -101,6 +103,7 @@ DECL_TEMPLATE(freebsd, sys_freebsd6_pwrite)
 DECL_TEMPLATE(freebsd, sys_ntp_adjtime)
 DECL_TEMPLATE(freebsd, sys_setegid)
 DECL_TEMPLATE(freebsd, sys_seteuid)
+// @todo PJF stat and lstat should have freebsd11 versions
 DECL_TEMPLATE(freebsd, sys_stat)
 #if (FREEBSD_VERS >= FREEBSD_12)
 DECL_TEMPLATE(freebsd, sys_freebsd11_fstat)
@@ -110,6 +113,15 @@ DECL_TEMPLATE(freebsd, sys_fstat)
 DECL_TEMPLATE(freebsd, sys_lstat)
 DECL_TEMPLATE(freebsd, sys_pathconf)
 DECL_TEMPLATE(freebsd, sys_fpathconf)
+// @todo PJF where are getrlimit/setrlimit
+
+#if (FREEBSD_VERS >= FREEBSD_12)
+DECL_TEMPLATE(freebsd, sys_freebsd11_getdirentries)
+#else
+DECL_TEMPLATE(freebsd, sys_getdirentries)
+#endif
+
+// @todo PJF should be sys_freebsd6_mmap only on FreeBSD <= 10
 DECL_TEMPLATE(freebsd, sys_mmap)
 //DECL_TEMPLATE(freebsd, sys___syscall)
 DECL_TEMPLATE(freebsd, sys_lseek)

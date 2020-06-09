@@ -185,7 +185,7 @@
 #define __NR_nfssvc              155
 /* old getdirentries             156 */
 
-#if (FREEBSD_VER <= FREEBSD_10)
+#if (FREEBSD_VERS <= FREEBSD_10)
 // these were removed in FreeBSD 11
 #define __NR_freebsd4_statfs     157
 #define __NR_freebsd4_fstatfs    158
@@ -193,10 +193,11 @@
 #define __NR_lgetfh              160
 #define __NR_getfh               161
 
-// @todo PJF freebsd4 not in 12.1
-#define __NR_getdomainname       162
-#define __NR_setdomainname       163
-#define __NR_uname               164
+#if (FREEBSD_VERS <= FREEBSD_10)
+#define __NR_freebsd4_getdomainname 162
+#define __NR_freebsd4_setdomainname 163
+#define __NR_freebsd4_uname      164
+#endif
 
 #define __NR_sysarch             165
 #define __NR_rtprio              166

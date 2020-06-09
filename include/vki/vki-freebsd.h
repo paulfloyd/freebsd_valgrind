@@ -1956,9 +1956,10 @@ struct vki_ptrace_vm_entry {
 #endif // __VKI_FREEBSD_H
 
 //----------------------------------------------------------------------
-// From i386/include/sysarch.h and amd64/include/sysarch.h (interchangeable)
+// From x86/sysarch.h
 //----------------------------------------------------------------------
 
+// @todo PJF missing VKI_I386_VM86 VKI_I386_SET_PKRU VKI_I386_CLEAR_PKRU VKI_AMD64_SET_PKRU VKI_AMD64_CLEAR_PKRU
 #define VKI_I386_GET_FSBASE     7
 #define VKI_I386_SET_FSBASE     8
 #define VKI_I386_GET_GSBASE     9
