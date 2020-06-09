@@ -81,8 +81,13 @@ int main(void)
 
    /* SYS_freebsd11_mknod         14 */
    /* @todo PJF will need conditional compilation */
+#if (FREEBSD_VERS >= FREEBSD_12)
    GO(SYS_freebsd11_mknod, "3s 1m");
    SY(SYS_freebsd11_mknod, x0, x0, x0); FAIL;
+#else
+   GO(SYS_mknod, "3s 1m");
+   SY(SYS_mknod, x0, x0, x0); FAIL;
+#endif
 
    /* chmod                       15 */
    GO(SYS_chmod, "2s 1m");
@@ -1203,7 +1208,11 @@ int main(void)
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
+*/
+
 #if (FREEBSD_VERS >= FREEBSD_12)
+
+/*
    BSDXY(__NR_fstat,            sys_fstat),             // 551
    
     // fstatat                                             552
@@ -1245,5 +1254,7 @@ int main(void)
     
     // fhreadlink                                          567
 */
+
+#endif
 
 }
