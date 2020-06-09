@@ -156,11 +156,13 @@ DECL_TEMPLATE(freebsd, sys_nfstat)
 DECL_TEMPLATE(freebsd, sys_nlstat)
 DECL_TEMPLATE(freebsd, sys_fhstatfs)
 DECL_TEMPLATE(freebsd, sys_fhopen)
+
 #if (FREEBSD_VERS >= FREEBSD_12)
 DECL_TEMPLATE(freebsd, sys_freebsd11_fhstat)
 #else
 DECL_TEMPLATE(freebsd, sys_fhstat)
 #endif
+
 DECL_TEMPLATE(freebsd, sys_modnext)
 DECL_TEMPLATE(freebsd, sys_modstat)
 DECL_TEMPLATE(freebsd, sys_modfnext)
@@ -229,12 +231,15 @@ DECL_TEMPLATE(freebsd, sys_aio_waitcomplete)
 DECL_TEMPLATE(freebsd, sys_getresuid)
 DECL_TEMPLATE(freebsd, sys_getresgid)
 DECL_TEMPLATE(freebsd, sys_kqueue)
+
 #if (FREEBSD_VERS >= FREEBSD_12)
 DECL_TEMPLATE(freebsd, sys_freebsd11_kevent)
 #else
 DECL_TEMPLATE(freebsd, sys_kevent)
 #endif
+
 DECL_TEMPLATE(freebsd, sys_sendfile)
+
 #if (FREEBSD_VERS >= FREEBSD_12)
 DECL_TEMPLATE(freebsd, sys_freebsd11_getfsstat)
 DECL_TEMPLATE(freebsd, sys_freebsd11_statfs)
@@ -246,6 +251,7 @@ DECL_TEMPLATE(freebsd, sys_statfs)
 DECL_TEMPLATE(freebsd, sys_fstatfs)
 DECL_TEMPLATE(freebsd, sys_fhstatfs)
 #endif
+
 DECL_TEMPLATE(freebsd, sys_thr_exit)
 DECL_TEMPLATE(freebsd, sys_thr_self)
 DECL_TEMPLATE(freebsd, sys_thr_set_name)
@@ -262,7 +268,6 @@ DECL_TEMPLATE(freebsd, sys_lkmnosys5)
 DECL_TEMPLATE(freebsd, sys_lkmnosys6)
 DECL_TEMPLATE(freebsd, sys_lkmnosys7)
 DECL_TEMPLATE(freebsd, sys_lkmnosys8)
-DECL_TEMPLATE(freebsd, sys_mmap)
 DECL_TEMPLATE(freebsd, sys_lseek)
 DECL_TEMPLATE(freebsd, sys_truncate)
 DECL_TEMPLATE(freebsd, sys_ftruncate)
@@ -359,7 +364,6 @@ DECL_TEMPLATE(freebsd, sys_ppoll)
 #if (FREEBSD_VERS >= FREEBSD_12)
 
 DECL_TEMPLATE(freebsd, sys_fstat)
-DECL_TEMPLATE(freebsd, sys_fhstat)
 DECL_TEMPLATE(freebsd, sys_fstatat)
 DECL_TEMPLATE(freebsd, sys_fhstat)
 DECL_TEMPLATE(freebsd, sys_getdirentries)

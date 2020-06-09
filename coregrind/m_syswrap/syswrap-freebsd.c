@@ -1567,7 +1567,7 @@ POST(sys_fhopen)
    }
 }
 
-#if (FREEBSD_VERS >= FREEBSD12)
+#if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_fhstat)
 {
    PRINT("sys_freebsd11_fhstat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
