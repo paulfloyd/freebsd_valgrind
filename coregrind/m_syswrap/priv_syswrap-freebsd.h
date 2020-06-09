@@ -288,7 +288,6 @@ DECL_TEMPLATE(freebsd, sys_faccessat)
 DECL_TEMPLATE(freebsd, sys_fchmodat)
 DECL_TEMPLATE(freebsd, sys_fchownat)
 DECL_TEMPLATE(freebsd, sys_fexecve)
-//SYS_freebsd11_fstatat
 DECL_TEMPLATE(freebsd, sys_posix_openpt) // 504
 DECL_TEMPLATE(freebsd, sys_kenv) // 390
 DECL_TEMPLATE(freebsd, sys_lchflags) // 391
@@ -310,8 +309,13 @@ DECL_TEMPLATE(freebsd, sys_thr_wake)
 DECL_TEMPLATE(freebsd, sys_ioctl)
 DECL_TEMPLATE(freebsd, sys_mq_open)
 DECL_TEMPLATE(freebsd, sys_mq_unlink)
-DECL_TEMPLATE(freebsd, sys_futimesat)
-DECL_TEMPLATE(freebsd, sys_linkat)
+#if (FREEBSD_VERS >= FREEBSD_12)
+DECL_TEMPLATE(freebsd, sys_freebsd11_fstatat)
+#else
+DECL_TEMPLATE(freebsd, sys_fstatat)
+#endif
+DECL_TEMPLATE(freebsd, sys_futimesat) // 494
+DECL_TEMPLATE(freebsd, sys_linkat) // 495
 DECL_TEMPLATE(freebsd, sys_mkdirat) // 496
 DECL_TEMPLATE(freebsd, sys_mkfifoat) // 497
 

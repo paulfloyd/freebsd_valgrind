@@ -3642,19 +3642,36 @@ PRE(sys_futimesat)
       PRE_MEM_READ( "futimesat(tvp)", ARG3, 2 * sizeof(struct vki_timeval) );
 }
 
+// int fstatat(int fd, const char *path, struct stat *sb, int flag);
+#if (FREEBSD_VERS >= FREEBSD_12)
+PRE(sys_freebsd11_fstatat)
+{
+   PRINT("sys_freebsd11_fstatat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3);
+   PRE_REG_READ4(int, "fstatat",
+                 int, fd, const char *, path, struct freebsd11_stat *, buf, int, flag);
+   PRE_MEM_RASCIIZ( "fstatat(file_name)", ARG2 );
+   PRE_MEM_WRITE( "fstatat(buf)", ARG3, sizeof(struct vki_freebsd11_stat) );
+}
+
+POST(sys_freebsd11_fstatat)
+{
+   POST_MEM_WRITE( ARG3, sizeof(struct vki_freebsd11_stat) );
+}
+#else
 PRE(sys_fstatat)
 {
    PRINT("sys_fstatat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3);
-   PRE_REG_READ3(long, "fstatat",
-                 int, dfd, char *, file_name, struct stat *, buf);
+   PRE_REG_READ4(int, "fstatat",
+                 int, fd, const char *, path, struct stat *, buf, int, flag);
    PRE_MEM_RASCIIZ( "fstatat(file_name)", ARG2 );
-   PRE_MEM_WRITE( "fstatat(buf)", ARG3, sizeof(struct vki_stat) );
+   PRE_MEM_WRITE( "fstatat(buf)", ARG3, sizeof(struct vki_freebsd11_stat) );
 }
 
 POST(sys_fstatat)
 {
-   POST_MEM_WRITE( ARG3, sizeof(struct vki_stat) );
+   POST_MEM_WRITE( ARG3, sizeof(struct vki_freebsd11_stat) );
 }
+#endif
 
 PRE(sys_unlinkat)
 {
@@ -4695,6 +4712,20 @@ POST(sys_fstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
+PRE(sys_fstatat)
+{
+   PRINT("sys_fstatat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %" FMT_REGWORD "d )", SARG1,ARG2,(char*)ARG2,ARG3,ARG4);
+   PRE_REG_READ4(int, "fstatat",
+                 int, fd, const char *, path, struct stat *, buf, int, flag);
+   PRE_MEM_RASCIIZ( "fstatat(path)", ARG2 );
+   PRE_MEM_WRITE( "fstatat(buf)", ARG3, sizeof(struct vki_stat) );
+}
+
+POST(sys_fstatat)
+{
+   POST_MEM_WRITE( ARG3, sizeof(struct vki_stat) );
+}
+
 PRE(sys_fhstat)
 {
    PRINT("sys_fhstat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2);
@@ -5507,7 +5538,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_fchownat,         sys_fchownat),          // 491
 
    // fexecve                                              492
+#if (FREEBSD_VERS >= FREEBSD_12)
+   BSDXY(__NR_freebsd11_fstatat, sys_freebsd11_fstatat), // 493
+#else
    BSDXY(__NR_fstatat,          sys_fstatat),           // 493
+#endif
    BSDX_(__NR_futimesat,        sys_futimesat),         // 494
    BSDX_(__NR_linkat,           sys_linkat),            // 495
 
@@ -5588,8 +5623,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #endif // FREEBSD_VERS >= FREEBSD_11
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_fstat,            sys_fstat),             // 551
-    // fstatat                                             552
+    BSDXY(__NR_fstat,           sys_fstat),             // 551
+    BSDXY(__NR_fstatat,         sys_fstatat),           // 493
     BSDXY(__NR_fhstat,          sys_fhstat),            // 553
     BSDXY(__NR_getdirentries,   sys_getdirentries),     // 554
     BSDXY(__NR_statfs,          sys_statfs),            // 555
