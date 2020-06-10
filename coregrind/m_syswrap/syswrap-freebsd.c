@@ -1950,9 +1950,9 @@ PRE(sys_kmq_notify)
                     ARG2, sizeof(struct vki_sigevent) );
 }
 
-PRE(sys_mq_unlink)
+PRE(sys_kmq_unlink)
 {
-   PRINT("sys_mq_unlink ( %#" FMT_REGWORD "x(%s) )", ARG1,(char *)ARG1);
+   PRINT("sys_kmq_unlink ( %#" FMT_REGWORD "x(%s) )", ARG1,(char *)ARG1);
    PRE_REG_READ1(long, "mq_unlink", const char *, name);
    PRE_MEM_RASCIIZ( "mq_unlink(name)", ARG1 );
 }
@@ -5157,7 +5157,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #endif
    // __syscall (handled specially)                     // 198
 #if (FREEBSD_VERS <= FREEBSD_10)
-   BSDX_(__NR_freebsd6_lseek,    sys_freebsd6_lseek),   // 199
+   BSDX_(__NR_freebsd6_lseek,   sys_freebsd6_lseek),   // 199
    BSDX_(__NR_freebsd6_truncate, sys_freebsd6_truncate), // 200
    BSDX_(__NR_freebsd6_ftruncate, sys_freebsd6_ftruncate), // 201
 #endif
@@ -5500,7 +5500,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    BSDX_(__NR_kmq_timedsend,    sys_kmq_timedsend),     // 460
    BSDX_(__NR_kmq_notify,       sys_kmq_notify),        // 461
-   BSDX_(__NR_kmq_unlink,       sys_mq_unlink),         // 462
+   BSDX_(__NR_kmq_unlink,       sys_kmq_unlink),        // 462
    // abort2                                               463
 
    BSDX_(__NR_thr_set_name,     sys_thr_set_name),      // 464

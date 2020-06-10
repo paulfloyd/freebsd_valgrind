@@ -63,8 +63,9 @@ DECL_TEMPLATE(freebsd, sys_chflags)
 DECL_TEMPLATE(freebsd, sys_fchflags)
 DECL_TEMPLATE(freebsd, sys_pipe)
 DECL_TEMPLATE(freebsd, sys_ktrace)
-DECL_TEMPLATE(freebsd, sys_getlogin)
-DECL_TEMPLATE(freebsd, sys_setlogin)
+DECL_TEMPLATE(freebsd, sys_getlogin) // 49
+DECL_TEMPLATE(freebsd, sys_setlogin) // 50
+DECL_TEMPLATE(freebsd, sys_ioctl) // 54
 DECL_TEMPLATE(freebsd, sys_reboot)
 DECL_TEMPLATE(freebsd, sys_revoke)
 DECL_TEMPLATE(freebsd, sys_sbrk)
@@ -125,9 +126,11 @@ DECL_TEMPLATE(freebsd, sys_getdirentries)
 DECL_TEMPLATE(freebsd, sys_freebsd6_mmap)
 #endif
 //DECL_TEMPLATE(freebsd, sys___syscall)
-DECL_TEMPLATE(freebsd, sys_lseek)
-DECL_TEMPLATE(freebsd, sys_truncate)
-DECL_TEMPLATE(freebsd, sys_ftruncate)
+#if (FREEBSD_VERS <= FREEBSD_10)
+DECL_TEMPLATE(freebsd, sys_freebsd6_lseek) // 199
+DECL_TEMPLATE(freebsd, sys_freebsd6_truncate) // 200
+DECL_TEMPLATE(freebsd, sys_freebsd6_ftruncate) // 201
+#endif
 DECL_TEMPLATE(freebsd, sys___sysctl)
 DECL_TEMPLATE(freebsd, sys_undelete)
 DECL_TEMPLATE(freebsd, sys_futimes)
@@ -255,12 +258,10 @@ DECL_TEMPLATE(freebsd, sys_fhstatfs)
 
 DECL_TEMPLATE(freebsd, sys_thr_exit)
 DECL_TEMPLATE(freebsd, sys_thr_self)
-DECL_TEMPLATE(freebsd, sys_thr_set_name)
-DECL_TEMPLATE(freebsd, sys_rtprio_thread)
 DECL_TEMPLATE(freebsd, sys_vfork)
 DECL_TEMPLATE(freebsd, sys_modfind)
-DECL_TEMPLATE(freebsd, sys_modstat)
-DECL_TEMPLATE(freebsd, sys_lkmnosys0)
+
+DECL_TEMPLATE(freebsd, sys_lkmnosys0) // 210
 DECL_TEMPLATE(freebsd, sys_lkmnosys1)
 DECL_TEMPLATE(freebsd, sys_lkmnosys2)
 DECL_TEMPLATE(freebsd, sys_lkmnosys3)
@@ -268,51 +269,52 @@ DECL_TEMPLATE(freebsd, sys_lkmnosys4)
 DECL_TEMPLATE(freebsd, sys_lkmnosys5)
 DECL_TEMPLATE(freebsd, sys_lkmnosys6)
 DECL_TEMPLATE(freebsd, sys_lkmnosys7)
-DECL_TEMPLATE(freebsd, sys_lkmnosys8)
-DECL_TEMPLATE(freebsd, sys_lseek)
-DECL_TEMPLATE(freebsd, sys_truncate)
-DECL_TEMPLATE(freebsd, sys_ftruncate)
-DECL_TEMPLATE(freebsd, sys_pread)
-DECL_TEMPLATE(freebsd, sys_pwrite)
-DECL_TEMPLATE(freebsd, sys_mmap)
-DECL_TEMPLATE(freebsd, sys_thr_kill2)
-DECL_TEMPLATE(freebsd, sys_shm_open)
-DECL_TEMPLATE(freebsd, sys_shm_unlink)
-DECL_TEMPLATE(freebsd, sys_eaccess)
-DECL_TEMPLATE(freebsd, sys_cpuset)
-DECL_TEMPLATE(freebsd, sys_cpuset_setid)
-DECL_TEMPLATE(freebsd, sys_cpuset_getid)
-DECL_TEMPLATE(freebsd, sys_cpuset_getaffinity)
-DECL_TEMPLATE(freebsd, sys_cpuset_setaffinity)
-DECL_TEMPLATE(freebsd, sys_faccessat)
-DECL_TEMPLATE(freebsd, sys_fchmodat)
-DECL_TEMPLATE(freebsd, sys_fchownat)
-DECL_TEMPLATE(freebsd, sys_fexecve)
-DECL_TEMPLATE(freebsd, sys_posix_openpt) // 504
+DECL_TEMPLATE(freebsd, sys_lkmnosys8) // 218
+DECL_TEMPLATE(freebsd, sys_modstat) // 301
+DECL_TEMPLATE(freebsd, sys_eaccess) // 376
 DECL_TEMPLATE(freebsd, sys_kenv) // 390
 DECL_TEMPLATE(freebsd, sys_lchflags) // 391
 DECL_TEMPLATE(freebsd, sys_uuidgen) // 392
+DECL_TEMPLATE(freebsd, sys_thr_kill) // 433
+DECL_TEMPLATE(freebsd, sys__umtx_lock) // 434
+DECL_TEMPLATE(freebsd, sys__umtx_unlock) // 435
+DECL_TEMPLATE(freebsd, sys_jail_attach) // 436
+DECL_TEMPLATE(freebsd, sys_thr_wake) // 443
+
 DECL_TEMPLATE(freebsd, sys__umtx_op) // 454
 DECL_TEMPLATE(freebsd, sys_thr_new) // 455
 DECL_TEMPLATE(freebsd, sys_kmq_open) // 457
-DECL_TEMPLATE(freebsd, sys_kmq_setattr)
-DECL_TEMPLATE(freebsd, sys_kmq_timedreceive)
-DECL_TEMPLATE(freebsd, sys_kmq_timedsend)
-DECL_TEMPLATE(freebsd, sys_kmq_notify)
-DECL_TEMPLATE(freebsd, sys_kmq_unlink)
-DECL_TEMPLATE(freebsd, sys_thr_kill)
-DECL_TEMPLATE(freebsd, sys__umtx_lock)
-DECL_TEMPLATE(freebsd, sys__umtx_unlock)
-DECL_TEMPLATE(freebsd, sys_jail_attach)
-DECL_TEMPLATE(freebsd, sys_thr_wake)
+DECL_TEMPLATE(freebsd, sys_kmq_setattr) // 458
+DECL_TEMPLATE(freebsd, sys_kmq_timedreceive) // 459
+DECL_TEMPLATE(freebsd, sys_kmq_timedsend) // 460
+DECL_TEMPLATE(freebsd, sys_kmq_notify) // 461
+DECL_TEMPLATE(freebsd, sys_kmq_unlink) // 462
+DECL_TEMPLATE(freebsd, sys_thr_set_name) // 464
+// aio_fsync 465
+DECL_TEMPLATE(freebsd, sys_rtprio_thread) // 466
+DECL_TEMPLATE(freebsd, sys_pread) // 475
+DECL_TEMPLATE(freebsd, sys_pwrite) // 476
+DECL_TEMPLATE(freebsd, sys_mmap) // 477
+DECL_TEMPLATE(freebsd, sys_lseek) // 478
+DECL_TEMPLATE(freebsd, sys_truncate) // 479
+DECL_TEMPLATE(freebsd, sys_ftruncate) // 480
+DECL_TEMPLATE(freebsd, sys_thr_kill2) // 481
+DECL_TEMPLATE(freebsd, sys_shm_open) // 482
+DECL_TEMPLATE(freebsd, sys_shm_unlink) // 483
+DECL_TEMPLATE(freebsd, sys_cpuset) // 484
+DECL_TEMPLATE(freebsd, sys_cpuset_setid) // 485
+DECL_TEMPLATE(freebsd, sys_cpuset_getid) // 486
+DECL_TEMPLATE(freebsd, sys_cpuset_getaffinity) // 487
+DECL_TEMPLATE(freebsd, sys_cpuset_setaffinity) // 488
+DECL_TEMPLATE(freebsd, sys_faccessat) // 489
+DECL_TEMPLATE(freebsd, sys_fchmodat) //490
+DECL_TEMPLATE(freebsd, sys_fchownat) // 491
+DECL_TEMPLATE(freebsd, sys_fexecve)
 
-DECL_TEMPLATE(freebsd, sys_ioctl)
-DECL_TEMPLATE(freebsd, sys_mq_open)
-DECL_TEMPLATE(freebsd, sys_mq_unlink)
 #if (FREEBSD_VERS >= FREEBSD_12)
-DECL_TEMPLATE(freebsd, sys_freebsd11_fstatat)
+DECL_TEMPLATE(freebsd, sys_freebsd11_fstatat) // 493
 #else
-DECL_TEMPLATE(freebsd, sys_fstatat)
+DECL_TEMPLATE(freebsd, sys_fstatat) // 493
 #endif
 DECL_TEMPLATE(freebsd, sys_futimesat) // 494
 DECL_TEMPLATE(freebsd, sys_linkat) // 495
@@ -325,12 +327,12 @@ DECL_TEMPLATE(freebsd, sys_freebsd11_mknodat) // 498
 DECL_TEMPLATE(freebsd, sys_mknodat) // 498
 #endif
 
-DECL_TEMPLATE(freebsd, sys_openat)
-DECL_TEMPLATE(freebsd, sys_readlinkat)
-DECL_TEMPLATE(freebsd, sys_renameat)
-DECL_TEMPLATE(freebsd, sys_symlinkat)
-DECL_TEMPLATE(freebsd, sys_unlinkat)
-DECL_TEMPLATE(freebsd, sys_posix_openpt)
+DECL_TEMPLATE(freebsd, sys_openat) // 499
+DECL_TEMPLATE(freebsd, sys_readlinkat) // 500
+DECL_TEMPLATE(freebsd, sys_renameat) // 501
+DECL_TEMPLATE(freebsd, sys_symlinkat) // 502
+DECL_TEMPLATE(freebsd, sys_unlinkat) // 503
+DECL_TEMPLATE(freebsd, sys_posix_openpt) // 504
 DECL_TEMPLATE(freebsd, sys_jail_get)
 DECL_TEMPLATE(freebsd, sys_jail_set)
 DECL_TEMPLATE(freebsd, sys_jail_remove)
