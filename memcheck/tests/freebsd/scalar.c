@@ -738,32 +738,54 @@ int main(void)
    SY(SYS_getdirentries, x0, x0, x0+3, x0+1); FAIL;
 #endif
    
+#if (FREEBSD_VERS <= FREEBSD_10)
+   /* SYS_freebsd6_mmap           197*/
+#endif
+   /* __syscall (handled specially) 198 */
+#if (FREEBSD_VERS <= FREEBSD_10)
+   /* SYS_freebsd6_lseek          199 */
+   
+   /* SYS_freebsd6_truncate       200 */
+   
+   /* SYS_freebsd6_ftruncate      201 */
+#endif
+
+   /* SYS___sysctl                202 */
+   GO(SYS___sysctl, "(getoldlen) 3s 2m");
+   SY(SYS___sysctl, x0, x0+1, NULL, x0+1, NULL, x0); FAIL;
+   
+   GO(SYS___sysctl, "(getold) 4s 2m");
+   SY(SYS___sysctl, x0, x0+1, x0+1, x0+1, NULL, x0); FAIL;
+   
+   GO(SYS___sysctl, "(putnew) 4s 2m");
+   /* @todo PJF I'm only getting 3s + 2m, why no error for the last arg, newlen? */
+   SY(SYS___sysctl, x0, x0+1, NULL, NULL, x0+1, x0+2); FAIL;
+
+   /* SYS_mlock                   203 */
+   GO(SYS_mlock, "2s 0m");
+   SY(SYS_mlock, x0, x0+1); FAIL;
+   
+   /* SYS_munlock                 204 */
+   GO(SYS_munlock, "2s 0m");
+   SY(SYS_munlock, x0, x0+1); FAIL;
+   
+   /* SYS_undelete                205 */
+   GO(SYS_undelete, "1s 1m");
+   SY(SYS_undelete, x0); FAIL;
+   
+   /* SYS_futimes                 206 */
+   GO(SYS_futimes, "2s 0m");
+   /* not 1m? */
+   SY(SYS_futimes, x0+5, x0); FAIL;
+   
+   /* SYS_getpgid                 207 */
+   GO(SYS_getpgid, "1s 0m");
+   SY(SYS_getpgid, x0-1); FAIL;
+
+   /* netbsd newreboot            208 */
+   
    /*
-   
-#if (FREEBSD_VERS <= FREEBSD_10)
-   BSDX_(__NR_freebsd6_mmap,    sys_freebsd6_mmap),     // 197
-#endif
-   // __syscall (handled specially)                     // 198
-#if (FREEBSD_VERS <= FREEBSD_10)
-   BSDX_(__NR_freebsd6_lseek,    sys_freebsd6_lseek),    // 199
-   
-   BSDX_(__NR_freebsd6_truncate, sys_freebsd6_truncate), // 200
-   
-   BSDX_(__NR_freebsd6_ftruncate, sys_freebsd6_ftruncate), // 201
-#endif
-   BSDXY(__NR___sysctl,         sys___sysctl),          // 202
-   
-   GENX_(__NR_mlock,            sys_mlock),             // 203
 
-   GENX_(__NR_munlock,          sys_munlock),           // 204
-   
-   BSDX_(__NR_undelete,         sys_undelete),          // 205
-   
-   BSDX_(__NR_futimes,          sys_futimes),           // 206
-   
-   GENX_(__NR_getpgid,          sys_getpgid),           // 207
-
-   // netbsd newreboot                                     208
    GENXY(__NR_poll,             sys_poll),              // 209
    
    BSDX_(__NR_lkmnosys0,        sys_lkmnosys0),         // 210

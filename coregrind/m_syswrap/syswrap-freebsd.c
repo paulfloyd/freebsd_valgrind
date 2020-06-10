@@ -1143,69 +1143,55 @@ POST(sys_sysinfo)
 PRE(sys___sysctl)
 {
    PRINT("sys_sysctl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5,ARG6 );
+
    int* name = (int*)ARG1;
-   PRINT("\nmib[0]: ");
-   if (SARG2 >= 1)
-   {
-       switch (name[0])
-       {
-       case 0: // CTL_UNSPEC
-           PRINT("unspec");
-           break;
-       case 1: // CTL_KERN
-           PRINT("kern");
-           break;
-       case 2: // CTL_VM
-           PRINT("vm");
-           break;
-       case 3: // CTL_VFS
-           PRINT("vfs");
-           break;
-       case 4: // CTL_NET
-           PRINT("net");
-           break;
-       case 5: // CTL_DEBUG
-           PRINT("debug");
-           break;
-       case 6: // CTL_HW
-           PRINT("hw");
-           break;
-       case 7: // CTL_MACHDEP
-           PRINT("machdep");
-           break;
-       case 8: // CTL _USER
-           PRINT("user");
-           break;
-       case 9: //CTL_P1003_1B
-           PRINT("p1003_b1b");
-           break;
-       default:
-           PRINT("unrecognized (%d)", ((int*)ARG1)[0]);
-           break;
-       }
-   }
-   if (SARG2 >= 2)
-   {
-       PRINT(" mib[1]: %d\n", name[1]);
-   }
-
-   PRE_REG_READ6(long, "__sysctl", int *, name, vki_u_int32_t, namelen, void *, oldp,
-         vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
-
-#define ORIGINAL_CODE 0
-
-#if defined(ORIGINAL_CODE) && ORIGINAL_CODE == 1
-   PRE_MEM_READ("sysctl(name)", ARG1, ARG2 * sizeof(int));
-   if (ARG5 != (UWord)NULL)
-      PRE_MEM_READ("sysctl(new)", (Addr)ARG5, ARG6);
-   if (ARG4 != (UWord)NULL) {
-      if (ARG3 != (UWord)NULL) {
-         PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
-         PRE_MEM_WRITE("sysctl(oldval)", (Addr)ARG3, *(vki_size_t *)ARG4);
+   if (ML_(safe_to_deref)(name, sizeof(int))) {
+      PRINT("\nmib[0]: ");
+      if (SARG2 >= 1) {
+         switch (name[0])
+         {
+         case 0: // CTL_UNSPEC
+            PRINT("unspec");
+            break;
+         case 1: // CTL_KERN
+            PRINT("kern");
+            break;
+         case 2: // CTL_VM
+            PRINT("vm");
+            break;
+         case 3: // CTL_VFS
+            PRINT("vfs");
+            break;
+         case 4: // CTL_NET
+            PRINT("net");
+            break;
+         case 5: // CTL_DEBUG
+            PRINT("debug");
+            break;
+         case 6: // CTL_HW
+            PRINT("hw");
+            break;
+         case 7: // CTL_MACHDEP
+            PRINT("machdep");
+            break;
+         case 8: // CTL _USER
+            PRINT("user");
+            break;
+         case 9: //CTL_P1003_1B
+            PRINT("p1003_b1b");
+            break;
+         default:
+            PRINT("unrecognized (%d)", ((int*)ARG1)[0]);
+            break;
+         }
       }
-      PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+      if (SARG2 >= 2 && ML_(safe_to_deref)(name, 2*sizeof(int))) {
+          PRINT(" mib[1]: %d\n", name[1]);
+      }
    }
-#else
+
+   PRE_REG_READ6(int, "__sysctl", int *, name, vki_u_int32_t, namelen, void *, oldp,
+                 vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
 
    // read number of ints specified in ARG2 from mem pointed to by ARG1
    PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
@@ -1226,16 +1212,18 @@ PRE(sys___sysctl)
       if (ARG3 != (UWord)NULL) {
          // case 2 above
          PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
-         PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
+         if (ML_(safe_to_deref)((void*)(Addr)ARG4, sizeof(vki_size_t))) {
+            PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
+         } else {
+            VG_(dmsg)("Warning: Bad oldlenp address %p in syctl\n",
+                      (void *)(Addr)ARG4);
+            SET_STATUS_Failure ( VKI_EFAULT );
+         }
       } else {
          // case 1 above
           PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       }
-
    }
-#endif
-
-#undef ORIGINAL_CODE
 }
 
 POST(sys___sysctl)

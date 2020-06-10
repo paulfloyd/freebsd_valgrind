@@ -1369,6 +1369,113 @@ Syscall param getdirentries(basep) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+202:            SYS___sysctl (getoldlen) 3s 2m
+---------------------------------------------------------
+Syscall param __sysctl(name) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(oldlenp) contains uninitialised byte(s)
+   ...
+
+Syscall param sysctl(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param sysctl(oldlenp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+202:            SYS___sysctl (getold) 4s 2m
+---------------------------------------------------------
+Syscall param __sysctl(name) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(oldp) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(oldlenp) contains uninitialised byte(s)
+   ...
+
+Syscall param sysctl(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param sysctl(oldlenp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Warning: Bad oldlenp address 0x........ in syctl
+---------------------------------------------------------
+202:            SYS___sysctl (putnew) 4s 2m
+---------------------------------------------------------
+Syscall param __sysctl(name) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctl(newp) contains uninitialised byte(s)
+   ...
+
+Syscall param sysctl(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param sysctl(newp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+203:               SYS_mlock 2s 0m
+---------------------------------------------------------
+Syscall param mlock(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param mlock(len) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+204:             SYS_munlock 2s 0m
+---------------------------------------------------------
+Syscall param munlock(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param munlock(len) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+205:            SYS_undelete 1s 1m
+---------------------------------------------------------
+Syscall param undelete(pathname) contains uninitialised byte(s)
+   ...
+
+Syscall param undelete(pathname) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+206:             SYS_futimes 2s 0m
+---------------------------------------------------------
+Syscall param futimes(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param futimes(tvp) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+207:             SYS_getpgid 1s 0m
+---------------------------------------------------------
+Syscall param getpgid(pid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
 Syscall param mkfifoat(fd) contains uninitialised byte(s)
