@@ -40,11 +40,11 @@ Syscall param lgetfh(fhp) points to unaddressable byte(s)
    at 0x........: malloc (vg_replace_malloc.c:...)
    by 0x........: main (getfh.c:35)
 
-Syscall param getfh(fd) contains uninitialised byte(s)
+Syscall param getfhat(fd) contains uninitialised byte(s)
    at 0x........: getfhat (in /...libc...)
    by 0x........: main (getfh.c:43)
 
-Syscall param getfh(flag) contains uninitialised byte(s)
+Syscall param getfhat(flag) contains uninitialised byte(s)
    at 0x........: getfhat (in /...libc...)
    by 0x........: main (getfh.c:43)
 
