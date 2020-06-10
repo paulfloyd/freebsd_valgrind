@@ -192,8 +192,13 @@ int main(void)
    SY(SYS_dup, x0-1); FAIL;
 
    /* freebsd10_pipe              42 */
+#if (FREEBSD_VERS >= FREEBSD_11)   
    GO(SYS_freebsd10_pipe, "0s 0m");
    SY(SYS_freebsd10_pipe, x0); SUCC;
+#else
+   GO(SYS_freebsd10_pipe, "0s 0m");
+   SY(SYS_freebsd10_pipe, x0); SUCC;
+#endif
    
    /* getegid                     43 */
    GO(SYS_getegid, "0s 0m");
