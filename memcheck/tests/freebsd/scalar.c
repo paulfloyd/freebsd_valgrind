@@ -196,8 +196,8 @@ int main(void)
    GO(SYS_freebsd10_pipe, "0s 0m");
    SY(SYS_freebsd10_pipe, x0); SUCC;
 #else
-   GO(SYS_freebsd10_pipe, "0s 0m");
-   SY(SYS_freebsd10_pipe, x0); SUCC;
+   GO(SYS_pipe, "0s 0m");
+   SY(SYS_pipe, x0); SUCC;
 #endif
    
    /* getegid                     43 */
