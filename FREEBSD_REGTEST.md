@@ -34,7 +34,7 @@ memcheck/tests/gone_abrt_xml             (stderr)
 memcheck/tests/sigaltstack               (stderr)
 ```
 
-descr_belowsp - missing info on stack guard in message. See issue #101__
+descr_belowsp - missing info on stack guard in message. See issue #101  
 gone_abrt_xml - differences in signal details. See issue 102  
 sigaltstack - SIGSEGV handling issue  
 
