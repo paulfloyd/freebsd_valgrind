@@ -1201,6 +1201,174 @@ Syscall param sysarch(args) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
+166:              SYS_rtprio (GET) 3s 1m
+---------------------------------------------------------
+Syscall param rtprio(function) contains uninitialised byte(s)
+   ...
+
+Syscall param rtprio(pid) contains uninitialised byte(s)
+   ...
+
+Syscall param rtprio(rtp) contains uninitialised byte(s)
+   ...
+
+Syscall param rtprio(rtp#lookup) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+166:              SYS_rtprio (SET) 3s 1m
+---------------------------------------------------------
+Syscall param rtprio(function) contains uninitialised byte(s)
+   ...
+
+Syscall param rtprio(pid) contains uninitialised byte(s)
+   ...
+
+Syscall param rtprio(rtp) contains uninitialised byte(s)
+   ...
+
+Syscall param rtprio(rtp#set) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+181:              SYS_setgid 1s 0m
+---------------------------------------------------------
+Syscall param setgid(gid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+182:             SYS_setegid 1s 0m
+---------------------------------------------------------
+Syscall param setegid(gid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+183:             SYS_seteuid 1s 0m
+---------------------------------------------------------
+Syscall param seteuid(uid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+188:      SYS_freebsd11_stat 2s 2m
+---------------------------------------------------------
+Syscall param stat(file_name) contains uninitialised byte(s)
+   ...
+
+Syscall param stat(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param stat(file_name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param stat(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+189:     SYS_freebsd11_fstat 2s 1m
+---------------------------------------------------------
+Syscall param fstat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param fstat(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param fstat(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+190:     SYS_freebsd11_lstat 2s 2m
+---------------------------------------------------------
+Syscall param lstat(file_name) contains uninitialised byte(s)
+   ...
+
+Syscall param lstat(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param lstat(file_name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param lstat(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+191:            SYS_pathconf 2s 1m
+---------------------------------------------------------
+Syscall param pathconf(file_name) contains uninitialised byte(s)
+   ...
+
+Syscall param pathconf(name) contains uninitialised byte(s)
+   ...
+
+Syscall param pathconf(file_name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+192:           SYS_fpathconf 2s 0m
+---------------------------------------------------------
+Syscall param fpathconf(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param fpathconf(name) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+194:           SYS_getrlimit 2s 1m
+---------------------------------------------------------
+Syscall param getrlimit(resource) contains uninitialised byte(s)
+   ...
+
+Syscall param getrlimit(rlim) contains uninitialised byte(s)
+   ...
+
+Syscall param getrlimit(rlim) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+195:           SYS_setrlimit 2s 1m
+---------------------------------------------------------
+Syscall param setrlimit(resource) contains uninitialised byte(s)
+   ...
+
+Syscall param setrlimit(rlim) contains uninitialised byte(s)
+   ...
+
+Syscall param setrlimit(rlim) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+196:SYS_freebsd11_getdirentries 4s 2m
+---------------------------------------------------------
+Syscall param getdirentries(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param getdirentries(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param getdirentries(nbytes) contains uninitialised byte(s)
+   ...
+
+Syscall param getdirentries(basep) contains uninitialised byte(s)
+   ...
+
+Syscall param getdirentries(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param getdirentries(basep) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
 Syscall param mkfifoat(fd) contains uninitialised byte(s)
@@ -1219,16 +1387,16 @@ Syscall param mkfifoat(path) points to unaddressable byte(s)
 ---------------------------------------------------------
 564:             SYS_getfhat 4s 2m
 ---------------------------------------------------------
-Syscall param getfh(fd) contains uninitialised byte(s)
+Syscall param getfhat(fd) contains uninitialised byte(s)
    ...
 
-Syscall param getfh(path) contains uninitialised byte(s)
+Syscall param getfhat(path) contains uninitialised byte(s)
    ...
 
-Syscall param getfh(fhp) contains uninitialised byte(s)
+Syscall param getfhat(fhp) contains uninitialised byte(s)
    ...
 
-Syscall param getfh(flag) contains uninitialised byte(s)
+Syscall param getfhat(flag) contains uninitialised byte(s)
    ...
 
 Syscall param getfhat(path) points to unaddressable byte(s)

@@ -94,7 +94,7 @@ DECL_TEMPLATE(freebsd, sys_freebsd4_setdomainname)
 DECL_TEMPLATE(freebsd, sys_freebsd4_uname)
 #endif
 DECL_TEMPLATE(freebsd, sys_sysarch)
-DECL_TEMPLATE(freebsd, sys_rtprio)
+DECL_TEMPLATE(freebsd, sys_rtprio) // 166
 DECL_TEMPLATE(freebsd, sys_semsys)
 DECL_TEMPLATE(freebsd, sys_msgsys)
 DECL_TEMPLATE(freebsd, sys_shmsys)

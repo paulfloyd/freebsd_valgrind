@@ -622,79 +622,123 @@ int main(void)
 #error "freebsd platform not defined"
 #endif
    
-   /*
+   /* SYS_rtprio                   166 */
+   GO(SYS_rtprio, "(GET) 3s 1m");
+   SY(SYS_rtprio, x0, x0, x0); FAIL;
    
-// BSDXY(__NR_rtprio,           sys_rtprio),            // 166
+   GO(SYS_rtprio, "(SET) 3s 1m");
+   SY(SYS_rtprio, x0+1, x0, x0); FAIL;
 
-   // nosys                                                167
+   /* nosys                       167 */
 
-   // nosys                                                168
+   /* nosys                       168 */
    
-// BSDXY(__NR_semsys,           sys_semsys),            // 169
+   /* SYS_semsys                  169 */
 
-// BSDXY(__NR_msgsys,           sys_msgsys),            // 170
+   /* SYS_msgsys                  170 */
 
-// BSDXY(__NR_shmsys,           sys_shmsys),            // 171
+   /* SYS_shmsys                  171 */
 
-   // nosys                                                172
+   /* nosys                       172 */
    
 #if (FREEBSD_VERS <= FREEBSD_10)
-   BSDXY(__NR_freebsd6_pread,   sys_freebsd6_pread),    // 173
-   BSDX_(__NR_freebsd6_pwrite,  sys_freebsd6_pwrite),   // 174
+
+   /* @todo PJF maybe one day */
+
+   /* SYS_freebsd6_pread          173 */
+   
+   /* SYS_freebsd6_pwrite         174 */
 #endif
 
-   // nosys                                                175
+   /* nosys                       175 */
 
    // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
    
-   // bsd/os sfork                                         177
+   /* bsd/os sfork                177 */
    
-   // bsd/os getdescriptor                                 178
+   /* bsd/os getdescriptor        178 */
    
-   // bsd/os setdescriptor                                 179
+   /* bsd/os setdescriptor        179 */
 
-   // nosys                                                180
+   /* nosys                       180 */
    
-   GENX_(__NR_setgid,           sys_setgid),            // 181
+   /* SYS_setgid,                 181 */
+   GO(SYS_setgid, "1s 0m");
+   SY(SYS_setgid, x0-1); FAIL;
    
-   BSDX_(__NR_setegid,          sys_setegid),           // 182
+   /* SYS_setegid                 182 */
+   GO(SYS_setegid, "1s 0m");
+   SY(SYS_setegid, x0-1); FAIL;
    
-   BSDX_(__NR_seteuid,          sys_seteuid),           // 183
+   
+   /* SYS_seteuid                 183 */
+   GO(SYS_seteuid, "1s 0m");
+   SY(SYS_seteuid, x0-1); FAIL;
+   
 
-   // unimpl lfs_bmapv                                     184
+   /* unimpl lfs_bmapv            184 */
    
-   // unimpl lfs_markv                                     185
+   /* unimpl lfs_markv            185 */
    
-   // unimpl lfs_segclean                                  186
+   /* unimpl lfs_segclean         186 */
    
-   // unimpl lfs_segwait                                   187
+   /* unimpl lfs_segwait          187 */
 
  #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_stat,   sys_stat),              // 188
+   /* SYS_freebsd11_stat          188 */
+   GO(SYS_freebsd11_stat, "2s 2m");
+   SY(SYS_freebsd11_stat, x0, x0); FAIL;
    
-   BSDXY(__NR_freebsd11_fstat,  sys_freebsd11_fstat),   // 189
+   /* SYS_freebsd11_fstat         189 */
+   GO(SYS_freebsd11_fstat, "2s 1m");
+   SY(SYS_freebsd11_fstat, x0, x0); FAIL;
    
-   BSDXY(__NR_freebsd11_lstat,  sys_lstat),             // 190
+   /* SYS_freebsd11_lstat         190 */
+   GO(SYS_freebsd11_lstat, "2s 2m");
+   SY(SYS_freebsd11_lstat, x0, x0); FAIL;
    
  #else
-   BSDXY(__NR_stat,             sys_stat),              // 188
+   /* SYS_stat          188 */
+   GO(SYS_stat, "2s 2m");
+   SY(SYS_stat, x0, x0); FAIL;
    
-   BSDXY(__NR_fstat,            sys_fstat),             // 189
-   
-   BSDXY(__NR_lstat,            sys_lstat),             // 190
+   /* SYS_fstat                   189 */
+   GO(SYS_fstat, "2s 1m");
+   SY(SYS_fstat, x0, x0); FAIL;
+
+   /* SYS_lstat         190 */
+   GO(SYS_lstat, "2s 2m");
+   SY(SYS_lstat, x0, x0); FAIL;
  #endif
  
-   BSDX_(__NR_pathconf,         sys_pathconf),          // 191
+   /* SYS_pathconf                191 */
+   GO(SYS_pathconf, "2s 1m");
+   SY(SYS_pathconf, x0, x0); FAIL;
 
-   BSDX_(__NR_fpathconf,        sys_fpathconf),         // 192
+   /* SYS_fpathconf               192 */
+   GO(SYS_fpathconf, "2s 0m");
+   SY(SYS_fpathconf, x0, x0); FAIL;
    
-   // nosys                                                193
+   /* nosys                       193 */
    
-   GENXY(__NR_getrlimit,        sys_getrlimit),         // 194
+   /* SYS_getrlimit               194 */
+   GO(SYS_getrlimit, "2s 1m");
+   SY(SYS_getrlimit, x0, x0); FAIL;
    
-   GENX_(__NR_setrlimit,        sys_setrlimit),         // 195
+   /* SYS_3etrlimit               195 */
+   GO(SYS_setrlimit, "2s 1m");
+   SY(SYS_setrlimit, x0, x0); FAIL;
 
-   BSDXY(__NR_getdirentries,    sys_getdirentries),     // 196
+   /* SYS_freebsd11_getdirentries 196 */
+ #if (FREEBSD_VERS >= FREEBSD_12)   
+   GO(SYS_freebsd11_getdirentries, "4s 2m");
+   SY(SYS_freebsd11_getdirentries, x0, x0, x0+3, x0+1); FAIL;
+#else
+   GO(SYS_getdirentries, "4s 2m");
+   SY(SYS_getdirentries, x0, x0, x0+3, x0+1); FAIL;
+#endif
+   
+   /*
    
 #if (FREEBSD_VERS <= FREEBSD_10)
    BSDX_(__NR_freebsd6_mmap,    sys_freebsd6_mmap),     // 197

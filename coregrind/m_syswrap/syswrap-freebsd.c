@@ -920,6 +920,26 @@ POST(sys_getfh)
    POST_MEM_WRITE(ARG2, sizeof(vki_fhandle_t));
 }
 
+PRE(sys_rtprio)
+{
+   PRINT( "sys_rtprio ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3 );
+   PRE_REG_READ3(int, "rtprio",
+      int, function, pid_t, pid, struct rtprio *, rtp);
+   if (ARG1 == VKI_RTP_SET) {
+      PRE_MEM_READ( "rtprio(rtp#set)", ARG3, sizeof(struct vki_rtprio));
+   } else if (ARG1 == VKI_RTP_LOOKUP) {
+      PRE_MEM_WRITE( "rtprio(rtp#lookup)", ARG3, sizeof(struct vki_rtprio));
+   } else {
+    /* PHK ?? */
+   }
+}
+
+POST(sys_rtprio)
+{
+   if (ARG1 == VKI_RTP_LOOKUP && RES == 0)
+      POST_MEM_WRITE( ARG3, sizeof(struct vki_rtprio));
+}
+
 #if (FREEBSD_VERS <= FREEBSD_10)
 /* int getdomainname(char *domainname, int len); */
 PRE(sys_freebsd4_getdomainname)
@@ -4871,7 +4891,7 @@ POST(sys_getrandom)
 PRE(sys_getfhat)
 {
    PRINT("sys_getfhat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "x, %" FMT_REGWORD "d ", SARG1, ARG2, ARG3, SARG4);
-   PRE_REG_READ4(int, "getfh", int, fd, const char*, path, vki_fhandle_t*, fhp, int, flag);
+   PRE_REG_READ4(int, "getfhat", int, fd, const char*, path, vki_fhandle_t*, fhp, int, flag);
    PRE_MEM_RASCIIZ( "getfhat(path)", ARG2 );
    PRE_MEM_WRITE("getfhat(fhp)", ARG3, sizeof(vki_fhandle_t));
 }
@@ -5102,13 +5122,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_freebsd4_uname,   sys_freebsd4_uname),    // 164
 #endif
    BSDXY(__NR_sysarch,          sys_sysarch),           // 165
-// BSDXY(__NR_rtprio,           sys_rtprio),            // 166
+   BSDXY(__NR_rtprio,           sys_rtprio),            // 166
    // nosys                                                167
 
    // nosys                                                168
-// BSDXY(__NR_semsys,           sys_semsys),            // 169
-// BSDXY(__NR_msgsys,           sys_msgsys),            // 170
-// BSDXY(__NR_shmsys,           sys_shmsys),            // 171
+
+   // the following 3 seem only to be defines in a header
+   // semsys                                               169
+   // msgsys                                               170
+   // shmsys                                               171
 
    // nosys                                                172
 #if (FREEBSD_VERS <= FREEBSD_10)
@@ -5117,7 +5139,12 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #endif
    // nosys                                                175
 
+   // @todo PJF this exists on Darwin and Solaris as well
+   // and it isn't implememented on either
+   // looking at the manpage there is a rather fearsome
+   // timex struct with a mixture of ro and rw fields
    // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
+
    // bsd/os sfork                                         177
    // bsd/os getdescriptor                                 178
    // bsd/os setdescriptor                                 179
