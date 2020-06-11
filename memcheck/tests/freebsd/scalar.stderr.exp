@@ -1486,6 +1486,250 @@ Syscall param getpgid(pid) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
+209:                SYS_poll 3s 3m
+---------------------------------------------------------
+Syscall param poll(ufds) contains uninitialised byte(s)
+   ...
+
+Syscall param poll(nfds) contains uninitialised byte(s)
+   ...
+
+Syscall param poll(timeout) contains uninitialised byte(s)
+   ...
+
+Syscall param poll(ufds.fd) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param poll(ufds.events) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param poll(ufds.revents) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+220:   SYS_freebsd7___semctl 4s 1m
+---------------------------------------------------------
+Syscall param semctl(semid) contains uninitialised byte(s)
+   ...
+
+Syscall param semctl(semnum) contains uninitialised byte(s)
+   ...
+
+Syscall param semctl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param semctl(arg) contains uninitialised byte(s)
+   ...
+
+Syscall param semctl(IPC_INFO, arg.buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+221:              SYS_semget 3s 0m
+---------------------------------------------------------
+Syscall param semget(key) contains uninitialised byte(s)
+   ...
+
+Syscall param semget(nsems) contains uninitialised byte(s)
+   ...
+
+Syscall param semget(semflg) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+222:               SYS_semop 3s 0m
+---------------------------------------------------------
+Syscall param semop(semid) contains uninitialised byte(s)
+   ...
+
+Syscall param semop(sops) contains uninitialised byte(s)
+   ...
+
+Syscall param semop(nsoops) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+224:     SYS_freebsd7_msgctl (set) 3s 1m
+---------------------------------------------------------
+Syscall param msgctl(msqid) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(IPC_SET, buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+224:     SYS_freebsd7_msgctl (stat) 3s 1m
+---------------------------------------------------------
+Syscall param msgctl(msqid) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(IPC_STAT, buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+225:              SYS_msgget 2s 0m
+---------------------------------------------------------
+Syscall param msgget(key) contains uninitialised byte(s)
+   ...
+
+Syscall param msgget(msgflg) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+226:              SYS_msgsnd 4s 1m
+---------------------------------------------------------
+Syscall param msgsnd(msqid) contains uninitialised byte(s)
+   ...
+
+Syscall param msgsnd(msgp) contains uninitialised byte(s)
+   ...
+
+Syscall param msgsnd(msgsz) contains uninitialised byte(s)
+   ...
+
+Syscall param msgsnd(msgflg) contains uninitialised byte(s)
+   ...
+
+Syscall param msgsnd(msgp->mtype) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+227:              SYS_msgrcv 4s 1m
+---------------------------------------------------------
+Syscall param msgrcv(msqid) contains uninitialised byte(s)
+   ...
+
+Syscall param msgrcv(msgp) contains uninitialised byte(s)
+   ...
+
+Syscall param msgrcv(msgsz) contains uninitialised byte(s)
+   ...
+
+Syscall param msgrcv(msgtyp) contains uninitialised byte(s)
+   ...
+
+Syscall param msgrcv(msgp->mtype) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+228:               SYS_shmat 3s 0m
+---------------------------------------------------------
+Syscall param shmat(shmid) contains uninitialised byte(s)
+   ...
+
+Syscall param shmat(shmaddr) contains uninitialised byte(s)
+   ...
+
+Syscall param shmat(shmflg) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+229:     SYS_freebsd7_shmctl 3s 0m
+---------------------------------------------------------
+Syscall param shmctl(shmid) contains uninitialised byte(s)
+   ...
+
+Syscall param shmctl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param shmctl(buf) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+230:               SYS_shmdt 1s 0m
+---------------------------------------------------------
+Syscall param shmdt(shmaddr) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+231:              SYS_shmget 3s 0m
+---------------------------------------------------------
+Syscall param shmget(key) contains uninitialised byte(s)
+   ...
+
+Syscall param shmget(size) contains uninitialised byte(s)
+   ...
+
+Syscall param shmget(shmflg) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+232:       SYS_clock_gettime 2s 1m
+---------------------------------------------------------
+Syscall param clock_settime(clk_id) contains uninitialised byte(s)
+   ...
+
+Syscall param clock_settime(tp) contains uninitialised byte(s)
+   ...
+
+Syscall param clock_settime(tp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+233:       SYS_clock_settime 2s 1m
+---------------------------------------------------------
+Syscall param clock_settime(clk_id) contains uninitialised byte(s)
+   ...
+
+Syscall param clock_settime(tp) contains uninitialised byte(s)
+   ...
+
+Syscall param clock_settime(tp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+234:        SYS_clock_getres 2s 1m
+---------------------------------------------------------
+Syscall param clock_getres(clk_id) contains uninitialised byte(s)
+   ...
+
+Syscall param clock_getres(res) contains uninitialised byte(s)
+   ...
+
+Syscall param clock_getres(res) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+240:           SYS_nanosleep 2s 2m
+---------------------------------------------------------
+Syscall param nanosleep(req) contains uninitialised byte(s)
+   ...
+
+Syscall param nanosleep(rem) contains uninitialised byte(s)
+   ...
+
+Syscall param nanosleep(req) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param nanosleep(rem) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
 Syscall param mkfifoat(fd) contains uninitialised byte(s)

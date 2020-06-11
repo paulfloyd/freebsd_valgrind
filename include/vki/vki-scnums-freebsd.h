@@ -249,16 +249,6 @@
 #define __NR_futimes             206
 #define __NR_getpgid             207
 #define __NR_poll                209
-#define __NR_lkmnosys0           210
-#define __NR_lkmnosys1           211
-#define __NR_lkmnosys2           212
-#define __NR_lkmnosys3           213
-#define __NR_lkmnosys4           214
-#define __NR_lkmnosys5           215
-#define __NR_lkmnosys6           216
-#define __NR_lkmnosys7           217
-#define __NR_lkmnosys8           218
-#define __NR_nfs_fhopen          219
 #define __NR_freebsd7___semctl   220
 #define __NR_semget              221
 #define __NR_semop               222

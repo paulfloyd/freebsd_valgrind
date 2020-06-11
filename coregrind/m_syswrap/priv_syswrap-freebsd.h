@@ -261,15 +261,6 @@ DECL_TEMPLATE(freebsd, sys_thr_self)
 DECL_TEMPLATE(freebsd, sys_vfork)
 DECL_TEMPLATE(freebsd, sys_modfind)
 
-DECL_TEMPLATE(freebsd, sys_lkmnosys0) // 210
-DECL_TEMPLATE(freebsd, sys_lkmnosys1)
-DECL_TEMPLATE(freebsd, sys_lkmnosys2)
-DECL_TEMPLATE(freebsd, sys_lkmnosys3)
-DECL_TEMPLATE(freebsd, sys_lkmnosys4)
-DECL_TEMPLATE(freebsd, sys_lkmnosys5)
-DECL_TEMPLATE(freebsd, sys_lkmnosys6)
-DECL_TEMPLATE(freebsd, sys_lkmnosys7)
-DECL_TEMPLATE(freebsd, sys_lkmnosys8) // 218
 DECL_TEMPLATE(freebsd, sys_modstat) // 301
 DECL_TEMPLATE(freebsd, sys_eaccess) // 376
 DECL_TEMPLATE(freebsd, sys_kenv) // 390

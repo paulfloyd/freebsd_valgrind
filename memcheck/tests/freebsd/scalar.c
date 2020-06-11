@@ -783,71 +783,112 @@ int main(void)
    SY(SYS_getpgid, x0-1); FAIL;
 
    /* netbsd newreboot            208 */
-   
-   /*
 
-   GENXY(__NR_poll,             sys_poll),              // 209
-   
-   BSDX_(__NR_lkmnosys0,        sys_lkmnosys0),         // 210
-   
-   BSDX_(__NR_lkmnosys1,        sys_lkmnosys1),         // 211
+   /* SYS_poll                    209 */
+   GO(SYS_poll, "3s 3m");
+   SY(SYS_poll, x0, x0+1, x0); FAIL;
 
-   BSDX_(__NR_lkmnosys2,        sys_lkmnosys2),         // 212
+   /* SYS_freebsd7___semctl       220 */
+   GO(SYS_freebsd7___semctl, "4s 1m");
+   SY(SYS_freebsd7___semctl, x0, x0, x0+11, x0); FAIL;
    
-   BSDX_(__NR_lkmnosys3,        sys_lkmnosys3),         // 213
+   /* SYS_semget                  221 */
+   GO(SYS_semget, "3s 0m");
+   SY(SYS_semget, x0, x0, x0); FAIL;
    
-   BSDX_(__NR_lkmnosys4,        sys_lkmnosys4),         // 214
+   /* SYS_semop                   222 */
+   GO(SYS_semop, "3s 0m");
+   SY(SYS_semop, x0, x0, x0); FAIL;
    
-   BSDX_(__NR_lkmnosys5,        sys_lkmnosys5),         // 215
+   /* unimpl semconfig            223 */
 
-   BSDX_(__NR_lkmnosys6,        sys_lkmnosys6),         // 216
+   /* SYS_freebsd7_msgctl         224 */
+   GO(SYS_freebsd7_msgctl, "(set) 3s 1m");
+   SY(SYS_freebsd7_msgctl, x0, x0+1, x0); FAIL;
    
-   BSDX_(__NR_lkmnosys7,        sys_lkmnosys7),         // 217
+   GO(SYS_freebsd7_msgctl, "(stat) 3s 1m");
+   SY(SYS_freebsd7_msgctl, x0, x0+2, x0); FAIL;
    
-   BSDX_(__NR_lkmnosys8,        sys_lkmnosys8),         // 218
+   /* SYS_msgget                  225 */
+   GO(SYS_msgget, "2s 0m");
+   SY(SYS_msgget, x0, x0); SUCC;
    
-// BSDXY(__NR_nfs_fhopen,       sys_nfs_fhopen),        // 219
-
-   BSDXY(__NR_freebsd7___semctl, sys_freebsd7___semctl), // 220
+   /* SYS_msgsnd                  226 */
+   GO(SYS_msgsnd, "4s 1m");
+   SY(SYS_msgsnd, x0, x0, x0, x0); FAIL;
    
-   BSDX_(__NR_semget,           sys_semget),            // 221
+   /* SYS_msgrcv                  227 */
+   GO(SYS_msgrcv, "4s 1m");
+   SY(SYS_msgrcv, x0, x0, x0, x0); FAIL;
    
-   BSDX_(__NR_semop,            sys_semop),             // 222
-   // unimpl semconfig                                     223
+   /* SYS_shmat                   228 */
+   GO(SYS_shmat, "3s 0m");
+   SY(SYS_shmat, x0, x0, x0); FAIL;
 
-// BSDXY(__NR_msgctl,           sys_msgctl),            // 224
-// BSDX_(__NR_msgget,           sys_msgget),            // 225
-// BSDX_(__NR_msgsnd,           sys_msgsnd),            // 226
-// BSDXY(__NR_msgrcv,           sys_msgrcv),            // 227
+   /* SYS_freebsd7_shmctl         229 */
+   GO(SYS_freebsd7_shmctl, "3s 0m");
+   SY(SYS_freebsd7_shmctl, x0, x0, x0); FAIL;
 
-   BSDXY(__NR_shmat,            sys_shmat),             // 228
-   BSDXY(__NR_freebsd7_shmctl,  sys_freebsd7_shmctl),   // 229
-   BSDXY(__NR_shmdt,            sys_shmdt),             // 230
-   BSDX_(__NR_shmget,           sys_shmget),            // 231
+   /* SYS_shmdt                   230 */
+   GO(SYS_shmdt, "1s 0m");
+   SY(SYS_shmdt, x0); FAIL;
 
-   BSDXY(__NR_clock_gettime,    sys_clock_gettime),     // 232
-   BSDX_(__NR_clock_settime,    sys_clock_settime),     // 233
-   BSDXY(__NR_clock_getres,     sys_clock_getres),      // 234
-   // unimpl timer_create                                  235
+   /* SYS_shmget                  231 */
+   GO(SYS_shmget, "3s 0m");
+   SY(SYS_shmget, x0, x0, x0); FAIL;
 
-   // unimpl timer_delete                                  236
-   // unimpl timer_settime                                 237
-   // unimpl timer_gettime                                 238
-   // unimpl timer_getoverrun                              239
+   /* SYS_clock_gettime           232 */
+   GO(SYS_clock_gettime, "2s 1m");
+   SY(SYS_clock_settime, x0, x0); FAIL;
+   
+   /* SYS_clock_settime           233 */
+   GO(SYS_clock_settime, "2s 1m");
+   SY(SYS_clock_settime, x0, x0); FAIL;
+   
+   /* SYS_clock_getres            234 */
+   GO(SYS_clock_getres, "2s 1m");
+   SY(SYS_clock_getres, x0, x0+1); FAIL;
+   
+   /* unimpl ktimer_create         235 */
 
-   GENXY(__NR_nanosleep,        sys_nanosleep),         // 240
-   // nosys                                                241
-   // nosys                                                242
-   // nosys                                                243
+   /* unimpl ktimer_delete         236 */
 
-   // nosys                                                244
-   // nosys                                                245
-   // nosys                                                246
-   // nosys                                                247
+   /* unimpl ktimer_settime        237 */
+
+   /* unimpl ktimer_gettime        238 */
+
+   /* unimpl ktimer_getoverrun     239 */
+
+   /* SYS_nanosleep               240 */
+   GO(SYS_nanosleep, "2s 2m");
+   SY(SYS_nanosleep, x0, x0+1); FAIL;
+   
+   /* nosys                       241 */
+
+   /* nosys                       242 */
+
+   /* nosys                       243 */
+
+   /* nosys                       244 */
+
+   /* nosys                       245 */
+
+   /* nosys                       246 */
+
+   /* nosys                       247 */
 
 // BSDXY(__NR_ntp_gettime,      sys_ntp_gettime),       // 248
-   // nosys                                                249
-   BSDXY(__NR_minherit,         sys_minherit),          // 250
+
+   /* nosys                       249 */
+
+   /* SYS_minherit                250 */
+   // @todo PJF causes Valgrind to crash 
+   //GO(SYS_minherit, "3s 1m");
+   //SY(SYS_minherit, x0, x0+1024, x0+1); SUCC;
+
+   
+   /*
+ 
    BSDX_(__NR_rfork,            sys_rfork),             // 251
 
    // openbsd_poll                                      // 252

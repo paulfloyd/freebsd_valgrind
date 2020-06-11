@@ -3113,60 +3113,6 @@ POST(sys_modstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_module_stat) );
 }
 
-PRE(sys_lkmnosys0)
-{
-   PRINT("%s", "sys_lkmnosys0 ()");
-   PRE_REG_READ0(long, "lkmnosys0");
-}
-
-PRE(sys_lkmnosys1)
-{
-   PRINT("%s", "sys_lkmnosys1 ()");
-   PRE_REG_READ0(long, "lkmnosys1");
-}
-
-PRE(sys_lkmnosys2)
-{
-   PRINT("%s", "sys_lkmnosys2 ()");
-   PRE_REG_READ0(long, "lkmnosys2");
-}
-
-PRE(sys_lkmnosys3)
-{
-   PRINT("%s", "sys_lkmnosys3 ()");
-   PRE_REG_READ0(long, "lkmnosys3");
-}
-
-PRE(sys_lkmnosys4)
-{
-   PRINT("%s", "sys_lkmnosys4 ()");
-   PRE_REG_READ0(long, "lkmnosys4");
-}
-
-PRE(sys_lkmnosys5)
-{
-   PRINT("%s", "sys_lkmnosys5 ()");
-   PRE_REG_READ0(long, "lkmnosys5");
-}
-
-PRE(sys_lkmnosys6)
-{
-   PRINT("%s", "sys_lkmnosys6 ()");
-   PRE_REG_READ0(long, "lkmnosys6");
-}
-
-PRE(sys_lkmnosys7)
-{
-   PRINT("%s", "sys_lkmnosys7 ()");
-   PRE_REG_READ0(long, "lkmnosys7");
-}
-
-PRE(sys_lkmnosys8)
-{
-   PRINT("%s", "sys_lkmnosys8 ()");
-   PRE_REG_READ0(long, "lkmnosys8");
-}
-
 PRE(sys_kenv)
 {
    PRINT("sys_kenv ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
@@ -3262,7 +3208,7 @@ POST(sys_shmdt)
 // int msgctl(int msqid, int cmd, struct msqid_ds_old *buf);
 PRE(sys_freebsd7_msgctl)
 {
-   PRINT("sys_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
+   PRINT("sys_freebsd7_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
 
    PRE_REG_READ3(int, "msgctl", int, msqid, int, cmd, struct msqid_ds_old *, buf);
 
@@ -5189,18 +5135,6 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // netbsd newreboot                                     208
    GENXY(__NR_poll,             sys_poll),              // 209
-   BSDX_(__NR_lkmnosys0,        sys_lkmnosys0),         // 210
-   BSDX_(__NR_lkmnosys1,        sys_lkmnosys1),         // 211
-
-   BSDX_(__NR_lkmnosys2,        sys_lkmnosys2),         // 212
-   BSDX_(__NR_lkmnosys3,        sys_lkmnosys3),         // 213
-   BSDX_(__NR_lkmnosys4,        sys_lkmnosys4),         // 214
-   BSDX_(__NR_lkmnosys5,        sys_lkmnosys5),         // 215
-
-   BSDX_(__NR_lkmnosys6,        sys_lkmnosys6),         // 216
-   BSDX_(__NR_lkmnosys7,        sys_lkmnosys7),         // 217
-   BSDX_(__NR_lkmnosys8,        sys_lkmnosys8),         // 218
-// BSDXY(__NR_nfs_fhopen,       sys_nfs_fhopen),        // 219
 
    BSDXY(__NR_freebsd7___semctl, sys_freebsd7___semctl), // 220
    BSDX_(__NR_semget,           sys_semget),            // 221
