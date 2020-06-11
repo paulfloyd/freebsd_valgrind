@@ -834,8 +834,10 @@ PRE(sys_exit)
 
 PRE(sys_getlogin)
 {
-   PRINT("sys_getlogin ( )");
-   PRE_REG_READ0(char *, "getlogin");
+   PRINT("sys_getlogin ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
+   PRE_REG_READ2(long, "getlogin",
+                 char *, buf, u_int, len);
+   PRE_MEM_WRITE( "getlogin(buf, len)", ARG1, ARG2 );
 }
 
 POST(sys_getlogin)
