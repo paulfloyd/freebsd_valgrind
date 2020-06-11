@@ -221,8 +221,8 @@ int main(void)
    /* old sigprocmask             48 */
 
    /* getlogin                    49 */
-   GO(SYS_getlogin, "0s 0m");
-   SY(SYS_getlogin); SUCC;
+   GO(SYS_getlogin, "2s 1m");
+   SY(SYS_getlogin, x0, x0+20); SUCC;
    
    /* setlogin                    50 */
    GO(SYS_setlogin, "1s 1m");
