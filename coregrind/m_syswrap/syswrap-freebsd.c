@@ -832,19 +832,20 @@ PRE(sys_exit)
    SET_STATUS_Success(0);
 }
 
+// syscall.master refers to namelen and namebuf for the argument names
+// man getlogin has just getlogin(void) but also
+// int getlogin_r(char *name, int len);
+// so let's go with those names
 PRE(sys_getlogin)
 {
    PRINT("sys_getlogin ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
-   PRE_REG_READ2(long, "getlogin",
-                 char *, buf, u_int, len);
-   PRE_MEM_WRITE( "getlogin(buf, len)", ARG1, ARG2 );
+   PRE_REG_READ2(int, "getlogin", char *, buf, u_int, len);
+   PRE_MEM_WRITE( "getlogin(name)", ARG1, ARG2 );
 }
 
 POST(sys_getlogin)
 {
-   if (ARG1 != 0) {
-      POST_MEM_WRITE( ARG1, ARG2 );
-   }
+   POST_MEM_WRITE(ARG1, ARG2 );
 }
 
 PRE(sys_setlogin)

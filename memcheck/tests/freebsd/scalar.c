@@ -222,7 +222,7 @@ int main(void)
 
    /* getlogin                    49 */
    GO(SYS_getlogin, "2s 1m");
-   SY(SYS_getlogin, x0, x0+20); SUCC;
+   SY(SYS_getlogin, x0, x0+20); FAIL;
    
    /* setlogin                    50 */
    GO(SYS_setlogin, "1s 1m");

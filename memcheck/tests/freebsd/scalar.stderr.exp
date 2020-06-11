@@ -388,7 +388,7 @@ Syscall param dup(oldfd) contains uninitialised byte(s)
 ---------------------------------------------------------
  49:            SYS_getlogin 2s 1m
 ---------------------------------------------------------
-Syscall param getlogin(name) contains uninitialised byte(s)
+Syscall param getlogin(buf) contains uninitialised byte(s)
    ...
 
 Syscall param getlogin(len) contains uninitialised byte(s)
@@ -397,7 +397,7 @@ Syscall param getlogin(len) contains uninitialised byte(s)
 Syscall param getlogin(name) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
- 
+
 ---------------------------------------------------------
  50:            SYS_setlogin 1s 1m
 ---------------------------------------------------------
@@ -467,6 +467,9 @@ Syscall param revoke(path) points to unaddressable byte(s)
 ---------------------------------------------------------
  57:             SYS_symlink 2s 2m
 ---------------------------------------------------------
+
+More than 100 errors detected.  Subsequent errors
+will still be recorded, but in less detail than before.
 Syscall param symlink(oldpath) contains uninitialised byte(s)
    ...
 
@@ -477,9 +480,6 @@ Syscall param symlink(oldpath) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-
-More than 100 errors detected.  Subsequent errors
-will still be recorded, but in less detail than before.
 Syscall param symlink(newpath) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
