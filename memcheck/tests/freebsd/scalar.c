@@ -303,7 +303,7 @@ int main(void)
    GO(SYS_sbrk, "1s 1m");
    SY(SYS_sbrk, x0); FAIL;
 
-   /* not implemented SYS_sstk    70 */
+   /* not implemented on OS SYS_sstk 70 */
    
    /* 4.3 mmap                    71 */
 
@@ -580,8 +580,6 @@ int main(void)
    /* freebsd 4 statfs            157 */
    
    /* freebsd 4 fstatfs           158 */
-   
-   /* nosys                       159 */
 
    /* SYS_lgetfh                  160 */
    GO(SYS_lgetfh, "2s 2m");
@@ -629,17 +627,13 @@ int main(void)
    GO(SYS_rtprio, "(SET) 3s 1m");
    SY(SYS_rtprio, x0+1, x0, x0); FAIL;
 
-   /* nosys                       167 */
-
-   /* nosys                       168 */
+   /* following 3 not implemented in OS */
    
    /* SYS_semsys                  169 */
 
    /* SYS_msgsys                  170 */
 
    /* SYS_shmsys                  171 */
-
-   /* nosys                       172 */
    
 #if (FREEBSD_VERS <= FREEBSD_10)
 
@@ -650,7 +644,7 @@ int main(void)
    /* SYS_freebsd6_pwrite         174 */
 #endif
 
-   /* nosys                       175 */
+   /* unimp SYS_setfib            175 */
 
    // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
    
@@ -659,8 +653,6 @@ int main(void)
    /* bsd/os getdescriptor        178 */
    
    /* bsd/os setdescriptor        179 */
-
-   /* nosys                       180 */
    
    /* SYS_setgid,                 181 */
    GO(SYS_setgid, "1s 0m");
@@ -741,7 +733,9 @@ int main(void)
 #if (FREEBSD_VERS <= FREEBSD_10)
    /* SYS_freebsd6_mmap           197*/
 #endif
+
    /* __syscall (handled specially) 198 */
+   
 #if (FREEBSD_VERS <= FREEBSD_10)
    /* SYS_freebsd6_lseek          199 */
    
@@ -789,8 +783,11 @@ int main(void)
    SY(SYS_poll, x0, x0+1, x0); FAIL;
 
    /* SYS_freebsd7___semctl       220 */
-   GO(SYS_freebsd7___semctl, "4s 1m");
-   SY(SYS_freebsd7___semctl, x0, x0, x0+11, x0); FAIL;
+   GO(SYS_freebsd7___semctl, "(IPC_INFO) 4s 1m");
+   SY(SYS_freebsd7___semctl, x0, x0, x0+3, x0+1); FAIL;
+   
+   GO(SYS_freebsd7___semctl, "(bogus cmd) 3s 0m");
+   SY(SYS_freebsd7___semctl, x0, x0, x0-1, x0+1); FAIL;
    
    /* SYS_semget                  221 */
    GO(SYS_semget, "3s 0m");
@@ -829,6 +826,10 @@ int main(void)
    GO(SYS_freebsd7_shmctl, "3s 0m");
    SY(SYS_freebsd7_shmctl, x0, x0, x0); FAIL;
 
+   GO(SYS_freebsd7_shmctl, "(bogus cmd) 3s 0m");
+   SY(SYS_freebsd7_shmctl, x0, x0-1, x0+1); FAIL;
+   
+
    /* SYS_shmdt                   230 */
    GO(SYS_shmdt, "1s 0m");
    SY(SYS_shmdt, x0); FAIL;
@@ -839,288 +840,461 @@ int main(void)
 
    /* SYS_clock_gettime           232 */
    GO(SYS_clock_gettime, "2s 1m");
-   SY(SYS_clock_settime, x0, x0); FAIL;
+   SY(SYS_clock_gettime, x0, x0+1); FAIL;
    
    /* SYS_clock_settime           233 */
    GO(SYS_clock_settime, "2s 1m");
    SY(SYS_clock_settime, x0, x0); FAIL;
-   
+
    /* SYS_clock_getres            234 */
    GO(SYS_clock_getres, "2s 1m");
    SY(SYS_clock_getres, x0, x0+1); FAIL;
    
-   /* unimpl ktimer_create         235 */
+   /* SYS_ktimer_create           235 */
+   GO(SYS_ktimer_create, "3s 2m");
+   SY(SYS_ktimer_create, x0-1, x0+1, x0+1); FAIL;
 
-   /* unimpl ktimer_delete         236 */
+   /* SYS_ktimer_delete           236 */
+   GO(SYS_ktimer_delete, "1s 0m");
+   SY(SYS_ktimer_delete, x0); FAIL;
 
-   /* unimpl ktimer_settime        237 */
+   /* SYS_ktimer_settime          237 */
+   GO(SYS_ktimer_settime, "4s 2m");
+   SY(SYS_ktimer_settime, x0-1, x0+1, x0+1, x0+1); FAIL;
 
-   /* unimpl ktimer_gettime        238 */
+   /* SYS_ktimer_gettime          238 */
+   GO(SYS_ktimer_gettime, "2s 1m");
+   SY(SYS_ktimer_gettime, x0-1, x0+1); FAIL;
 
-   /* unimpl ktimer_getoverrun     239 */
+   /* SYS_ktimer_getoverrun       239 */
+   GO(SYS_ktimer_getoverrun, "1s 0m");
+   SY(SYS_ktimer_getoverrun, x0+1); FAIL;
 
    /* SYS_nanosleep               240 */
    GO(SYS_nanosleep, "2s 2m");
    SY(SYS_nanosleep, x0, x0+1); FAIL;
    
-   /* nosys                       241 */
+   // unimpl SYS_ffclock_getcounter                        241
+   
+   // unimpl SYS_ffclock_setestimate                       242
+   
+   // unimpl SYS_ffclock_getestimate                       243
 
-   /* nosys                       242 */
+   // unimpls SYS_clock_nanosleep                          244
 
-   /* nosys                       243 */
+   // unimpl SYS_clock_getcpuclockid2                      247
 
-   /* nosys                       244 */
-
-   /* nosys                       245 */
-
-   /* nosys                       246 */
-
-   /* nosys                       247 */
-
-// BSDXY(__NR_ntp_gettime,      sys_ntp_gettime),       // 248
-
-   /* nosys                       249 */
+   // BSDXY(__NR_ntp_gettime,      sys_ntp_gettime),       // 248
 
    /* SYS_minherit                250 */
    // @todo PJF causes Valgrind to crash 
    //GO(SYS_minherit, "3s 1m");
    //SY(SYS_minherit, x0, x0+1024, x0+1); SUCC;
-
-   
-   /*
  
-   BSDX_(__NR_rfork,            sys_rfork),             // 251
+   /* SYS_rfork                   251 */
+   GO(SYS_rfork, "other");
 
-   // openbsd_poll                                      // 252
-   BSDX_(__NR_issetugid,        sys_issetugid),         // 253
-   GENX_(__NR_lchown,           sys_lchown),            // 254
-   // nosys                                                255
+   /* openbsd_poll                252 */
+   
+   /* SYS_issetugid               253 */
+   GO(SYS_issetugid, "0s 0m");
+   SY(SYS_issetugid); SUCC;
 
-   // nosys                                                256
-   
-   // nosys                                                257
-   
-   // nosys                                                258
-   
-   // nosys                                                259
- 
-   // nosys                                                260
-   
-   // nosys                                                261
-   
-   // nosys                                                262
-   
-   // nosys                                                263
+   /* SYS_lchown                  254 */
+   GO(SYS_lchown, "3s 1m");
+   SY(SYS_lchown, x0, x0+1234, x0+2345); FAIL;
 
-   // nosys                                                264
+   // unimpl SYS_aio_read                                  255
    
-   // nosys                                                265
-   // nosys                                                266
-   // nosys                                                267
+   // unimpl SYS_aio_write                                 256
+   
+   // unimpl SYS_lio_listio                                257
+   
 
-   // nosys                                                268
-   // nosys                                                269
-   // nosys                                                270
-   // nosys                                                271
+   /* @todo PJF will need ifdefs for FreeBSD11 */
+   /* SYS_freebsd11_getdents      272 */
+   GO(SYS_freebsd11_getdents, "3s 1m");
+   SY(SYS_freebsd11_getdents, x0+9, x0+1, x0+2); FAIL;
+   
+   /* SYS_lchmod                  274 */
+   GO(SYS_lchmod, "2s 1m");
+   SY(SYS_lchmod, x0, x0+1234); FAIL;
+   
+   /* netbsd_lchown               275 */
 
-   GENXY(__NR_getdents,         sys_getdents),          // 272
-   // nosys                                                273
-   BSDX_(__NR_lchmod,           sys_lchmod),            // 274
-   // netbsd_lchown                                     // 275
+   /* SYS_lutimes                 276 */
+   GO(SYS_lutimes, "3s 2m");
+   SY(SYS_lutimes, x0+9, x0+1, x0+2); FAIL;
+   
+   /* netbsd msync                277 */
 
-   BSDX_(__NR_lutimes,          sys_lutimes),           // 276
-   // netbsd msync                                         277
-   // netbsd stat                                          278
-   // netbsd fstat                                         279
+   /* netbsd stat                 278 */
 
-   // netbsd lstat                                         280
-   // nosys                                                281
-   // nosys                                                282
-   // nosys                                                283
+   /* netbsd fstat                279 */
 
-   // nosys                                                284
-   // nosys                                                285
-   // nosys                                                286
-   // nosys                                                287
+   /* netbsd lstat                280 */
 
-   // nosys                                                288
-   // nosys                                                289
+   // unimpl SYS_preadv                                    289
    
-   // nosys                                                290
+   // unimpl SYS_pwritev                                   290
    
-   // nosys                                                291
+   /* freebsd 4 fhstatfs          297 */
 
-   // nosys                                                292
+   /* SYS_fhopen                  298 */
+   GO(SYS_fhopen, "2s 1m");
+   SY(SYS_fhopen, x0+1, x0); FAIL;
    
-   // nosys                                                293
-   
-   // nosys                                                294
-   
-   // nosys                                                295
+   /* SYS_fhstat                  299 */
+   GO(SYS_fhstat, "2s 2m");
+   SY(SYS_fhstat, x0+1, x0+2); FAIL;
 
-   // nosys                                                296
-   
-   // freebsd 4 fhstatfs                                   297
-   BSDXY(__NR_fhopen,           sys_fhopen),            // 298
-   
-   BSDXY(__NR_fhstat,           sys_fhstat),            // 299
+   /* SYS_modnext                 300 */
+   GO(SYS_modnext, "1s 0m");
+   SY(SYS_modnext, x0+1); SUCC;
 
-// BSDX_(__NR_modnext,          sys_modnext),           // 300
-   BSDXY(__NR_modstat,          sys_modstat),           // 301
-// BSDX_(__NR_modfnext,         sys_modfnext),          // 302
-   BSDX_(__NR_modfind,          sys_modfind),           // 303
+   /* SYS_modstat                 301 */
+   GO(SYS_modstat, "2s 1m");
+   SY(SYS_modstat, x0+1234, x0+1); FAIL;
 
-   BSDX_(__NR_kldload,          sys_kldload),           // 304
+   /* SYS_modfnext                302 */
+   GO(SYS_modfnext, "1s 0m");
+   SY(SYS_modfnext, x0+1); SUCC;
    
-   BSDX_(__NR_kldunload,        sys_kldunload),         // 305
-   
-   BSDX_(__NR_kldfind,          sys_kldfind),           // 306
-   
-   BSDX_(__NR_kldnext,          sys_kldnext),           // 307
+   /* SYS_modfind                 303 */
+   GO(SYS_modfind, "1s 1m");
+   SY(SYS_modfind, x0+1234, x0+1); FAIL;
 
-// BSDXY(__NR_kldstat,          sys_kldstat),           // 308
-// BSDX_(__NR_kldfirstmod,      sys_kldfirstmod),       // 309
-   GENX_(__NR_getsid,           sys_getsid),            // 310
-   BSDX_(__NR_setresuid,        sys_setresuid),         // 311
+   /* SYS_kldload                  304 */
+   GO(SYS_kldload, "1s 1m");
+   SY(SYS_kldload, x0+1); FAIL;
+   
+   /* SYS_kldunload               305 */
+   GO(SYS_kldunload, "1s 0m");
+   SY(SYS_kldunload, x0+1); FAIL;
+   
+   /* SYS_kldfind                 306 */
+   GO(SYS_kldfind, "1s 1m");
+   SY(SYS_kldfind, x0+1); FAIL;
+   
+   /* SYS_kldnext                 307 */
+   GO(SYS_kldnext, "1s 0m");
+   SY(SYS_kldnext, x0+6); SUCC;
 
-   BSDX_(__NR_setresgid,        sys_setresgid),         // 312
-   
-   // obsol signanosleep                                   313
-   
-   // BSDXY(__NR_aio_return,    sys_aio_return),        // 314
-   
-   // BSDXY(__NR_aio_suspend,   sys_aio_suspend),       // 315
+   /* SYS_kldstat                 308 */
+   GO(SYS_kldstat, "2s 1m");
+   SY(SYS_kldstat, x0+1234, x0+1); FAIL;
 
-   // BSDXY(__NR_aio_cancel,    sys_aio_cancel),        // 316
-   
-   // BSDXY(__NR_aio_error,     sys_aio_error),         // 317
-   
-   // freebsd 6 aio_read                                   318
-   
-   // freebsd 6 aio_write                                  319
-   
-   // freebsd 6 lio_listio                                 320
-   
-   BSDX_(__NR_yield,            sys_yield),             // 321
-   
-   // obs thr_sleep                                        322
-   
-   // obs thr_wakeup                                       323
+   /* SYS_kldfirstmod             309 */
+   GO(SYS_kldfirstmod, "1s 0m");
+   SY(SYS_kldfirstmod, x0+14); SUCC;
 
-   GENX_(__NR_mlockall,         sys_mlockall),          // 324
+   /* SYS_getsid                  310 */
+   GO(SYS_getsid, "1s 0m");
+   SY(SYS_getsid, x0-1); FAIL;
+
+   /* SYS_setresuid               311 */
+   GO(SYS_setresuid, "3s 0m");
+   SY(SYS_setresuid, x0+1, x0+2, x0+3); FAIL;
+
+   /* SYS_setresgid               312 */
+   GO(SYS_setresgid, "3s 0m");
+   SY(SYS_setresgid, x0+1, x0+2, x0+3); FAIL;
+
+   /* obsol signanosleep          313 */
    
-   BSDX_(__NR_munlockall,       sys_munlockall),        // 325
+   /* SYS_aio_return              314 */
+   GO(SYS_aio_return, "1s 1m");
+   SY(SYS_aio_return, x0+1); FAIL;
    
-   BSDXY(__NR___getcwd,         sys___getcwd),          // 326
+   /* SYS_aio_suspend             315 */
+   GO(SYS_aio_suspend, "3s 2m");
+   SY(SYS_aio_suspend, x0+1, x0+1, x0+1); FAIL;
+
+   /* SYS_aio_cancel              316 */
+   GO(SYS_aio_cancel, "2s 1m");
+   SY(SYS_aio_cancel, x0-1, x0+1); FAIL;
    
-// BSDXY(__NR_sched_setparam,   sys_sched_setparam),    // 327
+   /* SYS_aio_error               317 */
+   GO(SYS_aio_error, "1s 1m");
+   SY(SYS_aio_error, x0+1); SUCC;
+   
+   /* freebsd 6 aio_read          318 */
+   
+   /* freebsd 6 aio_write         319 */
+   
+   /* freebsd 6 lio_listio        320 */
+   
+   /* SYS_yield                   321 */
+   GO(SYS_yield, "0s 0m");
+   SY(SYS_yield); SUCC;
+   
+   /* obs thr_sleep               322 */
+   
+   /* obs thr_wakeup              323 */
 
-// BSDXY(__NR_sched_getparam,   sys_sched_getparam),    // 328
-// BSDX_(__NR_sched_setscheduler, sys_sched_setscheduler), // 329
-// BSDX_(__NR_sched_getscheduler, sys_sched_getscheduler), // 330
-   BSDX_(__NR_sched_yield,      sys_sched_yield),       // 331
+   /* SYS_mlockall                324 */
+   GO(SYS_mlockall, "1s 0m");
+   SY(SYS_mlockall, x0-1); FAIL;
+   
+   /* SYS_munlockall              325 */
+   GO(SYS_munlockall, "0s 0m");
+   SY(SYS_munlockall); SUCC;
+   
+   /* SYS___getcwd                326 */
+   GO(SYS___getcwd, "2s 1m");
+   SY(SYS___getcwd, x0+1, x0+1); FAIL;
+   
+   /* SYS_sched_setparam          327 */
+   GO(SYS_sched_setparam, "2s 1m");
+   SY(SYS_sched_setparam, x0+1, x0+1); FAIL;
 
-   BSDX_(__NR_sched_get_priority_max, sys_sched_get_priority_max), // 332
-   BSDX_(__NR_sched_get_priority_min, sys_sched_get_priority_min), // 333
-// BSDXY(__NR_sched_rr_get_interval, sys_sched_rr_get_interval), // 334
-   BSDX_(__NR_utrace,           sys_utrace),            // 335
+   /* SYS_sched_getparam          328 */
+   GO(SYS_sched_getparam, "2s 1m");
+   SY(SYS_sched_getparam, x0+1, x0+1); FAIL;
 
-   // freebsd 4 sendfile                                   336
-   BSDXY(__NR_kldsym,           sys_kldsym),            // 337
-// BSDX_(__NR_jail,             sys_jail),              // 338
-   // unimpl pioctl                                        339
+   /* SYS_sched_setscheduler      329 */
+   GO(SYS_sched_setscheduler, "3s 1m");
+   SY(SYS_sched_setscheduler, x0+1, x0+1, x0+1); FAIL;
 
-   BSDXY(__NR_sigprocmask,      sys_sigprocmask),       // 340
-   BSDX_(__NR_sigsuspend,       sys_sigsuspend),        // 341
-   // freebsd 4 sigaction                                  342
-   BSDXY(__NR_sigpending,       sys_sigpending),        // 343
+   /* SYS_sched_getscheduler      330*/
+   GO(SYS_sched_getscheduler, "1s 0m");
+   SY(SYS_sched_getscheduler, x0+486); FAIL;
 
-   // freebsd sigreturn                                    344
-   BSDXY(__NR_sigtimedwait,     sys_sigtimedwait),      // 345
-   BSDXY(__NR_sigwaitinfo,      sys_sigwaitinfo),       // 346
-   BSDXY(__NR___acl_get_file,   sys___acl_get_file),    // 347
+   /* SYS_sched_yield             331 */
+   GO(SYS_sched_yield, "0s 0m");
+   SY(SYS_sched_yield); SUCC;
 
-   BSDX_(__NR___acl_set_file,   sys___acl_set_file),    // 348
-   BSDXY(__NR___acl_get_fd,     sys___acl_get_fd),      // 349
-   BSDX_(__NR___acl_set_fd,     sys___acl_set_fd),      // 350
-   BSDX_(__NR___acl_delete_file, sys___acl_delete_file), // 351
+   /* SYS_sched_get_priority_max  332 */
+   GO(SYS_sched_get_priority_max, "1s 0m");
+   SY(SYS_sched_get_priority_max, x0+5678); FAIL;
 
-   BSDX_(__NR___acl_delete_fd,  sys___acl_delete_fd),   // 352
-   BSDX_(__NR___acl_aclcheck_file, sys___acl_aclcheck_file), // 353
-   BSDX_(__NR___acl_aclcheck_fd, sys___acl_aclcheck_fd), // 354
+   /* SYS_sched_get_priority_min  333 */
+   GO(SYS_sched_get_priority_min, "1s 0m");
+   SY(SYS_sched_get_priority_min, x0+9876); FAIL;
+
+   // BSDXY(__NR_sched_rr_get_interval, sys_sched_rr_get_interval), // 334
+
+   /* SYS_utrace                  335*/
+   GO(SYS_utrace, "2s 1m");
+   SY(SYS_utrace, x0+1, x0+16); SUCC;
+
+   // freebsd 4 sendfile          336
+   
+   /* SYS_kldsym                  337 */
+   GO(SYS_kldsym, "3s 1m");
+   /* @todo if data (arg2) is valid but the symname field is not then that would be a different 1m */
+   SY(SYS_kldsym, x0-1, x0+16, x0+1); FAIL;
+   
+   // BSDX_(__NR_jail,             sys_jail),              // 338
+
+   // unimpl pioctl               339
+
+   /* SYS_sigprocmask             340 */
+   GO(SYS_sigprocmask, "2s 1m");
+   SY(SYS_sigprocmask, x0+13, NULL, x0+1); FAIL;
+   
+   GO(SYS_sigprocmask, "3s 2m");
+   SY(SYS_sigprocmask, x0+13, x0+2, x0+1); FAIL;
+
+   /* SYS_sigsuspend              341 */
+   GO(SYS_sigsuspend, "1s 1m");
+   SY(SYS_sigsuspend, x0+1); FAIL;
+
+   // freebsd 4 sigaction         342
+
+   /* SYS_sigpending              343 */
+   GO(SYS_sigpending, "1s 1m");
+   SY(SYS_sigpending, x0+1); FAIL;
+
+   /* freebsd 4 sigreturn         344 */
+
+   /* SYS_sigtimedwait            345 */
+   GO(SYS_sigtimedwait, "3s 3m");
+   SY(SYS_sigtimedwait, x0+1, x0+2, x0+3); FAIL;
+
+   /* SYS_sigwaitinfo             346 */
+   GO(SYS_sigwaitinfo, "2s 2m");
+   SY(SYS_sigwaitinfo, x0+1, x0+2, x0+3); FAIL;
+
+   /* SYS___acl_get_file          347 */
+   GO(SYS___acl_get_file, "3s 2m");
+   SY(SYS___acl_get_file, x0+1, x0+4567, x0+3); FAIL;
+
+   /* SYS___acl_set_file          348 */
+   GO(SYS___acl_set_file, "3s 2m");
+   SY(SYS___acl_set_file, x0+1, x0+4567, x0+3); FAIL;
+
+   /* SYS___acl_get_fd            349 */
+   GO(SYS___acl_get_fd, "3s 1m");
+   SY(SYS___acl_get_fd, x0-1, x0+4567, x0+3); FAIL;
+
+   /* SYS___acl_set_fd            350 */
+   GO(SYS___acl_set_fd, "3s 1m");
+   SY(SYS___acl_set_fd, x0-1, x0+4567, x0+3); FAIL;
+
+   /* SYS___acl_delete_file       351 */
+   GO(SYS___acl_delete_file, "2s 1m");
+   SY(SYS___acl_delete_file, x0+1, x0+3); FAIL;
+
+   /* SYS___acl_delete_fd         352 */
+   GO(SYS___acl_delete_fd, "2s 0m");
+   SY(SYS___acl_delete_fd, x0-1, x0+3); FAIL;
+
+   /* SYS___acl_aclcheck_file     353 */
+   GO(SYS___acl_aclcheck_file, "3s 2m");
+   SY(SYS___acl_aclcheck_file, x0+1, x0+4567, x0+3); FAIL;
+
+   /* SYS___acl_aclcheck_fd       354 */
+   GO(SYS___acl_aclcheck_fd, "3s 1m");
+   SY(SYS___acl_aclcheck_fd, x0-1, x0+4567, x0+3); FAIL;
+
    // BSDXY(__NR_extattrctl,    sys_extattrctl),        // 355
 
    // BSDXY(__NR_extattr_set_file, sys_extattr_set_file), // 356
-   BSDXY(__NR_extattr_get_file, sys_extattr_get_file),  // 357
+
+   /* SYS_extattr_get_file        357 */
+   GO(SYS_extattr_get_file, "5s 3m");
+   SY(SYS_extattr_get_file, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
+   
    // BSDXY(__NR_extattr_delete_file, sys_extattr_delete_file), // 358
+
    // BSDXY(__NR_aio_waitcomplete, sys_aio_waitcomplete), // 359
 
-   BSDXY(__NR_getresuid,        sys_getresuid),         // 360
-   BSDXY(__NR_getresgid,        sys_getresgid),         // 361
-   BSDX_(__NR_kqueue,           sys_kqueue),            // 362
-   BSDXY(__NR_kevent,           sys_kevent),            // 363
+   /* SYS_getresuid               360 */
+   GO(SYS_getresuid, "3s 3m");
+   SY(SYS_getresuid, x0+1, x0+4567, x0+3); FAIL;
 
-   // nosys                                                364
-   // nosys                                                365
-   // nosys                                                366
-   // nosys                                                367
+   /* SYS_getresgid               361 */
+   GO(SYS_getresgid, "3s 3m");
+   SY(SYS_getresgid, x0+1, x0+4567, x0+3); FAIL;
 
-   // nosys                                                368
-   // nosys                                                369
-   // lkmressys                                            370
+   /* SYS_kqueue                  362 */
+   GO(SYS_kqueue, "0s 0m");
+   SY(SYS_kqueue); SUCC;
+
+   /* SYS_freebsd11_kevent        363 */
+   /* @todo PJF <= freebsd11 version */
+   /* @todo PJF why only 5s, not 63? */
+   GO(SYS_freebsd11_kevent, "5s 3m");
+   SY(SYS_freebsd11_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
+
+   /* obs __cap_get* / __cap_set* 364 to 369 */
+
    // extattr_set_fd                                       371
 
    // extattr_get_fd                                       372
+
    // extattr_delete_fd                                    373
+
    // __setugid                                            374
+
    // nfsclnt                                              375
 
-   BSDX_(__NR_eaccess,          sys_eaccess),           // 376
+   /* SYS_eaccess                 376 */
+   GO(SYS_eaccess, "2s 1m");
+   SY(SYS_eaccess, x0+1, x0+3); FAIL;
+
    // afs_syscall                                          377
+
    // nmount                                               378
+
    // kse_exit                                             379
 
    // kse_wakeup                                           380
+
    // kse_create                                           381
+
    // kse_thr_interrupt                                    382
+
    // kse_release                                          383
 
    // __mac_get_proc                                       384
+
    // __mac_set_proc                                       385
+
    // __mac_get_fd                                         386
+
    // __mac_get_file                                       387
 
    // __mac_set_fd                                         388
-   // __mac_set_file                                       389
-   BSDXY(__NR_kenv,             sys_kenv),              // 390
-   BSDX_(__NR_lchflags,         sys_lchflags),          // 391
 
-   BSDXY(__NR_uuidgen,          sys_uuidgen),           // 392
-   BSDXY(__NR_sendfile,         sys_sendfile),          // 393
+   // __mac_set_file                                       389
+
+   /* SYS_kenv                    390 */
+   GO(SYS_kenv, "(KENV_GET) 4s 1m");
+   SY(SYS_kenv, x0+0, x0+2, x0+3, x0+4); FAIL;
+   
+   GO(SYS_kenv, "(KENV_DUMP) 4s 0m");
+   SY(SYS_kenv, x0+3, x0+2, x0+3, x0+4); FAIL;
+   
+   GO(SYS_kenv, "(bogus) 4s 0m");
+   SY(SYS_kenv, x0+20, x0+2, x0+3, x0+4); FAIL;
+
+   /* SYS_lchflags                391 */
+   GO(SYS_lchflags, "2s 1m");
+   SY(SYS_lchflags, x0+1, x0+2); FAIL;
+
+   /* SYS_uuidgen                 392 */
+   GO(SYS_uuidgen, "2s 1m");
+   SY(SYS_uuidgen, x0+1, x0+2); FAIL;
+
+   /* SYS_sendfile                393 */
+   GO(SYS_sendfile, "7s 2m");
+   /* @todo where is the 1s 1m from sbytes? */
+   /* this may have x86/amd64 differences */
+   SY(SYS_sendfile, x0-1, x0+2, x0+3, x0+4, x0+1, x0+1, x0+3); FAIL;
+
    // mac_syscall                                          394
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-   BSDXY(__NR_freebsd11_getfsstat, sys_freebsd11_getfsstat), // 395
-   BSDXY(__NR_freebsd11_statfs, sys_statfs),            // 396
-   BSDXY(__NR_freebsd11_fstatfs, sys_fstatfs),          // 397
-   BSDXY(__NR_freebsd11_fhstatfs, sys_fhstatfs),        // 398
+   /* SYS_freebsd11_getfsstat     395*/
+   GO(SYS_freebsd11_getfsstat, "3s 1m");
+   SY(SYS_freebsd11_getfsstat, x0+1, x0+2, x0+3); FAIL;
+   
+   /* SYS_freebsd11_statfs        396 */
+   GO(SYS_freebsd11_statfs, "2s 2m");
+   SY(SYS_freebsd11_statfs, x0+1, x0+2); FAIL;
+   
+   /* SYS_freebsd11_fstatfs       397 */
+   GO(SYS_freebsd11_fstatfs, "2s 1m");
+   SY(SYS_freebsd11_fstatfs, x0+1, x0+2); FAIL;
+   
+   /* SYS_freebsd11_fhstatfs      398 */
+   GO(SYS_freebsd11_fhstatfs, "2s 2m");
+   SY(SYS_freebsd11_fhstatfs, x0+1, x0+2); FAIL;
 #else
-   BSDXY(__NR_getfsstat,        sys_getfsstat),         // 395
-   BSDXY(__NR_statfs,           sys_statfs),            // 396
-   BSDXY(__NR_fstatfs,          sys_fstatfs),           // 397
-   BSDXY(__NR_fhstatfs,         sys_fhstatfs),          // 398
+   /* SYS_getfsstat     395*/
+   GO(SYS_getfsstat, "3s 1m");
+   SY(SYS_getfsstat, x0+1, x0+2, x0+3); FAIL;
+   
+   /* SYS_statfs        396 */
+   GO(SYS_statfs, "2s 2m");
+   SY(SYS_statfs, x0+1, x0+2); FAIL;
+   
+   /* SYS_fstatfs       397 */
+   GO(SYS_fstatfs, "2s 1m");
+   SY(SYS_fstatfs, x0+1, x0+2); FAIL;
+   
+   /* SYS_fhstatfs      398 */
+   GO(SYS_fhstatfs, "2s 2m");
+   SY(SYS_fhstatfs, x0+1, x0+2); FAIL;
+
 #endif
 
-   // nosys                                                399
-
    // ksem_close                                           400
+   
    // ksem_post                                            401
+   
    // ksem_wait                                            402
+   
    // ksem_trywait                                         403
 
    // ksem_init                                            404
+   
    // ksem_open                                            405
+   
    // ksem_unlink                                          406
+   
    // ksem_getvalue                                        407
 
    // ksem_destroy                                         408
@@ -1139,105 +1313,224 @@ int main(void)
    
    // __mac_execve                                         415
 
-   BSDXY(__NR_sigaction,        sys_sigaction),         // 416
-   BSDX_(__NR_sigreturn,        sys_sigreturn),         // 417
-   // __xstat                                              418
-   // __xfstat                                             419
+   /* SYSR_sigaction              416 */
+   GO(SYS_sigaction, "3s 2+2m");
+   SY(SYS_sigaction, x0+1000, x0+2, x0+3); FAIL;
 
-   // __xlstat                                             420
-   BSDXY(__NR_getcontext,       sys_getcontext),        // 421
-   BSDX_(__NR_setcontext,       sys_setcontext),        // 422
-   BSDXY(__NR_swapcontext,      sys_swapcontext),       // 423
-
-   // swapoff                                              424
+   /* SYS_sigreturn               417 */
+   /* hope it fails because we're not in a signal context */
+   GO(SYS_sigreturn, "1s 1m");
+   SY(SYS_sigreturn, x0+1); FAIL;
    
-   BSDXY(__NR___acl_get_link,   sys___acl_get_link),    // 425
+   /* SYS_getcontext              421 */
+   GO(SYS_getcontext, "1s 1m");
+   SY(SYS_getcontext, x0+1); FAIL;
    
-   BSDX_(__NR___acl_set_link,   sys___acl_set_link),    // 426
+   /* SYS_setcontext              422 */
+   GO(SYS_setcontext, "1s 1m");
+   SY(SYS_setcontext, x0+1); FAIL;
    
-   BSDX_(__NR___acl_delete_link, sys___acl_delete_link), // 427
+   /* SYS_swapcontext             423 */
+   GO(SYS_swapcontext, "2s 2m");
+   SY(SYS_swapcontext, x0+1, x0+2); FAIL;
 
-   BSDX_(__NR___acl_aclcheck_link, sys___acl_aclcheck_link), // 428
-   BSDXY(__NR_sigwait,          sys_sigwait),           // 429
-   // thr_create                                           430
-   BSDX_(__NR_thr_exit,         sys_thr_exit),          // 431
+   // swapoff                     424
+   
+   /* SYS___acl_get_link          425 */
+   GO(SYS___acl_get_link, "3s 2m");
+   SY(SYS___acl_get_link, x0+1, x0+2, x0+3); FAIL;
+   
+   /* SYS___acl_set_link          426 */
+   GO(SYS___acl_set_link, "3s 2m");
+   SY(SYS___acl_set_link, x0+1, x0+2, x0+3); FAIL;
+   
+   /* SYS___acl_delete_link       427 */
+   GO(SYS___acl_delete_link, "2s 1m");
+   SY(SYS___acl_delete_link, x0+1, x0+2); FAIL;
 
-   BSDXY(__NR_thr_self,         sys_thr_self),          // 432
-   BSDXY(__NR_thr_kill,         sys_thr_kill),          // 433
+   /* SYS___acl_aclcheck_link     428 */
+   GO(SYS___acl_aclcheck_link, "3s 2m");
+   SY(SYS___acl_aclcheck_link, x0+1, x0+2, x0+3); FAIL;
+   
+   /* SYS_sigwait                 429 */
+   GO(SYS_sigwait, "2s 2m");
+   SY(SYS_sigwait, x0+1, x0+2); SUCC;
+   
+   // thr_create                  430
+   
+   /* SYS_thr_exit                431 */
+   /* @todo PJF need specific test for this as it terminates the proces */
+   /*
+   GO(SYS_thr_exit, "1s 1m");
+   SY(SYS_thr_exit, x0+1); FAIL;
+   */
+
+   /* SYS_thr_self                432 */
+   GO(SYS_thr_self, "1s 1m");
+   SY(SYS_thr_self, x0+1); FAIL;
+
+   /* SYS_thr_kill                433 */
+   GO(SYS_thr_kill, "2s 0m");
+   SY(SYS_thr_kill, x0-10, x0-20); FAIL;
+   
+#if (FREEBSD_VERS <= FREEBSD_10)
+   
+   /* @todo PJF (maybe) FreeBSD 10 or earlier, hmmm */
+
    BSDXY(__NR__umtx_lock,       sys__umtx_lock),        // 434
+   
    BSDXY(__NR__umtx_unlock,     sys__umtx_unlock),      // 435
+#endif
 
-   // jail_attach                                          436
+   /* SYS_jail_attach             436 */
+   GO(SYS_jail_attach, "1s 0m");
+   SY(SYS_jail_attach, x0-1); FAIL;
+   
    // extattr_list_fd                                      437
+   
    // extattr_list_file                                    438
+   
    // extattr_list_link                                    439
 
    // kse_switchin                                         440
+   
    // ksem_timedwait                                       441
+   
    // thr_suspend                                          442
-   BSDX_(__NR_thr_wake,         sys_thr_wake),          // 443
+   
+   /* SYS_thr_wake                443 */
+   GO(SYS_thr_wake, "1s 0m");
+   SY(SYS_thr_wake, x0+99); FAIL;
+   
    // kldunloadf                                           444
+
    // audit                                                445
+
    // auditon                                              446
+
    // getauid                                              447
 
    // setauid                                              448
+
    // getaudit                                             449
+
    // setaudit                                             450
+
    // getaudit_addr                                        451
 
    // setaudit_addr                                        452
+
    // auditctl                                             453
-   BSDXY(__NR__umtx_op,         sys__umtx_op),          // 454
-   BSDX_(__NR_thr_new,          sys_thr_new),           // 455
+
+// int _umtx_op(void *obj, int op, u_long val, void *uaddr, void *uaddr2);
+
+   /* SYS__umtx_op                 454 */
+   GO(SYS__umtx_op, "5s 2m");
+   SY(SYS__umtx_op, x0+1, x0+15, x0+3, x0+4, x0+5); FAIL;
+
+   /* SYS_thr_new                 455 */
+   /* @todo needs some special testing, VG hangs if we go spawning threads willy-nilly */
+   /*
+   GO(SYS_thr_new, "2s 1m");
+   SY(SYS_thr_new, x0+1, x0+2); FAIL;
+   */
 
    // sigqueue                                             456
-   BSDXY(__NR_kmq_open,         sys_kmq_open),          // 457
-   BSDX_(__NR_kmq_setattr,      sys_kmq_setattr),       // 458
-   BSDXY(__NR_kmq_timedreceive, sys_kmq_timedreceive),  // 459
 
-   BSDX_(__NR_kmq_timedsend,    sys_kmq_timedsend),     // 460
-   BSDX_(__NR_kmq_notify,       sys_kmq_notify),        // 461
-   BSDX_(__NR_kmq_unlink,       sys_mq_unlink),         // 462
-   // abort2                                               463
+   /* SYS_kmq_open                457 */
+   /* @todo PJF see commnents in syswrap, this is probably wrong wrt mode and O_CREAT */
+   GO(SYS_kmq_open, "4s 2m");
+   SY(SYS_kmq_open, x0+1, x0+O_CREAT, x0, x0+1); FAIL;
 
-   BSDX_(__NR_thr_set_name,     sys_thr_set_name),      // 464
+   /* SYS_kmq_setattr             458 */
+   GO(SYS_kmq_setattr, "3s 2m");
+   SY(SYS_kmq_setattr, x0+1, x0+2, x0+3); FAIL;
+
+   /* SYS_kmq_timedreceive        459 */
+   GO(SYS_kmq_timedreceive, "5s 2m");
+   SY(SYS_kmq_timedreceive, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
+
+   /* SYS_kmq_timedsend           460 */
+   GO(SYS_kmq_timedsend, "5s 1m");
+   SY(SYS_kmq_timedsend, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
+
+   /* SYS_kmq_notify              461 */
+   GO(SYS_kmq_notify, "2s 1m");
+   SY(SYS_kmq_notify, x0+1, x0+2); FAIL;
+
+   /* SYS_kmq_unlink              462 */
+   GO(SYS_kmq_unlink, "1s 1m");
+   SY(SYS_kmq_unlink, x0+1); FAIL;
+
+   // abort2                      463
+
+   /* SYS_thr_set_name            464 */
+   /* @todo PJF VG doesn't like this. Causes a SIGSEGV. */
+   /*
+   GO(SYS_thr_set_name, "2s 1m");
+   SY(SYS_thr_set_name, x0+1, x0+2); FAIL;
+   */
+
    // aio_fsync                                            465
-   BSDXY(__NR_rtprio_thread,    sys_rtprio_thread),     // 466
-   // nosys                                                467
 
-   // nosys                                                468
+   /* SYS_rtprio_thread           466 */
+   GO(SYS_rtprio_thread, "3s 1m");
+   SY(SYS_rtprio_thread, x0+1, x0-2, x0+1); FAIL;
+
    // __getpath_fromfd                                     469
+
    // __getpath_fromaddr                                   470
+   
    // sctp_peeloff                                         471
 
    // sctp_generic_sendmsg                                 472
+
    // sctp_generic_sendmsg_iov                             473
+
    // sctp_generic_recvmsg                                 474
+   
+   /*
+
    BSDXY(__NR_pread,            sys_pread),             // 475
 
    BSDX_(__NR_pwrite,           sys_pwrite),            // 476
+
    BSDX_(__NR_mmap,             sys_mmap),              // 477
+
    BSDX_(__NR_lseek,            sys_lseek),             // 478
+
    BSDX_(__NR_truncate,         sys_truncate),          // 479
+
    BSDX_(__NR_ftruncate,        sys_ftruncate),         // 480
+
    BSDXY(__NR_thr_kill2,        sys_thr_kill2),         // 481
+
    BSDXY(__NR_shm_open,         sys_shm_open),          // 482
+
    BSDX_(__NR_shm_unlink,       sys_shm_unlink),        // 483
 
    // cpuset                                               484
+
    // cpuset_setid                                         485
+
    // cpuset_getid                                         486
 
    BSDXY(__NR_cpuset_getaffinity, sys_cpuset_getaffinity), // 487
+
    BSDX_(__NR_cpuset_setaffinity, sys_cpuset_setaffinity), // 488
+
    BSDX_(__NR_faccessat,        sys_faccessat),         // 489
+
    BSDX_(__NR_fchmodat,         sys_fchmodat),          // 490
+
    BSDX_(__NR_fchownat,         sys_fchownat),          // 491
 
    // fexecve                                              492
+
    BSDXY(__NR_fstatat,          sys_fstatat),           // 493
+
    BSDX_(__NR_futimesat,        sys_futimesat),         // 494
+
    BSDX_(__NR_linkat,           sys_linkat),            // 495
 
    BSDX_(__NR_mkdirat,          sys_mkdirat),           // 496

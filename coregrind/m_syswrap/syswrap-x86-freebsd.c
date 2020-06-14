@@ -540,6 +540,7 @@ struct thr_param {
 int thr_new(struct thr_param *param, int param_size);
 #endif
 
+// int thr_new(struct thr_param *param, int param_size);
 PRE(sys_thr_new)
 {
    static const Bool debug = False;
@@ -692,10 +693,11 @@ PRE(sys_rfork)
 #endif
 }
 
+// int sigreturn(const ucontext_t *scp);
 PRE(sys_sigreturn)
 {
    PRINT("sys_sigreturn ( %#" FMT_REGWORD "x )", ARG1);
-   PRE_REG_READ1(long, "sigreturn",
+   PRE_REG_READ1(int, "sigreturn",
                  struct vki_ucontext *, ucp);
 
    PRE_MEM_READ( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
@@ -851,18 +853,18 @@ static void fill_mcontext(ThreadState *tst, struct vki_mcontext *sc)
    VG_(memset)(sc->spare2, 0, sizeof(sc->spare2));
 }
 
-
+// int getcontext(ucontext_t *ucp);
 PRE(sys_getcontext)
 {
    ThreadState* tst;
    struct vki_ucontext *uc;
    
    PRINT("sys_getcontext ( %#" FMT_REGWORD "x )", ARG1);
-   PRE_REG_READ1(long, "getcontext",
+   PRE_REG_READ1(int, "getcontext",
                  struct vki_ucontext *, ucp);
    PRE_MEM_WRITE( "getcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
    uc = (struct vki_ucontext *)ARG1;
-   if (uc == NULL) {
+   if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext))) {
       SET_STATUS_Failure(VKI_EINVAL);
       return;
    }
@@ -876,6 +878,7 @@ PRE(sys_getcontext)
    SET_STATUS_Success(0);
 }
 
+// int setcontext(const ucontext_t *ucp);
 PRE(sys_setcontext)
 {
    ThreadState* tst;
@@ -894,7 +897,7 @@ PRE(sys_setcontext)
 
    tst = VG_(get_ThreadState)(tid);
    uc = (struct vki_ucontext *)ARG1;
-   if (uc == NULL || uc->uc_mcontext.len != sizeof(uc->uc_mcontext)) {
+   if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext)) || uc->uc_mcontext.len != sizeof(uc->uc_mcontext)) {
       SET_STATUS_Failure(VKI_EINVAL);
       return;
    }
@@ -925,7 +928,9 @@ PRE(sys_swapcontext)
  
    oucp = (struct vki_ucontext *)ARG1;
    ucp = (struct vki_ucontext *)ARG2;
-   if (oucp == NULL || ucp == NULL || ucp->uc_mcontext.len != sizeof(ucp->uc_mcontext)) {
+   if (!ML_(safe_to_deref)(oucp, sizeof(struct vki_ucontext)) ||
+       !ML_(safe_to_deref)(ucp, sizeof(struct vki_ucontext)) ||
+       ucp->uc_mcontext.len != sizeof(ucp->uc_mcontext)) {
       SET_STATUS_Failure(VKI_EINVAL);
       return;
    }

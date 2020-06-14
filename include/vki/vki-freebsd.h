@@ -778,137 +778,28 @@ struct vki_sockaddr_un {
 	char sun_path[VKI_UNIX_PATH_MAX];	/* pathname */
 };
 
-#if 0
 //----------------------------------------------------------------------
-// From linux-2.6.8.1/include/linux/if.h
-//----------------------------------------------------------------------
-
-#define	VKI_IFNAMSIZ	16
-
-struct vki_ifmap 
-{
-	unsigned long mem_start;
-	unsigned long mem_end;
-	unsigned short base_addr; 
-	unsigned char irq;
-	unsigned char dma;
-	unsigned char port;
-	/* 3 bytes spare */
-};
-
-struct vki_if_settings
-{
-	unsigned int type;	/* Type of physical device or protocol */
-	unsigned int size;	/* Size of the data allocated by the caller */
-	union {
-                // [[Nb: converted these all to void* to avoid pulling in
-                //   unnecessary headers]]]
-		/* {atm/eth/dsl}_settings anyone ? */
-		void /*raw_hdlc_proto		*/__user *raw_hdlc;
-		void /*cisco_proto		*/__user *cisco;
-		void /*fr_proto			*/__user *fr;
-		void /*fr_proto_pvc		*/__user *fr_pvc;
-		void /*fr_proto_pvc_info	*/__user *fr_pvc_info;
-
-		/* interface settings */
-		void /*sync_serial_settings	*/__user *sync;
-		void /*te1_settings		*/__user *te1;
-	} ifs_ifsu;
-};
-
-struct vki_ifreq 
-{
-#define VKI_IFHWADDRLEN	6
-	union
-	{
-		char	ifrn_name[VKI_IFNAMSIZ];		/* if name, e.g. "en0" */
-	} ifr_ifrn;
-	
-	union {
-		struct	vki_sockaddr ifru_addr;
-		struct	vki_sockaddr ifru_dstaddr;
-		struct	vki_sockaddr ifru_broadaddr;
-		struct	vki_sockaddr ifru_netmask;
-		struct  vki_sockaddr ifru_hwaddr;
-		short	ifru_flags;
-		int	ifru_ivalue;
-		int	ifru_mtu;
-		struct  vki_ifmap ifru_map;
-		char	ifru_slave[VKI_IFNAMSIZ];	/* Just fits the size */
-		char	ifru_newname[VKI_IFNAMSIZ];
-		void __user *	ifru_data;
-		struct	vki_if_settings ifru_settings;
-	} ifr_ifru;
-};
-
-#define vki_ifr_name	ifr_ifrn.ifrn_name	/* interface name 	*/
-#define ifr_hwaddr	ifr_ifru.ifru_hwaddr	/* MAC address 		*/
-#define	ifr_addr	ifr_ifru.ifru_addr	/* address		*/
-#define	ifr_dstaddr	ifr_ifru.ifru_dstaddr	/* other end of p-p lnk	*/
-#define	ifr_broadaddr	ifr_ifru.ifru_broadaddr	/* broadcast address	*/
-#define	ifr_netmask	ifr_ifru.ifru_netmask	/* interface net mask	*/
-#define	vki_ifr_flags	ifr_ifru.ifru_flags	/* flags		*/
-#define	vki_ifr_metric	ifr_ifru.ifru_ivalue	/* metric		*/
-#define	vki_ifr_mtu		ifr_ifru.ifru_mtu	/* mtu			*/
-#define ifr_map		ifr_ifru.ifru_map	/* device map		*/
-#define ifr_slave	ifr_ifru.ifru_slave	/* slave device		*/
-#define	vki_ifr_data	ifr_ifru.ifru_data	/* for use by interface	*/
-#define vki_ifr_ifindex	ifr_ifru.ifru_ivalue	/* interface index	*/
-#define ifr_bandwidth	ifr_ifru.ifru_ivalue    /* link bandwidth	*/
-#define ifr_qlen	ifr_ifru.ifru_ivalue	/* Queue length 	*/
-#define ifr_newname	ifr_ifru.ifru_newname	/* New name		*/
-#define ifr_settings	ifr_ifru.ifru_settings	/* Device/proto settings*/
-
-struct vki_ifconf 
-{
-	int	ifc_len;			/* size of buffer	*/
-	union 
-	{
-		char __user *ifcu_buf;
-		struct vki_ifreq __user *ifcu_req;
-	} ifc_ifcu;
-};
-#define	vki_ifc_buf	ifc_ifcu.ifcu_buf	/* buffer address	*/
-
-//----------------------------------------------------------------------
-// From linux-2.6.8.1/include/linux/if_arp.h
+// From aio.h
 //----------------------------------------------------------------------
 
-struct vki_arpreq {
-  struct vki_sockaddr	arp_pa;		/* protocol address		*/
-  struct vki_sockaddr	arp_ha;		/* hardware address		*/
-  int			arp_flags;	/* flags			*/
-  struct vki_sockaddr   arp_netmask;    /* netmask (only for proxy arps) */
-  char			arp_dev[16];
+struct vki___aiocb_private {
+   long    status;
+   long    error;
+   void    *kernelinfo;
 };
 
-//----------------------------------------------------------------------
-// From linux-2.6.8.1/include/linux/route.h
-//----------------------------------------------------------------------
-
-struct vki_rtentry 
-{
-	unsigned long	rt_pad1;
-	struct vki_sockaddr	rt_dst;		/* target address		*/
-	struct vki_sockaddr	rt_gateway;	/* gateway addr (RTF_GATEWAY)	*/
-	struct vki_sockaddr	rt_genmask;	/* target network mask (IP)	*/
-	unsigned short	rt_flags;
-	short		rt_pad2;
-	unsigned long	rt_pad3;
-	void		*rt_pad4;
-	short		rt_metric;	/* +1 for binary compatibility!	*/
-	char __user	*rt_dev;	/* forcing the device at add	*/
-	unsigned long	rt_mtu;		/* per route MTU/Window 	*/
-// [[Not important for Valgrind]]
-//#ifndef __KERNEL__
-//#define rt_mss	rt_mtu		/* Compatibility :-(            */
-//#endif
-	unsigned long	rt_window;	/* Window clamping 		*/
-	unsigned short	rt_irtt;	/* Initial RTT			*/
-};
-#endif
-
-// QQQ sort
+typedef struct vki_aiocb {
+   int     aio_fildes;
+   vki_off_t   aio_offset;             /* File offset for I/O */
+   volatile void *aio_buf;         /* I/O buffer in process space */
+   vki_size_t  aio_nbytes;             /* Number of bytes for I/O */
+   int     __spare__[2];
+   void    *__spare2__;
+   int     aio_lio_opcode;         /* LIO opcode */
+   int     aio_reqprio;            /* Request priority -- ignored */
+   struct  vki___aiocb_private _aiocb_private;
+   struct  vki_sigevent aio_sigevent;  /* Signal to deliver */
+} aiocb_t;
 
 //----------------------------------------------------------------------
 // From sys/mount.h
@@ -2225,6 +2116,17 @@ struct vki_thr_param {
 //----------------------------------------------------------------------
 // From sys/linker.h
 //----------------------------------------------------------------------
+
+struct vki_kld_file_stat {
+    int         version;        /* set to sizeof(struct kld_file_stat) */
+    char        name[MAXPATHLEN];
+    int         refs;
+    int         id;
+    vki_caddr_t     address;        /* load address */
+    vki_size_t      size;           /* size in bytes */
+    char        pathname[MAXPATHLEN];
+};
+
 
 struct vki_kld_sym_lookup {
     int         version;        /* set to sizeof(struct kld_sym_lookup) */

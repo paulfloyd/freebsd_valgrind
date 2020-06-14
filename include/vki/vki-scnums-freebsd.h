@@ -92,7 +92,7 @@
 /* old sigpending                52 */
 #define __NR_sigaltstack         53
 #define __NR_ioctl               54
-#define __NR_reboo               55
+#define __NR_reboot              55
 #define __NR_revoke              56
 #define __NR_symlink             57
 #define __NR_readlink            58
@@ -264,13 +264,18 @@
 #define __NR_clock_gettime       232
 #define __NR_clock_settime       233
 #define __NR_clock_getres        234
+#define __NR_ktimer_create       235
+#define __NR_ktimer_delete       236
+#define __NR_ktimer_settime      237
+#define __NR_ktimer_gettime      238
+#define __NR_ktimer_getoverrun	239
 #define __NR_nanosleep           240
 #define __NR_minherit            250
 #define __NR_rfork               251
 /* ons openbsd_poll              252 */
 #define __NR_issetugid           253
 #define __NR_lchown              254
-#define __NR_getdents            272
+#define __NR_freebsd11_getdents  272
 #define __NR_lchmod              274
 /* obs netbsd_lchown             275 */
 #define __NR_lutimes             276
@@ -311,8 +316,8 @@
 #define __NR_getsid              310
 #define __NR_setresuid           311
 #define __NR_setresgid           312
-#define __NR_aio_return          314
 /* obs signanosleep              313 */
+#define __NR_aio_return          314
 #define __NR_aio_suspend         315
 #define __NR_aio_cancel          316
 #define __NR_aio_error           317

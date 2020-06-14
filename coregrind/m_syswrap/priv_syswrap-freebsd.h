@@ -44,8 +44,8 @@ extern SysRes ML_(do_rfork) ( ThreadId tid, Int flags );
 
 
 DECL_TEMPLATE(freebsd, sys_syscall)
-DECL_TEMPLATE(freebsd, sys_exit)
-DECL_TEMPLATE(freebsd, sys_fork)
+DECL_TEMPLATE(freebsd, sys_exit) // 1
+DECL_TEMPLATE(freebsd, sys_fork) // 2
 // lots are not here ????
 // it would be nice if thse were in the same order as sys/syscall.h
 // instead of just being some random jumble
@@ -66,7 +66,7 @@ DECL_TEMPLATE(freebsd, sys_ktrace)
 DECL_TEMPLATE(freebsd, sys_getlogin) // 49
 DECL_TEMPLATE(freebsd, sys_setlogin) // 50
 DECL_TEMPLATE(freebsd, sys_ioctl) // 54
-DECL_TEMPLATE(freebsd, sys_reboot)
+DECL_TEMPLATE(freebsd, sys_reboot) // 55
 DECL_TEMPLATE(freebsd, sys_revoke)
 DECL_TEMPLATE(freebsd, sys_sbrk)
 DECL_TEMPLATE(freebsd, sys_sstk)
@@ -148,7 +148,12 @@ DECL_TEMPLATE(freebsd, sys_shmdt)
 DECL_TEMPLATE(freebsd, sys_shmget)
 DECL_TEMPLATE(freebsd, sys_clock_gettime)
 DECL_TEMPLATE(freebsd, sys_clock_settime)
-DECL_TEMPLATE(freebsd, sys_clock_getres)
+DECL_TEMPLATE(freebsd, sys_clock_getres) // 234
+DECL_TEMPLATE(freebsd, sys_timer_create) // 235
+DECL_TEMPLATE(freebsd, sys_timer_delete) // 236
+DECL_TEMPLATE(freebsd, sys_timer_settime) // 237
+DECL_TEMPLATE(freebsd, sys_timer_gettime) // 238
+DECL_TEMPLATE(freebsd, sys_timer_getoverrun) // 239
 DECL_TEMPLATE(freebsd, sys_minherit)
 DECL_TEMPLATE(freebsd, sys_rfork)
 DECL_TEMPLATE(freebsd, sys_issetugid)
@@ -167,10 +172,10 @@ DECL_TEMPLATE(freebsd, sys_freebsd11_fhstat)
 DECL_TEMPLATE(freebsd, sys_fhstat)
 #endif
 
-DECL_TEMPLATE(freebsd, sys_modnext)
-DECL_TEMPLATE(freebsd, sys_modstat)
-DECL_TEMPLATE(freebsd, sys_modfnext)
-DECL_TEMPLATE(freebsd, sys_modfind)
+DECL_TEMPLATE(freebsd, sys_modnext) // 300
+DECL_TEMPLATE(freebsd, sys_modstat) // 301
+DECL_TEMPLATE(freebsd, sys_modfnext) // 302
+DECL_TEMPLATE(freebsd, sys_modfind) // 303
 DECL_TEMPLATE(freebsd, sys_kldload)
 DECL_TEMPLATE(freebsd, sys_kldunload)
 DECL_TEMPLATE(freebsd, sys_kldfind)
