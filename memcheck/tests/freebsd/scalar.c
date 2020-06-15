@@ -986,7 +986,7 @@ int main(void)
 
    /* SYS_kldfirstmod             309 */
    GO(SYS_kldfirstmod, "1s 0m");
-   SY(SYS_kldfirstmod, x0+14); SUCC;
+   SY(SYS_kldfirstmod, x0+1000); FAIL;
 
    /* SYS_getsid                  310 */
    GO(SYS_getsid, "1s 0m");
