@@ -285,7 +285,7 @@ Syscall param socketcall.recvfrom(buf) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
- 30:              SYS_accept 3s 0m
+ 30:              SYS_accept 3+1s 0m
 ---------------------------------------------------------
 Syscall param accept(s) contains uninitialised byte(s)
    ...
