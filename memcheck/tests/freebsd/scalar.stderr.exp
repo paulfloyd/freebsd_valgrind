@@ -3012,20 +3012,16 @@ Syscall param mq_open(attr->mq_msgsize) points to unaddressable byte(s)
 ---------------------------------------------------------
 458:         SYS_kmq_setattr 3s 2m
 ---------------------------------------------------------
-Syscall param mq_getsetattr(mqdes) contains uninitialised byte(s)
+Syscall param mq_setattr(mqdes) contains uninitialised byte(s)
    ...
 
-Syscall param mq_getsetattr(mqstat) contains uninitialised byte(s)
+Syscall param mq_setattr(mqstat) contains uninitialised byte(s)
    ...
 
-Syscall param mq_getsetattr(omqstat) contains uninitialised byte(s)
+Syscall param mq_setattr(omqstat) contains uninitialised byte(s)
    ...
 
-Syscall param mq_getattr(mqstat->mq_flags) points to unaddressable byte(s)
-   ...
- Address 0x........ is not stack'd, malloc'd or (recently) free'd
-
-Syscall param mq_getattr(omqstat) points to unaddressable byte(s)
+Syscall param mq_setattr(omqstat) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

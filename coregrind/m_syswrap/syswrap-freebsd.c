@@ -4190,20 +4190,19 @@ POST(sys_kmq_open)
 PRE(sys_kmq_setattr)
 {
    PRINT("sys_kmq_getattr( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
-   PRE_REG_READ3(int, "mq_getsetattr",
+   PRE_REG_READ3(int, "mq_setattr",
                  vki_mqd_t, mqdes, const struct mq_attr *, mqstat,
                  struct mq_attr *, omqstat);
    if (!ML_(fd_allowed)(ARG1, "mq_getattr", tid, False)) {
       SET_STATUS_Failure( VKI_EBADF );
    } else {
-      if (ARG2 != 0) {
+      if (ML_(safe_to_deref)((struct vki_mq_attr *)ARG2, sizeof(struct vki_mq_attr))) {
          const struct vki_mq_attr *attr = (struct vki_mq_attr *)ARG2;
-         PRE_MEM_READ( "mq_getattr(mqstat->mq_flags)",
+         PRE_MEM_READ( "mq_setattr(mqstat->mq_flags)",
                         (Addr)&attr->mq_flags, sizeof(attr->mq_flags) );
       }
-      if (ARG3 != 0)
-         PRE_MEM_WRITE( "mq_getattr(omqstat)", ARG3,
-                        sizeof(struct vki_mq_attr) );
+      PRE_MEM_WRITE( "mq_setattr(omqstat)", ARG3,
+                     sizeof(struct vki_mq_attr) );
    }
 }
 

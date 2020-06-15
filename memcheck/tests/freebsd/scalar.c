@@ -978,7 +978,7 @@ int main(void)
    
    /* SYS_kldnext                 307 */
    GO(SYS_kldnext, "1s 0m");
-   SY(SYS_kldnext, x0+6); SUCC;
+   SY(SYS_kldnext, x0+1000); FAIL;
 
    /* SYS_kldstat                 308 */
    GO(SYS_kldstat, "2s 1m");
