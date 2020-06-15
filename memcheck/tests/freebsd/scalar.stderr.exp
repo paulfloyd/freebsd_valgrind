@@ -263,7 +263,7 @@ Syscall param sendmsg(flags) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
- 29:            SYS_recvfrom 5+1s 0m
+ 29:            SYS_recvfrom 6+1s 0m
 ---------------------------------------------------------
 Syscall param recvfrom(s) contains uninitialised byte(s)
    ...
@@ -281,6 +281,10 @@ Syscall param recvfrom(from) contains uninitialised byte(s)
    ...
 
 Syscall param socketcall.recvfrom(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param socketcall.recvfrom(fromlen_in) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

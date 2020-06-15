@@ -144,8 +144,8 @@ int main(void)
    SY(SYS_sendmsg, x0, x0, x0); FAIL;
 
    /* recvfrom                    29 */
-   GO(SYS_recvfrom, "5+1s 0m");
-   SY(SYS_recvfrom, x0-1, x0+1, x0+16, x0+1, x0+1); FAIL;
+   GO(SYS_recvfrom, "6+1s 0m");
+   SY(SYS_recvfrom, x0-1, x0+1, x0+16, x0+1, x0+1, x0+1); FAIL;
 
    /* accept                      30 */
    GO(SYS_accept, "3+1s 0m");
