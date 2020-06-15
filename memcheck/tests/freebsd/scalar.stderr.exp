@@ -3077,6 +3077,108 @@ Syscall param rtprio_thread(rtp#set) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+475:               SYS_pread 4s 1m
+---------------------------------------------------------
+Syscall param pread(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param pread(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param pread(count) contains uninitialised byte(s)
+   ...
+
+Syscall param pread(off) contains uninitialised byte(s)
+   ...
+
+Syscall param pread(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+476:              SYS_pwrite 4s 1m
+---------------------------------------------------------
+Syscall param pwrite(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param pwrite(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param pwrite(nbytes) contains uninitialised byte(s)
+   ...
+
+Syscall param pwrite(offset) contains uninitialised byte(s)
+   ...
+
+Syscall param pwrite(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+477:                SYS_mmap 6s 1m
+---------------------------------------------------------
+Syscall param mmap(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param mmap(len) contains uninitialised byte(s)
+   ...
+
+Syscall param mmap(prot) contains uninitialised byte(s)
+   ...
+
+Syscall param mmap(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param mmap(fd) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+478:               SYS_lseek 3s 0m
+---------------------------------------------------------
+Syscall param lseek(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param lseek(offset) contains uninitialised byte(s)
+   ...
+
+Syscall param lseek(whence) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+479:            SYS_truncate 2s 1m
+---------------------------------------------------------
+Syscall param truncate(path) contains uninitialised byte(s)
+   ...
+
+Syscall param truncate(length) contains uninitialised byte(s)
+   ...
+
+Syscall param truncate(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+480:           SYS_ftruncate 2s 0m
+---------------------------------------------------------
+Syscall param ftruncate(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param ftruncate(length) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+481:           SYS_thr_kill2 3s 0m
+---------------------------------------------------------
+Syscall param thr_kill2(pid) contains uninitialised byte(s)
+   ...
+
+Syscall param thr_kill2(tid) contains uninitialised byte(s)
+   ...
+
+Syscall param thr_kill2(sig) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
 Syscall param mkfifoat(fd) contains uninitialised byte(s)

@@ -982,15 +982,16 @@ PRE(sys_freebsd6_mmap)
 }
 #endif
 
+// void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);
 PRE(sys_mmap)
 {
    SysRes r;
 
    PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, lo0x%" FMT_REGWORD "x hi0x%" FMT_REGWORD "x)",
          ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7 );
-   PRE_REG_READ7(long, "mmap",
-                 char *, addr, unsigned long, len, int, prot,  int, flags,
-                 int, fd, unsigned long, lo, unsigned long, hi);
+   PRE_REG_READ7(void *, "mmap",
+                 void *, addr, size_t, len, int, prot,  int, flags,
+                 int, fd, unsigned long, offset_lo, unsigned long, offset_hi);
 
    r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, MERGE64(ARG6,ARG7) );
    SET_STATUS_from_SysRes(r);
@@ -1169,15 +1170,16 @@ PRE(sys_sysarch)
    case VKI_I386_GET_GSBASE:
       PRINT("sys_i386_get_gsbase ( %#lx )", ARG2);
       PRE_MEM_WRITE( "i386_get_gsbase(basep)", ARG2, sizeof(void *) );
-
-      /* "do" the syscall ourselves; the kernel never sees it */
-      SET_STATUS_from_SysRes( sys_get_thread_area( tid, 2, (void **)ARG2 ) );
-
+       if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
+         /* "do" the syscall ourselves; the kernel never sees it */
+         SET_STATUS_from_SysRes( sys_get_thread_area( tid, 2, (void **)ARG2 ) );
+       } else {
+          SET_STATUS_Failure( VKI_EINVAL );
+       }
       break;
    case VKI_I386_GET_XFPUSTATE:
       PRINT("sys_i386_get_xfpustate ( %#lx )", ARG2);
       PRE_MEM_WRITE( "i386_get_xfpustate(basep)", ARG2, sizeof(void *) );
-      
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
       SET_STATUS_Success2( tst->arch.vex.guest_FPTAG[0], tst->arch.vex.guest_FPTAG[0] );
@@ -1195,7 +1197,7 @@ POST(sys_sysarch)
    case VKI_AMD64_SET_FSBASE:
       break;
    case VKI_AMD64_GET_FSBASE:
-      //POST_MEM_WRITE( ARG2, sizeof(void *) );
+      POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    case VKI_AMD64_GET_XFPUSTATE:
       POST_MEM_WRITE( ARG2, sizeof(void *) );

@@ -612,7 +612,7 @@ int main(void)
    SY(SYS_sysarch, x0+I386_SET_GSBASE, x0); FAIL;
 #elif defined(VGP_amd64_freebsd)
    GO(SYS_sysarch, "2s 1m");
-   SY(SYS_sysarch, x0+AMD64_GET_FSBASE, x0); SUCC;
+   SY(SYS_sysarch, x0+AMD64_GET_FSBASE, x0); FAIL;
    
    GO(SYS_sysarch, "2s 0m");
    SY(SYS_sysarch, x0+AMD64_SET_FSBASE, x0); FAIL;
@@ -1489,21 +1489,37 @@ int main(void)
 
    // sctp_generic_recvmsg                                 474
    
+
+   /* SYS_pread                   475 */
+   GO(SYS_pread, "4s 1m");
+   SY(SYS_pread, x0+99, x0+1, x0+1, x0+2); FAIL;
+
+   /* SYS_pwrite                  476 */
+   GO(SYS_pwrite, "4s 1m");
+   SY(SYS_pwrite, x0+99, x0+1, x0+1, x0+2); FAIL;
+
+   /* SYS_mmap                    477 */
+   GO(SYS_mmap, "6s 1m");
+   /* @todo PJF no offset (arg 6) in output on amd64 */
+   SY(SYS_mmap, x0+1, x0, x0+123456, x0+234567, x0+99, x0+3); FAIL;
+
+   /* SYS_lseek                   478 */
+   GO(SYS_lseek, "3s 0m");
+   SY(SYS_lseek, x0+99, x0+1, x0+55); FAIL;
+
+   /* SYS_truncate                479 */
+   GO(SYS_truncate, "2s 1m");
+   SY(SYS_truncate, x0+1, x0+1); FAIL;
+
+   /* SYS_ftruncate               480 */
+   GO(SYS_ftruncate, "2s 0m");
+   SY(SYS_ftruncate, x0+99, x0+1); FAIL;
+
+   /* SYS_thr_kill2               481 */
+   GO(SYS_thr_kill2, "3s 0m");
+   SY(SYS_thr_kill2, x0-1, x0-1, x0+9999); FAIL;
+   
    /*
-
-   BSDXY(__NR_pread,            sys_pread),             // 475
-
-   BSDX_(__NR_pwrite,           sys_pwrite),            // 476
-
-   BSDX_(__NR_mmap,             sys_mmap),              // 477
-
-   BSDX_(__NR_lseek,            sys_lseek),             // 478
-
-   BSDX_(__NR_truncate,         sys_truncate),          // 479
-
-   BSDX_(__NR_ftruncate,        sys_ftruncate),         // 480
-
-   BSDXY(__NR_thr_kill2,        sys_thr_kill2),         // 481
 
    BSDXY(__NR_shm_open,         sys_shm_open),          // 482
 

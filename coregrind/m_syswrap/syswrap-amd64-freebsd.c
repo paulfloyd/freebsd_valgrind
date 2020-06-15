@@ -520,15 +520,16 @@ PRE(sys_freebsd6_mmap)
 #endif
 
 /* FreeBSD-7 introduces a "regular" version of mmap etc. */
+// void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);
 PRE(sys_mmap)
 {
    SysRes r;
 
    PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
          ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6 );
-   PRE_REG_READ6(long, "mmap",
-                 char *, addr, unsigned long, len, int, prot,  int, flags,
-                 int, fd,  unsigned long, pos);
+   PRE_REG_READ6(void *, "mmap",
+                 void *, addr, size_t, len, int, prot,  int, flags,
+                 int, fd,  off_t, offset);
 
    r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6 );
    SET_STATUS_from_SysRes(r);
@@ -626,7 +627,7 @@ PRE(sys_pwrite)
                  vki_off_t, offset);
    /* check to see if it is allowed.  If not, try for an exemption from
       --sim-hints=enable-outer (used for self hosting). */
-   ok = ML_(fd_allowed)(ARG1, "write", tid, False);
+   ok = ML_(fd_allowed)(ARG1, "pwrite", tid, False);
    if (!ok && ARG1 == 2/*stderr*/
            && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
       ok = True;
@@ -702,14 +703,20 @@ PRE(sys_sysarch)
    case VKI_AMD64_GET_FSBASE:
       PRINT("sys_amd64_get_fsbase ( %#lx )", ARG2);
       PRE_MEM_WRITE( "amd64_get_fsbase(basep)", ARG2, sizeof(void *) );
-
-      /* "do" the syscall ourselves; the kernel never sees it */
-      tst = VG_(get_ThreadState)(tid);
-      SET_STATUS_Success2( tst->arch.vex.guest_FS_CONST, tst->arch.vex.guest_RDX );
+      if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
+         /* "do" the syscall ourselves; the kernel never sees it */
+         tst = VG_(get_ThreadState)(tid);
+         SET_STATUS_Success2( tst->arch.vex.guest_FS_CONST, tst->arch.vex.guest_RDX );
+      } else {
+         SET_STATUS_Failure( VKI_EINVAL );
+      }
       break;
    case VKI_AMD64_GET_XFPUSTATE:
       PRINT("sys_amd64_get_xfpustate ( %#lx )", ARG2);
       PRE_MEM_WRITE( "amd64_get_xfpustate(basep)", ARG2, sizeof(void *) );
+
+      // @todo PJF need a test for this
+      // I think that it will fail in the POST if ARG2 is not a valid pointer
       
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
@@ -728,7 +735,7 @@ POST(sys_sysarch)
    case VKI_AMD64_SET_FSBASE:
       break;
    case VKI_AMD64_GET_FSBASE:
-      //POST_MEM_WRITE( ARG2, sizeof(void *) );
+      POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    case VKI_AMD64_GET_XFPUSTATE:
       POST_MEM_WRITE( ARG2, sizeof(void *) );
