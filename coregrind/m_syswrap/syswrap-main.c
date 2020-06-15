@@ -1709,6 +1709,7 @@ void getSyscallArgLayout ( /*OUT*/SyscallArgLayout* layout )
    layout->o_arg6   = OFFSET_amd64_R9;
    layout->s_arg7   = sizeof(UWord) * 1;
    layout->s_arg8   = sizeof(UWord) * 2;
+   layout->arg6_is_reg = True;
 
 #elif defined(VGP_arm_linux)
    layout->o_sysno  = OFFSET_arm_R7;
@@ -1838,9 +1839,10 @@ void getSyscallArgLayout_0_198 ( /*OUT*/SyscallArgLayout* layout )
    layout->o_arg3   = OFFSET_amd64_R10;
    layout->o_arg4   = OFFSET_amd64_R8;
    layout->o_arg5   = OFFSET_amd64_R9;
-   layout->o_arg6   = sizeof(UWord) * 1;
+   layout->s_arg6   = sizeof(UWord) * 1;
    layout->s_arg7   = sizeof(UWord) * 2;
    layout->s_arg8   = sizeof(UWord) * 3;
+   layout->arg6_is_reg = False;
 }
 #endif
 
@@ -2151,10 +2153,9 @@ void VG_(client_syscall) ( ThreadId tid, UInt trc )
       they need to inspect. */
 #if defined(VGP_amd64_freebsd)
    // PJF - somewhat unfortunate uglificaton of the code, but the current code handles two
-   // types of syscall with different register use
-   // I'm not certain that both are currently used, but mixing them up is certainly
-   // not good. I've avoided modifying the existing function (I could have added
-   // a FreeBSD amd64-ony flag to it for this purpiose).
+   // types of syscall with different register use. Mixing them up is not good.
+   // I've avoided modifying the existing function (I could have added
+   // a FreeBSD amd64-only flag to it for this purpiose).
    if (sci->orig_args.klass == VG_FREEBSD_SYSCALL0 || sci->orig_args.klass == VG_FREEBSD_SYSCALL198) {
        getSyscallArgLayout_0_198( &layout );
     } else {

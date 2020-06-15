@@ -120,9 +120,13 @@ typedef
       Int o_arg4;
       Int o_arg5;
       // @todo PJF this can either be a register or a stack
+      union {
       Int o_arg6;
+      Int s_arg6;
+      };
       Int s_arg7;
       Int s_arg8;
+      Bool arg6_is_reg;
 #     elif defined(VGP_mips32_linux)
       Int o_arg1;
       Int o_arg2;
@@ -464,12 +468,19 @@ static inline UWord getERR ( SyscallStatus* st ) {
 
 #elif defined(VGP_amd64_freebsd)
    /* Up to 8 parameters, 6 in registers, 2 on the stack. */
+   /* or 7 in registers and 3 on the stack */
 #  define PRA1(s,t,a) PRRAn(1,s,t,a)
 #  define PRA2(s,t,a) PRRAn(2,s,t,a)
 #  define PRA3(s,t,a) PRRAn(3,s,t,a)
 #  define PRA4(s,t,a) PRRAn(4,s,t,a)
 #  define PRA5(s,t,a) PRRAn(5,s,t,a)
-#  define PRA6(s,t,a) PRRAn(6,s,t,a)
+#  define PRA6(s,t,a) \
+   do { \
+      if (layout->arg6_is_reg) \
+         PRRAn(6,s,t,a); \
+       else \
+         PSRAn(6,s,t,a); \
+   } while (0)
 #  define PRA7(s,t,a) PSRAn(7,s,t,a)
 #  define PRA8(s,t,a) PSRAn(8,s,t,a)
 
