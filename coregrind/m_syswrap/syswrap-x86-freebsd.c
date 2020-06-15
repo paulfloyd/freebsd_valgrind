@@ -1020,7 +1020,7 @@ PRE(sys_freebsd6_pread)
 {
    *flags |= SfMayBlock;
    PRINT("sys_freebsd6_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG5, ARG6);
-   PRE_REG_READ6(ssize_t, "read",
+   PRE_REG_READ6(ssize_t, "pread",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  int, pad, unsigned int, off_low, unsigned int, off_high);
 
@@ -1041,14 +1041,14 @@ PRE(sys_pread)
 {
    *flags |= SfMayBlock;
    PRINT("sys_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
-   PRE_REG_READ5(ssize_t, "read",
+   PRE_REG_READ5(ssize_t, "pread",
                  unsigned int, fd, char *, buf, vki_size_t, count,
                  unsigned int, off_low, unsigned int, off_high);
 
    if (!ML_(fd_allowed)(ARG1, "pread", tid, False))
       SET_STATUS_Failure( VKI_EBADF );
    else
-      PRE_MEM_WRITE( "read(buf)", ARG2, ARG3 );
+      PRE_MEM_WRITE( "pread(buf)", ARG2, ARG3 );
 }
 
 POST(sys_pread)
