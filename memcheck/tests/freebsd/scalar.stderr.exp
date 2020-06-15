@@ -1651,6 +1651,9 @@ Syscall param msgrcv(msgsz) contains uninitialised byte(s)
 Syscall param msgrcv(msgtyp) contains uninitialised byte(s)
    ...
 
+Syscall param msgrcv(msgflg) contains uninitialised byte(s)
+   ...
+
 Syscall param msgrcv(msgp->mtype) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd

@@ -816,7 +816,7 @@ int main(void)
    
    /* SYS_msgrcv                  227 */
    GO(SYS_msgrcv, "4+1s 1m");
-   SY(SYS_msgrcv, x0-1, x0+1, x0+4, x0); FAIL;
+   SY(SYS_msgrcv, x0-1, x0+1, x0+4, x0, x0); FAIL;
    
    /* SYS_shmat                   228 */
    GO(SYS_shmat, "3s 0m");
