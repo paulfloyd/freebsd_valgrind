@@ -149,7 +149,7 @@ int main(void)
 
    /* accept                      30 */
    GO(SYS_accept, "3s 0m");
-   SY(SYS_accept, x0, x0, x0); FAIL;
+   SY(SYS_accept, x0-1, x0+1, x0+1); FAIL;
 
    /* getpeername                 31 */
    GO(SYS_getpeername, "3s 1m");

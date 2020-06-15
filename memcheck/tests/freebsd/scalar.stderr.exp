@@ -292,6 +292,10 @@ Syscall param accept(addr) contains uninitialised byte(s)
 Syscall param accept(*addrlen) contains uninitialised byte(s)
    ...
 
+Syscall param socketcall.accept(addrlen_in) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
 ---------------------------------------------------------
  31:         SYS_getpeername 3s 1m
 ---------------------------------------------------------
