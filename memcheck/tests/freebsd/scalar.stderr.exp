@@ -462,6 +462,9 @@ Syscall param ioctl(request) contains uninitialised byte(s)
 Syscall param ioctl(arg) contains uninitialised byte(s)
    ...
 
+
+More than 100 errors detected.  Subsequent errors
+will still be recorded, but in less detail than before.
 Syscall param ioctl(generic) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
@@ -479,9 +482,6 @@ Syscall param revoke(path) points to unaddressable byte(s)
 ---------------------------------------------------------
  57:             SYS_symlink 2s 2m
 ---------------------------------------------------------
-
-More than 100 errors detected.  Subsequent errors
-will still be recorded, but in less detail than before.
 Syscall param symlink(oldpath) contains uninitialised byte(s)
    ...
 
@@ -1637,7 +1637,7 @@ Syscall param msgsnd(msgp->mtype) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-227:              SYS_msgrcv 4s 1m
+227:              SYS_msgrcv 4+1s 1m
 ---------------------------------------------------------
 Syscall param msgrcv(msqid) contains uninitialised byte(s)
    ...
@@ -1652,6 +1652,10 @@ Syscall param msgrcv(msgtyp) contains uninitialised byte(s)
    ...
 
 Syscall param msgrcv(msgp->mtype) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param msgrcv(msgp->mtext) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

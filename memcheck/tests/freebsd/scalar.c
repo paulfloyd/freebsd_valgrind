@@ -145,7 +145,7 @@ int main(void)
 
    /* recvfrom                    29 */
    GO(SYS_recvfrom, "6+1s 0m");
-   SY(SYS_recvfrom, x0-1, x0+1, x0+16, x0+1, x0+1, x0+1); FAIL;
+   SY(SYS_recvfrom, x0-1, x0+1, x0+16, x0+2, x0+3, x0+4); FAIL;
 
    /* accept                      30 */
    GO(SYS_accept, "3+1s 0m");
@@ -815,8 +815,8 @@ int main(void)
    SY(SYS_msgsnd, x0, x0, x0, x0); FAIL;
    
    /* SYS_msgrcv                  227 */
-   GO(SYS_msgrcv, "4s 1m");
-   SY(SYS_msgrcv, x0, x0, x0, x0); FAIL;
+   GO(SYS_msgrcv, "4+1s 1m");
+   SY(SYS_msgrcv, x0-1, x0+1, x0+4, x0); FAIL;
    
    /* SYS_shmat                   228 */
    GO(SYS_shmat, "3s 0m");
