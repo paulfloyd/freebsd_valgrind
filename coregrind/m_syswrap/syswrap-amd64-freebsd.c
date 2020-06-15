@@ -681,13 +681,12 @@ PRE(sys_sysarch)
    void **p;
 
    PRINT("sys_sysarch ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2);
-   PRE_REG_READ2(int, "sysarch",
-                 int, number, void *, args);
+   PRE_REG_READ2(int, "sysarch", int, number, void *, args);
    switch (ARG1) {
    case VKI_AMD64_SET_FSBASE:
       PRINT("sys_amd64_set_fsbase ( %#lx )", ARG2);
 
-      if (ARG2) {
+      if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
          /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
          tst = VG_(get_ThreadState)(tid);
          p = (void**)ARG2;
@@ -707,7 +706,6 @@ PRE(sys_sysarch)
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
       SET_STATUS_Success2( tst->arch.vex.guest_FS_CONST, tst->arch.vex.guest_RDX );
-      //POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    case VKI_AMD64_GET_XFPUSTATE:
       PRINT("sys_amd64_get_xfpustate ( %#lx )", ARG2);
@@ -716,7 +714,6 @@ PRE(sys_sysarch)
       /* "do" the syscall ourselves; the kernel never sees it */
       tst = VG_(get_ThreadState)(tid);
       SET_STATUS_Success2( tst->arch.vex.guest_FPTAG[0], tst->arch.vex.guest_FPTAG[0] );
-      //POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    default:
       VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %lu", ARG1);
@@ -731,6 +728,7 @@ POST(sys_sysarch)
    case VKI_AMD64_SET_FSBASE:
       break;
    case VKI_AMD64_GET_FSBASE:
+      //POST_MEM_WRITE( ARG2, sizeof(void *) );
       break;
    case VKI_AMD64_GET_XFPUSTATE:
       POST_MEM_WRITE( ARG2, sizeof(void *) );
