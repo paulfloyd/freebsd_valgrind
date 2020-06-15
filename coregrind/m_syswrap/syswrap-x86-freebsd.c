@@ -1085,7 +1085,7 @@ PRE(sys_pwrite)
    Bool ok;
    *flags |= SfMayBlock;
    PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
-   PRE_REG_READ5(ssize_t, "write",
+   PRE_REG_READ5(ssize_t, "pwrite",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
                  unsigned int, off_low, unsigned int, off_high);
    /* check to see if it is allowed.  If not, try for an exemption from
@@ -1097,7 +1097,7 @@ PRE(sys_pwrite)
    if (!ok)
       SET_STATUS_Failure( VKI_EBADF );
    else
-      PRE_MEM_READ( "write(buf)", ARG2, ARG3 );
+      PRE_MEM_READ( "pwrite(buf)", ARG2, ARG3 );
 }
 
 #if (FREEBSD_VERS <= FREEBSD_10)
