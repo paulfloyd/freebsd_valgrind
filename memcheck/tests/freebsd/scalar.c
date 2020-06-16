@@ -6,6 +6,8 @@
 #include <sys/ptrace.h>
 #include <ufs/ufs/quota.h>
 #include <machine/sysarch.h>
+#include <sys/mman.h>
+#include <mqueue.h>
 #include "scalar.h"
 #include "config.h"
 #include "../../memcheck.h"
@@ -752,7 +754,6 @@ int main(void)
    SY(SYS___sysctl, x0, x0+1, x0+1, x0+1, NULL, x0); FAIL;
    
    GO(SYS___sysctl, "(putnew) 4s 2m");
-   /* @todo PJF I'm only getting 3s + 2m, why no error for the last arg, newlen? */
    SY(SYS___sysctl, x0, x0+1, NULL, NULL, x0+1, x0+2); FAIL;
 
    /* SYS_mlock                   203 */
@@ -1174,8 +1175,7 @@ int main(void)
 
    /* SYS_freebsd11_kevent        363 */
    /* @todo PJF <= freebsd11 version */
-   /* @todo PJF why only 5s, not 63? */
-   GO(SYS_freebsd11_kevent, "5s 3m");
+   GO(SYS_freebsd11_kevent, "6s 3m");
    SY(SYS_freebsd11_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
 
    /* obs __cap_get* / __cap_set* 364 to 369 */
@@ -1438,9 +1438,17 @@ int main(void)
    // sigqueue                                             456
 
    /* SYS_kmq_open                457 */
-   /* @todo PJF see commnents in syswrap, this is probably wrong wrt mode and O_CREAT */
    GO(SYS_kmq_open, "4s 2m");
    SY(SYS_kmq_open, x0+1, x0+O_CREAT, x0, x0+1); FAIL;
+   
+   GO(SYS_kmq_open, "3s 1m");
+   SY(SYS_kmq_open, x0+1, x0, x0); FAIL;
+   
+   {
+       struct mq_attr mqa = { x0+1, x0+1 };
+       GO(SYS_kmq_open, "3s 2m");
+       SY(SYS_kmq_open, x0+1, x0+O_CREAT, x0, &mqa); FAIL;
+   }
 
    /* SYS_kmq_setattr             458 */
    GO(SYS_kmq_setattr, "3s 2m");
@@ -1500,7 +1508,6 @@ int main(void)
 
    /* SYS_mmap                    477 */
    GO(SYS_mmap, "6s 1m");
-   /* @todo PJF no offset (arg 6) in output on amd64 */
    SY(SYS_mmap, x0+1, x0, x0+123456, x0+234567, x0+99, x0+3); FAIL;
 
    /* SYS_lseek                   478 */
@@ -1518,82 +1525,159 @@ int main(void)
    /* SYS_thr_kill2               481 */
    GO(SYS_thr_kill2, "3s 0m");
    SY(SYS_thr_kill2, x0-1, x0-1, x0+9999); FAIL;
+
+   /* SYS_shm_open                482 */
+   GO(SYS_shm_open, "(SHM_ANON) 3s 0m");
+   SY(SYS_shm_open, x0+SHM_ANON, x0+2, x0+9); SUCC;
    
-   /*
+   // @todo this was causing a VG crash
+   // GO(SYS_shm_open, "3s 1m");
+   //SY(SYS_shm_open, x0+2, x0+2, x0+9); SUCC;
 
-   BSDXY(__NR_shm_open,         sys_shm_open),          // 482
+   /* SYS_shm_unlink              483 */
+   GO(SYS_shm_unlink, "1s 1m");
+   SY(SYS_shm_unlink, x0+1); FAIL;
 
-   BSDX_(__NR_shm_unlink,       sys_shm_unlink),        // 483
+   // cpuset                      484
 
-   // cpuset                                               484
+   // cpuset_setid                485
 
-   // cpuset_setid                                         485
+   // cpuset_getid                486
 
-   // cpuset_getid                                         486
+   /* SYS_cpuset_getaffinity      487 */
+   GO(SYS_cpuset_getaffinity, "5s 1m");
+   SY(SYS_cpuset_getaffinity, x0+100, x0+100, x0+200, x0+500, x0+1); FAIL;
 
-   BSDXY(__NR_cpuset_getaffinity, sys_cpuset_getaffinity), // 487
+   /* SYS_cpuset_setaffinity      488 */
+   GO(SYS_cpuset_setaffinity, "5s 1m");
+   SY(SYS_cpuset_setaffinity, x0+100, x0+100, x0+200, x0+500, x0+1); FAIL;
 
-   BSDX_(__NR_cpuset_setaffinity, sys_cpuset_setaffinity), // 488
+   /* SYS_faccessat               489 */
+   GO(SYS_faccessat, "3s 1m");
+   SY(SYS_faccessat, x0+1, x0, x0); FAIL;
 
-   BSDX_(__NR_faccessat,        sys_faccessat),         // 489
+   /* SYS_fchmodat                490 */
+   GO(SYS_fchmodat, "3s 1m");
+   SY(SYS_fchmodat, x0, x0+1, x0); FAIL;
 
-   BSDX_(__NR_fchmodat,         sys_fchmodat),          // 490
+   /* SYS_fchownat                491 */
+   GO(SYS_fchownat, "4s 1m");
+   SY(SYS_fchownat, x0, x0+1, x0, x0); FAIL;
 
-   BSDX_(__NR_fchownat,         sys_fchownat),          // 491
+   // fexecve                     492
 
-   // fexecve                                              492
+   /* SYS_freebsd11_fstatat                 493 */
+   /* @todo PJF freebsd11 version */
+   GO(SYS_fstatat, "s4s 2m");
+   SY(SYS_fstatat, x0, x0+1, x0+1, x0); FAIL;
 
-   BSDXY(__NR_fstatat,          sys_fstatat),           // 493
+   /* SYS_futimesat               494 */
+   GO(SYS_futimesat, "3s 2m");
+   SY(SYS_futimesat, x0, x0+1, x0+1); FAIL;
 
-   BSDX_(__NR_futimesat,        sys_futimesat),         // 494
+   /* SYS_linkat                  495 */
+   GO(SYS_linkat, "4s 2m");
+   SY(SYS_linkat, x0, x0+1, x0+1, x0); FAIL;
 
-   BSDX_(__NR_linkat,           sys_linkat),            // 495
-
-   BSDX_(__NR_mkdirat,          sys_mkdirat),           // 496
-   
-   */
+   /* SYS_mkdirat                 496 */
+   GO(SYS_mkdirat, "3s 1m");
+   SY(SYS_mkdirat, x0, x0+1, x0+1); FAIL;
    
    /* SYS_mkfifoat                497 */
    /* not getting an error with fd */
    /* need to investigate */
    GO(SYS_mkfifoat, "3s 1m");
    SY(SYS_mkfifoat, x0, x0, x0); FAIL;
+   
+   /* SYS_freebsd11_mknodat       498 */
+   GO(SYS_freebsd11_mknodat, "4s 1m");
+   SY(SYS_freebsd11_mknodat, x0, x0+1, x0, x0); FAIL;
+   
+   /* SYS_openat                  499 */
+   GO(SYS_openat, "3s 1m");
+   SY(SYS_openat, x0, x0+1, x0); FAIL;
+   
+   GO(SYS_openat, "4s 1m");
+   SY(SYS_openat, x0, x0+1, x0+O_CREAT, x0); FAIL;
 
+   /* SYS _readlinkat             500 */
+   GO(SYS_readlinkat, "4s 2m");
+   SY(SYS_readlinkat, x0, x0+1, x0+1, x0+4); FAIL;
+   
+   /* SYS_renameat                501 */
+   GO(SYS_renameat, "4s 2m");
+   SY(SYS_renameat, x0, x0+1, x0+1, x0+1); FAIL;
+   
+   /* SYS_symlinkat               502 */
+   GO(SYS_symlinkat, "3s 2m");
+   SY(SYS_symlinkat, x0+1, x0, x0+1); FAIL;
+   
+   /* SYS_unlinkat                503 */
+   GO(SYS_unlinkat, "1s 1m");
+   SY(SYS_unlinkat, x0+1); FAIL;
+
+   /* SYS_posix_openpt            504 */
+   GO(SYS_posix_openpt, "1s 1m");
+   SY(SYS_posix_openpt, x0+0xffff0000); FAIL;
+   
+   // gssd_syscall                505
+   
+   /* SYS_jail_get                506 */
+   /* @todo PJF was expecting 1m from arg 1 ??? */
+   GO(SYS_jail_get, "3s 1m");
+   SY(SYS_jail_get, x0+1, x0, x0); FAIL;
+   
+   /* SYS_jail_set                507 */
+   /* @todo PJF was expecting 1m from arg 1 ??? */
+   GO(SYS_jail_set, "3s 1m");
+   SY(SYS_jail_set, x0+1, x0, x0); FAIL;
+   
+   /* SYS_jail_remove             508 */
+   GO(SYS_jail_remove, "1s 0m");
+   SY(SYS_jail_remove, x0+1, x0, x0); FAIL;
+   
+   // closefrom                   509
+   
    /*
    
-   BSDX_(__NR_mknodat,          sys_mknodat),           // 498
-   BSDXY(__NR_openat,           sys_openat),            // 499
-
-   BSDX_(__NR_readlinkat,       sys_readlinkat),        // 500
-   BSDX_(__NR_renameat,         sys_renameat),          // 501
-   BSDX_(__NR_symlinkat,        sys_symlinkat),         // 502
-   BSDX_(__NR_unlinkat,         sys_unlinkat),          // 503
-
-   BSDX_(__NR_posix_openpt,     sys_posix_openpt),      // 504
-   // gssd_syscall                                         505
-   BSDXY(__NR_jail_get,         sys_jail_get),          // 506
-   BSDX_(__NR_jail_set,         sys_jail_set),          // 507
-   BSDX_(__NR_jail_remove,      sys_jail_remove),       // 508
-   // closefrom                                            509
    BSDXY(__NR___semctl,         sys___semctl),          // 510
-   // msgctl                                               511
+   
+   // msgctl                      511
+   
    BSDXY(__NR_shmctl,           sys_shmctl),            // 512
+   
     // lpathconf                                           513
+    
     // 514 is obsolete cap_new
+    
     // __cap_rights_get                                    515
+    
     BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
+    
     // cap_getmode                                         517
+    
     BSDXY(__NR_pdfork,          sys_pdfork),            // 518
+    
     BSDX_(__NR_pdkill,          sys_pdkill),            // 519
+    
     BSDXY(__NR_pdgetpid,        sys_pdgetpid),          // 520
+    
     BSDXY(__NR_pselect,         sys_pselect),           // 522
+    
     // getloginclass                                       523
+    
     // setloginclass                                       524
+    
     // rctl_get_racct                                      525
+    
     // rctl_get_rules                                      526
+    
     // rctl_get_limits                                     527
+    
     // rctl_add_rule                                       528
+    
     // rctl_remove_rule                                    529
+    
     BSDX_(__NR_posix_fallocate, sys_posix_fallocate),   // 530
     BSDX_(__NR_posix_fadvise,   sys_posix_fadvise),     // 531
     // wait6                                               532
@@ -1667,7 +1751,6 @@ int main(void)
    SY(SYS_getfhat, x0, x0, x0, x0); FAIL;
    
    /*
-
     
     // fhlink                                              565
     

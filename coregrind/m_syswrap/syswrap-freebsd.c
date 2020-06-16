@@ -4154,21 +4154,28 @@ POST(sys__umtx_op)
 // int kmq_open(_In_z_ const char *path, int flags, mode_t mode, _In_opt_ const struct mq_attr *attr);
 PRE(sys_kmq_open)
 {
-   // @todo PJF this is wrong
-   // should only print/reg_read 4 arguments if
-   // mode has the O_CREAT bit set
-   PRINT("sys_kmq_open( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %llu, %#" FMT_REGWORD "x )",
-         ARG1,(char *)ARG1,ARG2,(ULong)ARG3,ARG4);
-   PRE_REG_READ4(long, "mq_open",
-                 const char *, name, int, oflag, vki_mode_t, mode,
-                 struct mq_attr *, attr);
+   if (ARG2 & VKI_O_CREAT) {
+      PRINT("sys_kmq_open( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %hu, %#" FMT_REGWORD "x )",
+            ARG1,(char *)ARG1,ARG2,(vki_mode_t)ARG3,ARG4);
+      PRE_REG_READ4(long, "mq_open",
+                    const char *, name, int, oflag, vki_mode_t, mode,
+                    struct mq_attr *, attr);
+   } else {
+      PRINT("sys_kmq_open( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %hu)",
+            ARG1,(char *)ARG1,ARG2,(vki_mode_t)ARG3);
+      PRE_REG_READ3(long, "mq_open",
+                    const char *, name, int, oflag, vki_mode_t, mode);
+   }
    PRE_MEM_RASCIIZ( "mq_open(name)", ARG1 );
-   if ((ARG2 & VKI_O_CREAT) != 0 && ARG4 != 0) {
-      const struct vki_mq_attr *attr = (struct vki_mq_attr *)ARG4;
-      PRE_MEM_READ( "mq_open(attr->mq_maxmsg)",
-                     (Addr)&attr->mq_maxmsg, sizeof(attr->mq_maxmsg) );
-      PRE_MEM_READ( "mq_open(attr->mq_msgsize)",
-                     (Addr)&attr->mq_msgsize, sizeof(attr->mq_msgsize) );
+   if (ARG2 & VKI_O_CREAT) {
+      PRE_MEM_READ("mq_open(attr)", ARG4, sizeof(struct vki_mq_attr));
+      if (ML_(safe_to_deref)((struct vki_mq_attr *)ARG4, sizeof(struct vki_mq_attr))) {
+         const struct vki_mq_attr *attr = (struct vki_mq_attr *)ARG4;
+         PRE_MEM_READ("mq_open(attr->mq_maxmsg)",
+                      (Addr)&attr->mq_maxmsg, sizeof(attr->mq_maxmsg) );
+         PRE_MEM_READ("mq_open(attr->mq_msgsize)",
+                      (Addr)&attr->mq_msgsize, sizeof(attr->mq_msgsize) );
+      }
    }
 }
 
@@ -4400,9 +4407,9 @@ PRE(sys_shm_open)
    PRE_REG_READ3(int, "shm_open",
                 const char *, path, int, flags, vki_mode_t, mode);
    if (ARG1 == VKI_SHM_ANON) {
-      PRINT("sys_shm_open(%#" FMT_REGWORD "x(SHM_ANON), %" FMT_REGWORD "u, %" FMT_REGWORD "u)", ARG1, ARG2, ARG3);
+      PRINT("sys_shm_open(%#" FMT_REGWORD "x(SHM_ANON), %" FMT_REGWORD "u, %hu)", ARG1, ARG2, (vki_mode_t)ARG3);
    } else {
-      PRINT("sys_shm_open(%#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %" FMT_REGWORD "u)", ARG1, (char *)ARG1, ARG2, ARG3);
+      PRINT("sys_shm_open(%#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %hu)", ARG1, (HChar *)ARG1, ARG2, (vki_mode_t)ARG3);
       PRE_MEM_RASCIIZ( "shm_open(path)", ARG1 );
    }
    *flags |= SfMayBlock;
@@ -4419,7 +4426,6 @@ POST(sys_shm_open)
          ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)ARG1);
    }
 }
-
 
 // SYS_shm_unlink	483
 // int shm_unlink(const char *path);
@@ -4678,9 +4684,11 @@ PRE(sys_readlinkat)
       /* Normal case */
       SET_STATUS_from_SysRes( VG_(do_syscall4)(saved, ARG1, ARG2, ARG3, ARG4));
    }
+}
 
-   if (SUCCESS && (Word)RES != -1)
-      POST_MEM_WRITE( ARG3, RES );
+POST(sys_readlinkat)
+{
+   POST_MEM_WRITE( ARG3, RES );
 }
 
 // SYS_renameat	501
@@ -4702,7 +4710,7 @@ PRE(sys_symlinkat)
    *flags |= SfMayBlock;
    PRINT("sys_symlinkat ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s) )",ARG1,(char*)ARG1,ARG2,ARG3,(char*)ARG3);
    PRE_REG_READ3(int, "symlinkat",
-                 const char *, name1, int, fd, const char *, anme2);
+                 const char *, name1, int, fd, const char *, name2);
    PRE_MEM_RASCIIZ( "symlinkat(name1)", ARG1 );
    PRE_MEM_RASCIIZ( "symlinkat(name2)", ARG3 );
 }
@@ -6087,7 +6095,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    BSDXY(__NR_openat,           sys_openat),            // 499
 
-   BSDX_(__NR_readlinkat,       sys_readlinkat),        // 500
+   BSDXY(__NR_readlinkat,       sys_readlinkat),        // 500
    BSDX_(__NR_renameat,         sys_renameat),          // 501
    BSDX_(__NR_symlinkat,        sys_symlinkat),         // 502
    BSDX_(__NR_unlinkat,         sys_unlinkat),          // 503

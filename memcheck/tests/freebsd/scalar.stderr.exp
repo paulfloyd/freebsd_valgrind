@@ -2547,7 +2547,7 @@ Syscall param getresgid(sgid) points to unaddressable byte(s)
 362:              SYS_kqueue 0s 0m
 ---------------------------------------------------------
 ---------------------------------------------------------
-363:    SYS_freebsd11_kevent 5s 3m
+363:    SYS_freebsd11_kevent 6s 3m
 ---------------------------------------------------------
 Syscall param kevent(fd) contains uninitialised byte(s)
    ...
@@ -3001,13 +3001,49 @@ Syscall param mq_open(name) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param mq_open(attr->mq_maxmsg) points to unaddressable byte(s)
+Syscall param mq_open(attr) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param mq_open(attr->mq_msgsize) points to unaddressable byte(s)
+---------------------------------------------------------
+457:            SYS_kmq_open 3s 1m
+---------------------------------------------------------
+Syscall param mq_open(name) contains uninitialised byte(s)
+   ...
+
+Syscall param mq_open(oflag) contains uninitialised byte(s)
+   ...
+
+Syscall param mq_open(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param mq_open(name) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+457:            SYS_kmq_open 3s 2m
+---------------------------------------------------------
+Syscall param mq_open(name) contains uninitialised byte(s)
+   ...
+
+Syscall param mq_open(oflag) contains uninitialised byte(s)
+   ...
+
+Syscall param mq_open(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param mq_open(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param mq_open(attr) points to uninitialised byte(s)
+   ...
+ Address 0x........ is on thread 1's stack
+
+Syscall param mq_open(attr->mq_maxmsg) points to uninitialised byte(s)
+   ...
+ Address 0x........ is on thread 1's stack
 
 ---------------------------------------------------------
 458:         SYS_kmq_setattr 3s 2m
@@ -3218,6 +3254,205 @@ Syscall param thr_kill2(sig) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
+482:            SYS_shm_open (SHM_ANON) 3s 0m
+---------------------------------------------------------
+Syscall param shm_open(path) contains uninitialised byte(s)
+   ...
+
+Syscall param shm_open(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param shm_open(mode) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+483:          SYS_shm_unlink 1s 1m
+---------------------------------------------------------
+Syscall param shm_unlink(path) contains uninitialised byte(s)
+   ...
+
+Syscall param shm_unlink(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+487:  SYS_cpuset_getaffinity 5s 1m
+---------------------------------------------------------
+Syscall param cpuset_getaffinity(level) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getaffinity(which) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getaffinity(id) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getaffinity(setsize) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getaffinity(mask) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getaffinity points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+488:  SYS_cpuset_setaffinity 5s 1m
+---------------------------------------------------------
+Syscall param cpuset_setaffinity(level) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setaffinity(which) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setaffinity(id) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setaffinity(setsize) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setaffinity(mask) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setaffinity points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+489:           SYS_faccessat 3s 1m
+---------------------------------------------------------
+Syscall param faccessat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param faccessat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param faccessat(flag) contains uninitialised byte(s)
+   ...
+
+Syscall param faccessat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+490:            SYS_fchmodat 3s 1m
+---------------------------------------------------------
+Syscall param fchmodat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param fchmodat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param fchmodat(flag) contains uninitialised byte(s)
+   ...
+
+Syscall param fchmodat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+491:            SYS_fchownat 4s 1m
+---------------------------------------------------------
+Syscall param fchownat(dfd) contains uninitialised byte(s)
+   ...
+
+Syscall param fchownat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param fchownat(owner) contains uninitialised byte(s)
+   ...
+
+Syscall param fchownat(group) contains uninitialised byte(s)
+   ...
+
+Syscall param fchownat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+552:             SYS_fstatat s4s 2m
+---------------------------------------------------------
+Syscall param fstatat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param fstatat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param fstatat(sb) contains uninitialised byte(s)
+   ...
+
+Syscall param fstatat(flag) contains uninitialised byte(s)
+   ...
+
+Syscall param fstatat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param fstatat(sb) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+494:           SYS_futimesat 3s 2m
+---------------------------------------------------------
+Syscall param futimesat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param futimesat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param futimesat(times) contains uninitialised byte(s)
+   ...
+
+Syscall param futimesat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param futimesat(times) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+495:              SYS_linkat 4s 2m
+---------------------------------------------------------
+Syscall param linkat(fd1) contains uninitialised byte(s)
+   ...
+
+Syscall param linkat(name1) contains uninitialised byte(s)
+   ...
+
+Syscall param linkat(fd2) contains uninitialised byte(s)
+   ...
+
+Syscall param linkat(name2) contains uninitialised byte(s)
+   ...
+
+Syscall param linkat(name1) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param linkat(name2) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+496:             SYS_mkdirat 3s 1m
+---------------------------------------------------------
+Syscall param mkdirat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param mkdirat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param mkdirat(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param mkdirat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 497:            SYS_mkfifoat 3s 1m
 ---------------------------------------------------------
 Syscall param mkfifoat(fd) contains uninitialised byte(s)
@@ -3232,6 +3467,172 @@ Syscall param mkfifoat(mode) contains uninitialised byte(s)
 Syscall param mkfifoat(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+498:   SYS_freebsd11_mknodat 4s 1m
+---------------------------------------------------------
+Syscall param mknodat(dfd) contains uninitialised byte(s)
+   ...
+
+Syscall param mknodat(pathname) contains uninitialised byte(s)
+   ...
+
+Syscall param mknodat(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param mknodat(dev) contains uninitialised byte(s)
+   ...
+
+Syscall param mknodat(pathname) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+499:              SYS_openat 3s 1m
+---------------------------------------------------------
+Syscall param openat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+499:              SYS_openat 4s 1m
+---------------------------------------------------------
+Syscall param openat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param openat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+500:          SYS_readlinkat 4s 2m
+---------------------------------------------------------
+Syscall param readlinkat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param readlinkat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param readlinkat(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param readlinkat(bufsize) contains uninitialised byte(s)
+   ...
+
+Syscall param readlinkat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param readlinkat(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+501:            SYS_renameat 4s 2m
+---------------------------------------------------------
+Syscall param renameat(fromfd) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat(from) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat(tofd) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat(to) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat(oldpath) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param renameat(newpath) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+502:           SYS_symlinkat 3s 2m
+---------------------------------------------------------
+Syscall param symlinkat(name1) contains uninitialised byte(s)
+   ...
+
+Syscall param symlinkat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param symlinkat(name2) contains uninitialised byte(s)
+   ...
+
+Syscall param symlinkat(name1) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param symlinkat(name2) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+503:            SYS_unlinkat 1s 1m
+---------------------------------------------------------
+Syscall param unlinkat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param unlinkat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+504:        SYS_posix_openpt 1s 1m
+---------------------------------------------------------
+Syscall param posix_openpt(oflag) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+506:            SYS_jail_get 3s 1m
+---------------------------------------------------------
+Syscall param jail_get(iov) contains uninitialised byte(s)
+   ...
+
+Syscall param jail_get(niov) contains uninitialised byte(s)
+   ...
+
+Syscall param jail_get(flags) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+507:            SYS_jail_set 3s 1m
+---------------------------------------------------------
+Syscall param jail_set(iov) contains uninitialised byte(s)
+   ...
+
+Syscall param jail_set(niov) contains uninitialised byte(s)
+   ...
+
+Syscall param jail_set(flags) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+508:         SYS_jail_remove 1s 0m
+---------------------------------------------------------
+Syscall param jail_remove(jid) contains uninitialised byte(s)
+   ...
 
 ---------------------------------------------------------
 564:             SYS_getfhat 4s 2m
