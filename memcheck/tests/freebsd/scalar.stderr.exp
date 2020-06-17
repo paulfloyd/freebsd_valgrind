@@ -4105,3 +4105,23 @@ Syscall param getfhat(fhp) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
+---------------------------------------------------------
+567:          SYS_fhreadlink 3s 2m
+---------------------------------------------------------
+Syscall param fhreadlink(fhp) contains uninitialised byte(s)
+   ...
+
+Syscall param fhreadlink(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param fhreadlink(bufsize) contains uninitialised byte(s)
+   ...
+
+Syscall param fhreadlink(fhp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param fhreadlink(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+

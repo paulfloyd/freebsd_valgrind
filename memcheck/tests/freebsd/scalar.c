@@ -1840,7 +1840,9 @@ int main(void)
     
     // fhlinkat                   566
     
-    // fhreadlink                 567
+    /* SYS_fhreadlink             567 */
+    GO(SYS_fhreadlink, "3s 2m");
+    SY(SYS_fhreadlink, x0+1, x0+1, x0+10);
 
 #endif
 

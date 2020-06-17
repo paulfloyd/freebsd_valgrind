@@ -5491,7 +5491,20 @@ POST(sys_getfhat)
 // @todo
 
 // SYS_fhreadlink	567
-//@todo
+// int fhreadlink(fhandle_t *fhp, char *buf, size_t bufsize);
+PRE(sys_fhreadlink)
+{
+   PRINT("sys_fhreadlink ( %#" FMT_REGWORD "x, %" FMT_REGWORD "x, %" FMT_REGWORD "u ", ARG1, ARG2, ARG3);
+   PRE_REG_READ3(int, "fhreadlink", vki_fhandle_t *, fhp, char *,buf, size_t, bufsize);
+   PRE_MEM_READ( "fhreadlink(fhp)", ARG1, sizeof(vki_fhandle_t));
+   PRE_MEM_WRITE("fhreadlink(buf)", ARG2, ARG3);
+}
+
+POST(sys_fhreadlink)
+{
+   POST_MEM_WRITE(ARG2, ARG3);
+}
+
 
 #endif
 
@@ -5582,7 +5595,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // 4.3 getpagesize                                      64
    GENX_(__NR_msync,            sys_msync),             // 65
-   BSDX_(__NR_vfork,            sys_fork),              // 66
+   BSDX_(__NR_vfork,            sys_vfork),             // 66
    // obsol vread                                          67
 
    // obsol vwrite                                         68
@@ -5646,7 +5659,6 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_gettimeofday,     sys_gettimeofday),      // 116
    GENXY(__NR_getrusage,        sys_getrusage),         // 117
    BSDXY(__NR_getsockopt,       sys_getsockopt),        // 118
-   // unimpl resuba                                        119
 
    GENXY(__NR_readv,            sys_readv),             // 120
    GENX_(__NR_writev,           sys_writev),            // 121
@@ -5899,7 +5911,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // freebsd 4 sigaction                                  342
    BSDXY(__NR_sigpending,       sys_sigpending),        // 343
 
-   // freebsd sigreturn                                    344
+   // freebsd 4 sigreturn                                  344
    BSDXY(__NR_sigtimedwait,     sys_sigtimedwait),      // 345
    BSDXY(__NR_sigwaitinfo,      sys_sigwaitinfo),       // 346
    BSDXY(__NR___acl_get_file,   sys___acl_get_file),    // 347
@@ -6166,7 +6178,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
 #if (FREEBSD_VERS >= FREEBSD_12)
     BSDXY(__NR_fstat,           sys_fstat),             // 551
-    BSDXY(__NR_fstatat,         sys_fstatat),           // 493
+    BSDXY(__NR_fstatat,         sys_fstatat),           // 552
     BSDXY(__NR_fhstat,          sys_fhstat),            // 553
     BSDXY(__NR_getdirentries,   sys_getdirentries),     // 554
     BSDXY(__NR_statfs,          sys_statfs),            // 555
@@ -6181,7 +6193,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_getfhat,          sys_getfhat),           // 564
     // unimp fhlink                                        565
     // unimp fhlinkat                                      566
-    // unimp fhreadlink                                    567
+    BSDXY(__NR_fhreadlink,      sys_fhreadlink),        // 567
 #endif // FREEBSD_VERS >= FREEBSD_12
    BSDX_(__NR_fake_sigreturn,   sys_fake_sigreturn),    // 1000, fake sigreturn
 
