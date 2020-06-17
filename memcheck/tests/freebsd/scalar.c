@@ -911,16 +911,14 @@ int main(void)
    // unimpl SYS_aio_write                                 256
    
    // unimpl SYS_lio_listio                                257
-   
 
-   /* @todo PJF will need ifdefs for FreeBSD11 */
    /* SYS_freebsd11_getdents      272 */
    #if (FREEBSD_VERS >= FREEBSD_12)
    GO(SYS_freebsd11_getdents, "3s 1m");
    SY(SYS_freebsd11_getdents, x0+9, x0+1, x0+2); FAIL;
 #else
-   GO(SYS_freebsd11_getdents, "3s 1m");
-   SY(SYS_freebsd11_getdents, x0+9, x0+1, x0+2); FAIL;
+   GO(SYS_getdents, "3s 1m");
+   SY(SYS_getdents, x0+9, x0+1, x0+2); FAIL;
 #endif
    
    /* SYS_lchmod                  274 */
@@ -1184,8 +1182,8 @@ int main(void)
    GO(SYS_freebsd11_kevent, "6s 3m");
    SY(SYS_freebsd11_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
 #else
-   GO(SYS_freebsd11_kevent, "6s 3m");
-   SY(SYS_freebsd11_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
+   GO(SYS_kevent, "6s 3m");
+   SY(SYS_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
 #endif
    
    /* obs __cap_get* / __cap_set* 364 to 369 */
