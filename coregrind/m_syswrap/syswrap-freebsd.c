@@ -5328,7 +5328,7 @@ PRE(sys_getdirentries)
    PRE_REG_READ4(ssize_t, "getdirentries",
                  int, fd, char *, buf,
                  size_t, nbytes,
-                 off_t, basep);
+                 off_t *, basep);
    PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
    if (ARG4)
       PRE_MEM_WRITE("getdirentries(buf)", ARG4, sizeof (vki_off_t));
