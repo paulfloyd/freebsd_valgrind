@@ -1579,8 +1579,8 @@ int main(void)
    SY(SYS_futimesat, x0, x0+1, x0+1); FAIL;
 
    /* SYS_linkat                  495 */
-   GO(SYS_linkat, "4s 2m");
-   SY(SYS_linkat, x0, x0+1, x0+1, x0); FAIL;
+   GO(SYS_linkat, "5s 2m");
+   SY(SYS_linkat, x0, x0+1, x0, x0+1, x0); FAIL;
 
    /* SYS_mkdirat                 496 */
    GO(SYS_mkdirat, "3s 1m");

@@ -3420,7 +3420,7 @@ Syscall param futimesat(times) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-495:              SYS_linkat 4s 2m
+495:              SYS_linkat 5s 2m
 ---------------------------------------------------------
 Syscall param linkat(fd1) contains uninitialised byte(s)
    ...
@@ -3432,6 +3432,9 @@ Syscall param linkat(fd2) contains uninitialised byte(s)
    ...
 
 Syscall param linkat(name2) contains uninitialised byte(s)
+   ...
+
+Syscall param linkat(flag) contains uninitialised byte(s)
    ...
 
 Syscall param linkat(name1) points to unaddressable byte(s)
