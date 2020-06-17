@@ -1860,15 +1860,6 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
       add_segment(&seg);
    }
 
-   /*
-    * @todo PJF for FreeBSD MAP_GUARD I may need to use the below
-    * init_resvn as well as (but not instead of?) the above increase
-    * to suggested_clstack_end
-    *
-    * A couple of the massif regtests fail because of this
-    *
-    */
-
    /* Create a 1-page reservation at the notional initial
       client/valgrind boundary.  This isn't strictly necessary, but
       because the advisor does first-fit and starts searches for

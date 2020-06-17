@@ -119,10 +119,12 @@ typedef
       Int o_arg3;
       Int o_arg4;
       Int o_arg5;
-      // @todo PJF this can either be a register or a stack
+      // arg6 can either be a register or a stack
+      // depending on whether the syscall is 'syscall/__syscall'
+      // or any other syscall
       union {
-      Int o_arg6;
-      Int s_arg6;
+         Int o_arg6;
+         Int s_arg6;
       };
       Int s_arg7;
       Int s_arg8;
