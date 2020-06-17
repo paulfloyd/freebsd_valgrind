@@ -7,6 +7,7 @@
 #include <ufs/ufs/quota.h>
 #include <machine/sysarch.h>
 #include <sys/mman.h>
+#include <sys/sem.h>
 #include <mqueue.h>
 #include "scalar.h"
 #include "config.h"
@@ -785,7 +786,7 @@ int main(void)
 
    /* SYS_freebsd7___semctl       220 */
    GO(SYS_freebsd7___semctl, "(IPC_INFO) 4s 1m");
-   SY(SYS_freebsd7___semctl, x0, x0, x0+3, x0+1); FAIL;
+   SY(SYS_freebsd7___semctl, x0, x0, x0+IPC_INFO, x0+1); FAIL;
    
    GO(SYS_freebsd7___semctl, "(bogus cmd) 3s 0m");
    SY(SYS_freebsd7___semctl, x0, x0, x0-1, x0+1); FAIL;
@@ -891,6 +892,7 @@ int main(void)
    // @todo PJF causes Valgrind to crash 
    //GO(SYS_minherit, "3s 1m");
    //SY(SYS_minherit, x0, x0+1024, x0+1); SUCC;
+   GO(SYS_minherit, "@todo");
  
    /* SYS_rfork                   251 */
    GO(SYS_rfork, "other");
@@ -1364,6 +1366,7 @@ int main(void)
    GO(SYS_thr_exit, "1s 1m");
    SY(SYS_thr_exit, x0+1); FAIL;
    */
+   GO(SYS_thr_exit, "other");
 
    /* SYS_thr_self                432 */
    GO(SYS_thr_self, "1s 1m");
@@ -1638,126 +1641,195 @@ int main(void)
    
    // closefrom                   509
    
-   /*
+   /* SYS___semctl                510 */
+   GO(SYS___semctl, "(IPC_INFO) 4s 1m");
+   SY(SYS___semctl, x0, x0, x0+IPC_INFO, x0+1); FAIL;
    
-   BSDXY(__NR___semctl,         sys___semctl),          // 510
+   GO(SYS___semctl, "(other) 3s 0m");
+   SY(SYS___semctl, x0, x0, x0+3000, x0+1); FAIL;
    
-   // msgctl                      511
+   /* msgctl                      511 */
    
-   BSDXY(__NR_shmctl,           sys_shmctl),            // 512
+   /* SYS_shmctl                  512 */
+   GO(SYS_shmctl, "3s 1m");
+   SY(SYS_shmctl, x0, x0+IPC_STAT, x0+1); FAIL;
    
-    // lpathconf                                           513
+    /* lpathconf                  513 */
     
     // 514 is obsolete cap_new
     
-    // __cap_rights_get                                    515
+    // __cap_rights_get           515
     
-    BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
+    /* SYS_cap_enter              516 */
+    GO(SYS_cap_enter, "other");    
     
-    // cap_getmode                                         517
+    // cap_getmode                517
     
-    BSDXY(__NR_pdfork,          sys_pdfork),            // 518
+    /* SYS_pdfork                 518 */
+    /* @todo PJF needs separate test */
+    /*
+    GO(SYS_pdfork, "2s 1m");
+    SY(SYS_pdfork, x0+1, x0); FAIL;
+    */
+    GO(SYS_pdfork, "@todo");
     
-    BSDX_(__NR_pdkill,          sys_pdkill),            // 519
+    /* SYS_pdkill                 519 */
+    GO(SYS_pdkill, "2s 0m");
+    SY(SYS_pdkill, x0-1, x0+1000); FAIL;
     
-    BSDXY(__NR_pdgetpid,        sys_pdgetpid),          // 520
+    /* SYS_pdgetpid               520 */
+    GO(SYS_pdgetpid, "2s 1m");
+    SY(SYS_pdgetpid, x0+100000, x0+1); FAIL;
     
-    BSDXY(__NR_pselect,         sys_pselect),           // 522
+    /* SYS_pselect                522 */
+    /* @todo PJF check output, add variations */
+    GO(SYS_pselect, "6s 5m");
+    SY(SYS_pselect, x0, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
     
-    // getloginclass                                       523
+    // getloginclass              523
     
-    // setloginclass                                       524
+    // setloginclass              524
     
-    // rctl_get_racct                                      525
+    // rctl_get_racct             525
     
-    // rctl_get_rules                                      526
+    // rctl_get_rules             526
     
-    // rctl_get_limits                                     527
+    // rctl_get_limits            527
     
-    // rctl_add_rule                                       528
+    // rctl_add_rule              528
     
-    // rctl_remove_rule                                    529
+    // rctl_remove_rule           529
     
-    BSDX_(__NR_posix_fallocate, sys_posix_fallocate),   // 530
-    BSDX_(__NR_posix_fadvise,   sys_posix_fadvise),     // 531
-    // wait6                                               532
-    BSDXY(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
-    BSDXY(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
-    // cap_ioctls_get                                      535
-    BSDX_(__NR_cap_fcntls_limit, sys_cap_fcntls_limit), // 536
-    // cap_fcntls_get                                      537
-    // bindat                                              538
-    // connectat                                           539
-    // chflagsat                                           540
-   BSDXY(__NR_accept4,          sys_accept4),           // 541
-   BSDXY(__NR_pipe2,            sys_pipe2),             // 542
-    // aio_mlock                                           543
-    // procctl                                             544
+    /* SYS_posix_fallocate        530 */
+    GO(SYS_posix_fallocate, "3s 0m");
+    SY(SYS_posix_fallocate, x0+99999, x0+10, x0+20); SUCC;
+    
+    /* SYS_posix_fadvise          531 */
+    GO(SYS_posix_fadvise, "4s 0m");
+    SY(SYS_posix_fadvise, x0+99999, x0+10, x0+20, x0); SUCC;
+    
+    // wait6                      532
+    
+    /* SYS_cap_rights_limit       533 */
+    GO(SYS_cap_rights_limit, "2s 1m");
+    SY(SYS_cap_rights_limit, x0+99999, x0+1); FAIL;
+    
+    /* SYS_cap_ioctls_limit       534 */
+    GO(SYS_cap_ioctls_limit, "3s 1m");
+    SY(SYS_cap_ioctls_limit, x0+99999, x0+1, x0+2); FAIL;
+    
+    // cap_ioctls_get             535
+    
+    /* SYS_cap_fcntls_limit       536 */
+    GO(SYS_cap_fcntls_limit, "2s 0m");
+    SY(SYS_cap_fcntls_limit, x0+99999, x0); FAIL;
+    
+    // cap_fcntls_get             537
+    
+    // bindat                     538
+    
+    // connectat                  539
+    
+    // chflagsat                  540
+    
+   /* SYS_accept4                 541 */
+   /* @todo PJF only 1m ??? */
+   GO(SYS_accept4, "4s 2m");
+   SY(SYS_accept4, x0+999999, x0+1, x0+1, x0); FAIL;
+   
+   /* SYS_pipe2                   542 */
+   GO(SYS_pipe2, "2s 1m");
+   SY(SYS_pipe2, x0+1, x0); FAIL;
+   
+    // aio_mlock                  543
+    
+    // procctl                    544
 
     // 544 is the highest syscall on FreeBSD 9
 
 #if (FREEBSD_VERS >= FREEBSD_10)
 
-   BSDXY(__NR_ppoll,            sys_ppoll),             // 545
-    // futimens                                            546
-    // utimensat                                           547
+   /* SYS_ppoll                   545 */
+   /* @todo PJF check output */
+   GO(SYS_ppoll, "4s 2m");
+   SY(SYS_ppoll, x0+1, x0+1, x0+1, x0+1); FAIL;
+   
+    // futimens                   546
+    
+    // utimensat                  547
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
 #if (FREEBSD_VERS >= FREEBSD_11)
 
-
     // 548 is obsolete numa_getaffinity
+    
     // 549 is obsolete numa_setaffinity
-    // fdatasync                                           550
+    
+    // fdatasync                  550
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
-*/
-
 #if (FREEBSD_VERS >= FREEBSD_12)
 
-/*
-   BSDXY(__NR_fstat,            sys_fstat),             // 551
+   /* SYS_fstat                   551 */
+   GO(SYS_fstat, "2s 1m");
+   SY(SYS_fstat, x0+99999999, x0+1); FAIL;
    
-    // fstatat                                             552
+   /* SYS_fstatat                552 */
+   GO(SYS_fstatat, "4s 2m");
+   SY(SYS_fstatat, x0+99999999, x0+1, x0+1, x0); FAIL;
     
-    // fhstat                                              553
+   /* SYS_fhstat                 553 */
+   GO(SYS_fhstat, "2s 2m");
+   SY(SYS_fhstat, x0+1, x0+1); FAIL;
     
-    // getdirentries                                       554
+   /* SYS_getdirentries           554 */
+   /* @todo PJF only 1m ??? */
+   GO(SYS_getdirentries, "4s 2m");
+   SY(SYS_getdirentries, x0+999999, x0+1, x0+1, x0+1); FAIL;
     
-    BSDXY(__NR_statfs,          sys_statfs),            // 555
+   /* SYS_statfs                 555 */
+   GO(SYS_statfs, "2s 2m");
+   SY(SYS_statfs, x0+1, x0+1); FAIL;
     
-    BSDXY(__NR_fstatfs,         sys_fstatfs),           // 556
+   /* SYS_fstatfs                556 */
+   GO(SYS_fstatfs, "2s 1m");
+   SY(SYS_fstatfs, x0+999999, x0+1); FAIL;
     
-    BSDXY(__NR_getfsstat,       sys_getfsstat),         // 557
+   /* SYS_getfsstat              557 */
+   GO(SYS_getfsstat, "3s 1m");
+   SY(SYS_getfsstat, x0+999999, x0+1, x0); FAIL;
     
-    BSDXY(__NR_fhstatfs,        sys_fhstatfs),          // 558
+   /* SYS_fhstatfs               558 */
+   GO(SYS_fhstatfs, "2s 2m");
+   SY(SYS_fhstatfs, x0+1, x0+1); FAIL;
     
-    // mknodat                                             559
+   /* SYS_mknodat                559 */
+   GO(SYS_mknodat, "4s 1m");
+   SY(SYS_mknodat, x0+999999, x0+1, x0, x0); FAIL;
     
-    // kevent                                              560
+   /* SYS_kevent                 560 */
+   GO(SYS_kevent, "6s 3m");
+   SY(SYS_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
+
+    // cpuset_getdomain           561
     
-    // cpuset_getdomain                                    561
+    // cpuset_setdomain           562
     
-    // cpuset_setdomain                                    562
-    
-   BSDXY(__NR_getrandom,        sys_getrandom),         // 563
-   
-   */
+   /* SYS_getrandom               563 */
+   GO(SYS_getrandom, "3s 1m");
+   SY(SYS_getrandom, x0+1, x0+1, x0); FAIL;
    
    /* SYS_getfhat                 564 */
    GO(SYS_getfhat, "4s 2m");
    SY(SYS_getfhat, x0, x0, x0, x0); FAIL;
-   
-   /*
     
-    // fhlink                                              565
+    // fhlink                     565
     
-    // fhlinkat                                            566
+    // fhlinkat                   566
     
-    // fhreadlink                                          567
-*/
+    // fhreadlink                 567
 
 #endif
 

@@ -5044,12 +5044,17 @@ PRE(sys_pselect)
              ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG5 != 0)
       PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
+
+   // @todo PJF is newsigmask allowed to be NULL?
+   // this won't generate any warnings if it is
+
    if (ARG6 != 0) {
       vki_sigset_t *ss = (vki_sigset_t *)(Addr)ARG6;
       PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(*ss) );
       if (!ML_(safe_to_deref)(ss, sizeof(*ss))) {
          ARG6 = 1; /* Something recognisable to POST() hook. */
       } else {
+         // copy sigmask with VGKILL cleared
          vki_sigset_t *adjss;
          adjss = VG_(malloc)("syswrap.pselect.1", sizeof(*adjss));
          *adjss = *ss;
