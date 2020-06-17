@@ -31,6 +31,7 @@ EXTRA_DIST = \
 	revoke.stderr.exp \
 	scalar.vgtest \
 	scalar.stderr.exp \
+		scalar.stderr.exp-x86 \
 	capsicum.vgtest \
 	capsicum.stderr.exp \
 	getfh.vgtest \
