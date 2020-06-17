@@ -463,7 +463,6 @@ COREGRIND_SOURCES_COMMON = \
 	m_syswrap/syswrap-linux.c \
 	m_syswrap/syswrap-linux-variants.c \
 	m_syswrap/syswrap-freebsd.c \
-	m_syswrap/syswrap-freebsd-variants.c \
 	m_syswrap/syswrap-darwin.c \
 	m_syswrap/syswrap-solaris.c \
 	m_syswrap/syswrap-x86-linux.c \
