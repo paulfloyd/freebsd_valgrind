@@ -83,7 +83,6 @@ int main(void)
    SY(SYS_fchdir, x0-1); FAIL;
 
    /* SYS_freebsd11_mknod         14 */
-   /* @todo PJF will need conditional compilation */
 #if (FREEBSD_VERS >= FREEBSD_12)
    GO(SYS_freebsd11_mknod, "3s 1m");
    SY(SYS_freebsd11_mknod, x0, x0, x0); FAIL;
@@ -1593,8 +1592,13 @@ int main(void)
    SY(SYS_mkfifoat, x0, x0, x0); FAIL;
    
    /* SYS_freebsd11_mknodat       498 */
+#if (FREEBSD_VERS >= FREEBSD_12)   
    GO(SYS_freebsd11_mknodat, "4s 1m");
    SY(SYS_freebsd11_mknodat, x0, x0+1, x0, x0); FAIL;
+#else
+   GO(SYS_mknodat, "4s 1m");
+   SY(SYS_mknodat, x0, x0+1, x0, x0); FAIL;
+#endif
    
    /* SYS_openat                  499 */
    GO(SYS_openat, "3s 1m");
