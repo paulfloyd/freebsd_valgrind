@@ -35,7 +35,7 @@ memcheck/tests/sigaltstack               (stderr)
 ```
 
 descr_belowsp - missing info on stack guard in message. See issue #101  
-gone_abrt_xml - differences in signal details. See issue 102  
+gone_abrt_xml - differences in signal details. See issue #102  
 sigaltstack - SIGSEGV handling issue  
 
 ## Tests in massif, callgrind and cachegrind, dhat
@@ -59,36 +59,32 @@ mcsigpass - guest getting SIGSEGV rather than SIGBUS
 
 # Tests in helgrind
 
-Helgrind - 94.5% good
+Helgrind - 96.4% good
 
 ```
-== 55 tests, 3 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 55 tests, 2 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 helgrind/tests/pth_cond_destroy_busy     (stderr)
-helgrind/tests/pth_destroy_cond          (stderr)
 helgrind/tests/tls_threads               (stderr)
 
 ```
 pth_cond_destroy_busy - one missing race error  
-pth_destroy_cond - ???  
-tls_threads - don't understand the error message  
+tls_threads - a test for Linux-specific detection of tls which can't work on FreeBSD  
 
 # Tests in drd
 
-DRD - 96.8% good
+DRD - 97.6% good
 
 ```
-== 126 tests, 4 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
+== 126 tests, 3 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 drd/tests/dlopen                         (stdout)
 drd/tests/dlopen                         (stderr)
 drd/tests/sigaltstack                    (stderr)
 drd/tests/std_list                       (stderr)
-drd/tests/tc23_bogus_condwait            (stderr)
 ```
 
-dlopen - crash, may need som hooks for dlopen. See issue #57  
+dlopen - crash, may need some hooks for dlopen. See issue #57  
 sigaltstack - sigsegv in guest  
 std_list - lots of errors related to setlocale  
-tc23_bogus_condwait - several exp files, not sure which is relevant for FreeBSD  
 
 ## amd64 / clang results
 
@@ -114,7 +110,6 @@ memcheck/tests/origin5-bz2               (stderr)
 memcheck/tests/signal2                   (stdout)
 memcheck/tests/signal2                   (stderr)
 memcheck/tests/varinfo6                  (stderr)
-
 ```
 
 insn-pmovmskb - See issue #47  
@@ -138,7 +133,7 @@ Not fully analyzed.
 
 ## x86 / GCC results
 
-As amd66 / gcc except the following extra failures
+As amd64 / gcc except the following extra failures
 
 # Tests in none
 
@@ -147,15 +142,15 @@ none/tests/fdleak_cmesg
 none/tests/manytreads
 none/tests/pth_self_kill_15_other
 ```
-
-Not analyzed.  
-Several amd64 testcases failing because of signals either don't run or pass.
+fdleak_cmesg - looks like a minor issue filtering open file descriptors  
+manythreads - aborts after running 8192 threads, see issue #85  
+th_self_kill_15_other - signal mask / exitreason problem, see issue #83
 
 # Tests in memcheck
 
 ## x86 / clang results
 
-46 fails. Ongoing analysis.
+39 fails. Ongoing analysis.
 
 ## Linux results
 
