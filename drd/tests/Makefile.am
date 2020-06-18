@@ -349,6 +349,7 @@ EXTRA_DIST =                                        \
 	tc23_bogus_condwait.stderr.exp-linux-ppc    \
 	tc23_bogus_condwait.stderr.exp-darwin-x86   \
 	tc23_bogus_condwait.stderr.exp-darwin-amd64 \
+	tc23_bogus_condwait.stderr.exp-freebsd      \
 	tc23_bogus_condwait.vgtest                  \
 	tc24_nonzero_sem.stderr.exp                 \
 	tc24_nonzero_sem.vgtest                     \
