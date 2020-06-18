@@ -3845,6 +3845,37 @@ Syscall param pipe2(fildes) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+544:             SYS_procctl (PROC_REAP_RELEASE) 3s 0m
+---------------------------------------------------------
+Syscall param procctl(idtype) contains uninitialised byte(s)
+   ...
+
+Syscall param procctl(id) contains uninitialised byte(s)
+   ...
+
+Syscall param procctl(cmd) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+544:             SYS_procctl (PROC_REAP_GETPIDS) 4s 1m
+---------------------------------------------------------
+Syscall param procctl(idtype) contains uninitialised byte(s)
+   ...
+
+Syscall param procctl(id) contains uninitialised byte(s)
+   ...
+
+Syscall param procctl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param procctl(arg) contains uninitialised byte(s)
+   ...
+
+Syscall param procctl(arg) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 545:               SYS_ppoll 4s 2m
 ---------------------------------------------------------
 Syscall param ppoll(fds) contains uninitialised byte(s)
@@ -3878,6 +3909,48 @@ Syscall param ppoll(tsp) points to unaddressable byte(s)
 Syscall param ppoll(newsigmask) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+546:            SYS_futimens 2s 1m
+---------------------------------------------------------
+Syscall param futimens(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param futimens(times) contains uninitialised byte(s)
+   ...
+
+Syscall param utimensat(times) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+547:           SYS_utimensat 4s 2m
+---------------------------------------------------------
+Syscall param utimensat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param utimensat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param utimensat(times) contains uninitialised byte(s)
+   ...
+
+Syscall param utimensat(flag) contains uninitialised byte(s)
+   ...
+
+Syscall param utimensat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param utimensat(times) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+550:           SYS_fdatasync 1s 0m
+---------------------------------------------------------
+Syscall param fdatasync(fd) contains uninitialised byte(s)
+   ...
 
 ---------------------------------------------------------
 551:               SYS_fstat 2s 1m
@@ -4067,6 +4140,60 @@ Syscall param kevent(timeout) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+561:    SYS_cpuset_getdomain 6s 2m
+---------------------------------------------------------
+Syscall param cpuset_getdomain(level) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(which) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(id) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(setsize) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(mask) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(policy) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(mask) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param cpuset_getdomain(policy) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+562:    SYS_cpuset_setdomain 6s 1m
+---------------------------------------------------------
+Syscall param cpuset_getdomain(level) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(which) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(id) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(setsize) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(mask) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(policy) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getdomain(mask) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 563:           SYS_getrandom 3s 1m
 ---------------------------------------------------------
 Syscall param getrandom(buf) contains uninitialised byte(s)
@@ -4102,6 +4229,43 @@ Syscall param getfhat(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 Syscall param getfhat(fhp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+565:              SYS_fhlink 2s 2m
+---------------------------------------------------------
+Syscall param fhlink(fhp) contains uninitialised byte(s)
+   ...
+
+Syscall param fhlink(to) contains uninitialised byte(s)
+   ...
+
+Syscall param fhlink(fhp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param fhlink(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+566:            SYS_fhlinkat 3s 2m
+---------------------------------------------------------
+Syscall param fhlinkat(fhp) contains uninitialised byte(s)
+   ...
+
+Syscall param fhlinkat(tofd) contains uninitialised byte(s)
+   ...
+
+Syscall param fhlinkat(to) contains uninitialised byte(s)
+   ...
+
+Syscall param fhlinkat(fhp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param fhreadlink(to) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

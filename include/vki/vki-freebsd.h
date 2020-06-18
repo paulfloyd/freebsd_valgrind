@@ -183,6 +183,7 @@ typedef __vki_mqd_t		vki_mqd_t;
 typedef __vki_u_register_t	vki_u_register_t;
 typedef __vki_uid_t		vki_uid_t;
 typedef __vki_useconds_t	vki_useconds_t;
+typedef int             __vki_cpuwhich_t;
 
 typedef __vki_vm_offset_t	vki_vm_offset_t;
 typedef __vki_vm_ooffset_t	vki_vm_ooffset_t;
@@ -1395,6 +1396,26 @@ union vki_semun {
 
 #define VKI_WNOHANG	0x00000001
 
+typedef enum vki_idtype
+{
+   P_PID,
+   P_PPID,
+   P_PGID,
+   P_SID,
+   P_CID,
+   P_UID,
+   P_GID,
+   P_ALL,
+   P_LWPID,
+   P_TASKID,
+   P_PROJID,
+   P_POOLID,
+   P_JAILID,
+   P_CTID,
+   P_CPUID,
+   P_PSETID
+} vki_idtype_t;
+
 //----------------------------------------------------------------------
 // From sys/mman.h
 //----------------------------------------------------------------------
@@ -2175,6 +2196,83 @@ typedef struct vki_cap_rights       vki_cap_rights_t;
 #define VKI_Q_SETQUOTA      0x0800
 #define VKI_Q_SETUSE        0x0900
 #define VKI_Q_GETQUOTASIZE  0x0A00
+
+//----------------------------------------------------------------------
+// From sys/_bitset.h
+//----------------------------------------------------------------------
+
+#define	VKI_BITSET_BITS		(sizeof(long) * 8)
+
+#define	vki__howmany(x, y)	(((x) + ((y) - 1)) / (y))
+
+#define	vki__bitset_words(_s)	(vki__howmany(_s, VKI_BITSET_BITS))
+
+#define	VKI_BITSET_DEFINE(t, _s)						\
+struct t {								\
+        long    __bits[vki__bitset_words((_s))];				\
+}
+
+//----------------------------------------------------------------------
+// From sys/_domainset.h
+//----------------------------------------------------------------------
+
+#define	VKI_DOMAINSET_MAXSIZE	256
+
+#ifndef	VKI_DOMAINSET_SETSIZE
+#define	VKI_DOMAINSET_SETSIZE	VKI_DOMAINSET_MAXSIZE
+#endif
+
+VKI_BITSET_DEFINE(vki_domainset, VKI_DOMAINSET_SETSIZE);
+
+typedef struct vki_domainset vki_domainset_t;
+
+//----------------------------------------------------------------------
+// From sys/procctl.h
+//----------------------------------------------------------------------
+
+#define PROC_SPROTECT           1
+#define PROC_REAP_ACQUIRE       2
+#define PROC_REAP_RELEASE       3
+#define PROC_REAP_STATUS        4
+#define PROC_REAP_GETPIDS       5
+#define PROC_REAP_KILL          6
+#define PROC_TRACE_CTL          7
+#define PROC_TRACE_STATUS       8
+#define PROC_TRAPCAP_CTL        9
+#define PROC_TRAPCAP_STATUS     10
+#define PROC_PDEATHSIG_CTL      11
+#define PROC_PDEATHSIG_STATUS   12
+#define PROC_ASLR_CTL           13
+#define PROC_ASLR_STATUS        14
+#define PROC_STACKGAP_CTL       17
+#define PROC_STACKGAP_STATUS    18
+
+
+struct vki_procctl_reaper_status {
+   u_int   rs_flags;
+   u_int   rs_children;
+   u_int   rs_descendants;
+   vki_pid_t   rs_reaper;
+   vki_pid_t   rs_pid;
+   u_int   rs_pad0[15];
+};
+
+struct vki_procctl_reaper_pidinfo;
+
+struct vki_procctl_reaper_pids {
+   u_int   rp_count;
+   u_int   rp_pad0[15];
+   struct vki_procctl_reaper_pidinfo *rp_pids;
+};
+
+struct vki_procctl_reaper_kill {
+   int     rk_sig;
+   u_int   rk_flags;
+   vki_pid_t   rk_subtree;
+   u_int   rk_killed;
+   vki_pid_t   rk_fpid;
+   u_int   rk_pad0[15];
+};
 
 // See syswrap-freebsd.c PRE/POST(sys_ioctl)
 #if 0

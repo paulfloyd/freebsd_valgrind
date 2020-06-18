@@ -115,6 +115,408 @@ void VG_(cleanup_thread) ( ThreadArchState *arch )
 #define PRE(name)       DEFN_PRE_TEMPLATE(freebsd, name)
 #define POST(name)      DEFN_POST_TEMPLATE(freebsd, name)
 
+// SYS_sysarch	165
+// int sysarch(int number, void *args);
+PRE(sys_sysarch)
+{
+   ThreadState *tst;
+   void **p;
+
+   PRINT("sys_sysarch ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2);
+   PRE_REG_READ2(int, "sysarch", int, number, void *, args);
+   switch (ARG1) {
+   case VKI_AMD64_SET_FSBASE:
+      PRINT("sys_amd64_set_fsbase ( %#lx )", ARG2);
+
+      if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
+         /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
+         tst = VG_(get_ThreadState)(tid);
+         p = (void**)ARG2;
+         tst->arch.vex.guest_FS_CONST = (UWord)*p;
+         /* "do" the syscall ourselves; the kernel never sees it */
+         SET_STATUS_Success2((ULong)*p, tst->arch.vex.guest_RDX );
+      } else {
+         // ????
+         SET_STATUS_Failure( VKI_EINVAL );
+      }
+
+      break;
+   case VKI_AMD64_GET_FSBASE:
+      PRINT("sys_amd64_get_fsbase ( %#lx )", ARG2);
+      PRE_MEM_WRITE( "amd64_get_fsbase(basep)", ARG2, sizeof(void *) );
+      if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
+         /* "do" the syscall ourselves; the kernel never sees it */
+         tst = VG_(get_ThreadState)(tid);
+         SET_STATUS_Success2( tst->arch.vex.guest_FS_CONST, tst->arch.vex.guest_RDX );
+      } else {
+         SET_STATUS_Failure( VKI_EINVAL );
+      }
+      break;
+   case VKI_AMD64_GET_XFPUSTATE:
+      PRINT("sys_amd64_get_xfpustate ( %#lx )", ARG2);
+      PRE_MEM_WRITE( "amd64_get_xfpustate(basep)", ARG2, sizeof(void *) );
+
+      // @todo PJF need a test for this
+      // I think that it will fail in the POST if ARG2 is not a valid pointer
+      
+      /* "do" the syscall ourselves; the kernel never sees it */
+      tst = VG_(get_ThreadState)(tid);
+      SET_STATUS_Success2( tst->arch.vex.guest_FPTAG[0], tst->arch.vex.guest_FPTAG[0] );
+      break;
+   default:
+      VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %lu", ARG1);
+      VG_(unimplemented) ("unhandled sysarch cmd");
+      break;
+   }
+}
+
+POST(sys_sysarch)
+{
+   switch (ARG1) {
+   case VKI_AMD64_SET_FSBASE:
+      break;
+   case VKI_AMD64_GET_FSBASE:
+      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      break;
+   case VKI_AMD64_GET_XFPUSTATE:
+      POST_MEM_WRITE( ARG2, sizeof(void *) );
+      break;
+   default:
+      break;
+   }
+}
+
+// freebsd6_pread 173
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_pread)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_freebsd6_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %lu, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRE_REG_READ5(ssize_t, "read",
+                 unsigned int, fd, char *, buf, vki_size_t, count,
+                 int, pad, unsigned long, off);
+
+   if (!ML_(fd_allowed)(ARG1, "freebsd6_pread", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+   else
+      PRE_MEM_WRITE( "freebsd6_pread(buf)", ARG2, ARG3 );
+}
+
+POST(sys_freebsd6_pread)
+{
+   vg_assert(SUCCESS);
+   POST_MEM_WRITE( ARG2, RES );
+}
+#endif
+
+// freebsd6_pwrite 174
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_pwrite)
+{
+   Bool ok;
+   *flags |= SfMayBlock;
+   PRINT("sys_freebsd6_pwrite ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", SARG1, ARG2, ARG3, ARG4, ARG5);
+   PRE_REG_READ5(ssize_t, "write",
+                 unsigned int, fd, const char *, buf, vki_size_t, count,
+                 int, pad, unsigned long, off);
+   /* check to see if it is allowed.  If not, try for an exemption from
+      --sim-hints=enable-outer (used for self hosting). */
+   ok = ML_(fd_allowed)(ARG1, "freebsd6_pwrite", tid, False);
+   if (!ok && ARG1 == 2/*stderr*/
+           && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
+      ok = True;
+   if (!ok)
+      SET_STATUS_Failure( VKI_EBADF );
+   else
+      PRE_MEM_READ( "freebsd6_pwrite(buf)", ARG2, ARG3 );
+}
+#endif
+
+// SYS_freebsd6_mmap 197
+#if (FREEBSD_VERS <= FREEBSD_10)
+/* This is here because on x86 the off_t is passed in 2 regs. Don't ask about pad.  */
+
+/* caddr_t mmap(caddr_t addr, size_t len, int prot, int flags, int fd, int pad, off_t pos); */
+/*              ARG1           ARG2       ARG3      ARG4       ARG5    ARG6     ARG7 */
+
+PRE(sys_freebsd6_mmap)
+{
+   SysRes r;
+
+   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, pad%" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
+         ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7 );
+   PRE_REG_READ7(long, "mmap",
+                 char *, addr, unsigned long, len, int, prot,  int, flags,
+                 int, fd,  int, pad, unsigned long, pos);
+
+   r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG7 );
+   SET_STATUS_from_SysRes(r);
+}
+#endif
+
+// freebsd6_lseek 199
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_lseek)
+{
+   PRINT("sys_freebsd6_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
+   PRE_REG_READ4(long, "lseek",
+                 unsigned int, fd, int, pad, unsigned long, offset,
+                 unsigned int, whence);
+}
+#endif
+
+// freebsd6_truncate 200
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_truncate)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG3);
+   PRE_REG_READ3(long, "truncate",
+                 const char *, path, int, pad, unsigned int, length);
+   PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
+}
+#endif
+
+// freebsd6_ftruncate 201
+#if (FREEBSD_VERS <= FREEBSD_10)
+PRE(sys_freebsd6_ftruncate)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG3);
+   PRE_REG_READ3(long, "ftruncate", unsigned int, fd, int, pad,
+        unsigned int, length);
+}
+#endif
+
+// SYS_rfork 251
+// pid_t rfork(int flags);
+PRE(sys_rfork)
+{
+   PRINT("sys_rfork ( %#" FMT_REGWORD "x )", ARG1 );
+   PRE_REG_READ1(long, "rfork", int, flags);
+
+   VG_(message)(Vg_UserMsg, "rfork() not implemented");
+   VG_(unimplemented)("Valgrind does not support rfork().");
+
+   SET_STATUS_Failure(VKI_ENOSYS);
+}
+
+// SYS_sendfile	393
+// int sendfile(int fd, int s, off_t offset, size_t nbytes,
+//         struct sf_hdtr *hdtr, off_t *sbytes, int flags);
+PRE(sys_sendfile)
+{
+   *flags |= SfMayBlock;
+
+   PRINT("sys_sendfile ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %lu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+         SARG1,SARG2,ARG3,ARG4,ARG5,ARG6,SARG7);
+   PRE_REG_READ7(int, "sendfile",
+                 int, fd, int, s, vki_off_t, offset, size_t, nbytes,
+                 void *, hdtr, vki_off_t *, sbytes, int, flags);
+
+   if (ARG6 != 0)
+      PRE_MEM_WRITE( "sendfile(offset)", ARG6, sizeof(vki_off_t) );
+}
+
+POST(sys_sendfile)
+{
+   if (ARG6 != 0 ) {
+      POST_MEM_WRITE( ARG6, sizeof( vki_off_t ) );
+   }
+}
+
+// SYS_sigreturn	417
+// int sigreturn(const ucontext_t *scp);
+PRE(sys_sigreturn)
+{
+   PRINT("sys_sigreturn ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "sigreturn",
+                 struct vki_ucontext *, ucp);
+
+   PRE_MEM_READ( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
+   PRE_MEM_WRITE( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
+}
+
+static void restore_mcontext(ThreadState *tst, struct vki_mcontext *sc)
+{
+   tst->arch.vex.guest_RAX     = sc->rax;
+   tst->arch.vex.guest_RCX     = sc->rcx;
+   tst->arch.vex.guest_RDX     = sc->rdx;
+   tst->arch.vex.guest_RBX     = sc->rbx;
+   tst->arch.vex.guest_RBP     = sc->rbp;
+   tst->arch.vex.guest_RSP     = sc->rsp;
+   tst->arch.vex.guest_RSI     = sc->rsi;
+   tst->arch.vex.guest_RDI     = sc->rdi;
+   tst->arch.vex.guest_R8      = sc->r8;
+   tst->arch.vex.guest_R9      = sc->r9;
+   tst->arch.vex.guest_R10     = sc->r10;
+   tst->arch.vex.guest_R11     = sc->r11;
+   tst->arch.vex.guest_R12     = sc->r12;
+   tst->arch.vex.guest_R13     = sc->r13;
+   tst->arch.vex.guest_R14     = sc->r14;
+   tst->arch.vex.guest_R15     = sc->r15;
+   tst->arch.vex.guest_RIP     = sc->rip;
+   /*
+    * XXX: missing support for other flags.
+    */
+   if (sc->rflags & 0x0001)
+      LibVEX_GuestAMD64_put_rflag_c(1, &tst->arch.vex);
+   else
+      LibVEX_GuestAMD64_put_rflag_c(0, &tst->arch.vex);
+}
+
+static void fill_mcontext(ThreadState *tst, struct vki_mcontext *sc)
+{
+   sc->rax = tst->arch.vex.guest_RAX;
+   sc->rcx = tst->arch.vex.guest_RCX;
+   sc->rdx = tst->arch.vex.guest_RDX;
+   sc->rbx = tst->arch.vex.guest_RBX;
+   sc->rbp = tst->arch.vex.guest_RBP;
+   sc->rsp = tst->arch.vex.guest_RSP;
+   sc->rsi = tst->arch.vex.guest_RSI;
+   sc->rdi = tst->arch.vex.guest_RDI;
+   sc->r8 = tst->arch.vex.guest_R8;
+   sc->r9 = tst->arch.vex.guest_R9;
+   sc->r10 = tst->arch.vex.guest_R10;
+   sc->r11 = tst->arch.vex.guest_R11;
+   sc->r12 = tst->arch.vex.guest_R12;
+   sc->r13 = tst->arch.vex.guest_R13;
+   sc->r14 = tst->arch.vex.guest_R14;
+   sc->r15 = tst->arch.vex.guest_R15;
+   sc->rip = tst->arch.vex.guest_RIP;
+/*
+   Not supported by VEX.
+   sc->cs = tst->arch.vex.guest_CS;
+   sc->ss = tst->arch.vex.guest_SS;
+   sc->ds = tst->arch.vex.guest_DS;
+   sc->es = tst->arch.vex.guest_ES;
+   sc->fs = tst->arch.vex.guest_FS;
+   sc->gs = tst->arch.vex.guest_GS;
+*/
+   sc->rflags = LibVEX_GuestAMD64_get_rflags(&tst->arch.vex);
+/*
+   not yet.
+   VG_(memcpy)(&sc->fpstate, fpstate, sizeof(*fpstate));
+*/
+   sc->fpformat = VKI_FPFMT_NODEV;
+   sc->ownedfp = VKI_FPOWNED_NONE;
+   sc->len = sizeof(*sc);
+   VG_(memset)(sc->spare2, 0, sizeof(sc->spare2));
+}
+
+// SYS_getcontext	421
+// int getcontext(ucontext_t *ucp);
+PRE(sys_getcontext)
+{
+   ThreadState* tst;
+   struct vki_ucontext *uc;
+
+   PRINT("sys_getcontext ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "getcontext",
+                 struct vki_ucontext *, ucp);
+   PRE_MEM_WRITE( "getcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
+   uc = (struct vki_ucontext *)ARG1;
+   if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext))) {
+      SET_STATUS_Failure(VKI_EINVAL);
+      return;
+   }
+   tst = VG_(get_ThreadState)(tid);
+   fill_mcontext(tst, &uc->uc_mcontext);
+   uc->uc_mcontext.rax = 0;
+   uc->uc_mcontext.rdx = 0;
+   uc->uc_mcontext.rflags &= ~0x0001;	/* PSL_C */
+   uc->uc_sigmask = tst->sig_mask;
+   VG_(memset)(uc->__spare__, 0, sizeof(uc->__spare__));
+   SET_STATUS_Success(0);
+}
+
+// SYS_setcontext	422
+// int setcontext(const ucontext_t *ucp);
+PRE(sys_setcontext)
+{
+   ThreadState* tst;
+   struct vki_ucontext *uc;
+
+   PRINT("sys_setcontext ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(long, "setcontext",
+                 struct vki_ucontext *, ucp);
+
+   PRE_MEM_READ( "setcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
+   PRE_MEM_WRITE( "setcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
+
+   vg_assert(VG_(is_valid_tid)(tid));
+   vg_assert(tid >= 1 && tid < VG_N_THREADS);
+   vg_assert(VG_(is_running_thread)(tid));
+
+   tst = VG_(get_ThreadState)(tid);
+   uc = (struct vki_ucontext *)ARG1;
+   if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext)) || uc->uc_mcontext.len != sizeof(uc->uc_mcontext)) {
+      SET_STATUS_Failure(VKI_EINVAL);
+      return;
+   }
+
+   restore_mcontext(tst, &uc->uc_mcontext);
+   tst->sig_mask = uc->uc_sigmask;
+
+   /* Tell the driver not to update the guest state with the "result",
+      and set a bogus result to keep it happy. */
+   *flags |= SfNoWriteResult;
+   SET_STATUS_Success(0);
+
+   /* Check to see if some any signals arose as a result of this. */
+   *flags |= SfPollAfter;
+}
+
+// SYS_swapcontext	423
+// int swapcontext(ucontext_t *oucp, const ucontext_t *ucp);
+PRE(sys_swapcontext)
+{
+   struct vki_ucontext *ucp, *oucp;
+   ThreadState* tst;
+
+   PRINT("sys_swapcontext ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
+   PRE_REG_READ2(long, "swapcontext",
+                 struct vki_ucontext *, oucp, struct vki_ucontext *, ucp);
+
+   PRE_MEM_READ( "swapcontext(ucp)", ARG2, sizeof(struct vki_ucontext) );
+   PRE_MEM_WRITE( "swapcontext(oucp)", ARG1, sizeof(struct vki_ucontext) );
+
+   oucp = (struct vki_ucontext *)ARG1;
+   ucp = (struct vki_ucontext *)ARG2;
+   if (!ML_(safe_to_deref)(oucp, sizeof(struct vki_ucontext)) ||
+       !ML_(safe_to_deref)(ucp, sizeof(struct vki_ucontext)) ||
+       ucp->uc_mcontext.len != sizeof(ucp->uc_mcontext)) {
+      SET_STATUS_Failure(VKI_EINVAL);
+      return;
+   }
+   tst = VG_(get_ThreadState)(tid);
+
+   /*
+    * Save the context.
+    */
+   fill_mcontext(tst, &oucp->uc_mcontext);
+   oucp->uc_mcontext.rax = 0;
+   oucp->uc_mcontext.rdx = 0;
+   oucp->uc_mcontext.rflags &= ~0x0001;	/* PSL_C */
+   oucp->uc_sigmask = tst->sig_mask;
+   VG_(memset)(oucp->__spare__, 0, sizeof(oucp->__spare__));
+
+   /*
+    * Switch to new one.
+    */
+   restore_mcontext(tst, &ucp->uc_mcontext);
+   tst->sig_mask = ucp->uc_sigmask;
+
+   /* Tell the driver not to update the guest state with the "result",
+      and set a bogus result to keep it happy. */
+   *flags |= SfNoWriteResult;
+   SET_STATUS_Success(0);
+
+   /* Check to see if some any signals arose as a result of this. */
+   *flags |= SfPollAfter;
+}
+
+// SYS_thr_new	455
 // int thr_new(struct thr_param *param, int param_size);
 PRE(sys_thr_new)
 {
@@ -132,7 +534,7 @@ PRE(sys_thr_new)
    PRE_REG_READ2(int, "thr_new",
                  struct thr_param *, param,
                  int, param_size);
-   
+
    PRE_MEM_READ( "thr_new(param)", ARG1, offsetof(struct vki_thr_param, spare));
    if (!ML_(safe_to_deref)( (void*)ARG1, offsetof(struct vki_thr_param, spare))) {
       SET_STATUS_Failure( VKI_EFAULT );
@@ -243,26 +645,228 @@ fail:
    SET_STATUS_from_SysRes(res);
 }
 
-PRE(sys_rfork)
+// SYS_pread	475
+// ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
+PRE(sys_pread)
 {
-   PRINT("sys_rfork ( %#" FMT_REGWORD "x )", ARG1 );
-   PRE_REG_READ1(long, "rfork", int, flags);
+   *flags |= SfMayBlock;
+   PRINT("sys_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "pread",
+                 unsigned int, fd, char *, buf, vki_size_t, count,
+                 unsigned long, off);
 
-   VG_(message)(Vg_UserMsg, "rfork() not implemented");
-   VG_(unimplemented)("Valgrind does not support rfork().");
-
-   SET_STATUS_Failure(VKI_ENOSYS);
+   if (!ML_(fd_allowed)(ARG1, "read", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+   else
+      PRE_MEM_WRITE( "pread(buf)", ARG2, ARG3 );
 }
 
-// int sigreturn(const ucontext_t *scp);
-PRE(sys_sigreturn)
+POST(sys_pread)
 {
-   PRINT("sys_sigreturn ( %#" FMT_REGWORD "x )", ARG1);
-   PRE_REG_READ1(int, "sigreturn",
-                 struct vki_ucontext *, ucp);
+   vg_assert(SUCCESS);
+   POST_MEM_WRITE( ARG2, RES );
+}
 
-   PRE_MEM_READ( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
-   PRE_MEM_WRITE( "sigreturn(ucp)", ARG1, sizeof(struct vki_ucontext) );
+// SYS_pwrite	476
+// ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
+PRE(sys_pwrite)
+{
+   Bool ok;
+   *flags |= SfMayBlock;
+   PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "pwrite",
+                 int, fd, const char *, buf, vki_size_t, nbytes,
+                 vki_off_t, offset);
+   /* check to see if it is allowed.  If not, try for an exemption from
+      --sim-hints=enable-outer (used for self hosting). */
+   ok = ML_(fd_allowed)(ARG1, "pwrite", tid, False);
+   if (!ok && ARG1 == 2/*stderr*/
+           && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
+      ok = True;
+   if (!ok)
+      SET_STATUS_Failure( VKI_EBADF );
+   else
+      PRE_MEM_READ( "pwrite(buf)", ARG2, ARG3 );
+}
+
+// SYS_mmap	477
+/* FreeBSD-7 introduces a "regular" version of mmap etc. */
+// void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);
+PRE(sys_mmap)
+{
+   SysRes r;
+
+   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
+         ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6 );
+   PRE_REG_READ6(void *, "mmap",
+                 void *, addr, size_t, len, int, prot,  int, flags,
+                 int, fd,  off_t, offset);
+
+   r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6 );
+   SET_STATUS_from_SysRes(r);
+}
+
+// SYS_lseek 478
+// off_t lseek(int fildes, off_t offset, int whence);
+PRE(sys_lseek)
+{
+   PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
+   PRE_REG_READ3(long, "lseek",
+                 unsigned int, fd, unsigned long, offset,
+                 unsigned int, whence);
+}
+
+// SYS_truncate	479
+// int truncate(const char *path, off_t length);
+PRE(sys_truncate)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);
+   PRE_REG_READ2(long, "truncate",
+                 const char *, path, unsigned long, length);
+   PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
+}
+
+// SYS_ftruncate	480
+// int ftruncate(int fd, off_t length);
+PRE(sys_ftruncate)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
+   PRE_REG_READ2(long, "ftruncate", unsigned int, fd,
+        unsigned long, length);
+}
+
+// SYS_posix_fallocate 530
+// int posix_fallocate(int fd, off_t offset, off_t len);
+PRE(sys_posix_fallocate)
+{
+   PRINT("sys_posix_fallocate ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",
+         SARG1, ARG2, ARG3);
+   PRE_REG_READ3(long, "posix_fallocate",
+                 int, fd, vki_uint32_t, offset,
+                 vki_uint32_t, len);
+}
+
+// SYS_posix_fadvise	531
+// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
+PRE(sys_posix_fadvise)
+{
+   PRINT("sys_posix_fadvise ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "d )",
+         SARG1, ARG2, ARG3, SARG4);
+   PRE_REG_READ4(long, "posix_fadvise",
+                int, fd, off_t, offset,
+                off_t, len,
+                int, advice);
+   // @todo PJF advice can be 0 to 5 inclusive
+}
+
+// the man page is inconsistent for the last argument
+// See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=247386
+// will stick to 'arg' for simplicity
+
+// SYS_procctl	544
+// int procctl(idtype_t idtype, id_t id, int cmd, void *arg);
+PRE(sys_procctl)
+{
+   PRINT("sys_procctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD"d, %#" FMT_REGWORD "x )",
+         SARG1, ARG2, SARG3, ARG4);
+   PRE_REG_READ4(int, "procctl", vki_idtype_t, idtype, vki_id_t, id, int, cmd, void *, arg);
+   switch (ARG3)
+   {
+   case PROC_ASLR_CTL:
+   case PROC_SPROTECT:
+   case PROC_TRACE_CTL:
+   case PROC_TRAPCAP_CTL:
+   case PROC_PDEATHSIG_CTL:
+   case PROC_STACKGAP_CTL:
+      PRE_MEM_READ("procctl(arg)", ARG4, sizeof(int));
+      break;
+   case PROC_REAP_STATUS:
+      PRE_MEM_READ("procctl(arg)", ARG4, sizeof(struct vki_procctl_reaper_status));
+      break;
+   case PROC_REAP_GETPIDS:
+      PRE_MEM_READ("procctl(arg)", ARG4, sizeof(struct vki_procctl_reaper_pids));
+      break;
+   case PROC_REAP_KILL:
+      /* The first three fields are reads
+       * int rk_sig;
+       * u_int rk_flags;
+       * pid_t rk_subtree;
+       *
+       * The last two fields are writes
+       * u_int rk_killed;
+       * pid_t	rk_fpid;
+       *
+       * There is also a pad field
+       */
+      PRE_MEM_READ("procctl(arg)", ARG4, sizeof(int) + sizeof(u_int) + sizeof(vki_pid_t));
+      PRE_MEM_WRITE("procctl(arg)", ARG4+offsetof(struct vki_procctl_reaper_kill, rk_killed), sizeof(u_int) + sizeof(vki_pid_t));
+      break;
+   case PROC_ASLR_STATUS:
+   case PROC_PDEATHSIG_STATUS:
+   case PROC_STACKGAP_STATUS:
+   case PROC_TRAPCAP_STATUS:
+   case PROC_TRACE_STATUS:
+      PRE_MEM_WRITE("procctl(arg)", ARG4, sizeof(int));
+   case PROC_REAP_ACQUIRE:
+   case PROC_REAP_RELEASE:
+   default:
+      break;
+   }
+}
+
+POST(sys_procctl)
+{
+   switch (ARG3)
+   {
+   case PROC_REAP_KILL:
+      POST_MEM_WRITE(ARG4+offsetof(struct vki_procctl_reaper_kill, rk_killed), sizeof(u_int) + sizeof(vki_pid_t));
+      break;
+   case PROC_ASLR_STATUS:
+   case PROC_PDEATHSIG_STATUS:
+   case PROC_STACKGAP_STATUS:
+   case PROC_TRAPCAP_STATUS:
+   case PROC_TRACE_STATUS:
+      POST_MEM_WRITE(ARG4, sizeof(int));
+   default:
+      break;
+   }
+}
+
+// SYS_cpuset_getdomain	561
+// int cpuset_getdomain(cpulevel_t level, cpuwhich_t which, id_t id,
+//                      size_t setsize, domainset_t *mask, int *policy);
+PRE(sys_cpuset_getdomain)
+{
+   PRINT("sys_cpuset_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1, SARG2, ARG3, ARG4, ARG5, ARG6);
+   PRE_REG_READ6(int, "cpuset_getdomain",
+                 cpulevel_t, level, cpuwhich_t, which, id_t, id,
+                 size_t, setsize, vki_domainset_t *, mask, int *, policy);
+   // man page says that setsize (ARG4) "is usually provided by calling sizeof(mask)"
+   PRE_MEM_WRITE( "cpuset_getdomain(mask)", ARG5, ARG4 );
+   PRE_MEM_WRITE( "cpuset_getdomain(policy)", ARG6, sizeof(int) );
+}
+
+POST(sys_cpuset_getdomain)
+{
+   POST_MEM_WRITE(ARG5, ARG4 );
+   POST_MEM_WRITE(ARG6, sizeof(int) );
+}
+
+// SYS_cpuset_setdomain	562
+// int cuset_setdomain(cpulevel_t level, cpuwhich_t which, id_t id,
+//                     size_t setsize, const domainset_t *mask, int policy);
+PRE(sys_cpuset_setdomain)
+{
+   PRINT("sys_cpuget_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+         SARG1, SARG2, ARG3, ARG4, ARG5, SARG6);
+   PRE_REG_READ6(int, "cpuset_getdomain",
+                 cpulevel_t, level, cpuwhich_t, which, id_t, id,
+                 size_t, setsize, vki_domainset_t *, mask, int, policy);
+   // man page says that setsize (ARG4) "is usually provided by calling sizeof(mask)"
+   PRE_MEM_READ( "cpuset_getdomain(mask)", ARG5, ARG4 );
 }
 
 PRE(sys_fake_sigreturn)
@@ -292,7 +896,7 @@ PRE(sys_fake_sigreturn)
       SET_STATUS_Failure(VKI_EINVAL);
       return;
    }
- 
+
    /* This is only so that the EIP is (might be) useful to report if
       something goes wrong in the sigreturn */
    ML_(fixup_guest_state_to_restart_syscall)(&tst->arch);
@@ -323,472 +927,6 @@ PRE(sys_fake_sigreturn)
    *flags |= SfPollAfter;
 }
 
-static void restore_mcontext(ThreadState *tst, struct vki_mcontext *sc)
-{
-   tst->arch.vex.guest_RAX     = sc->rax;
-   tst->arch.vex.guest_RCX     = sc->rcx;
-   tst->arch.vex.guest_RDX     = sc->rdx;
-   tst->arch.vex.guest_RBX     = sc->rbx;
-   tst->arch.vex.guest_RBP     = sc->rbp;
-   tst->arch.vex.guest_RSP     = sc->rsp;
-   tst->arch.vex.guest_RSI     = sc->rsi;
-   tst->arch.vex.guest_RDI     = sc->rdi;
-   tst->arch.vex.guest_R8      = sc->r8;
-   tst->arch.vex.guest_R9      = sc->r9;
-   tst->arch.vex.guest_R10     = sc->r10;
-   tst->arch.vex.guest_R11     = sc->r11;
-   tst->arch.vex.guest_R12     = sc->r12;
-   tst->arch.vex.guest_R13     = sc->r13;
-   tst->arch.vex.guest_R14     = sc->r14;
-   tst->arch.vex.guest_R15     = sc->r15;
-   tst->arch.vex.guest_RIP     = sc->rip;
-   /*
-    * XXX: missing support for other flags.
-    */
-   if (sc->rflags & 0x0001)
-      LibVEX_GuestAMD64_put_rflag_c(1, &tst->arch.vex);
-   else
-      LibVEX_GuestAMD64_put_rflag_c(0, &tst->arch.vex);
-}
-
-static void fill_mcontext(ThreadState *tst, struct vki_mcontext *sc)
-{
-   sc->rax = tst->arch.vex.guest_RAX;
-   sc->rcx = tst->arch.vex.guest_RCX;
-   sc->rdx = tst->arch.vex.guest_RDX;
-   sc->rbx = tst->arch.vex.guest_RBX;
-   sc->rbp = tst->arch.vex.guest_RBP;
-   sc->rsp = tst->arch.vex.guest_RSP;
-   sc->rsi = tst->arch.vex.guest_RSI;
-   sc->rdi = tst->arch.vex.guest_RDI;
-   sc->r8 = tst->arch.vex.guest_R8;
-   sc->r9 = tst->arch.vex.guest_R9;
-   sc->r10 = tst->arch.vex.guest_R10;
-   sc->r11 = tst->arch.vex.guest_R11;
-   sc->r12 = tst->arch.vex.guest_R12;
-   sc->r13 = tst->arch.vex.guest_R13;
-   sc->r14 = tst->arch.vex.guest_R14;
-   sc->r15 = tst->arch.vex.guest_R15;
-   sc->rip = tst->arch.vex.guest_RIP;
-/*
-   Not supported by VEX.
-   sc->cs = tst->arch.vex.guest_CS;
-   sc->ss = tst->arch.vex.guest_SS;
-   sc->ds = tst->arch.vex.guest_DS;
-   sc->es = tst->arch.vex.guest_ES;
-   sc->fs = tst->arch.vex.guest_FS;
-   sc->gs = tst->arch.vex.guest_GS;
-*/
-   sc->rflags = LibVEX_GuestAMD64_get_rflags(&tst->arch.vex);
-/*
-   not yet.
-   VG_(memcpy)(&sc->fpstate, fpstate, sizeof(*fpstate));
-*/
-   sc->fpformat = VKI_FPFMT_NODEV;
-   sc->ownedfp = VKI_FPOWNED_NONE;
-   sc->len = sizeof(*sc);
-   VG_(memset)(sc->spare2, 0, sizeof(sc->spare2));
-}
-
-// int getcontext(ucontext_t *ucp);
-PRE(sys_getcontext)
-{
-   ThreadState* tst;
-   struct vki_ucontext *uc;
-
-   PRINT("sys_getcontext ( %#" FMT_REGWORD "x )", ARG1);
-   PRE_REG_READ1(int, "getcontext",
-                 struct vki_ucontext *, ucp);
-   PRE_MEM_WRITE( "getcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
-   uc = (struct vki_ucontext *)ARG1;
-   if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext))) {
-      SET_STATUS_Failure(VKI_EINVAL);
-      return;
-   }
-   tst = VG_(get_ThreadState)(tid);
-   fill_mcontext(tst, &uc->uc_mcontext);
-   uc->uc_mcontext.rax = 0;
-   uc->uc_mcontext.rdx = 0;
-   uc->uc_mcontext.rflags &= ~0x0001;	/* PSL_C */
-   uc->uc_sigmask = tst->sig_mask;
-   VG_(memset)(uc->__spare__, 0, sizeof(uc->__spare__));
-   SET_STATUS_Success(0);
-}
-
-// int setcontext(const ucontext_t *ucp);
-PRE(sys_setcontext)
-{
-   ThreadState* tst;
-   struct vki_ucontext *uc;
-
-   PRINT("sys_setcontext ( %#" FMT_REGWORD "x )", ARG1);
-   PRE_REG_READ1(long, "setcontext",
-                 struct vki_ucontext *, ucp);
-
-   PRE_MEM_READ( "setcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
-   PRE_MEM_WRITE( "setcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
-
-   vg_assert(VG_(is_valid_tid)(tid));
-   vg_assert(tid >= 1 && tid < VG_N_THREADS);
-   vg_assert(VG_(is_running_thread)(tid));
-
-   tst = VG_(get_ThreadState)(tid);
-   uc = (struct vki_ucontext *)ARG1;
-   if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext)) || uc->uc_mcontext.len != sizeof(uc->uc_mcontext)) {
-      SET_STATUS_Failure(VKI_EINVAL);
-      return;
-   }
- 
-   restore_mcontext(tst, &uc->uc_mcontext);
-   tst->sig_mask = uc->uc_sigmask;
-
-   /* Tell the driver not to update the guest state with the "result",
-      and set a bogus result to keep it happy. */
-   *flags |= SfNoWriteResult;
-   SET_STATUS_Success(0);
-
-   /* Check to see if some any signals arose as a result of this. */
-   *flags |= SfPollAfter;
-}
-
-PRE(sys_swapcontext)
-{
-   struct vki_ucontext *ucp, *oucp;
-   ThreadState* tst;
-
-   PRINT("sys_swapcontext ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
-   PRE_REG_READ2(long, "swapcontext",
-                 struct vki_ucontext *, oucp, struct vki_ucontext *, ucp);
-
-   PRE_MEM_READ( "swapcontext(ucp)", ARG2, sizeof(struct vki_ucontext) );
-   PRE_MEM_WRITE( "swapcontext(oucp)", ARG1, sizeof(struct vki_ucontext) );
-
-   oucp = (struct vki_ucontext *)ARG1;
-   ucp = (struct vki_ucontext *)ARG2;
-   if (!ML_(safe_to_deref)(oucp, sizeof(struct vki_ucontext)) ||
-       !ML_(safe_to_deref)(ucp, sizeof(struct vki_ucontext)) ||
-       ucp->uc_mcontext.len != sizeof(ucp->uc_mcontext)) {
-      SET_STATUS_Failure(VKI_EINVAL);
-      return;
-   }
-   tst = VG_(get_ThreadState)(tid);
-
-   /*
-    * Save the context.
-    */
-   fill_mcontext(tst, &oucp->uc_mcontext);
-   oucp->uc_mcontext.rax = 0;
-   oucp->uc_mcontext.rdx = 0;
-   oucp->uc_mcontext.rflags &= ~0x0001;	/* PSL_C */
-   oucp->uc_sigmask = tst->sig_mask;
-   VG_(memset)(oucp->__spare__, 0, sizeof(oucp->__spare__));
-
-   /*
-    * Switch to new one.
-    */
-   restore_mcontext(tst, &ucp->uc_mcontext);
-   tst->sig_mask = ucp->uc_sigmask;
-
-   /* Tell the driver not to update the guest state with the "result",
-      and set a bogus result to keep it happy. */
-   *flags |= SfNoWriteResult;
-   SET_STATUS_Success(0);
-
-   /* Check to see if some any signals arose as a result of this. */
-   *flags |= SfPollAfter;
-}
-
-#if (FREEBSD_VERS <= FREEBSD_10)
-/* This is here because on x86 the off_t is passed in 2 regs. Don't ask about pad.  */
-
-/* caddr_t mmap(caddr_t addr, size_t len, int prot, int flags, int fd, int pad, off_t pos); */
-/*              ARG1           ARG2       ARG3      ARG4       ARG5    ARG6     ARG7 */
-
-PRE(sys_freebsd6_mmap)
-{
-   SysRes r;
-
-   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, pad%" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
-         ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7 );
-   PRE_REG_READ7(long, "mmap",
-                 char *, addr, unsigned long, len, int, prot,  int, flags,
-                 int, fd,  int, pad, unsigned long, pos);
-
-   r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG7 );
-   SET_STATUS_from_SysRes(r);
-}
-#endif
-
-/* FreeBSD-7 introduces a "regular" version of mmap etc. */
-// void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);
-PRE(sys_mmap)
-{
-   SysRes r;
-
-   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x)",
-         ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6 );
-   PRE_REG_READ6(void *, "mmap",
-                 void *, addr, size_t, len, int, prot,  int, flags,
-                 int, fd,  off_t, offset);
-
-   r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6 );
-   SET_STATUS_from_SysRes(r);
-}
-
-#if (FREEBSD_VERS <= FREEBSD_10)
-PRE(sys_freebsd6_lseek)
-{
-   PRINT("sys_freebsd6_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
-   PRE_REG_READ4(long, "lseek",
-                 unsigned int, fd, int, pad, unsigned long, offset,
-                 unsigned int, whence);
-}
-#endif
-
-PRE(sys_lseek)
-{
-   PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "lseek",
-                 unsigned int, fd, unsigned long, offset,
-                 unsigned int, whence);
-}
-
-#if (FREEBSD_VERS <= FREEBSD_10)
-PRE(sys_freebsd6_pread)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_freebsd6_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %lu, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
-   PRE_REG_READ5(ssize_t, "read",
-                 unsigned int, fd, char *, buf, vki_size_t, count,
-                 int, pad, unsigned long, off);
-
-   if (!ML_(fd_allowed)(ARG1, "freebsd6_pread", tid, False))
-      SET_STATUS_Failure( VKI_EBADF );
-   else
-      PRE_MEM_WRITE( "freebsd6_pread(buf)", ARG2, ARG3 );
-}
-
-POST(sys_freebsd6_pread)
-{
-   vg_assert(SUCCESS);
-   POST_MEM_WRITE( ARG2, RES );
-}
-#endif
-
-PRE(sys_pread)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_pread ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
-   PRE_REG_READ4(ssize_t, "pread",
-                 unsigned int, fd, char *, buf, vki_size_t, count,
-                 unsigned long, off);
-
-   if (!ML_(fd_allowed)(ARG1, "read", tid, False))
-      SET_STATUS_Failure( VKI_EBADF );
-   else
-      PRE_MEM_WRITE( "pread(buf)", ARG2, ARG3 );
-}
-
-POST(sys_pread)
-{
-   vg_assert(SUCCESS);
-   POST_MEM_WRITE( ARG2, RES );
-}
-
-#if (FREEBSD_VERS <= FREEBSD_10)
-PRE(sys_freebsd6_pwrite)
-{
-   Bool ok;
-   *flags |= SfMayBlock;
-   PRINT("sys_freebsd6_pwrite ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", SARG1, ARG2, ARG3, ARG4, ARG5);
-   PRE_REG_READ5(ssize_t, "write",
-                 unsigned int, fd, const char *, buf, vki_size_t, count,
-                 int, pad, unsigned long, off);
-   /* check to see if it is allowed.  If not, try for an exemption from
-      --sim-hints=enable-outer (used for self hosting). */
-   ok = ML_(fd_allowed)(ARG1, "freebsd6_pwrite", tid, False);
-   if (!ok && ARG1 == 2/*stderr*/
-           && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
-      ok = True;
-   if (!ok)
-      SET_STATUS_Failure( VKI_EBADF );
-   else
-      PRE_MEM_READ( "freebsd6_pwrite(buf)", ARG2, ARG3 );
-}
-#endif
-
-PRE(sys_pwrite)
-{
-   Bool ok;
-   *flags |= SfMayBlock;
-   PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
-   PRE_REG_READ4(ssize_t, "pwrite",
-                 int, fd, const char *, buf, vki_size_t, nbytes,
-                 vki_off_t, offset);
-   /* check to see if it is allowed.  If not, try for an exemption from
-      --sim-hints=enable-outer (used for self hosting). */
-   ok = ML_(fd_allowed)(ARG1, "pwrite", tid, False);
-   if (!ok && ARG1 == 2/*stderr*/
-           && SimHintiS(SimHint_enable_outer, VG_(clo_sim_hints)))
-      ok = True;
-   if (!ok)
-      SET_STATUS_Failure( VKI_EBADF );
-   else
-      PRE_MEM_READ( "pwrite(buf)", ARG2, ARG3 );
-}
-
-#if (FREEBSD_VERS <= FREEBSD_10)
-PRE(sys_freebsd6_ftruncate)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG3);
-   PRE_REG_READ3(long, "ftruncate", unsigned int, fd, int, pad,
-		  unsigned int, length);
-}
-#endif
-
-PRE(sys_ftruncate)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2);
-   PRE_REG_READ2(long, "ftruncate", unsigned int, fd,
-		  unsigned long, length);
-}
-
-#if (FREEBSD_VERS <= FREEBSD_10)
-PRE(sys_freebsd6_truncate)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG3);
-   PRE_REG_READ3(long, "truncate",
-                 const char *, path, int, pad, unsigned int, length);
-   PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
-}
-#endif
-
-PRE(sys_truncate)
-{
-   *flags |= SfMayBlock;
-   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(long, "truncate",
-                 const char *, path, unsigned long, length);
-   PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
-}
-
-// int sysarch(int number, void *args);
-PRE(sys_sysarch)
-{
-   ThreadState *tst;
-   void **p;
-
-   PRINT("sys_sysarch ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2);
-   PRE_REG_READ2(int, "sysarch", int, number, void *, args);
-   switch (ARG1) {
-   case VKI_AMD64_SET_FSBASE:
-      PRINT("sys_amd64_set_fsbase ( %#lx )", ARG2);
-
-      if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
-         /* On FreeBSD, the syscall loads the %gs selector for us, so do it now. */
-         tst = VG_(get_ThreadState)(tid);
-         p = (void**)ARG2;
-         tst->arch.vex.guest_FS_CONST = (UWord)*p;
-         /* "do" the syscall ourselves; the kernel never sees it */
-         SET_STATUS_Success2((ULong)*p, tst->arch.vex.guest_RDX );
-      } else {
-         // ????
-         SET_STATUS_Failure( VKI_EINVAL );
-      }
-
-      break;
-   case VKI_AMD64_GET_FSBASE:
-      PRINT("sys_amd64_get_fsbase ( %#lx )", ARG2);
-      PRE_MEM_WRITE( "amd64_get_fsbase(basep)", ARG2, sizeof(void *) );
-      if (ML_(safe_to_deref)((void**)ARG2, sizeof(void*))) {
-         /* "do" the syscall ourselves; the kernel never sees it */
-         tst = VG_(get_ThreadState)(tid);
-         SET_STATUS_Success2( tst->arch.vex.guest_FS_CONST, tst->arch.vex.guest_RDX );
-      } else {
-         SET_STATUS_Failure( VKI_EINVAL );
-      }
-      break;
-   case VKI_AMD64_GET_XFPUSTATE:
-      PRINT("sys_amd64_get_xfpustate ( %#lx )", ARG2);
-      PRE_MEM_WRITE( "amd64_get_xfpustate(basep)", ARG2, sizeof(void *) );
-
-      // @todo PJF need a test for this
-      // I think that it will fail in the POST if ARG2 is not a valid pointer
-      
-      /* "do" the syscall ourselves; the kernel never sees it */
-      tst = VG_(get_ThreadState)(tid);
-      SET_STATUS_Success2( tst->arch.vex.guest_FPTAG[0], tst->arch.vex.guest_FPTAG[0] );
-      break;
-   default:
-      VG_(message) (Vg_UserMsg, "unhandled sysarch cmd %lu", ARG1);
-      VG_(unimplemented) ("unhandled sysarch cmd");
-      break;
-   }
-}
-
-POST(sys_sysarch)
-{
-   switch (ARG1) {
-   case VKI_AMD64_SET_FSBASE:
-      break;
-   case VKI_AMD64_GET_FSBASE:
-      POST_MEM_WRITE( ARG2, sizeof(void *) );
-      break;
-   case VKI_AMD64_GET_XFPUSTATE:
-      POST_MEM_WRITE( ARG2, sizeof(void *) );
-      break;
-   default:
-      break;
-   }
-}
-
-// int sendfile(int fd, int s, off_t offset, size_t nbytes,
-//         struct sf_hdtr *hdtr, off_t *sbytes, int flags);
-PRE(sys_sendfile)
-{
-   *flags |= SfMayBlock;
-
-   PRINT("sys_sendfile ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %lu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
-         SARG1,SARG2,ARG3,ARG4,ARG5,ARG6,SARG7);
-   PRE_REG_READ7(int, "sendfile",
-                 int, fd, int, s, vki_off_t, offset, size_t, nbytes,
-                 void *, hdtr, vki_off_t *, sbytes, int, flags);
-
-   if (ARG6 != 0)
-      PRE_MEM_WRITE( "sendfile(offset)", ARG6, sizeof(vki_off_t) );
-}
-
-POST(sys_sendfile)
-{
-   if (ARG6 != 0 ) {
-      POST_MEM_WRITE( ARG6, sizeof( vki_off_t ) );
-   }
-}
-
-// int posix_fallocate(int fd, off_t offset, off_t len);
-PRE(sys_posix_fallocate)
-{
-   PRINT("sys_posix_fallocate ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",
-         SARG1, ARG2, ARG3);
-   PRE_REG_READ3(long, "posix_fallocate",
-                 int, fd, vki_uint32_t, offset,
-                 vki_uint32_t, len);
-}
-
-// int posix_fadvise(int fd, off_t offset, off_t len, int advice);
-PRE(sys_posix_fadvise)
-{
-   PRINT("sys_posix_fadvise ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "d )",
-         SARG1, ARG2, ARG3, SARG4);
-   PRE_REG_READ4(long, "posix_fadvise",
-                int, fd, off_t, offset,
-                off_t, len,
-                int, advice);
-   // @todo PJF advice can be 0 to 5 inclusive
-}
 
 #undef PRE
 #undef POST

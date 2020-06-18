@@ -8,6 +8,7 @@
 #include <machine/sysarch.h>
 #include <sys/mman.h>
 #include <sys/sem.h>
+#include <sys/procctl.h>
 #include <mqueue.h>
 #include "scalar.h"
 #include "config.h"
@@ -1754,7 +1755,12 @@ int main(void)
    
     // aio_mlock                  543
     
-    // procctl                    544
+    /* SYS_procctl                544 */
+    GO(SYS_procctl, "(PROC_REAP_RELEASE) 3s 0m");
+    SY(SYS_procctl, x0+9999, x0+9999, x0+PROC_REAP_RELEASE); FAIL;
+    
+    GO(SYS_procctl, "(PROC_REAP_GETPIDS) 4s 1m");
+    SY(SYS_procctl, x0+9999, x0+9999, x0+PROC_REAP_GETPIDS, x0+1); FAIL;
 
     // 544 is the highest syscall on FreeBSD 9
 
@@ -1765,9 +1771,13 @@ int main(void)
    GO(SYS_ppoll, "4s 2m");
    SY(SYS_ppoll, x0+1, x0+1, x0+1, x0+1); FAIL;
    
-    // futimens                   546
+   /* SYS_futimens                546 */
+   GO(SYS_futimens, "2s 1m");
+   SY(SYS_futimens, x0+99999999, x0+1); FAIL;
     
-    // utimensat                  547
+   /* SYS_utimensat               547 */
+   GO(SYS_utimensat, "4s 2m");
+   SY(SYS_utimensat, x0+99999999, x0+1, x0+1, x0); FAIL;
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
@@ -1777,7 +1787,9 @@ int main(void)
     
     // 549 is obsolete numa_setaffinity
     
-    // fdatasync                  550
+   /* SYS_fdatasync              550 */
+   GO(SYS_fdatasync, "1s 0m");
+   SY(SYS_fdatasync, x0+99999999); FAIL;
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
@@ -1824,9 +1836,13 @@ int main(void)
    GO(SYS_kevent, "6s 3m");
    SY(SYS_kevent, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
 
-    // cpuset_getdomain           561
+   /* SYS_cpuset_getdomain        561 */
+   GO(SYS_cpuset_getdomain, "6s 2m");
+   SY(SYS_cpuset_getdomain, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
     
-    // cpuset_setdomain           562
+   /* SYS_cpuset_setdomain        562 */
+   GO(SYS_cpuset_setdomain, "6s 1m");
+   SY(SYS_cpuset_setdomain, x0+1, x0+2, x0+3, x0+4, x0+5, x0+6); FAIL;
     
    /* SYS_getrandom               563 */
    GO(SYS_getrandom, "3s 1m");
@@ -1836,13 +1852,17 @@ int main(void)
    GO(SYS_getfhat, "4s 2m");
    SY(SYS_getfhat, x0, x0, x0, x0); FAIL;
     
-    // fhlink                     565
+   /* SYS_fhlink                  565 */
+   GO(SYS_fhlink, "2s 2m");
+   SY(SYS_fhlink, x0+1, x0+1);
     
-    // fhlinkat                   566
-    
-    /* SYS_fhreadlink             567 */
-    GO(SYS_fhreadlink, "3s 2m");
-    SY(SYS_fhreadlink, x0+1, x0+1, x0+10);
+   /* SYS_fhlinkat                566 */
+   GO(SYS_fhlinkat, "3s 2m");
+   SY(SYS_fhlinkat, x0+1, x0+1000, x0+1);
+
+   /* SYS_fhreadlink              567 */
+   GO(SYS_fhreadlink, "3s 2m");
+   SY(SYS_fhreadlink, x0+1, x0+1, x0+10);
 
 #endif
 

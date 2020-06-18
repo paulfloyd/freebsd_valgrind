@@ -485,11 +485,11 @@ DECL_TEMPLATE(freebsd, sys_cap_fcntls_limit) // 536
 DECL_TEMPLATE(freebsd, sys_accept4) // 541
 DECL_TEMPLATE(freebsd, sys_pipe2) // 542
 // aio_mlock 543
-// procctl 544
+DECL_TEMPLATE(freebsd, sys_procctl) // 544
 DECL_TEMPLATE(freebsd, sys_ppoll) // 545
-// futimens 546
-// utimensat 547
-// fdatasync 550
+DECL_TEMPLATE(freebsd, sys_futimens) // 546
+DECL_TEMPLATE(freebsd, sys_utimensat) // 547
+DECL_TEMPLATE(freebsd, sys_fdatasync) // 550
 
 #if (FREEBSD_VERS >= FREEBSD_12)
 
@@ -503,12 +503,12 @@ DECL_TEMPLATE(freebsd, sys_getfsstat) // 557
 DECL_TEMPLATE(freebsd, sys_fhstatfs) // 558
 DECL_TEMPLATE(freebsd, sys_mknodat) // 559
 DECL_TEMPLATE(freebsd, sys_kevent) // 560
-// cpuset_getdomain 561
-// cpuset_setdomain 562
+DECL_TEMPLATE(freebsd, sys_cpuset_getdomain) // 561
+DECL_TEMPLATE(freebsd, sys_cpuset_setdomain) // 562
 DECL_TEMPLATE(freebsd, sys_getrandom) // 563
 DECL_TEMPLATE(freebsd, sys_getfhat) // 654
-// fhlink 565
-// fhlinkat 566
+DECL_TEMPLATE(freebsd, sys_fhlink) // 565
+DECL_TEMPLATE(freebsd, sys_fhlinkat) // 566
 DECL_TEMPLATE(freebsd, sys_fhreadlink) // 567
 
 DECL_TEMPLATE(freebsd, sys_fake_sigreturn)

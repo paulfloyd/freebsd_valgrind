@@ -1879,6 +1879,10 @@ POST(sys_getdirentries)
 }
 #endif
 
+// SYS_freebsd6_mmap 197
+// amd64 / x86
+
+
 // SYS___syscall	198
 // special handling
 
@@ -5205,7 +5209,7 @@ POST(sys_pipe2)
 // @todo
 
 // SYS_procctl	544
-// @todo
+// amd64 / x86
 
 // SYS_ppoll	545
 // int ppoll(struct pollfd fds[], nfds_t nfds,
@@ -5265,14 +5269,34 @@ POST(sys_ppoll)
 }
 
 // SYS_futimens	546
-// @todo
+// int futimens(int fd, const struct timespec times[2]);
+PRE(sys_futimens)
+{
+   PRINT("sys_futimens ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRE_REG_READ2(int, "futimens", int, fd, const struct timespec *, times);
+   PRE_MEM_READ("utimensat(times)", ARG2, 2*sizeof(struct vki_timespec));
+}
 
 // SYS_utimensat	547
-// @todo
+// int utimensat(int fd, const char *path, const struct timespec times[2],
+//               int flag);
+PRE(sys_utimensat)
+{
+   PRINT("sys_utimensat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+         SARG1, ARG2, ARG3, SARG4);
+   PRE_REG_READ4(int, "utimensat", int, fd, const char *,path, const struct timespec *, times,
+                 int, flag);
+   PRE_MEM_RASCIIZ("utimensat(path)", ARG2);
+   PRE_MEM_READ("utimensat(times)", ARG3, 2*sizeof(struct vki_timespec));
+}
 
 // SYS_fdatasync	550
-// @todo
-
+// int fdatasync(int fd);
+PRE(sys_fdatasync)
+{
+   PRINT("sys_fdatasync ( %" FMT_REGWORD "d )",SARG1);
+   PRE_REG_READ1(int, "fdatasync", int, fd);
+}
 
 #if (FREEBSD_VERS >= FREEBSD_12)
 // SYS_fstat	551
@@ -5417,7 +5441,6 @@ PRE(sys_mknodat)
    PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
 }
 
-
 // SYS_kevent	560
 // int kevent(int kq, const struct kevent *changelist, int nchanges,
 //            struct kevent *eventlist, int nevents,
@@ -5449,10 +5472,10 @@ POST(sys_kevent)
 }
 
 // SYS_cpuset_getdomain	561
-// @todo
+// x86 / amd64
 
 // SYS_cpuset_setdomain	562
-// @todo
+// x86 / amd64
 
 // SYS_getrandom	563
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
@@ -5485,17 +5508,31 @@ POST(sys_getfhat)
 }
 
 // SYS_fhlink	565
-// @todo
+// int fhlink(fhandle_t *fhp, const char *to);
+PRE(sys_fhlink)
+{
+   PRINT("sys_fhlink ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
+   PRE_REG_READ2(int, "fhlink", vki_fhandle_t *, fhp, const char *, to);
+   PRE_MEM_READ( "fhlink(fhp)", ARG1, sizeof(vki_fhandle_t));
+   PRE_MEM_RASCIIZ("fhlink(buf)", ARG2);
+}
 
 // SYS_fhlinkat	566
-// @todo
+// int fhlinkat(fhandle_t *fhp, int tofd, const char *to);
+PRE(sys_fhlinkat)
+{
+   PRINT("sys_fhlinkat ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "xu ", ARG1, SARG2, ARG3);
+   PRE_REG_READ3(int, "fhlinkat", vki_fhandle_t *, fhp, int, tofd, const char *, to);
+   PRE_MEM_READ( "fhlinkat(fhp)", ARG1, sizeof(vki_fhandle_t));
+   PRE_MEM_RASCIIZ("fhreadlink(to)", ARG3);
+}
 
 // SYS_fhreadlink	567
 // int fhreadlink(fhandle_t *fhp, char *buf, size_t bufsize);
 PRE(sys_fhreadlink)
 {
    PRINT("sys_fhreadlink ( %#" FMT_REGWORD "x, %" FMT_REGWORD "x, %" FMT_REGWORD "u ", ARG1, ARG2, ARG3);
-   PRE_REG_READ3(int, "fhreadlink", vki_fhandle_t *, fhp, char *,buf, size_t, bufsize);
+   PRE_REG_READ3(int, "fhreadlink", vki_fhandle_t *, fhp, char *, buf, size_t, bufsize);
    PRE_MEM_READ( "fhreadlink(fhp)", ARG1, sizeof(vki_fhandle_t));
    PRE_MEM_WRITE("fhreadlink(buf)", ARG2, ARG3);
 }
@@ -6126,74 +6163,74 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR___semctl,         sys___semctl),          // 510
    BSDXY(__NR_msgctl,           sys_msgctl),            // 511
    BSDXY(__NR_shmctl,           sys_shmctl),            // 512
-    // unimp lpathconf                                     513
-    /* 514 is obsolete cap_new */
-    BSDXY(__NR___cap_rights_get, sys_cap_rights_get),   // 515
-    BSDX_(__NR_cap_enter,       sys_cap_enter),         // 516
-    BSDXY(__NR_cap_getmode,     sys_cap_getmode),       // 517
-    BSDXY(__NR_pdfork,          sys_pdfork),            // 518
-    BSDX_(__NR_pdkill,          sys_pdkill),            // 519
-    BSDXY(__NR_pdgetpid,        sys_pdgetpid),          // 520
-    BSDXY(__NR_pselect,         sys_pselect),           // 522
-    // unimpl getloginclass                                523
-    // unimpl setloginclass                                524
-    // unimpl rctl_get_racct                               525
-    // unimpl rctl_get_rules                               526
-    // unimpl rctl_get_limits                              527
-    // unimpl rctl_add_rule                                528
-    // unimpl rctl_remove_rule                             529
-    BSDX_(__NR_posix_fallocate, sys_posix_fallocate),   // 530
-    BSDX_(__NR_posix_fadvise,   sys_posix_fadvise),     // 531
-    // unimpl wait6                                        532
-    BSDX_(__NR_cap_rights_limit, sys_cap_rights_limit), // 533
-    BSDX_(__NR_cap_ioctls_limit, sys_cap_ioctls_limit), // 534
-    // unimpl cap_ioctls_get                               535
-    BSDX_(__NR_cap_fcntls_limit, sys_cap_fcntls_limit), // 536
-    // unimpl cap_fcntls_get                               537
-    // unimpl bindat                                       538
-    // unimpl connectat                                    539
-    // unimpl chflagsat                                    540
+   // unimp lpathconf                                      513
+   /* 514 is obsolete cap_new */
+   BSDXY(__NR___cap_rights_get, sys_cap_rights_get),    // 515
+   BSDX_(__NR_cap_enter,        sys_cap_enter),         // 516
+   BSDXY(__NR_cap_getmode,      sys_cap_getmode),       // 517
+   BSDXY(__NR_pdfork,           sys_pdfork),            // 518
+   BSDX_(__NR_pdkill,           sys_pdkill),            // 519
+   BSDXY(__NR_pdgetpid,         sys_pdgetpid),          // 520
+   BSDXY(__NR_pselect,          sys_pselect),           // 522
+   // unimpl getloginclass                                 523
+   // unimpl setloginclass                                 524
+   // unimpl rctl_get_racct                                525
+   // unimpl rctl_get_rules                                526
+   // unimpl rctl_get_limits                               527
+   // unimpl rctl_add_rule                                 528
+   // unimpl rctl_remove_rule                              529
+   BSDX_(__NR_posix_fallocate,  sys_posix_fallocate),   // 530
+   BSDX_(__NR_posix_fadvise,    sys_posix_fadvise),     // 531
+   // unimpl wait6                                         532
+   BSDX_(__NR_cap_rights_limit,  sys_cap_rights_limit), // 533
+   BSDX_(__NR_cap_ioctls_limit,  sys_cap_ioctls_limit), // 534
+   // unimpl cap_ioctls_get                                535
+   BSDX_(__NR_cap_fcntls_limit,  sys_cap_fcntls_limit), // 536
+   // unimpl cap_fcntls_get                                537
+   // unimpl bindat                                        538
+   // unimpl connectat                                     539
+   // unimpl chflagsat                                     540
    BSDXY(__NR_accept4,          sys_accept4),           // 541
    BSDXY(__NR_pipe2,            sys_pipe2),             // 542
-    // unimp aio_mlock                                     543
-    // unimp procctl                                       544
+   // unimp aio_mlock                                      543
+   BSDXY(__NR_procctl,          sys_procctl),           // 544
 
-    // 544 is the highest syscall on FreeBSD 9
+   // 544 is the highest syscall on FreeBSD 9
 
 #if (FREEBSD_VERS >= FREEBSD_10)
 
    BSDXY(__NR_ppoll,            sys_ppoll),             // 545
-    // unimp futimens                                      546
-    // unimp utimensat                                     547
+   BSDX_(__NR_futimens,         sys_futimens),          // 546
+   BSDX_(__NR_utimensat,        sys_utimensat),         // 547
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
 #if (FREEBSD_VERS >= FREEBSD_11)
 
-    /* 548 is obsolete numa_getaffinity */
-    /* 549 is obsolete numa_setaffinity */
-    // unimp fdatasync                                     550
+   /* 548 is obsolete numa_getaffinity */
+   /* 549 is obsolete numa_setaffinity */
+   BSDX_(__NR_fdatasync,        sys_fdatasync),         // 550
 
 #endif // FREEBSD_VERS >= FREEBSD_11
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-    BSDXY(__NR_fstat,           sys_fstat),             // 551
-    BSDXY(__NR_fstatat,         sys_fstatat),           // 552
-    BSDXY(__NR_fhstat,          sys_fhstat),            // 553
-    BSDXY(__NR_getdirentries,   sys_getdirentries),     // 554
-    BSDXY(__NR_statfs,          sys_statfs),            // 555
-    BSDXY(__NR_fstatfs,         sys_fstatfs),           // 556
-    BSDXY(__NR_getfsstat,       sys_getfsstat),         // 557
-    BSDXY(__NR_fhstatfs,        sys_fhstatfs),          // 558
-    BSDX_(__NR_mknodat,         sys_mknodat),           // 559
-    BSDXY(__NR_kevent,          sys_kevent),            // 560
-    // unimp cpuset_getdomain                              561
-    // unimp cpuset_setdomain                              562
+   BSDXY(__NR_fstat,            sys_fstat),             // 551
+   BSDXY(__NR_fstatat,          sys_fstatat),           // 552
+   BSDXY(__NR_fhstat,           sys_fhstat),            // 553
+   BSDXY(__NR_getdirentries,    sys_getdirentries),     // 554
+   BSDXY(__NR_statfs,           sys_statfs),            // 555
+   BSDXY(__NR_fstatfs,          sys_fstatfs),           // 556
+   BSDXY(__NR_getfsstat,        sys_getfsstat),         // 557
+   BSDXY(__NR_fhstatfs,         sys_fhstatfs),          // 558
+   BSDX_(__NR_mknodat,          sys_mknodat),           // 559
+   BSDXY(__NR_kevent,           sys_kevent),            // 560
+   BSDXY(__NR_cpuset_getdomain, sys_cpuset_getdomain),  // 561
+   BSDX_(__NR_cpuset_setdomain, sys_cpuset_setdomain),  // 562
    BSDXY(__NR_getrandom,        sys_getrandom),         // 563
    BSDXY(__NR_getfhat,          sys_getfhat),           // 564
-    // unimp fhlink                                        565
-    // unimp fhlinkat                                      566
-    BSDXY(__NR_fhreadlink,      sys_fhreadlink),        // 567
+   BSDX_(__NR_fhlink,           sys_fhlink),            // 565
+   BSDX_(__NR_fhlinkat,         sys_fhlinkat),          // 566
+   BSDXY(__NR_fhreadlink,       sys_fhreadlink),        // 567
 #endif // FREEBSD_VERS >= FREEBSD_12
    BSDX_(__NR_fake_sigreturn,   sys_fake_sigreturn),    // 1000, fake sigreturn
 
