@@ -48,6 +48,7 @@ $sed \
  # Remove version
  $sed \
  -e "s/pthread_create@\*/pthread_create/" \
+ -e "s/pthread_cond_destroy@\*/pthread_cond_destroy/" \
  -e "s/pthread_cond_timedwait@\*/pthread_cond_timedwait/" |
 
 
