@@ -2,7 +2,7 @@ Syscall param extattr_get_file(attrnamespace) contains uninitialised byte(s)
    at 0x........: extattr_get_file (in /...libc...)
    by 0x........: main (extattr.c:24)
 
-Syscall param sys_extattr_get_file(data) points to unaddressable byte(s)
+Syscall param extattr_get_file(data) points to unaddressable byte(s)
    at 0x........: extattr_get_file (in /...libc...)
    by 0x........: main (extattr.c:28)
  Address 0x........ is 0 bytes inside a block of size 64 free'd
@@ -12,7 +12,7 @@ Syscall param sys_extattr_get_file(data) points to unaddressable byte(s)
    at 0x........: malloc (vg_replace_malloc.c:...)
    by 0x........: main (extattr.c:26)
 
-Syscall param sys_extattr_get_file(path) points to unaddressable byte(s)
+Syscall param extattr_get_file(path) points to unaddressable byte(s)
    at 0x........: extattr_get_file (in /...libc...)
    by 0x........: main (extattr.c:32)
  Address 0x........ is 0 bytes inside a block of size 6 free'd
@@ -23,7 +23,7 @@ Syscall param sys_extattr_get_file(path) points to unaddressable byte(s)
    ...
    by 0x........: main (extattr.c:30)
 
-Syscall param sys_extattr_get_file(attrname) points to unaddressable byte(s)
+Syscall param extattr_get_file(attrname) points to unaddressable byte(s)
    at 0x........: extattr_get_file (in /...libc...)
    by 0x........: main (extattr.c:33)
  Address 0x........ is 0 bytes inside a block of size 6 free'd
@@ -34,7 +34,8 @@ Syscall param sys_extattr_get_file(attrname) points to unaddressable byte(s)
    ...
    by 0x........: main (extattr.c:30)
 
-Syscall param extattr_get_file(nbytes) contains uninitialised byte(s)
+Syscall param extattr_get_file(data) points to unaddressable byte(s)
    at 0x........: extattr_get_file (in /...libc...)
-   by 0x........: main (extattr.c:35)
+   by 0x........: main (extattr.c:39)
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

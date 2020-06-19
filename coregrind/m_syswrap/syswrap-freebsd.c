@@ -3066,11 +3066,11 @@ PRE(sys_extattr_get_file)
     PRINT("sys_extattr_get_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
     PRE_REG_READ5(ssize_t, "extattr_get_file",
                   const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
-    PRE_MEM_RASCIIZ("sys_extattr_get_file(path)", ARG1);
-    PRE_MEM_RASCIIZ("sys_extattr_get_file(attrname)", ARG3);
+    PRE_MEM_RASCIIZ("extattr_get_file(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattr_get_file(attrname)", ARG3);
     if (ARG4)
     {
-        PRE_MEM_WRITE("sys_extattr_get_file(data)", ARG4, ARG5);
+        PRE_MEM_WRITE("extattr_get_file(data)", ARG4, ARG5);
     }
 }
 

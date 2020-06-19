@@ -32,6 +32,10 @@ int main()
     (void)extattr_get_file(badstring, EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
     (void)extattr_get_file("test1", EXTATTR_NAMESPACE_USER, badstring, buff, sizeof(buff));
     
-    extattr_get_file("test1", EXTATTR_NAMESPACE_USER, "bar", buff, uninit);
+    int* badsize = malloc(sizeof(int));
+    *badsize = sizeof(buff);
+    free(badsize);
+    
+    extattr_get_file("test1", EXTATTR_NAMESPACE_USER, "bar", buff, badsize);
 
 }
