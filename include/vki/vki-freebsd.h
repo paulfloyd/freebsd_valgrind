@@ -1146,6 +1146,12 @@ struct vki_rlimit {
 #define VKI_RLIMIT_CORE		4	/* max core file size */
 #define VKI_RLIMIT_NOFILE	8	/* max number of open files */
 
+struct vki___wrusage {
+   struct vki_rusage   wru_self;
+   struct vki_rusage   wru_children;
+};
+
+
 //----------------------------------------------------------------------
 // From sys/procfs.h
 //----------------------------------------------------------------------

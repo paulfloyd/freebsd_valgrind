@@ -59,7 +59,7 @@ int main(void)
    GO(SYS_close, "1s 0m");
    SY(SYS_close, x0-1); FAIL;
    
-   /* SYS_waitpid                 7 */
+   /* SYS_wait4                   7 */
    GO(SYS_wait4, "4s 2m");
    SY(SYS_wait4, x0, x0+1, x0, x0+1); FAIL;
    
@@ -1720,7 +1720,9 @@ int main(void)
     GO(SYS_posix_fadvise, "4s 0m");
     SY(SYS_posix_fadvise, x0+99999, x0+10, x0+20, x0); SUCC;
     
-    // wait6                      532
+    /* SYS_wait6                  532 */
+    GO(SYS_wait6, "6s 3m");
+    SY(SYS_wait6, x0, x0, x0+1, x0, x0+1, x0+1); FAIL;
     
     /* SYS_cap_rights_limit       533 */
     GO(SYS_cap_rights_limit, "2s 1m");
@@ -1730,19 +1732,29 @@ int main(void)
     GO(SYS_cap_ioctls_limit, "3s 1m");
     SY(SYS_cap_ioctls_limit, x0+99999, x0+1, x0+2); FAIL;
     
-    // cap_ioctls_get             535
+    /* cap_ioctls_get             535 */
+    GO(SYS_cap_ioctls_get, "3s 1m");
+    SY(SYS_cap_ioctls_get, x0+99999, x0+1, x0+10); FAIL;
     
     /* SYS_cap_fcntls_limit       536 */
     GO(SYS_cap_fcntls_limit, "2s 0m");
     SY(SYS_cap_fcntls_limit, x0+99999, x0); FAIL;
     
-    // cap_fcntls_get             537
+    /* SYS_cap_fcntls_get         537 */
+    GO(SYS_cap_fcntls_get, "2s 1m");
+    SY(SYS_cap_fcntls_get, x0+99999, x0+1); FAIL;
     
-    // bindat                     538
+    /* SYS_bindat                 538 */
+    GO(SYS_bindat, "4s 1m");
+    SY(SYS_bindat, x0+99999, x0+1, x0+2, x0+16); FAIL;
     
-    // connectat                  539
+    /* SYS_connectat              539 */
+    GO(SYS_connectat, "4s 1m");
+    SY(SYS_connectat, x0+99999, x0+1, x0+2, x0+16); FAIL;
     
-    // chflagsat                  540
+    /* SYS_chflagsat              540*/
+    GO(SYS_chflagsat, "4s 1m");
+    SY(SYS_chflagsat, x0+99999, x0+1, x0+2, x0+3); FAIL;
     
    /* SYS_accept4                 541 */
    /* @todo PJF only 1m ??? */
@@ -1753,7 +1765,9 @@ int main(void)
    GO(SYS_pipe2, "2s 1m");
    SY(SYS_pipe2, x0+1, x0); FAIL;
    
-    // aio_mlock                  543
+    /* SYS_aio_mlock              543*/
+    GO(SYS_aio_mlock, "1s 1m");
+    SY(SYS_aio_mlock, x0+1); FAIL;
     
     /* SYS_procctl                544 */
     GO(SYS_procctl, "(PROC_REAP_RELEASE) 3s 0m");

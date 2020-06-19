@@ -2486,15 +2486,15 @@ Syscall param extattr_get_file(data) contains uninitialised byte(s)
 Syscall param extattr_get_file(nbytes) contains uninitialised byte(s)
    ...
 
-Syscall param sys_extattr_get_file(path) points to unaddressable byte(s)
+Syscall param extattr_get_file(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param sys_extattr_get_file(attrname) points to unaddressable byte(s)
+Syscall param extattr_get_file(attrname) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param sys_extattr_get_file(data) points to unaddressable byte(s)
+Syscall param extattr_get_file(data) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -3775,6 +3775,39 @@ Syscall param posix_fadvise(advice) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
+532:               SYS_wait6 6s 3m
+---------------------------------------------------------
+Syscall param wait6(idtype) contains uninitialised byte(s)
+   ...
+
+Syscall param wait6(id) contains uninitialised byte(s)
+   ...
+
+Syscall param wait6(status) contains uninitialised byte(s)
+   ...
+
+Syscall param wait6(options) contains uninitialised byte(s)
+   ...
+
+Syscall param wait6(wrusage) contains uninitialised byte(s)
+   ...
+
+Syscall param wait6(infop) contains uninitialised byte(s)
+   ...
+
+Syscall param wait6(status) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param wait6(wrusage) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param wait6(infop) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 533:    SYS_cap_rights_limit 2s 1m
 ---------------------------------------------------------
 Syscall param cap_rights_limit(fd) contains uninitialised byte(s)
@@ -3804,6 +3837,22 @@ Syscall param cap_ioctls_limit(cmds)) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+535:      SYS_cap_ioctls_get 3s 1m
+---------------------------------------------------------
+Syscall param cap_ioctls_get(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_ioctls_get(cmds) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_ioctls_get(maxcmds) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_ioctls_get(cmds) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 536:    SYS_cap_fcntls_limit 2s 0m
 ---------------------------------------------------------
 Syscall param cap_fcntls_limit(fd) contains uninitialised byte(s)
@@ -3811,6 +3860,76 @@ Syscall param cap_fcntls_limit(fd) contains uninitialised byte(s)
 
 Syscall param cap_fcntls_limit(fcntlrights) contains uninitialised byte(s)
    ...
+
+---------------------------------------------------------
+537:      SYS_cap_fcntls_get 2s 1m
+---------------------------------------------------------
+Syscall param cap_fcntls_get(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_fcntls_get(fcntlrightsp) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_fcntls_get(fcntlrightsp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+538:              SYS_bindat 4s 1m
+---------------------------------------------------------
+Syscall param bindat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param bindat(s) contains uninitialised byte(s)
+   ...
+
+Syscall param bindat(name) contains uninitialised byte(s)
+   ...
+
+Syscall param bindat(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param bindat(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+539:           SYS_connectat 4s 1m
+---------------------------------------------------------
+Syscall param connectat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param connectat(s) contains uninitialised byte(s)
+   ...
+
+Syscall param connectat(name) contains uninitialised byte(s)
+   ...
+
+Syscall param connectat(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param connectat(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+540:           SYS_chflagsat 4s 1m
+---------------------------------------------------------
+Syscall param chflagsat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param chflagsat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param chflagsat(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param chflagsat(atflag) contains uninitialised byte(s)
+   ...
+
+Syscall param chflagsat(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
 541:             SYS_accept4 4s 2m
@@ -3841,6 +3960,16 @@ Syscall param pipe2(flags) contains uninitialised byte(s)
    ...
 
 Syscall param pipe2(fildes) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+543:           SYS_aio_mlock 1s 1m
+---------------------------------------------------------
+Syscall param aio_mlock(iocb) contains uninitialised byte(s)
+   ...
+
+Syscall param aio_mlock(iocb points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

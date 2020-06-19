@@ -761,6 +761,36 @@ PRE(sys_posix_fadvise)
    // @todo PJF advice can be 0 to 5 inclusive
 }
 
+// SYS_wait6	532
+// pid_t wait6(idtype_t idtype, id_t id, int *status, int options,
+//             struct __wrusage *wrusage, siginfo_t *infop);
+PRE(sys_wait6)
+{
+   PRINT("sys_wait6 ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1, SARG2, ARG3, SARG4, ARG5, ARG6);
+   PRE_REG_READ6(pid_t, "wait6", vki_idtype_t, idtype, vki_id_t, id, int *, status, int, options,
+                                          struct vki___wrusage *, wrusage, vki_siginfo_t *,infop);
+   PRE_MEM_WRITE("wait6(status)", ARG3, sizeof(int));
+   if (ARG5) {
+      PRE_MEM_WRITE("wait6(wrusage)", ARG5, sizeof(struct vki___wrusage));
+   }
+   if (ARG6) {
+      PRE_MEM_WRITE("wait6(infop)", ARG6, sizeof(vki_siginfo_t));
+   }
+}
+
+POST(sys_wait6)
+{
+   POST_MEM_WRITE(ARG3, sizeof(int));
+   if (ARG5) {
+      POST_MEM_WRITE(ARG5, sizeof(struct vki___wrusage));
+   }
+
+   if (ARG6) {
+      POST_MEM_WRITE(ARG5, sizeof(vki_siginfo_t));
+   }
+}
+
 // the man page is inconsistent for the last argument
 // See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=247386
 // will stick to 'arg' for simplicity

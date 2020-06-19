@@ -473,18 +473,18 @@ DECL_TEMPLATE(freebsd, sys_pselect) // 522
 // rctl_remove_rule 529
 DECL_TEMPLATE(freebsd, sys_posix_fallocate) // 530
 DECL_TEMPLATE(freebsd, sys_posix_fadvise) // 531
-// wait6 532
+DECL_TEMPLATE(freebsd, sys_wait6) // 532
 DECL_TEMPLATE(freebsd, sys_cap_rights_limit) // 533
 DECL_TEMPLATE(freebsd, sys_cap_ioctls_limit) // 534
-// get_ioctls_get 535
+DECL_TEMPLATE(freebsd, sys_cap_ioctls_get) // 535
 DECL_TEMPLATE(freebsd, sys_cap_fcntls_limit) // 536
-// cap_fcntls_get 537
-// bindat 538
-// connectat 539
-// chflagsat 540
+DECL_TEMPLATE(freebsd, sys_cap_fcntls_get) // 537
+DECL_TEMPLATE(freebsd, sys_bindat) // 538
+DECL_TEMPLATE(freebsd, sys_connectat) // 539
+DECL_TEMPLATE(freebsd, sys_chflagsat) // 540
 DECL_TEMPLATE(freebsd, sys_accept4) // 541
 DECL_TEMPLATE(freebsd, sys_pipe2) // 542
-// aio_mlock 543
+DECL_TEMPLATE(freebsd, sys_aio_mlock) // 543
 DECL_TEMPLATE(freebsd, sys_procctl) // 544
 DECL_TEMPLATE(freebsd, sys_ppoll) // 545
 DECL_TEMPLATE(freebsd, sys_futimens) // 546

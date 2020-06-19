@@ -5103,13 +5103,13 @@ POST(sys_pselect)
 // x86/amd64
 
 // SYS_wait6	532
-// @todo
+// amd64 / x86
 
 // SYS_cap_rights_limit	533
 //int cap_rights_limit(int fd, const cap_rights_t *rights);
 PRE(sys_cap_rights_limit)
 {
-   PRINT("cap_rights_limit ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRINT("sys_cap_rights_limit ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
    PRE_REG_READ2(int, "cap_rights_limit",
                  int, fd, const cap_rights_t *, rights);
    PRE_MEM_READ( "cap_rights_limit(rights)", ARG2, sizeof(struct vki_cap_rights) );
@@ -5122,14 +5122,31 @@ PRE(sys_cap_ioctls_limit)
    PRINT("cap_ioctls_limit ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(int, "cap_ioctls_limit",
                  int, fd, unsigned long*, rights, vki_size_t, ncmds);
-   if (ARG3 <= 256 )
-   {
-       PRE_MEM_READ( "cap_ioctls_limit(cmds))", ARG2, ARG3*sizeof(long) );
+   // "can be up to 256" taking that to not be inclusive
+   if (ARG3 < 256 ) {
+       PRE_MEM_READ( "cap_ioctls_limit(cmds))", ARG2, ARG3*sizeof(unsigned long) );
    }
+   // else fail?
 }
 
 // SYS_cap_ioctls_get	535
-// @todo
+// int cap_ioctls_get(int fd, unsigned long *cmds, size_t maxcmds);
+PRE(sys_cap_ioctls_get)
+{
+   PRINT("sys_cap_ioctls_get ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", SARG1, ARG2, ARG3);
+   PRE_REG_READ3(int, "cap_ioctls_get", int, fd, unsigned long *, cmds, size_t, maxcmds);
+   if (ARG3 <= 256) {
+      PRE_MEM_WRITE("cap_ioctls_get(cmds)", ARG2, ARG3*sizeof(unsigned long));
+   }
+}
+
+POST(sys_cap_ioctls_get)
+{
+   if (ARG3 < 256) {
+      PRE_MEM_WRITE("cap_ioctls_get(cmds)", ARG2, ARG3*sizeof(unsigned long));
+   }
+}
+
 
 // SYS_cap_fcntls_limit	536
 //int cap_fcntls_limit(int fd, uint32_t fcntlrights);
@@ -5141,16 +5158,49 @@ PRE(sys_cap_fcntls_limit)
 }
 
 // SYS_cap_fcntls_get	537
-// @todo
+// int cap_fcntls_get(int fd, uint32_t *fcntlrightsp);
+PRE(sys_cap_fcntls_get)
+{
+   PRINT("sys_cap_fcntls_get ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRE_REG_READ2(int, "cap_fcntls_get", int, fd, uint32_t *, fcntlrightsp);
+   PRE_MEM_WRITE("cap_fcntls_get(fcntlrightsp)", ARG2, sizeof(uint32_t));
+}
+
+POST(sys_cap_fcntls_get)
+{
+   POST_MEM_WRITE(ARG2, sizeof(uint32_t));
+}
+
 
 // SYS_bindat	538
-// @todo
+// int bindat(int fd, int s, const struct sockaddr *addr, socklen_t addrlen);
+PRE(sys_bindat)
+{
+   PRINT("sys_bindat ( %" FMT_REGWORD "d, %" FMT_REGWORD "dx, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",
+         SARG1, SARG2, ARG3, ARG4);
+   PRE_REG_READ4(int, "bindat", int, fd, int, s, const struct vki_sockaddr *, name, vki_socklen_t, namelen);
+   PRE_MEM_READ("bindat(name)", ARG3, ARG4);
+}
 
 // SYS_connectat	539
-// @todo
+// int connectat(int fd, int s, const struct sockaddr *name, socklen_t namelen);
+PRE(sys_connectat)
+{
+   PRINT("sys_connectat ( %" FMT_REGWORD "d, %" FMT_REGWORD "dx, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",
+         SARG1, SARG2, ARG3, ARG4);
+   PRE_REG_READ4(int, "connectat", int, fd, int, s, const struct vki_sockaddr *, name, vki_socklen_t, namelen);
+   PRE_MEM_READ("connectat(name)", ARG3, ARG4);
+}
 
 // SYS_chflagsat	540
-// @todo
+// int chflagsat(int fd, const char *path, unsigned long flags, int atflag);
+PRE(sys_chflagsat)
+{
+   PRINT("sys_chglagsat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "d )",
+         SARG1, ARG2, ARG3, SARG4);
+   PRE_REG_READ4(int, "chflagsat", int, fd, const char *, path, unsigned long, flags, int, atflag);
+   PRE_MEM_RASCIIZ("chflagsat(path)", ARG2);
+}
 
 // SYS_accept4	541
 // int accept4(int s, struct sockaddr * restrict addr,
@@ -5206,7 +5256,16 @@ POST(sys_pipe2)
 }
 
 // SYS_aio_mlock	543
-// @todo
+// int aio_mlock(struct aiocb *iocb);
+PRE(sys_aio_mlock)
+{
+   PRINT("sys_aio_mlock ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "aio_mlock", struct vki_aiocb *, iocb);
+   PRE_MEM_READ("aio_mlock(iocb", ARG1, sizeof(struct vki_aiocb));
+   // this locks memory into RAM, don't think that we need to do
+   // anything extra
+}
+
 
 // SYS_procctl	544
 // amd64 / x86
@@ -6181,18 +6240,18 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl rctl_remove_rule                              529
    BSDX_(__NR_posix_fallocate,  sys_posix_fallocate),   // 530
    BSDX_(__NR_posix_fadvise,    sys_posix_fadvise),     // 531
-   // unimpl wait6                                         532
-   BSDX_(__NR_cap_rights_limit,  sys_cap_rights_limit), // 533
-   BSDX_(__NR_cap_ioctls_limit,  sys_cap_ioctls_limit), // 534
-   // unimpl cap_ioctls_get                                535
-   BSDX_(__NR_cap_fcntls_limit,  sys_cap_fcntls_limit), // 536
-   // unimpl cap_fcntls_get                                537
-   // unimpl bindat                                        538
-   // unimpl connectat                                     539
-   // unimpl chflagsat                                     540
+   BSDXY(__NR_wait6,            sys_wait6),             // 532
+   BSDX_(__NR_cap_rights_limit, sys_cap_rights_limit),  // 533
+   BSDX_(__NR_cap_ioctls_limit, sys_cap_ioctls_limit),  // 534
+   BSDXY(__NR_cap_ioctls_get,   sys_cap_ioctls_get),    // 535
+   BSDX_(__NR_cap_fcntls_limit, sys_cap_fcntls_limit),  // 536
+   BSDXY(__NR_cap_fcntls_get,   sys_cap_fcntls_get),    // 537
+   BSDX_(__NR_bindat,           sys_bindat),            // 538
+   BSDX_(__NR_connectat,        sys_connectat),         // 539
+   BSDX_(__NR_chflagsat,        sys_chflagsat),         // 540
    BSDXY(__NR_accept4,          sys_accept4),           // 541
    BSDXY(__NR_pipe2,            sys_pipe2),             // 542
-   // unimp aio_mlock                                      543
+   BSDX_(__NR_aio_mlock,        sys_aio_mlock),         // 543
    BSDXY(__NR_procctl,          sys_procctl),           // 544
 
    // 544 is the highest syscall on FreeBSD 9

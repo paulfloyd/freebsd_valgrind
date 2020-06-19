@@ -1136,6 +1136,39 @@ PRE(sys_posix_fadvise)
                 int, advice);
 }
 
+// SYS_wait6	532
+// pid_t wait6(idtype_t idtype, id_t id, int *status, int options,
+//             struct __wrusage *wrusage, siginfo_t *infop);
+PRE(sys_wait6)
+{
+   PRINT("sys_wait6 ( %" FMT_REGWORD "d, %lld, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1, MERGE64(ARG2, ARG3), ARG4, SARG5, ARG6, ARG7);
+   PRE_REG_READ7(pid_t, "wait6", vki_idtype_t, idtype,
+                 vki_uint32_t, MERGE64_FIRST(id),
+                 vki_uint32_t, MERGE64_SECOND(id),
+                 int *, status, int, options,
+                 struct vki___wrusage *, wrusage, vki_siginfo_t *,infop);
+   PRE_MEM_WRITE("wait6(status)", ARG4, sizeof(int));
+   if (ARG6) {
+      PRE_MEM_WRITE("wait6(wrusage)", ARG6, sizeof(struct vki___wrusage));
+   }
+   if (ARG7) {
+      PRE_MEM_WRITE("wait6(infop)", ARG7, sizeof(vki_siginfo_t));
+   }
+}
+
+POST(sys_wait6)
+{
+   POST_MEM_WRITE(ARG4, sizeof(int));
+   if (ARG6) {
+      POST_MEM_WRITE(ARG6, sizeof(struct vki___wrusage));
+   }
+
+   if (ARG7) {
+      POST_MEM_WRITE(ARG7, sizeof(vki_siginfo_t));
+   }
+}
+
 // the man page is inconsistent for the last argument
 // See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=247386
 // will stick to 'arg' for simplicity
