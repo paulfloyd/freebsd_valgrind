@@ -183,7 +183,10 @@ typedef __vki_mqd_t		vki_mqd_t;
 typedef __vki_u_register_t	vki_u_register_t;
 typedef __vki_uid_t		vki_uid_t;
 typedef __vki_useconds_t	vki_useconds_t;
-typedef int             __vki_cpuwhich_t;
+typedef int             vki_cpuwhich_t;
+typedef int             vki_cpulevel_t;
+typedef int             vki_cpusetid_t;
+
 
 typedef __vki_vm_offset_t	vki_vm_offset_t;
 typedef __vki_vm_ooffset_t	vki_vm_ooffset_t;
