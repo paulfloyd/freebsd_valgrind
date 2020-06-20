@@ -3760,6 +3760,124 @@ Syscall param pselect(sig) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+523:       SYS_getloginclass 2s 1m
+---------------------------------------------------------
+Syscall param getloginclass(name) contains uninitialised byte(s)
+   ...
+
+Syscall param getloginclass(len) contains uninitialised byte(s)
+   ...
+
+Syscall param getloginclass(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+524:       SYS_setloginclass 1s 1m
+---------------------------------------------------------
+Syscall param setloginclass(name) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_setloginclass(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+525:      SYS_rctl_get_racct 4s 2m
+---------------------------------------------------------
+Syscall param rctl_get_racct(inbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_racct(inbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_racct(outbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_racct(outbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_racct(inbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param rctl_get_racct(outbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+526:      SYS_rctl_get_rules 4s 2m
+---------------------------------------------------------
+Syscall param rctl_get_rules(inbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_rules(inbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_rules(outbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_rules(outbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_rules(inbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param rctl_get_rules(outbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+527:     SYS_rctl_get_limits 4s 2m
+---------------------------------------------------------
+Syscall param rctl_get_limits(inbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_limits(inbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_limits(outbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_limits(outbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_get_limits(inbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param rctl_get_limits(outbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+528:       SYS_rctl_add_rule 2s 1m
+---------------------------------------------------------
+Syscall param rctl_add_rule(inbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_add_rule(inbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_add_rule(inbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+529:    SYS_rctl_remove_rule 2s 1m
+---------------------------------------------------------
+Syscall param rctl_remove_rule(inbufp) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_remove_rule(inbuflen) contains uninitialised byte(s)
+   ...
+
+Syscall param rctl_remove_rule(inbufp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 530:     SYS_posix_fallocate 3s 0m
 ---------------------------------------------------------
 Syscall param posix_fallocate(fd) contains uninitialised byte(s)
@@ -4180,6 +4298,10 @@ Syscall param getdirentries(basep) contains uninitialised byte(s)
    ...
 
 Syscall param getdirentries(buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param getdirentries(basep) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
