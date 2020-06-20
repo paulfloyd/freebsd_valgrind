@@ -3282,6 +3282,47 @@ Syscall param shm_unlink(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+484:              SYS_cpuset 1s 1m
+---------------------------------------------------------
+Syscall param cpuset(setid) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset(setid) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+485:        SYS_cpuset_setid 3s 0m
+---------------------------------------------------------
+Syscall param cpuset_sgetid(which) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_sgetid(id) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_sgetid(setid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+486:        SYS_cpuset_getid 4s 1m
+---------------------------------------------------------
+Syscall param cpuset_getid(level) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getid(which) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getid(id) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getid(setid) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getid(setid) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 487:  SYS_cpuset_getaffinity 5s 1m
 ---------------------------------------------------------
 Syscall param cpuset_getaffinity(level) contains uninitialised byte(s)
@@ -3358,9 +3399,9 @@ Syscall param fchmodat(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-491:            SYS_fchownat 4s 1m
+491:            SYS_fchownat 5s 1m
 ---------------------------------------------------------
-Syscall param fchownat(dfd) contains uninitialised byte(s)
+Syscall param fchownat(fd) contains uninitialised byte(s)
    ...
 
 Syscall param fchownat(path) contains uninitialised byte(s)
@@ -3372,12 +3413,35 @@ Syscall param fchownat(owner) contains uninitialised byte(s)
 Syscall param fchownat(group) contains uninitialised byte(s)
    ...
 
+Syscall param fchownat(flag) contains uninitialised byte(s)
+   ...
+
 Syscall param fchownat(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-552:             SYS_fstatat s4s 2m
+492:             SYS_fexecve 3s 2m
+---------------------------------------------------------
+Syscall param fexecve(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param fexecve(argv) contains uninitialised byte(s)
+   ...
+
+Syscall param fexecve(envp) contains uninitialised byte(s)
+   ...
+
+Syscall param fexecve(argv) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param fexecve(envp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+552:             SYS_fstatat 4s 2m
 ---------------------------------------------------------
 Syscall param fstatat(fd) contains uninitialised byte(s)
    ...
@@ -3625,6 +3689,10 @@ Syscall param jail_get(niov) contains uninitialised byte(s)
 Syscall param jail_get(flags) contains uninitialised byte(s)
    ...
 
+Syscall param jail_get(iov) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
 ---------------------------------------------------------
 507:            SYS_jail_set 3s 1m
 ---------------------------------------------------------
@@ -3637,10 +3705,20 @@ Syscall param jail_set(niov) contains uninitialised byte(s)
 Syscall param jail_set(flags) contains uninitialised byte(s)
    ...
 
+Syscall param jail_set(iovs) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
 ---------------------------------------------------------
 508:         SYS_jail_remove 1s 0m
 ---------------------------------------------------------
 Syscall param jail_remove(jid) contains uninitialised byte(s)
+   ...
+
+---------------------------------------------------------
+509:           SYS_closefrom 1s 0m
+---------------------------------------------------------
+Syscall param closefrom(lowfd) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
@@ -3687,6 +3765,19 @@ Syscall param shmctl(buf) contains uninitialised byte(s)
    ...
 
 Syscall param shmctl(IPC_STAT, buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+513:           SYS_lpathconf 2s 1m
+---------------------------------------------------------
+Syscall param lpathconf(path) contains uninitialised byte(s)
+   ...
+
+Syscall param lpathconf(name) contains uninitialised byte(s)
+   ...
+
+Syscall param lpathconf(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

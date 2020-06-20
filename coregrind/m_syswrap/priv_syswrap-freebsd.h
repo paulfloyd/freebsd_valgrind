@@ -453,10 +453,11 @@ DECL_TEMPLATE(freebsd, sys_posix_openpt) // 504
 DECL_TEMPLATE(freebsd, sys_jail_get) // 506
 DECL_TEMPLATE(freebsd, sys_jail_set) // 507
 DECL_TEMPLATE(freebsd, sys_jail_remove) // 508
+DECL_TEMPLATE(freebsd, sys_closefrom) // 508
 DECL_TEMPLATE(freebsd, sys___semctl) // 510
 DECL_TEMPLATE(freebsd, sys_msgctl) // 511
 DECL_TEMPLATE(freebsd, sys_shmctl) // 512
-// lpathconf 513
+DECL_TEMPLATE(freebsd, sys_lpathconf) // 513
 DECL_TEMPLATE(freebsd, sys_cap_rights_get) // 515
 DECL_TEMPLATE(freebsd, sys_cap_enter) // 516
 DECL_TEMPLATE(freebsd, sys_cap_getmode) // 517

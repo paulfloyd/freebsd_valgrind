@@ -539,6 +539,7 @@
 #define __NR_jail_get            506
 #define __NR_jail_set            507
 #define __NR_jail_remove         508
+#define __NR_closefrom           509
 #define __NR___semctl            510
 #define __NR_msgctl              511
 #define __NR_shmctl              512

@@ -1548,11 +1548,17 @@ int main(void)
    GO(SYS_shm_unlink, "1s 1m");
    SY(SYS_shm_unlink, x0+1); FAIL;
 
-   // cpuset                      484
+   /* cpuset                      484 */
+   GO(SYS_cpuset, "1s 1m");
+   SY(SYS_cpuset, x0+1); FAIL;
 
-   // cpuset_setid                485
+   /* cpuset_setid                485 */
+   GO(SYS_cpuset_setid, "3s 0m");
+   SY(SYS_cpuset_setid, x0, x0, x0); FAIL;
 
-   // cpuset_getid                486
+   /* cpuset_getid                486 */
+   GO(SYS_cpuset_getid, "4s 1m");
+   SY(SYS_cpuset_getid, x0, x0, x0, x0+1); FAIL;   
 
    /* SYS_cpuset_getaffinity      487 */
    GO(SYS_cpuset_getaffinity, "5s 1m");
@@ -1571,14 +1577,16 @@ int main(void)
    SY(SYS_fchmodat, x0, x0+1, x0); FAIL;
 
    /* SYS_fchownat                491 */
-   GO(SYS_fchownat, "4s 1m");
-   SY(SYS_fchownat, x0, x0+1, x0, x0); FAIL;
+   GO(SYS_fchownat, "5s 1m");
+   SY(SYS_fchownat, x0, x0+1, x0, x0, x0); FAIL;
 
-   // fexecve                     492
+   /* SYS_fexecve                 492 */
+   GO(SYS_fexecve, "3s 2m");
+   SY(SYS_fexecve, x0-1, x0+1, x0+1); FAIL;
 
-   /* SYS_freebsd11_fstatat                 493 */
+   /* SYS_freebsd11_fstatat       493 */
    /* @todo PJF freebsd11 version */
-   GO(SYS_fstatat, "s4s 2m");
+   GO(SYS_fstatat, "4s 2m");
    SY(SYS_fstatat, x0, x0+1, x0+1, x0); FAIL;
 
    /* SYS_futimesat               494 */
@@ -1594,8 +1602,6 @@ int main(void)
    SY(SYS_mkdirat, x0, x0+1, x0+1); FAIL;
    
    /* SYS_mkfifoat                497 */
-   /* not getting an error with fd */
-   /* need to investigate */
    GO(SYS_mkfifoat, "3s 1m");
    SY(SYS_mkfifoat, x0, x0, x0); FAIL;
    
@@ -1638,20 +1644,20 @@ int main(void)
    // gssd_syscall                505
    
    /* SYS_jail_get                506 */
-   /* @todo PJF was expecting 1m from arg 1 ??? */
    GO(SYS_jail_get, "3s 1m");
-   SY(SYS_jail_get, x0+1, x0, x0); FAIL;
+   SY(SYS_jail_get, x0+1, x0+10, x0); FAIL;
    
    /* SYS_jail_set                507 */
-   /* @todo PJF was expecting 1m from arg 1 ??? */
    GO(SYS_jail_set, "3s 1m");
-   SY(SYS_jail_set, x0+1, x0, x0); FAIL;
+   SY(SYS_jail_set, x0+1, x0+10, x0); FAIL;
    
    /* SYS_jail_remove             508 */
    GO(SYS_jail_remove, "1s 0m");
-   SY(SYS_jail_remove, x0+1, x0, x0); FAIL;
+   SY(SYS_jail_remove, x0+1); FAIL;
    
-   // closefrom                   509
+   /* SYS_closefrom               509 */
+   GO(SYS_closefrom, "1s 0m");
+   SY(SYS_closefrom, x0+100000); SUCC;
    
    /* SYS___semctl                510 */
    GO(SYS___semctl, "(IPC_INFO) 4s 1m");
@@ -1667,6 +1673,8 @@ int main(void)
    SY(SYS_shmctl, x0, x0+IPC_STAT, x0+1); FAIL;
    
     /* lpathconf                  513 */
+    GO(SYS_lpathconf, "2s 1m");
+    SY(SYS_lpathconf, x0+1, x0); FAIL;
     
     // 514 is obsolete cap_new
     
@@ -1775,7 +1783,7 @@ int main(void)
    /* SYS_accept4                 541 */
    /* @todo PJF only 1m ??? */
    GO(SYS_accept4, "4s 2m");
-   SY(SYS_accept4, x0+999999, x0+1, x0+1, x0); FAIL;
+   SY(SYS_accept4, x0+999999, x0+1, x0+16, x0); FAIL;
    
    /* SYS_pipe2                   542 */
    GO(SYS_pipe2, "2s 1m");
@@ -1799,7 +1807,7 @@ int main(void)
    /* SYS_ppoll                   545 */
    /* @todo PJF check output */
    GO(SYS_ppoll, "4s 2m");
-   SY(SYS_ppoll, x0+1, x0+1, x0+1, x0+1); FAIL;
+   SY(SYS_ppoll, x0+8, x0+1, x0+1, x0+1); FAIL;
    
    /* SYS_futimens                546 */
    GO(SYS_futimens, "2s 1m");

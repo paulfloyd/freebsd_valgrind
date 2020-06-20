@@ -748,6 +748,34 @@ PRE(sys_posix_fallocate)
                  vki_uint32_t, len);
 }
 
+// SYS_cpuset_setid	485
+// int cpuset_setid(cpuwhich_t which, id_t id, cpusetid_t setid);
+PRE(sys_cpuset_setid)
+{
+   PRINT("sys_cpuset_setid ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",
+         SARG1, SARG2, ARG3);
+   PRE_REG_READ3(int, "cpuset_sgetid", vki_cpuwhich_t, which, vki_id_t, id,
+                 vki_cpusetid_t *,setid);
+}
+
+// SYS_cpuset_getid	486
+// int cpuset_getid(cpulevel_t level, cpuwhich_t which, id_t id,
+//                  cpusetid_t *setid);
+PRE(sys_cpuset_getid)
+{
+    PRINT("sys_cpuset_getid ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",
+          SARG1, SARG2, SARG3, ARG4);
+    PRE_REG_READ4(int, "cpuset_getid", vki_cpulevel_t, level,
+                  vki_cpuwhich_t, which, vki_id_t, id,
+                  vki_cpusetid_t, setid);
+    PRE_MEM_WRITE("cpuset_getid(setid)", ARG4, sizeof(vki_cpusetid_t));
+}
+
+POST(sys_cpuset_getid)
+{
+   POST_MEM_WRITE(ARG4, sizeof(vki_cpusetid_t));
+}
+
 // SYS_posix_fadvise	531
 // int posix_fadvise(int fd, off_t offset, off_t len, int advice);
 PRE(sys_posix_fadvise)

@@ -4442,13 +4442,24 @@ PRE(sys_shm_unlink)
 }
 
 // SYS_cpuset	484
-// @todo
+// int cpuset(cpusetid_t *setid);
+PRE(sys_cpuset)
+{
+    PRINT("sys_cpuset ( %#" FMT_REGWORD "x )", ARG1);
+    PRE_REG_READ1(int, "cpuset", vki_cpusetid_t *, setid);
+    PRE_MEM_WRITE("cpuset(setid)", ARG1, sizeof(vki_cpusetid_t));
+}
+
+POST(sys_cpuset)
+{
+   POST_MEM_WRITE(ARG1, sizeof(vki_cpusetid_t));
+}
 
 // SYS_cpuset_setid	485
-// @todo
+// amd64 / x86
 
 // SYS_cpuset_getid	486
-// @todo
+// amd64 / x86
 
 // SYS_cpuset_getaffinity	487
 // int cpuset_getaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
@@ -4508,15 +4519,26 @@ PRE(sys_fchmodat)
 // int fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag);
 PRE(sys_fchownat)
 {
-   PRINT("sys_fchownat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
-   PRE_REG_READ4(long, "fchownat",
-                 int, dfd, const char *, path,
-                 vki_uid_t, owner, vki_gid_t, group);
+   PRINT("sys_fchownat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+         ARG1,ARG2,(char*)ARG2,ARG3,ARG4, SARG5);
+   PRE_REG_READ5(int, "fchownat",
+                 int, fd, const char *, path,
+                 vki_uid_t, owner, vki_gid_t, group, int, flag);
    PRE_MEM_RASCIIZ( "fchownat(path)", ARG2 );
 }
 
 // SYS_fexecve	492
-// @todo
+// int fexecve(int fd, char *const argv[], char *const envp[]);
+PRE(sys_fexecve)
+{
+   PRINT("sys_fexecve ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1,ARG2,ARG3);
+   PRE_REG_READ3(long, "fexecve",
+                 int, fd, char * const *, argv,
+                 char * const *, envp);
+   PRE_MEM_RASCIIZ( "fexecve(argv)", ARG2 );
+   PRE_MEM_RASCIIZ( "fexecve(envp)", ARG3 );
+}
 
 // SYS_freebsd11_fstatat	493
 // int fstatat(int fd, const char *path, struct stat *sb, int flag);
@@ -4592,7 +4614,8 @@ PRE(sys_mkdirat)
 // int mkfifoat(int fd, const char *path, mode_t mode);
 PRE(sys_mkfifoat)
 {
-   PRINT("sys_mkfifoat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,ARG2,(ARG2?(char*)ARG2:"NULL"),ARG3 );
+   PRINT("sys_mkfifoat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )",
+         SARG1,ARG2,(HChar*)ARG2,ARG3 );
    PRE_REG_READ3(int, "mkfifoat",
                  int, fd, const char *, path, vki_mode_t, mode);
    PRE_MEM_RASCIIZ( "mkfifoat(path)", ARG2 );
@@ -4737,6 +4760,8 @@ PRE(sys_posix_openpt)
 
 // SYS_gssd_syscall	505
 // @todo
+// see https://www.freebsd.org/cgi/man.cgi?format=html&query=gssapi(3)
+// syscalls.master says ; 505 is initialised by the kgssapi code, if present.
 
 // SYS_jail_get	506
 // int jail_get(struct iovec *iov, u_int niov, int flags);
@@ -4767,7 +4792,23 @@ PRE(sys_jail_remove)
 }
 
 // SYS_closefrom	509
-// @todo
+// void closefrom(int lowfd);
+PRE(sys_closefrom)
+{
+    PRINT("sys_closefrom ( %" FMT_REGWORD "dx  )", SARG1);
+    PRE_REG_READ1(int, "closefrom", int, lowfd);
+
+    /*
+     * Can't pass this on to the kernel otherwise it will close
+     * all of the host files like the log
+     */
+
+    for (int i = ARG1; i < VG_(fd_soft_limit); ++i) {
+       VG_(close)(i);
+    }
+
+    SET_STATUS_Success(0);
+}
 
 // SYS___semctl	510
 // int semctl(int semid, int semnum, int cmd, ...);
@@ -4865,7 +4906,13 @@ POST(sys_shmctl)
 }
 
 // SYS_lpathconf	513
-// @todo
+// long lpathconf(const char *path, int name);
+PRE(sys_lpathconf)
+{
+   PRINT("sys_lpathconf ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d)", ARG1, SARG2);
+   PRE_REG_READ2(long, "lpathconf", const char *, path, int, name);
+   PRE_MEM_RASCIIZ("lpathconf(path)", ARG1);
+}
 
 // SYS___cap_rights_get	515
 // note extra 1st argument for the internal function which is not present
@@ -6260,9 +6307,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_shm_open,         sys_shm_open),          // 482
    BSDX_(__NR_shm_unlink,       sys_shm_unlink),        // 483
 
-   // unimpl cpuset                                        484
-   // unimpl cpuset_setid                                  485
-   // unimpl cpuset_getid                                  486
+   BSDXY(__NR_cpuset,           sys_cpuset),            // 484
+   BSDX_(__NR_cpuset_setid,     sys_cpuset_setid),      // 485
+   BSDXY(__NR_cpuset_getid,     sys_cpuset_getid),      // 486
 
    BSDXY(__NR_cpuset_getaffinity, sys_cpuset_getaffinity), // 487
    BSDX_(__NR_cpuset_setaffinity, sys_cpuset_setaffinity), // 488
@@ -6270,7 +6317,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_fchmodat,         sys_fchmodat),          // 490
    BSDX_(__NR_fchownat,         sys_fchownat),          // 491
 
-   // unimpl fexecve                                       492
+   BSDX_(__NR_fexecve,          sys_fexecve),           // 492
 #if (FREEBSD_VERS >= FREEBSD_12)
    BSDXY(__NR_freebsd11_fstatat, sys_freebsd11_fstatat), // 493
 #else
@@ -6300,11 +6347,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_jail_get,         sys_jail_get),          // 506
    BSDX_(__NR_jail_set,         sys_jail_set),          // 507
    BSDX_(__NR_jail_remove,      sys_jail_remove),       // 508
-   // unimp closefrom                                      509
+   BSDX_(__NR_closefrom,        sys_closefrom),         // 509
    BSDXY(__NR___semctl,         sys___semctl),          // 510
    BSDXY(__NR_msgctl,           sys_msgctl),            // 511
    BSDXY(__NR_shmctl,           sys_shmctl),            // 512
-   // unimp lpathconf                                      513
+   BSDX_(__NR_lpathconf,        sys_lpathconf),         // 513
    /* 514 is obsolete cap_new */
    BSDXY(__NR___cap_rights_get, sys_cap_rights_get),    // 515
    BSDX_(__NR_cap_enter,        sys_cap_enter),         // 516
