@@ -3441,7 +3441,7 @@ Syscall param fexecve(envp) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-552:             SYS_fstatat 4s 2m
+493:   SYS_freebsd11_fstatat 4s 2m
 ---------------------------------------------------------
 Syscall param fstatat(fd) contains uninitialised byte(s)
    ...
@@ -3449,7 +3449,7 @@ Syscall param fstatat(fd) contains uninitialised byte(s)
 Syscall param fstatat(path) contains uninitialised byte(s)
    ...
 
-Syscall param fstatat(sb) contains uninitialised byte(s)
+Syscall param fstatat(buf) contains uninitialised byte(s)
    ...
 
 Syscall param fstatat(flag) contains uninitialised byte(s)

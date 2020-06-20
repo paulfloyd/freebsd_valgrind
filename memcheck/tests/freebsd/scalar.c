@@ -1585,9 +1585,13 @@ int main(void)
    SY(SYS_fexecve, x0-1, x0+1, x0+1); FAIL;
 
    /* SYS_freebsd11_fstatat       493 */
-   /* @todo PJF freebsd11 version */
+#if (FREEBSD_VERS >= FREEBSD_12)   
+   GO(SYS_freebsd11_fstatat, "4s 2m");
+   SY(SYS_freebsd11_fstatat, x0, x0+1, x0+1, x0); FAIL;
+#else
    GO(SYS_fstatat, "4s 2m");
    SY(SYS_fstatat, x0, x0+1, x0+1, x0); FAIL;
+#endif
 
    /* SYS_futimesat               494 */
    GO(SYS_futimesat, "3s 2m");
