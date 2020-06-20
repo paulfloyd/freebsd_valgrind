@@ -1906,8 +1906,7 @@ PRE(sys___sysctl)
    if (ML_(safe_to_deref)(name, sizeof(int))) {
       PRINT("\nmib[0]: ");
       if (SARG2 >= 1) {
-         switch (name[0])
-         {
+         switch (name[0]) {
          case 0: // CTL_UNSPEC
             PRINT("unspec");
             break;
@@ -3068,16 +3067,14 @@ PRE(sys_extattr_get_file)
                   const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
     PRE_MEM_RASCIIZ("extattr_get_file(path)", ARG1);
     PRE_MEM_RASCIIZ("extattr_get_file(attrname)", ARG3);
-    if (ARG4)
-    {
+    if (ARG4) {
         PRE_MEM_WRITE("extattr_get_file(data)", ARG4, ARG5);
     }
 }
 
 POST(sys_extattr_get_file)
 {
-    if (ARG4)
-    {
+    if (ARG4) {
         POST_MEM_WRITE(ARG4, ARG5);
     }
 }
@@ -4945,8 +4942,7 @@ PRE(sys_pdfork)
    is_child = ( RES == 0 ? True : False );
    child_pid = ( is_child ? -1 : RES );
 
-   if (is_child)
-   {
+   if (is_child) {
       VG_(do_atfork_child)(tid);
 
       /* restore signal mask */
@@ -4960,16 +4956,14 @@ PRE(sys_pdfork)
       VG_(sigprocmask)(VKI_SIG_SETMASK, &pdfork_saved_mask, NULL);
    }
 
-   if (ARG1)
-   {
+   if (ARG1) {
       PRE_MEM_WRITE( "pdfork(fdp)", ARG1, sizeof(int) );
    }
 }
 
 POST(sys_pdfork)
 {
-    if (ARG1)
-    {
+    if (ARG1) {
         POST_MEM_WRITE( ARG1, sizeof(int) );
     }
 }
@@ -5076,25 +5070,115 @@ POST(sys_pselect)
 }
 
 // SYS_getloginclass	523
-// @todo
+// int getloginclass(char *name, size_t len);
+PRE(sys_getloginclass)
+{
+   PRINT("sys_getloginclass ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u  )", ARG1, ARG2);
+   PRE_REG_READ2(int, "getloginclass", char *, name, size_t, len);
+   // The buffer should be at least MAXLOGNAME bytes in length.
+   PRE_MEM_WRITE("getloginclass(name)", ARG1, ARG2);
+}
+
+POST(sys_getloginclass)
+{
+   POST_MEM_WRITE(ARG1, ARG2);
+}
 
 // SYS_setloginclass	524
-// @todo
+// int setloginclass(const char *name);
+PRE(sys_setloginclass)
+{
+   PRINT("sys_setloginclass ( %#" FMT_REGWORD "x(%s) )", ARG1, (HChar*)ARG1);
+   PRE_REG_READ1(int, "setloginclass", const char *, name);
+   PRE_MEM_RASCIIZ("rctl_setloginclass(name)", ARG1);
+}
 
 // SYS_rctl_get_racct	525
-// @todo
+// int rctl_get_racct(const char *inbufp, size_t inbuflen, char *outbufp,
+//                    size_t outbuflen);
+PRE(sys_rctl_get_racct)
+{
+   PRINT("sys_rctl_get_racct ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "xd, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(int, "rctl_get_racct", const char *, inbufp, size_t, inbuflen, char *, outbufp,
+                 size_t, outbuflen);
+   PRE_MEM_READ("rctl_get_racct(inbufp)", ARG1, ARG2);
+   PRE_MEM_WRITE("rctl_get_racct(outbufp)", ARG3, ARG4);
+}
+
+POST(sys_rctl_get_racct)
+{
+   POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_rctl_get_rules	526
-// @todo
+// int rctl_get_rules(const char *inbufp, size_t inbuflen, char *outbufp,
+//                    size_t outbuflen);
+PRE(sys_rctl_get_rules)
+{
+   PRINT("sys_rctl_get_rules ( %#" FMT_REGWORD "xd, %" FMT_REGWORD "u, %#" FMT_REGWORD "xd, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(int, "rctl_get_rules", const char *, inbufp, size_t, inbuflen, char *, outbufp,
+                 size_t, outbuflen);
+   PRE_MEM_READ("rctl_get_rules(inbufp)", ARG1, ARG2);
+   PRE_MEM_WRITE("rctl_get_rules(outbufp)", ARG3, ARG4);
+}
+
+POST(sys_rctl_get_rules)
+{
+   POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_rctl_get_limits	527
-// @todo
+// int rctl_get_limits(const char *inbufp, size_t inbuflen, char *outbufp,
+//                     size_t outbuflen);
+PRE(sys_rctl_get_limits)
+{
+   PRINT("sys_rctl_get_limits ( %#" FMT_REGWORD "xd, %" FMT_REGWORD "u, %#" FMT_REGWORD "xd, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(int, "rctl_get_limits", const char *, inbufp, size_t, inbuflen, char *, outbufp,
+                 size_t, outbuflen);
+   PRE_MEM_READ("rctl_get_limits(inbufp)", ARG1, ARG2);
+   PRE_MEM_WRITE("rctl_get_limits(outbufp)", ARG3, ARG4);
+}
+
+POST(sys_rctl_get_limits)
+{
+   POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_rctl_add_rule	528
-// @todo
+// int rctl_add_rule(const char *inbufp, size_t inbuflen, char *outbufp,
+//                   size_t outbuflen);
+PRE(sys_rctl_add_rule)
+{
+   PRINT("sys_rctl_add_rule ( %#" FMT_REGWORD "xd, %" FMT_REGWORD "u, %#" FMT_REGWORD "xd, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ2(int, "rctl_add_rule", const char *, inbufp, size_t, inbuflen);
+   PRE_MEM_READ("rctl_add_rule(inbufp)", ARG1, ARG2);
+   // man page says
+   // The outbufp and outbuflen arguments are unused
+   //PRE_MEM_WRITE("rctl_add_rule(outbufp)", ARG3, ARG4);
+}
+
+POST(sys_rctl_add_rule)
+{
+   //POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_rctl_remove_rule	529
-// @todo
+// int rctl_remove_rule(const char *inbufp, size_t inbuflen, char *outbufp,
+//          size_t outbuflen);
+PRE(sys_rctl_remove_rule)
+{
+   PRINT("sys_rctl_remove_rule ( %#" FMT_REGWORD "xd, %" FMT_REGWORD "u, %#" FMT_REGWORD "xd, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ2(int, "rctl_remove_rule", const char *, inbufp, size_t, inbuflen);
+   PRE_MEM_READ("rctl_remove_rule(inbufp)", ARG1, ARG2);
+   // man page says
+   // The outbufp and outbuflen arguments are unused
+   //PRE_MEM_WRITE("rctl_remove_rule(outbufp)", ARG3, ARG4);
+}
+
+POST(sys_rctl_remove_rule)
+{
+   //POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_posix_fallocate	530
 // x86/amd64
@@ -5170,7 +5254,6 @@ POST(sys_cap_fcntls_get)
 {
    POST_MEM_WRITE(ARG2, sizeof(uint32_t));
 }
-
 
 // SYS_bindat	538
 // int bindat(int fd, int s, const struct sockaddr *addr, socklen_t addrlen);
@@ -5265,7 +5348,6 @@ PRE(sys_aio_mlock)
    // this locks memory into RAM, don't think that we need to do
    // anything extra
 }
-
 
 // SYS_procctl	544
 // amd64 / x86
@@ -5414,7 +5496,7 @@ PRE(sys_getdirentries)
                  off_t *, basep);
    PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
    if (ARG4)
-      PRE_MEM_WRITE("getdirentries(buf)", ARG4, sizeof (vki_off_t));
+      PRE_MEM_WRITE("getdirentries(basep)", ARG4, sizeof (vki_off_t));
 }
 
 POST(sys_getdirentries)
@@ -6231,13 +6313,13 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_pdkill,           sys_pdkill),            // 519
    BSDXY(__NR_pdgetpid,         sys_pdgetpid),          // 520
    BSDXY(__NR_pselect,          sys_pselect),           // 522
-   // unimpl getloginclass                                 523
-   // unimpl setloginclass                                 524
-   // unimpl rctl_get_racct                                525
-   // unimpl rctl_get_rules                                526
-   // unimpl rctl_get_limits                               527
-   // unimpl rctl_add_rule                                 528
-   // unimpl rctl_remove_rule                              529
+   BSDXY(__NR_getloginclass,    sys_getloginclass),     // 523
+   BSDX_(__NR_setloginclass,    sys_setloginclass),     // 524
+   BSDXY(__NR_rctl_get_racct,   sys_rctl_get_racct),    // 525
+   BSDXY(__NR_rctl_get_rules,   sys_rctl_get_rules),    // 526
+   BSDXY(__NR_rctl_get_limits,  sys_rctl_get_limits),   // 527
+   BSDXY(__NR_rctl_add_rule,    sys_rctl_add_rule),     // 528
+   BSDXY(__NR_rctl_remove_rule, sys_rctl_remove_rule),  // 529
    BSDX_(__NR_posix_fallocate,  sys_posix_fallocate),   // 530
    BSDX_(__NR_posix_fadvise,    sys_posix_fadvise),     // 531
    BSDXY(__NR_wait6,            sys_wait6),             // 532

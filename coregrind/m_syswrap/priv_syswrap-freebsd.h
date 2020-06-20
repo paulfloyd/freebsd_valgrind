@@ -464,13 +464,13 @@ DECL_TEMPLATE(freebsd, sys_pdfork) // 518
 DECL_TEMPLATE(freebsd, sys_pdkill) // 519
 DECL_TEMPLATE(freebsd, sys_pdgetpid) // 520
 DECL_TEMPLATE(freebsd, sys_pselect) // 522
-// getloginclass 523
-// setloginclass 524
-// rctl_get_racct 525
-// rctl_get_rules 526
-// rctl_get_limits 527
-// rctl_add_rule 528
-// rctl_remove_rule 529
+DECL_TEMPLATE(freebsd, sys_getloginclass) // 523
+DECL_TEMPLATE(freebsd, sys_setloginclass) // 524
+DECL_TEMPLATE(freebsd, sys_rctl_get_racct) // 525
+DECL_TEMPLATE(freebsd, sys_rctl_get_rules) // 526
+DECL_TEMPLATE(freebsd, sys_rctl_get_limits) // 527
+DECL_TEMPLATE(freebsd, sys_rctl_add_rule) // 528
+DECL_TEMPLATE(freebsd, sys_rctl_remove_rule) // 529
 DECL_TEMPLATE(freebsd, sys_posix_fallocate) // 530
 DECL_TEMPLATE(freebsd, sys_posix_fadvise) // 531
 DECL_TEMPLATE(freebsd, sys_wait6) // 532

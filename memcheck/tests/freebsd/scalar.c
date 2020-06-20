@@ -1698,19 +1698,35 @@ int main(void)
     GO(SYS_pselect, "6s 5m");
     SY(SYS_pselect, x0, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
     
-    // getloginclass              523
+    /* SYS_getloginclass          523 */
+    GO(SYS_getloginclass, "2s 1m");
+    SY(SYS_getloginclass, x0+1, x0+16); FAIL;
     
-    // setloginclass              524
+    /* SYS_setloginclass          524 */
+    GO(SYS_setloginclass, "1s 1m");
+    SY(SYS_setloginclass, x0+1); FAIL;
     
-    // rctl_get_racct             525
+    /* SYS_rctl_get_racct         525 */
+    GO(SYS_rctl_get_racct, "4s 2m");
+    SY(SYS_rctl_get_racct, x0+1, x0+1, x0+2, x0+16); FAIL;
     
-    // rctl_get_rules             526
+    /* SYS_rctl_get_rules         526 */
+    GO(SYS_rctl_get_rules, "4s 2m");
+    SY(SYS_rctl_get_rules, x0+1, x0+1, x0+2, x0+16); FAIL;
     
-    // rctl_get_limits            527
+    /* SYS_rctl_get_limits        527 */
+    GO(SYS_rctl_get_limits, "4s 2m");
+    SY(SYS_rctl_get_limits, x0+1, x0+1, x0+2, x0+16); FAIL;
     
-    // rctl_add_rule              528
+    /* SYS_rctl_add_rule          528 */
+    /* note arg3 and ar4 are not used as per the manpage */
+    GO(SYS_rctl_add_rule, "2s 1m");
+    SY(SYS_rctl_add_rule, x0+1, x0+1, x0+2, x0+16); FAIL;
     
-    // rctl_remove_rule           529
+    /* SYS_rctl_remove_rule       529 */
+    GO(SYS_rctl_remove_rule, "2s 1m");
+    /* note arg3 and ar4 are not used as per the manpage */    
+    SY(SYS_rctl_remove_rule, x0+1, x0+1, x0+2, x0+16); FAIL;
     
     /* SYS_posix_fallocate        530 */
     GO(SYS_posix_fallocate, "3s 0m");
@@ -1822,9 +1838,8 @@ int main(void)
    SY(SYS_fhstat, x0+1, x0+1); FAIL;
     
    /* SYS_getdirentries           554 */
-   /* @todo PJF only 1m ??? */
    GO(SYS_getdirentries, "4s 2m");
-   SY(SYS_getdirentries, x0+999999, x0+1, x0+1, x0+1); FAIL;
+   SY(SYS_getdirentries, x0+999999, x0+1, x0+16, x0+1); FAIL;
     
    /* SYS_statfs                 555 */
    GO(SYS_statfs, "2s 2m");
