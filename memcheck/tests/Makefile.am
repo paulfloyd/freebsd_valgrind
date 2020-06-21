@@ -156,6 +156,7 @@ EXTRA_DIST = \
 	file_locking.stderr.exp file_locking.vgtest \
 	fprw.stderr.exp fprw.stderr.exp-freebsd fprw.stderr.exp-mips32-be \
 		fprw.stderr.exp-mips32-le fprw.vgtest \
+		fprw.stderr.exp-freebsd-x86 \
 		fprw.stderr.exp-clang \
 	fwrite.stderr.exp fwrite.vgtest fwrite.stderr.exp-kfail \
 	gone_abrt_xml.vgtest gone_abrt_xml.stderr.exp gone_abrt_xml.stderr.exp-solaris \
