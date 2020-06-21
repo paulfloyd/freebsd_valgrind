@@ -794,16 +794,18 @@ struct vki___aiocb_private {
 
 typedef struct vki_aiocb {
    int     aio_fildes;
-   vki_off_t   aio_offset;             /* File offset for I/O */
-   volatile void *aio_buf;         /* I/O buffer in process space */
-   vki_size_t  aio_nbytes;             /* Number of bytes for I/O */
+   vki_off_t   aio_offset;
+   volatile void *aio_buf;
+   vki_size_t  aio_nbytes;
    int     __spare__[2];
    void    *__spare2__;
-   int     aio_lio_opcode;         /* LIO opcode */
-   int     aio_reqprio;            /* Request priority -- ignored */
+   int     aio_lio_opcode;
+   int     aio_reqprio;
    struct  vki___aiocb_private _aiocb_private;
-   struct  vki_sigevent aio_sigevent;  /* Signal to deliver */
+   struct  vki_sigevent aio_sigevent;
 } aiocb_t;
+
+#define VKI_LIO_NOWAIT 0x0
 
 //----------------------------------------------------------------------
 // From sys/mount.h
@@ -2282,6 +2284,23 @@ struct vki_procctl_reaper_kill {
    vki_pid_t   rk_fpid;
    u_int   rk_pad0[15];
 };
+
+//----------------------------------------------------------------------
+// From sys/jail.h
+//----------------------------------------------------------------------
+
+struct vki_jail {
+   uint32_t        version;
+   char            *path;
+   char            *hostname;
+   char            *jailname;
+   uint32_t        ip4s;
+   uint32_t        ip6s;
+   struct in_addr  *ip4;
+   struct in6_addr *ip6;
+};
+
+
 
 // See syswrap-freebsd.c PRE/POST(sys_ioctl)
 #if 0

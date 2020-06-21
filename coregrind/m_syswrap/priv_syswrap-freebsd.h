@@ -161,7 +161,7 @@ DECL_TEMPLATE(freebsd, sys_rtprio) // 166
 DECL_TEMPLATE(freebsd, sys_freebsd6_pread) // 173
 DECL_TEMPLATE(freebsd, sys_freebsd6_pwrite) // 174
 #endif
-// unimp setfib 175
+DECL_TEMPLATE(freebsd, sys_setfib) // 175
 //DECL_TEMPLATE(freebsd, sys_ntp_adjtime) 176
 // generic setgid 181
 DECL_TEMPLATE(freebsd, sys_setegid) // 182
@@ -224,16 +224,16 @@ DECL_TEMPLATE(freebsd, sys_timer_getoverrun) // 239
 // unimpl ffclock_getcounter 241
 // unimpl ffclock_setestimate 242
 // unimpl ffclock_getestimate 243
-// unimpl clock_nanosleep 244
+DECL_TEMPLATE(freebsd, sys_clock_nanosleep) // 244
 // unimpl clock_getcpuclockid2 247
 // unimpl ntp_gettime 248
 DECL_TEMPLATE(freebsd, sys_minherit) // 250
 DECL_TEMPLATE(freebsd, sys_rfork) // 251
 DECL_TEMPLATE(freebsd, sys_issetugid) // 253
 // generic lchown 254
-// unimpl aio_read 255
-// unimpl aio_write 256
-// unimpl lio_listio 257
+DECL_TEMPLATE(freebsd, sys_aio_read) // 255
+DECL_TEMPLATE(freebsd, sys_aio_write) // 256
+DECL_TEMPLATE(freebsd, sys_lio_listio) // 257
 // generic sys_getdents 272
 DECL_TEMPLATE(freebsd, sys_lchmod) // 274
 DECL_TEMPLATE(freebsd, sys_lutimes) // 276
@@ -241,8 +241,8 @@ DECL_TEMPLATE(freebsd, sys_lutimes) // 276
 // unimpl freebsd11_nstat 278
 // unimpl freebsd11_nfstat 279
 // unimpl freebsd11_nlstat 280
-// unimpl preadv 289
-// unimpl pwritev 290
+DECL_TEMPLATE(freebsd, sys_preadv) // 289
+DECL_TEMPLATE(freebsd, sys_pwritev) // 290
 
 DECL_TEMPLATE(freebsd, sys_fhopen) // 298
 
@@ -279,10 +279,10 @@ DECL_TEMPLATE(freebsd, sys_sched_getscheduler) // 330
 DECL_TEMPLATE(freebsd, sys_sched_yield) // 331
 DECL_TEMPLATE(freebsd, sys_sched_get_priority_max) // 332
 DECL_TEMPLATE(freebsd, sys_sched_get_priority_min) // 333
-//DECL_TEMPLATE(freebsd, sys_sched_rr_get_interval) 334
+DECL_TEMPLATE(freebsd, sys_sched_rr_get_interval) // 334
 DECL_TEMPLATE(freebsd, sys_utrace) // 335
 DECL_TEMPLATE(freebsd, sys_kldsym) // 337
-// DECL_TEMPLATE(freebsd, sys_jail) 338
+DECL_TEMPLATE(freebsd, sys_jail) // 338
 // unimpl SYS_nnpfs_syscall 339
 DECL_TEMPLATE(freebsd, sys_sigprocmask) // 340
 DECL_TEMPLATE(freebsd, sys_sigsuspend) // 341
@@ -300,11 +300,11 @@ DECL_TEMPLATE(freebsd, sys___acl_delete_fd) // 352
 DECL_TEMPLATE(freebsd, sys___acl_aclcheck_file) // 353
 DECL_TEMPLATE(freebsd, sys___acl_aclcheck_fd) // 354
 
-// DECL_TEMPLATE(freebsd, sys_extattrctl) 355
-//DECL_TEMPLATE(freebsd, sys_extattr_set_file) 356
+DECL_TEMPLATE(freebsd, sys_extattrctl) // 355
+DECL_TEMPLATE(freebsd, sys_extattr_set_file) // 356
 DECL_TEMPLATE(freebsd, sys_extattr_get_file) // 357
-//DECL_TEMPLATE(freebsd, sys_extattr_delete_file) 358
-//DECL_TEMPLATE(freebsd, sys_aio_waitcomplete) 350
+DECL_TEMPLATE(freebsd, sys_extattr_delete_file) // 358
+DECL_TEMPLATE(freebsd, sys_aio_waitcomplete) // 350
 DECL_TEMPLATE(freebsd, sys_getresuid) // 360
 DECL_TEMPLATE(freebsd, sys_getresgid) // 361
 DECL_TEMPLATE(freebsd, sys_kqueue) // 362
@@ -314,13 +314,13 @@ DECL_TEMPLATE(freebsd, sys_freebsd11_kevent) // 363
 #else
 DECL_TEMPLATE(freebsd, sys_kevent) // 363
 #endif
-// unimpl extattr_set_fd                                371
-// unimpl extattr_get_fd                                372
-// unimpl extattr_delete_fd                             373
-// unimpl __setugid 374
+DECL_TEMPLATE(freebsd, sys_extattr_set_fd) // 371
+DECL_TEMPLATE(freebsd, sys_extattr_get_fd) // 372
+DECL_TEMPLATE(freebsd, sys_extattr_delete_fd) // 373
+DECL_TEMPLATE(freebsd, sys___setugid) // 374
 DECL_TEMPLATE(freebsd, sys_eaccess) // 376
 // unimpl afs3_syscall 377
-// unimpl nmount 378
+DECL_TEMPLATE(freebsd, sys_nmount) // 378
 // unimpl __mac_get_proc 384
 // unimpl __mac_set_proc 385
 // unimpl __mac_get_fd 386
@@ -359,9 +359,9 @@ DECL_TEMPLATE(freebsd, sys_fhstatfs) // 398
 // unimpl __mac_get_link 410
 // unimpl __mac_set_link 411
 
-// unimpl extattr_set_link 412
-// unimpl extattr_get_link 413
-// unimpl extattr_delete_link 414
+DECL_TEMPLATE(freebsd, sys_extattr_set_link) // 412
+DECL_TEMPLATE(freebsd, sys_extattr_get_link) // 413
+DECL_TEMPLATE(freebsd, sys_extattr_delete_link) // 414
 // unimpl __mac_execve 415
 
 DECL_TEMPLATE(freebsd, sys_sigaction) // 416
@@ -369,26 +369,26 @@ DECL_TEMPLATE(freebsd, sys_sigreturn) // 417
 DECL_TEMPLATE(freebsd, sys_getcontext) // 421
 DECL_TEMPLATE(freebsd, sys_setcontext) // 422
 DECL_TEMPLATE(freebsd, sys_swapcontext) // 423
-// unimpl swapoff 424
+DECL_TEMPLATE(freebsd, sys_swapoff) // 424
 DECL_TEMPLATE(freebsd, sys___acl_get_link) // 425
 DECL_TEMPLATE(freebsd, sys___acl_set_link) // 426
 DECL_TEMPLATE(freebsd, sys___acl_delete_link) // 427
 DECL_TEMPLATE(freebsd, sys___acl_aclcheck_link) // 428
 DECL_TEMPLATE(freebsd, sys_sigwait) // 429
-// unimpl thr_create 430
+DECL_TEMPLATE(freebsd, sys_thr_create) // 430
 DECL_TEMPLATE(freebsd, sys_thr_exit) // 431
 DECL_TEMPLATE(freebsd, sys_thr_self) // 432
 DECL_TEMPLATE(freebsd, sys_thr_kill) // 433
 DECL_TEMPLATE(freebsd, sys__umtx_lock) // 434
 DECL_TEMPLATE(freebsd, sys__umtx_unlock) // 435
 DECL_TEMPLATE(freebsd, sys_jail_attach) // 436
-// unimpl extattr_list_fd 437
-// unimpl extattr_list_file 438
-// unimpl extattr_list_link 439
+DECL_TEMPLATE(freebsd, sys_extattr_list_fd) // 437
+DECL_TEMPLATE(freebsd, sys_extattr_list_file) // 438
+DECL_TEMPLATE(freebsd, sys_extattr_list_link) // 439
 // unimpl ksem_timedwait 441
-// unimpl thr_suspend 442
+DECL_TEMPLATE(freebsd, sys_thr_suspend) // 442
 DECL_TEMPLATE(freebsd, sys_thr_wake) // 443
-// unimpl kldunloadf 444
+DECL_TEMPLATE(freebsd, sys_kldunloadf) // 444
 // unimpl audit 445
 // unimpl auditon 446
 // unimpl getauid 447
@@ -400,14 +400,16 @@ DECL_TEMPLATE(freebsd, sys_thr_wake) // 443
 // unimpl auditctl 453
 DECL_TEMPLATE(freebsd, sys__umtx_op) // 454
 DECL_TEMPLATE(freebsd, sys_thr_new) // 455
+DECL_TEMPLATE(freebsd, sys_sigqueue) // 455
 DECL_TEMPLATE(freebsd, sys_kmq_open) // 457
 DECL_TEMPLATE(freebsd, sys_kmq_setattr) // 458
 DECL_TEMPLATE(freebsd, sys_kmq_timedreceive) // 459
 DECL_TEMPLATE(freebsd, sys_kmq_timedsend) // 460
 DECL_TEMPLATE(freebsd, sys_kmq_notify) // 461
 DECL_TEMPLATE(freebsd, sys_kmq_unlink) // 462
+DECL_TEMPLATE(freebsd, sys_abort2) // 463
 DECL_TEMPLATE(freebsd, sys_thr_set_name) // 464
-// aio_fsync 465
+DECL_TEMPLATE(freebsd, sys_aio_fsync) // 465
 DECL_TEMPLATE(freebsd, sys_rtprio_thread) // 466
 DECL_TEMPLATE(freebsd, sys_pread) // 475
 DECL_TEMPLATE(freebsd, sys_pwrite) // 476

@@ -301,6 +301,80 @@ PRE(sys_rfork)
    SET_STATUS_Failure(VKI_ENOSYS);
 }
 
+// SYS_preadv	289
+// ssize_t preadv(int fd, const struct iovec *iov, int iovcnt, off_t offset);
+PRE(sys_preadv)
+{
+   Int i;
+   struct vki_iovec * vec;
+   *flags |= SfMayBlock;
+   PRINT("sys_preadv ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %"
+         FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1, ARG2, SARG3, SARG4);
+   PRE_REG_READ4(ssize_t, "preadv",
+                 int, fd, const struct iovec *, iovr,
+                 int, iovcnt, vki_off_t, offset);
+   if (!ML_(fd_allowed)(ARG1, "preadv", tid, False)) {
+      SET_STATUS_Failure( VKI_EBADF );
+   } else {
+      if ((Int)ARG3 >= 0)
+         PRE_MEM_READ( "preadv(iov)", ARG2, ARG3 * sizeof(struct vki_iovec) );
+
+      if (ML_(safe_to_deref)((struct vki_iovec *)ARG2, ARG3 * sizeof(struct vki_iovec))) {
+         vec = (struct vki_iovec *)(Addr)ARG2;
+         for (i = 0; i < (Int)ARG3; i++)
+            PRE_MEM_WRITE( "preadv(iov[...])",
+                           (Addr)vec[i].iov_base, vec[i].iov_len );
+      }
+   }
+}
+
+POST(sys_preadv)
+{
+   vg_assert(SUCCESS);
+   if (RES > 0) {
+      Int i;
+      struct vki_iovec * vec = (struct vki_iovec *)(Addr)ARG2;
+      Int remains = RES;
+
+      /* RES holds the number of bytes read. */
+      for (i = 0; i < (Int)ARG3; i++) {
+         Int nReadThisBuf = vec[i].iov_len;
+         if (nReadThisBuf > remains) nReadThisBuf = remains;
+            POST_MEM_WRITE( (Addr)vec[i].iov_base, nReadThisBuf );
+         remains -= nReadThisBuf;
+         if (remains < 0) VG_(core_panic)("preadv: remains < 0");
+      }
+   }
+}
+
+// SYS_pwritev	290
+// ssize_t pwritev(int fd, const struct iovec *iov, int iovcnt, off_t offset);
+PRE(sys_pwritev)
+{
+   Int i;
+   struct vki_iovec * vec;
+   *flags |= SfMayBlock;
+   PRINT("sys_pwritev ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %"
+         FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1, ARG2, SARG3, SARG4);
+
+   PRE_REG_READ4(ssize_t, "pwritev",
+                 int, fd, const struct iovec *, iov,
+                 int, iovcnt,
+                 vki_off_t, offset);
+   if (!ML_(fd_allowed)(ARG1, "pwritev", tid, False)) {
+      SET_STATUS_Failure( VKI_EBADF );
+   } else {
+      if ((Int)ARG3 >= 0)
+         PRE_MEM_READ( "pwritev(vector)", ARG2, ARG3 * sizeof(struct vki_iovec) );
+      if (ML_(safe_to_deref)((struct vki_iovec *)ARG2, ARG3 * sizeof(struct vki_iovec))) {
+         vec = (struct vki_iovec *)(Addr)ARG2;
+         for (i = 0; i < (Int)ARG3; i++)
+            PRE_MEM_READ( "pwritev(iov[...])",
+                           (Addr)vec[i].iov_base, vec[i].iov_len );
+      }
+   }
+}
+
 // SYS_sendfile	393
 // int sendfile(int fd, int s, off_t offset, size_t nbytes,
 //         struct sf_hdtr *hdtr, off_t *sbytes, int flags);

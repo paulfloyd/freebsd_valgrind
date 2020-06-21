@@ -1575,9 +1575,12 @@ PRE(sys_quotactl)
 }
 
 // SYS_nlm_syscall	154
+// syscall.master says ; 154 is initialised by the NLM code, if present.
 // @todo
 
 // SYS_nfssvc	155
+// int nfssvc(int flags, void *argstructp);
+// lengthy manpage, at least 3 types of struct that argstructp can point to
 // @todo
 
 // SYS_lgetfh	160
@@ -1685,9 +1688,15 @@ POST(sys_rtprio)
 // x86/amd64
 
 // SYS_setfib	175
-// @todo
+// int setfib(int fib);
+PRE(sys_setfib)
+{
+   PRINT("sys_setfib ( %" FMT_REGWORD "d )", ARG1);
+   PRE_REG_READ1(int, "setfib", int, fib);
+}
 
 // SYS_ntp_adjtime	176
+// int ntp_adjtime(struct timex *);
 // @todo
 
 // SYS_setgid	181
@@ -2367,21 +2376,45 @@ PRE(sys_timer_getoverrun)
 // generic
 
 // SYS_ffclock_getcounter	241
+// int ffclock_getcounter(ffcounter *ffcount);
 // @todo
 
 // SYS_ffclock_setestimate	242
+// int ffclock_setestimate(struct ffclock_estimate *cest);
 // @todo
 
 // SYS_ffclock_getestimate	243
+// int ffclock_getestimate(struct ffclock_estimate *cest);
 // @todo
 
 // SYS_clock_nanosleep 244
-// @todo
+// int clock_nanosleep(clockid_t clock_id, int flags,
+//                     const struct timespec *rqtp, struct timespec *rmtp);
+PRE(sys_clock_nanosleep)
+{
+   *flags |= SfMayBlock|SfPostOnFail;
+   PRINT("sys_clock_nanosleep ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1, SARG2, ARG3, ARG4);
+   PRE_REG_READ4(int, "clock_nanosleep", clockid_t, clock_id, int, flags,
+                 const struct timespec *, rqtp, struct timespec *, rmtp);
+   PRE_MEM_READ("clock_nanosleep(rqtp)", ARG1, sizeof(struct vki_timespec));
+   if (ARG2 != 0)
+      PRE_MEM_WRITE( "clock_nanosleep(rmtp)", ARG2, sizeof(struct vki_timespec) );
+
+}
+
+POST(sys_clock_nanosleep)
+{
+   if (ARG2 != 0)
+      PRE_MEM_WRITE( "clock_nanosleep(rmtp)", ARG2, sizeof(struct vki_timespec) );
+}
 
 // SYS_clock_getcpuclockid2	247
+// no manpage for this
 // @todo
 
 // SYS_ntp_gettime	248
+// int ntp_gettime(struct ntptimeval *);
 // @todo
 
 // SYS_minherit	250
@@ -2416,13 +2449,70 @@ PRE(sys_issetugid)
 // generic
 
 // SYS_aio_read	255
-// @todo
+// int aio_read(struct aiocb *iocb);
+PRE(sys_aio_read)
+{
+   PRINT("sys_aio_read ( %#" FMT_REGWORD "x )" , ARG1);
+   PRE_REG_READ1(int, "aio_read", struct vki_aiocb *, iocb);
+   PRE_MEM_READ("aio_read(iocb)", ARG1, sizeof(struct vki_aiocb));
+   if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
+      struct vki_aiocb *iocb = (struct vki_aiocb *)ARG1;
+      PRE_MEM_WRITE( "minherit(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
+   }
+}
+
+POST(sys_aio_read)
+{
+   if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
+      struct vki_aiocb *iocb = (struct vki_aiocb *)ARG1;
+      PRE_MEM_WRITE( "minherit(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
+   }
+}
 
 // SYS_aio_write	256
-// @todo
+// int aio_write(struct aiocb *iocb);
+PRE(sys_aio_write)
+{
+   PRINT("sys_aio_write ( %#" FMT_REGWORD "x )" , ARG1);
+   PRE_REG_READ1(int, "aio_write", struct vki_aiocb *, iocb);
+   PRE_MEM_READ("aio_read(iocb)", ARG1, sizeof(struct vki_aiocb));
+   if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
+      struct vki_aiocb *iocb = (struct vki_aiocb *)ARG1;
+      PRE_MEM_WRITE( "aio_write(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
+   }
+}
+
+POST(sys_aio_write)
+{
+   if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
+      struct vki_aiocb *iocb = (struct vki_aiocb *)ARG1;
+      PRE_MEM_WRITE( "aio_write(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
+   }
+}
 
 // SYS_lio_listio	257
-// @todo
+// int lio_listio(int mode, struct aiocb * const list[], int nent,
+//                struct sigevent *sig);
+PRE(sys_lio_listio)
+{
+   PRINT("sys_lio_listio ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",
+         SARG1, ARG2, SARG3, ARG4);
+   PRE_REG_READ4(int, "lio_listio", int, mode, struct aiocb * const *, list, int, nent,
+                 struct sigevent *,sig);
+   PRE_MEM_READ("lio_listoio(list)", ARG2, ARG3*sizeof(struct vki_aiocb *));
+   // loop check elements
+   if (ML_(safe_to_deref)((struct vki_aiocb **)ARG2, ARG3*sizeof(struct vki_aiocb *))) {
+      struct vki_aiocb** list = (struct vki_aiocb **)ARG2;
+      for (int i = 0; i < (int)ARG3; ++i) {
+         if (list[i]) {
+            PRE_MEM_READ("lio_listoio(list[?])", (Addr)list[i], ARG3*sizeof(struct vki_aiocb));
+         }
+      }
+   }
+   if (ARG4 && (ARG1 & VKI_LIO_NOWAIT)) {
+      PRE_MEM_READ("lio_listoio(sig)", ARG4, sizeof(struct vki_sigevent));
+   }
+}
 
 // SYS_freebsd11_getdents	272
 // generic
@@ -2457,10 +2547,10 @@ PRE(sys_lutimes)
 // @todo, maybe
 
 // SYS_preadv	289
-// @todo
+// amd64 / x86
 
 // SYS_pwritev	290
-// @todo
+// amd64 / x86
 
 // SYS_fhopen	298
 // int fhopen(const fhandle_t *fhp, int flags);
@@ -2792,7 +2882,18 @@ PRE(sys_sched_get_priority_min)
 }
 
 // SYS_sched_rr_get_interval	334
-// @todo
+// int sched_rr_get_interval(pid_t pid, struct timespec *interval);
+PRE(sys_sched_rr_get_interval)
+{
+   PRINT("sys_sched_rr_get_interval ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
+   PRE_REG_READ2(int, "sched_rr_get_interval", vki_pid_t, pid, struct vki_timespec *,interval);
+   PRE_MEM_WRITE("sys_sched_rr_get_interval(interval)", ARG2, sizeof(struct vki_timespec));
+}
+
+POST(sys_sched_rr_get_interval)
+{
+   POST_MEM_WRITE(ARG2, sizeof(struct vki_timespec));
+}
 
 // SYS_utrace	335
 // int utrace(const void *addr, size_t len);
@@ -2824,7 +2925,13 @@ POST(sys_kldsym)
 }
 
 // SYS_jail	338
-// @todo
+// int jail(struct jail *jail);
+PRE(sys_jail)
+{
+   PRINT("sys_jail ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "jail", struct jail *, jail);
+   PRE_MEM_READ( "jail(jail)", ARG1, sizeof(struct vki_jail) );
+}
 
 // SYS_nnpfs_syscall 338
 // @todo
@@ -3052,10 +3159,30 @@ PRE(sys___acl_aclcheck_fd)
 }
 
 // SYS_extattrctl	355
-// @todo
+// no manpage?
+// syscalls.master: int extattrctl(_In_z_ const char *path, int cmd, _In_z_opt_ const char *filename, int attrnamespace, _In_z_ const char *attrname);
+PRE(sys_extattrctl)
+{
+    PRINT("sys_extattrctl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3,SARG4,ARG5);
+    PRE_REG_READ5(ssize_t, "extattrctl",
+                  const char *, path, int, cmd, const char *, filename, int, attrnamespace, const char *, attrname);
+    PRE_MEM_RASCIIZ("extattrctl(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattrctl(filename)", ARG3);
+    PRE_MEM_RASCIIZ("extattrctl(attrname)", ARG5);
+}
 
 // SYS_extattr_set_file	356
-// @todo
+// ssize_t extattr_set_file(const char *path, int attrnamespace,
+//                          const char *attrname, const void *data, size_t nbytes);
+PRE(sys_extattr_set_file)
+{
+    PRINT("sys_extattr_set_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+    PRE_REG_READ5(ssize_t, "extattr_set_file",
+                  const char *, path, int, attrnamespace, const char *, attrname, const void *, data, size_t, nbytes);
+    PRE_MEM_RASCIIZ("extattr_set_file(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattr_set_file(attrname)", ARG3);
+    PRE_MEM_READ("extattr_set_file(data)", ARG4, ARG5);
+}
 
 // SYS_extattr_get_file	357
 // ssize_t extattr_get_file(const char *path, int attrnamespace,
@@ -3080,10 +3207,34 @@ POST(sys_extattr_get_file)
 }
 
 // SYS_extattr_delete_file	358
-// @todo
+// int extattr_delete_file(const char *path, int attrnamespace,
+//                         const char *attrname);
+PRE(sys_extattr_delete_file)
+{
+    PRINT("sys_extattr_delete_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3);
+    PRE_REG_READ3(ssize_t, "extattr_delete_file",
+                  const char *, path, int, attrnamespace, const char *, attrname);
+    PRE_MEM_RASCIIZ("extattr_delete_file(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattr_delete_file(attrname)", ARG3);
+}
 
 // SYS_aio_waitcomplete	359
-// @todo
+// ssize_t aio_waitcomplete(struct aiocb **iocbp, struct timespec *timeout);
+PRE(sys_aio_waitcomplete)
+{
+   *flags |= SfMayBlock;
+   PRINT("sys_aio_waitcomplete ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2);
+   PRE_REG_READ2(ssize_t, "aio_waitcomplete", struct aiocb **, iocbp, struct timespec *, timeout);
+   if (ARG2) {
+      PRE_MEM_READ("aio_waitcomplete(timeout", ARG2, sizeof(struct vki_timespec));
+   }
+   PRE_MEM_WRITE( "aio_waitcomplete(iocbp)", ARG1, sizeof(struct aiocb *));
+}
+
+POST(sys_aio_waitcomplete)
+{
+   POST_MEM_WRITE(ARG1, sizeof(struct aiocb *));
+}
 
 // SYS_getresuid	360
 // int getresuid(uid_t *ruid, uid_t *euid, uid_t *suid);
@@ -3208,16 +3359,49 @@ POST(sys_kevent)
 #endif
 
 // SYS_extattr_set_fd	371
-// @todo
+// ssize_t extattr_set_fd(int fd, int attrnamespace, const char *attrname,
+//                        const void *data, size_t nbytes);
+PRE(sys_extattr_set_fd)
+{
+   PRINT("sys_extattr_set_fd ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", SARG1,SARG2,ARG3,ARG4,ARG5);
+   PRE_REG_READ5(int, "extattr_set_fd", int, fd, int, attrnamespace, const char *,attrname, const void *,data, size_t, nbytes);
+   PRE_MEM_RASCIIZ( "extattr_set_fd(attrname)", ARG3 );
+   PRE_MEM_READ("extattr_set_fd(data)", ARG4, ARG5);
+}
 
 // SYS_extattr_get_fd	372
-// @todo
+// ssize_t extattr_get_fd(int fd, int attrnamespace, const char *attrname,
+//                        void *data, size_t nbytes);
+PRE(sys_extattr_get_fd)
+{
+   PRINT("sys_extattr_get_fd ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", SARG1,SARG2,ARG3,ARG4,ARG5);
+   PRE_REG_READ5(int, "extattr_get_fd", int, fd, int, attrnamespace, const char *,attrname, const void *,data, size_t, nbytes);
+   PRE_MEM_RASCIIZ( "extattr_get_fd(attrname)", ARG3 );
+   PRE_MEM_WRITE("extattr_get_fd(data)", ARG4, ARG5);
+}
+
+POST(sys_extattr_get_fd)
+{
+   POST_MEM_WRITE(ARG4, ARG5);
+}
 
 // SYS_extattr_delete_fd	373
-// @todo
+// int extattr_delete_fd(int fd, int attrnamespace, const char *attrname);
+PRE(sys_extattr_delete_fd)
+{
+   PRINT("sys_extattr_delete_fd ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1,SARG2,ARG3);
+   PRE_REG_READ3(int, "extattr_delete_fd", int, fd, int, attrnamespace, const char *,attrname);
+   PRE_MEM_RASCIIZ( "extattr_delete_fd(attrname)", ARG3 );
+}
 
 // SYS___setugid	374
-// @todo
+// no manpage?
+// syscalls.master: int __setugid(int flag);
+PRE(sys___setugid)
+{
+   PRINT("sys___setugid ( %" FMT_REGWORD "d )", SARG1);
+   PRE_REG_READ1(int, "__setugid", int, flag);
+}
 
 // SYS_eaccess	376
 // int eaccess(const char *path, int mode);
@@ -3232,7 +3416,13 @@ PRE(sys_eaccess)
 // @todo
 
 // SYS_nmount	378
-// @todo
+// int nmount(struct iovec *iov, u_int niov, int flags);
+PRE(sys_nmount)
+{
+   PRINT("sys_nmount ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "d )", ARG1, ARG2, SARG3);
+   PRE_REG_READ3(int, "nmount", struct iovec *, iov, u_int, niov, int, flags);
+   PRE_MEM_READ( "nmount(pathname)", ARG1, ARG2*sizeof(struct vki_iovec) );
+}
 
 // SYS___mac_get_proc	384
 // @todo
@@ -3483,13 +3673,51 @@ POST(sys_fhstatfs)
 // @todo
 
 // SYS_extattr_set_link	412
-// @todo
+// ssize_t extattr_set_link(const char *path, int attrnamespace,
+//                          const char *attrname, const void *data, size_t nbytes);
+PRE(sys_extattr_set_link)
+{
+    PRINT("sys_extattr_set_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+    PRE_REG_READ5(ssize_t, "extattr_set_link",
+                  const char *, path, int, attrnamespace, const char *, attrname, const void *, data, size_t, nbytes);
+    PRE_MEM_RASCIIZ("extattr_set_link(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattr_set_link(attrname)", ARG3);
+    PRE_MEM_READ("extattr_set_link(data)", ARG4, ARG5);
+}
 
 // SYS_extattr_get_link	413
-// @todo
+// ssize_t extattr_get_link(const char *path, int attrnamespace,
+//                          const char *attrname, void *data, size_t nbytes);
+PRE(sys_extattr_get_link)
+{
+    PRINT("sys_extattr_get_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+    PRE_REG_READ5(ssize_t, "extattr_get_link",
+                  const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
+    PRE_MEM_RASCIIZ("extattr_get_link(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattr_get_link(attrname)", ARG3);
+    if (ARG4) {
+        PRE_MEM_WRITE("extattr_get_link(data)", ARG4, ARG5);
+    }
+}
+
+POST(sys_extattr_get_link)
+{
+    if (ARG4) {
+        POST_MEM_WRITE(ARG4, ARG5);
+    }
+}
 
 // SYS_extattr_delete_link	414
-// @todo
+// int extattr_delete_link(const char *path, int attrnamespace,
+//                         const char *attrname);
+PRE(sys_extattr_delete_link)
+{
+    PRINT("sys_extattr_delete_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3);
+    PRE_REG_READ3(ssize_t, "extattr_delete_link",
+                  const char *, path, int, attrnamespace, const char *, attrname);
+    PRE_MEM_RASCIIZ("extattr_delete_link(path)", ARG1);
+    PRE_MEM_RASCIIZ("extattr_delete_link(attrname)", ARG3);
+}
 
 // SYS___mac_execve	415
 // @todo
@@ -3585,7 +3813,13 @@ POST(sys_swapcontext)
 }
 
 // SYS_swapoff	424
-// @todo
+// int swapoff(const char *special);
+PRE(sys_swapoff)
+{
+   PRINT("sys_swapoff ( %#" FMT_REGWORD "x(%s) )", ARG1,(char *)ARG1);
+   PRE_REG_READ1(int, "swapoff", const char *, special);
+   PRE_MEM_RASCIIZ( "swapoff(special)", ARG1 );
+}
 
 // SYS___acl_get_link	425
 // int __acl_get_link(const char *path, acl_type_t type, struct acl *aclp);
@@ -3659,7 +3893,18 @@ POST(sys_sigwait)
 }
 
 // SYS_thr_create	430
-// @todo
+// no manpage?
+// syscalls.master: int thr_create(_In_ ucontext_t *ctx, _Out_ long *id, int flags );
+PRE(sys_thr_create)
+{
+   PRINT( "sys_thr_create ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )", ARG1, ARG2, SARG3 );
+   PRE_REG_READ3(int, "thr_create", /*ucontext_t*/void *, ctx, long *, id, int, flags );
+
+   VG_(message)(Vg_UserMsg, "thr_create() not implemented");
+   VG_(unimplemented)("Valgrind does not support thr_create().");
+
+   SET_STATUS_Failure(VKI_ENOSYS);
+}
 
 // SYS_thr_exit	431
 // void thr_exit(long *state);
@@ -3777,55 +4022,121 @@ PRE(sys_jail_attach)
 }
 
 // SYS_extattr_list_fd	437
-// @todo
+// ssize_t extattr_list_fd(int fd, int attrnamespace, void *data, size_t nbytes);
+PRE(sys_extattr_list_fd)
+{
+   PRINT("extattr_list_fd ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", SARG1, SARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "extattr_list_fd", int, id, int, attrnamespace, void *,data, size_t, nbytes);
+   PRE_MEM_WRITE("extattr_list_fd(data)", ARG3, ARG4);
+}
+
+POST(sys_extattr_list_fd)
+{
+   POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_extattr_list_file	438
-// @todo
+// ssize_t extattr_list_file(const char *path, int attrnamespace, void *data,
+//                           size_t nbytes);
+PRE(sys_extattr_list_file)
+{
+   PRINT("extattr_list_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, SARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "extattr_list_file", const char *, path, int, attrnamespace, void *,data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_list_file(path)", ARG1);
+   PRE_MEM_WRITE("extattr_list_file(data)", ARG3, ARG4);
+}
+
+POST(sys_extattr_list_file)
+{
+   POST_MEM_WRITE(ARG3, ARG4);
+}
 
 // SYS_extattr_list_link	439
-// @todo
+// ssize_t extattr_get_link(const char *path, int attrnamespace,
+//                          const char *attrname, void *data, size_t nbytes);
+PRE(sys_extattr_list_link)
+{
+   PRINT("extattr_list_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, SARG2, ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "extattr_list_list", const char *, path, int, attrnamespace, void *,data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_list_list(path)", ARG1);
+   PRE_MEM_WRITE("extattr_list_list(data)", ARG3, ARG4);
+}
+
+POST(sys_extattr_list_link)
+{
+   POST_MEM_WRITE(ARG3, ARG4);
+}
+
 
 // SYS_ksem_timedwait	441
 // @todo
 
 // SYS_thr_suspend	442
-// @todo
+// int thr_suspend(struct timespec *timeout);
+PRE(sys_thr_suspend)
+{
+   PRINT("sys_thr_suspend ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "thr_suspend", struct timespec *, timeout);
+   PRE_MEM_READ("thr_suspend(timeout)", ARG1, sizeof(struct vki_timespec));
+
+   VG_(message)(Vg_UserMsg, "thr_supend() not implemented");
+   VG_(unimplemented)("Valgrind does not support thr_suspend().");
+
+   SET_STATUS_Failure(VKI_ENOSYS);
+}
 
 // SYS_thr_wake	443
 // int thr_wake(long id);
 PRE(sys_thr_wake)
 {
-   PRINT("sys_thr_wake ( %" FMT_REGWORD "u )", ARG1);
+   PRINT("sys_thr_wake ( %" FMT_REGWORD "d )", SARG1);
    PRE_REG_READ1(long, "thr_wake", long, id);
 
-   // @todo PJF surely this needs to do more
+   if (VG_(is_valid_tid)(ARG1)) {
+      VG_(threads)[ARG1].status = VgTs_Runnable;
+   } else {
+      SET_STATUS_Failure( VKI_ESRCH );
+   }
 }
 
 // SYS_kldunloadf	444
-// @todo
+// int kldunloadf(int fileid, int flags);
+PRE(sys_kldunloadf)
+{
+   PRINT("sys_kldunloadf ( %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1, SARG2);
+   PRE_REG_READ2(int, "kldunloadf", int, fileid, int, flags);
+}
 
 // SYS_audit	445
+// int audit(const char *record, u_int length);
 // @todo
 
 // SYS_auditon	446
+// int auditon(int cmd, void *data, u_int length);
 // @todo
 
 // SYS_getauid	447
+// int getauid(au_id_t *auid);
 // @todo
 
 // SYS_setauid	448
+// int setauid(au_id_t *auid);
 // @todo
 
 // SYS_getaudit	449
+//  int getaudit(auditinfo_t *auditinfo);
 // @todo
 
 // SYS_setaudit	450
+// int setaudit(auditinfo_t *auditinfo);
 // @todo
 
 // SYS_getaudit_addr	451
+// int getaudit_addr(auditinfo_addr_t *auditinfo_addr, u_int length);
 // @todo
 
 // SYS_setaudit_addr	452
+// int setaudit_addr(auditinfo_addr_t *auditinfo_addr, u_int length);
 // @todo
 
 // SYS_auditctl	453
@@ -4148,7 +4459,13 @@ POST(sys__umtx_op)
 // x86/amd64
 
 // SYS_sigqueue	456
-// @todo
+// int sigqueue(pid_t pid, int signo, const union sigval value);
+PRE(sys_sigqueue)
+{
+   PRINT("sys_sigqueue ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",
+         SARG1,SARG2,ARG3);
+   PRE_REG_READ3(int, "sigqueue", vki_pid_t, pid, int, signo, const union vki_sigval, value);
+}
 
 // SYS_kmq_open	457
 // mqd_t mq_open(const char *name, int oflag, ...);
@@ -4291,7 +4608,16 @@ PRE(sys_kmq_unlink)
 }
 
 // SYS_abort2	463
-// @todo
+// void abort2(const char *why, int nargs, void **args);
+PRE(sys_abort2)
+{
+   PRINT( "sys_abort2 ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, SARG2, ARG3 );
+   PRE_REG_READ3(void, "abort2", const char *, why, int, nargs, void **, args);
+   // max length of 'why' is 128
+   PRE_MEM_RASCIIZ( "abort2(why)", ARG2);
+   // max val for nargs is 16
+   PRE_MEM_READ("abort2(args", ARG3, ARG2*sizeof(void*));
+}
 
 // SYS_thr_set_name	464
 // int thr_set_name(long id, const char *name);
@@ -4299,11 +4625,17 @@ PRE(sys_thr_set_name)
 {
    PRINT( "sys_thr_set_name ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2 );
    PRE_REG_READ2(int, "thr_set_name", long, id, const char *, name);
-   PRE_MEM_RASCIIZ( "sys_thr_set_name(name)", ARG2);
+   PRE_MEM_RASCIIZ( "thr_set_name(name)", ARG2);
 }
 
 // SYS_aio_fsync	465
-// @todo
+// int aio_fsync(int op, struct aiocb *iocb);
+PRE(sys_aio_fsync)
+{
+   PRINT("aio_fsync ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1,ARG2);
+   PRE_REG_READ2(int, "aio_fsync", int, op, struct vki_aiocb *, iocb);
+   PRE_MEM_READ( "aio_fsync(iocb)", ARG2, sizeof(struct vki_aiocb) );
+}
 
 // SYS_rtprio_thread	466
 // int rtprio_thread(int function, lwpid_t lwpid, struct rtprio *rtp);
@@ -4328,15 +4660,24 @@ POST(sys_rtprio_thread)
 }
 
 // SYS_sctp_peeloff	471
+// int sctp_peeloff(int s, sctp_assoc_t id);
 // @todo
 
 // SYS_sctp_generic_sendmsg	472
-// @todo
+// int sctp_generic_sendmsg(int s, void *msg, int msglen, struct sockaddr *to,
+//                          socklen_t len, struct sctp_sndrcvinfo *sinfo, int flags);
+// @tdo
+
 
 // SYS_sctp_generic_sendmsg_iov	473
+// int sctp_generic_sendmsg_iov(int s, struct iovec *iov, int iovlen,
+//                              struct sockaddr *to, struct sctp_sndrcvinfo *sinfo, int flags);
 // @todo
 
 // SYS_sctp_generic_recvmsg	474
+// int sctp_generic_recvmsg(int s, struct iovec *iov, int iovlen,
+//                          struct sockaddr *from, socklen_t *fromlen,
+//                          struct sctp_sndrcvinfo *sinfo, int *msgflags);
 // @todo
 
 // SYS_pread	475
@@ -4750,7 +5091,7 @@ PRE(sys_unlinkat)
 }
 
 // SYS_posix_openpt	504
-//int posix_openpt(int oflag);
+// int posix_openpt(int oflag);
 PRE(sys_posix_openpt)
 {
    PRINT("sys_posix_openpt ( %" FMT_REGWORD "d )", SARG2);
@@ -5959,7 +6300,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_freebsd6_pread,   sys_freebsd6_pread),    // 173
    BSDX_(__NR_freebsd6_pwrite,  sys_freebsd6_pwrite),   // 174
 #endif
-   // unimp SYS_setfib                                     175
+   BSDX_(__NR_setfib,           sys_setfib),            // 175
 
    // @todo PJF this exists on Darwin and Solaris as well
    // and it isn't implememented on either
@@ -6047,7 +6388,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl SYS_ffclock_setestimate                       242
    // unimpl SYS_ffclock_getestimate                       243
 
-   // unimpls SYS_clock_nanosleep                          244
+   BSDXY(__NR_clock_nanosleep,  sys_clock_nanosleep),   // 244
    // unimpl SYS_clock_getcpuclockid2                      247
 
    // unimpl SYS_ntp_gettime                               248
@@ -6057,9 +6398,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // openbsd_poll                                      // 252
    BSDX_(__NR_issetugid,        sys_issetugid),         // 253
    GENX_(__NR_lchown,           sys_lchown),            // 254
-   // unimpl SYS_aio_read                                  255
-   // unimpl SYS_aio_write                                 256
-   // unimpl SYS_lio_listio                                257
+   BSDXY(__NR_aio_read,         sys_aio_read),          // 255
+   BSDXY(__NR_aio_write,        sys_aio_write),         // 256
+   BSDX_(__NR_lio_listio,       sys_lio_listio),        // 257
 
    GENXY(__NR_freebsd11_getdents, sys_getdents),        // 272
    BSDX_(__NR_lchmod,           sys_lchmod),            // 274
@@ -6072,8 +6413,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    // unimpl SYS_freebsd11_nlstat                          280
 
-   // unimpl SYS_preadv                                    289
-   // unimpl SYS_pwritev                                   290
+   BSDXY(__NR_preadv,           sys_preadv),            // 289
+   BSDX_(__NR_pwritev,          sys_pwritev),           // 290
 
    // freebsd 4 fhstatfs                                   297
    BSDXY(__NR_fhopen,           sys_fhopen),            // 298
@@ -6123,12 +6464,12 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
    BSDX_(__NR_sched_get_priority_max, sys_sched_get_priority_max), // 332
    BSDX_(__NR_sched_get_priority_min, sys_sched_get_priority_min), // 333
-   // unimpl SYS_sched_rr_get_interval                     334
+   BSDXY(__NR_sched_rr_get_interval, sys_sched_rr_get_interval), // 334
    BSDX_(__NR_utrace,           sys_utrace),            // 335
 
    // freebsd 4 sendfile                                   336
    BSDXY(__NR_kldsym,           sys_kldsym),            // 337
-// BSDX_(__NR_jail,             sys_jail),              // 338
+   BSDX_(__NR_jail,             sys_jail),              // 338
    // unimpl SYS_nnpfs_syscall                             339
 
    BSDXY(__NR_sigprocmask,      sys_sigprocmask),       // 340
@@ -6149,11 +6490,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR___acl_delete_fd,  sys___acl_delete_fd),   // 352
    BSDX_(__NR___acl_aclcheck_file, sys___acl_aclcheck_file), // 353
    BSDX_(__NR___acl_aclcheck_fd, sys___acl_aclcheck_fd), // 354
-   // unimpl SYS_extattrctl                                355
-   // unimpl SYS_extattr_set_file                          356
+   BSDX_(__NR_extattrctl,       sys_extattrctl),        // 355
+   BSDX_(__NR_extattr_set_file, sys_extattr_set_file),  // 356
    BSDXY(__NR_extattr_get_file, sys_extattr_get_file),  // 357
-   // unimpl SYS_extattr_delete_file                       358
-   // unimpl SYS_aio_waitcomplete                          359
+   BSDX_(__NR_extattr_delete_file, sys_extattr_delete_file), // 358
+   BSDXY(__NR_aio_waitcomplete, sys_aio_waitcomplete),  // 359
 
    BSDXY(__NR_getresuid,        sys_getresuid),         // 360
    BSDXY(__NR_getresgid,        sys_getresgid),         // 361
@@ -6170,15 +6511,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // obs __cap_set_fd                                     368
    // obs __cap_set_file                                   369
 
-   // unimpl extattr_set_fd                                371
-   // unimpl extattr_get_fd                                372
-   // unimpl extattr_delete_fd                             373
-   // unimpl __setugid                                     374
+   BSDX_(__NR_extattr_set_fd,   sys_extattr_set_fd),    // 371
+   BSDXY(__NR_extattr_get_fd,   sys_extattr_get_fd),    // 372
+   BSDX_(__NR_extattr_delete_fd, sys_extattr_delete_fd), // 373
+   BSDX_(__NR___setugid,        sys___setugid),         // 374
    // obs nfsclnt                                          375
 
    BSDX_(__NR_eaccess,          sys_eaccess),           // 376
    // unimpl afs3_syscall                                  377
-   // unimpl nmount                                        378
+   BSDX_(__NR_nmount,           sys_nmount),           //  378
    // obs kse_exit                                         379
    // obs kse_wakeup                                       380
    // obs kse_create                                       381
@@ -6225,9 +6566,9 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl __mac_get_link                                410
    // unimpl __mac_set_link                                411
 
-   // unimpl extattr_set_link                              412
-   // unimpl extattr_get_link                              413
-   // unimpl extattr_delete_link                           414
+   BSDX_(__NR_extattr_set_link, sys_extattr_set_link),  // 412
+   BSDXY(__NR_extattr_get_link, sys_extattr_get_link),  // 413
+   BSDX_(__NR_extattr_delete_link, sys_extattr_delete_link), // 414
    // unimpl __mac_execve                                  415
 
    BSDXY(__NR_sigaction,        sys_sigaction),         // 416
@@ -6237,14 +6578,14 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_setcontext,       sys_setcontext),        // 422
    BSDXY(__NR_swapcontext,      sys_swapcontext),       // 423
 
-   // unimpl swapoff                                       424
+   BSDX_(__NR_swapoff,          sys_swapoff),           // 424
    BSDXY(__NR___acl_get_link,   sys___acl_get_link),    // 425
    BSDX_(__NR___acl_set_link,   sys___acl_set_link),    // 426
    BSDX_(__NR___acl_delete_link, sys___acl_delete_link), // 427
 
    BSDX_(__NR___acl_aclcheck_link, sys___acl_aclcheck_link), // 428
    BSDXY(__NR_sigwait,          sys_sigwait),           // 429
-   // unimpl thr_create                                    430
+   BSDX_(__NR_thr_create,       sys_thr_create),        // 430
    BSDX_(__NR_thr_exit,         sys_thr_exit),          // 431
 
    BSDXY(__NR_thr_self,         sys_thr_self),          // 432
@@ -6255,15 +6596,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #endif
 
    BSDX_(__NR_jail_attach,      sys_jail_attach),       // 436
-   // unimpl extattr_list_fd                               437
-   // unimpl extattr_list_file                             438
-   // unimpl extattr_list_link                             439
+   BSDXY(__NR_extattr_list_fd,  sys_extattr_list_fd),   // 437
+   BSDXY(__NR_extattr_list_file, sys_extattr_list_file), // 438
+   BSDXY(__NR_extattr_list_link, sys_extattr_list_link), // 439
 
    // obs kse_switchin                                     440
    // unimpl ksem_timedwait                                441
-   // unimpl thr_suspend                                   442
+   BSDX_(__NR_thr_suspend,      sys_thr_suspend),       // 442
    BSDX_(__NR_thr_wake,         sys_thr_wake),          // 443
-   // unimpl kldunloadf                                    444
+   BSDX_(__NR_kldunloadf,       sys_kldunloadf),        // 444
    // unimpl audit                                         445
    // unimpl auditon                                       446
    // unimpl getauid                                       447
@@ -6277,7 +6618,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR__umtx_op,         sys__umtx_op),          // 454
    BSDX_(__NR_thr_new,          sys_thr_new),           // 455
 
-   // unimpl sigqueue                                      456
+   BSDX_(__NR_sigqueue,         sys_sigqueue),          // 456
    BSDXY(__NR_kmq_open,         sys_kmq_open),          // 457
    BSDX_(__NR_kmq_setattr,      sys_kmq_setattr),       // 458
    BSDXY(__NR_kmq_timedreceive, sys_kmq_timedreceive),  // 459
@@ -6285,10 +6626,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_kmq_timedsend,    sys_kmq_timedsend),     // 460
    BSDX_(__NR_kmq_notify,       sys_kmq_notify),        // 461
    BSDX_(__NR_kmq_unlink,       sys_kmq_unlink),        // 462
-   // unimpl abort2                                        463
+   BSDX_(__NR_abort2,           sys_abort2),            // 463
 
    BSDX_(__NR_thr_set_name,     sys_thr_set_name),      // 464
-   // unimpl aio_fsync                                     465
+   BSDX_(__NR_aio_fsync,        sys_aio_fsync),         // 465
    BSDXY(__NR_rtprio_thread,    sys_rtprio_thread),     // 466
 
    // unimpl sctp_peeloff                                  471

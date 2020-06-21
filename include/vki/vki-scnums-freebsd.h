@@ -208,6 +208,7 @@
 #define __NR_freebsd6_pread      173
 #define __NR_freebsd6_pwrite     174
 #endif
+#define __NR_setfib              175
 #define __NR_ntp_adjtime         176
 #define __NR_setgid              181
 #define __NR_setegid             182
@@ -270,11 +271,21 @@
 #define __NR_ktimer_gettime      238
 #define __NR_ktimer_getoverrun	239
 #define __NR_nanosleep           240
+#define __NR_ffclock_getcounter  241
+#define __NR_ffclock_setestimate 242
+#define __NR_ffclock_getestimate 243
+#define __NR_clock_nanosleep     244
+#define __NR_clock_getcpuclockid2 247
+#define __NR_ntp_gettime         248
+
 #define __NR_minherit            250
 #define __NR_rfork               251
 /* ons openbsd_poll              252 */
 #define __NR_issetugid           253
 #define __NR_lchown              254
+#define __NR_aio_read            255
+#define __NR_aio_write           256
+#define __NR_lio_listio          257
 #define __NR_freebsd11_getdents  272
 #define __NR_lchmod              274
 /* obs netbsd_lchown             275 */
@@ -290,6 +301,8 @@
 #define __NR_nfstat              279
 #define __NR_nlstat              280
 #endif
+#define __NR_preadv              289
+#define __NR_pwritev             290
 
 #if (FREEBSD_VERS <= FREEBSD_10)
 #define __NR_freebsd4_fhstatfs   297

@@ -647,7 +647,9 @@ int main(void)
    /* SYS_freebsd6_pwrite         174 */
 #endif
 
-   /* unimp SYS_setfib            175 */
+   /* SYS_setfib                  175 */
+   GO(SYS_setfib, "1s 0m");
+   SY(SYS_setfib, x0+10); FAIL;
 
    // BSDXY(__NR_ntp_adjtime,   sys_ntp_adjtime),       // 176
    
@@ -882,7 +884,10 @@ int main(void)
    
    // unimpl SYS_ffclock_getestimate                       243
 
-   // unimpls SYS_clock_nanosleep                          244
+   /* SYS_clock_nanosleep         244 */
+   /* this succeeds ? */
+   GO(SYS_clock_nanosleep, "4s 2m");
+   SY(SYS_clock_nanosleep, x0+5000, x0+3000, x0, x0+1); SUCC;
 
    // unimpl SYS_clock_getcpuclockid2                      247
 
@@ -907,9 +912,13 @@ int main(void)
    GO(SYS_lchown, "3s 1m");
    SY(SYS_lchown, x0, x0+1234, x0+2345); FAIL;
 
-   // unimpl SYS_aio_read                                  255
+   /* SYS_aio_read                255 */
+   GO(SYS_aio_read, "1s 1m");
+   SY(SYS_aio_read, x0+1); FAIL;
    
-   // unimpl SYS_aio_write                                 256
+   /* SYS_aio_write               256 */
+   GO(SYS_aio_write, "1s 1m");
+   SY(SYS_aio_write, x0+1); FAIL;
    
    // unimpl SYS_lio_listio                                257
 
@@ -940,9 +949,14 @@ int main(void)
 
    /* netbsd lstat                280 */
 
-   // unimpl SYS_preadv                                    289
+   /* SYS_preadv                  289 */
+   GO(SYS_preadv, "4s 0m");
+   /* 0m because of the bofus fd */
+   SY(SYS_preadv, x0+9999999, x0+1, x0+16, x0+20); FAIL;
    
-   // unimpl SYS_pwritev                                   290
+   /* _pwritev                    290 */
+   GO(SYS_pwritev, "4s 0m");
+   SY(SYS_pwritev, x0+9999999, x0+1, x0+16, x0+20); FAIL;
    
    /* freebsd 4 fhstatfs          297 */
 
@@ -1022,7 +1036,7 @@ int main(void)
    
    /* SYS_aio_error               317 */
    GO(SYS_aio_error, "1s 1m");
-   SY(SYS_aio_error, x0+1); SUCC;
+   SY(SYS_aio_error, x0+1); FAIL;
    
    /* freebsd 6 aio_read          318 */
    
@@ -1078,7 +1092,9 @@ int main(void)
    GO(SYS_sched_get_priority_min, "1s 0m");
    SY(SYS_sched_get_priority_min, x0+9876); FAIL;
 
-   // BSDXY(__NR_sched_rr_get_interval, sys_sched_rr_get_interval), // 334
+   /* SYS_sched_rr_get_interval   334 */
+   GO(SYS_sched_rr_get_interval, "2s 1m");
+   SY(SYS_sched_rr_get_interval, x0+999999, x0+1); FAIL;
 
    /* SYS_utrace                  335*/
    GO(SYS_utrace, "2s 1m");
@@ -1091,7 +1107,9 @@ int main(void)
    /* @todo if data (arg2) is valid but the symname field is not then that would be a different 1m */
    SY(SYS_kldsym, x0-1, x0+16, x0+1); FAIL;
    
-   // BSDX_(__NR_jail,             sys_jail),              // 338
+   /* SYS_jail                    338 */
+   GO(SYS_jail, "1s 1m");
+   SY(SYS_jail, x0+1); FAIL;
 
    // unimpl pioctl               339
 
@@ -1154,17 +1172,25 @@ int main(void)
    GO(SYS___acl_aclcheck_fd, "3s 1m");
    SY(SYS___acl_aclcheck_fd, x0-1, x0+4567, x0+3); FAIL;
 
-   // BSDXY(__NR_extattrctl,    sys_extattrctl),        // 355
+   /* SYS_extattrctl              355 */
+   GO(SYS_extattrctl, "5s 3m");
+   SY(SYS_extattrctl, x0+1, x0, x0+2, x0, x0+3); FAIL;
 
-   // BSDXY(__NR_extattr_set_file, sys_extattr_set_file), // 356
+   /* SYS_extattr_set_file        356 */
+   GO(SYS_extattr_set_file, "5s 3m");
+   SY(SYS_extattr_set_file, x0+1, x0, x0+2, x0+3, x0); FAIL;
 
    /* SYS_extattr_get_file        357 */
    GO(SYS_extattr_get_file, "5s 3m");
    SY(SYS_extattr_get_file, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
    
-   // BSDXY(__NR_extattr_delete_file, sys_extattr_delete_file), // 358
+   /* SYS_extattr_delete_file     358 */
+   GO(SYS_extattr_delete_file, "3s 2m");
+   SY(SYS_extattr_delete_file, x0+1, x0+2, x0+3); FAIL;
 
-   // BSDXY(__NR_aio_waitcomplete, sys_aio_waitcomplete), // 359
+   /* SYS_aio_waitcomplete        359 */
+   GO(SYS_aio_waitcomplete, "2s 2m");
+   SY(SYS_aio_waitcomplete, x0+1, x0+1); FAIL;
 
    /* SYS_getresuid               360 */
    GO(SYS_getresuid, "3s 3m");
@@ -1189,14 +1215,22 @@ int main(void)
    
    /* obs __cap_get* / __cap_set* 364 to 369 */
 
-   // extattr_set_fd                                       371
+   /* SYS_extattr_set_fd          371 */
+   GO(SYS_extattr_set_fd, "5s 2m");
+   SY(SYS_extattr_set_fd, x0+999999, x0, x0+1, x0+1, x0+16); FAIL;
 
-   // extattr_get_fd                                       372
+   /* SYS_extattr_get_fd          372 */
+   GO(SYS_extattr_get_fd, "5s 2m");
+   SY(SYS_extattr_get_fd, x0+999999, x0, x0+1, x0+1, x0+16); FAIL;
 
-   // extattr_delete_fd                                    373
+   /* SYS_extattr_delete_fd       373 */
+   GO(SYS_extattr_delete_fd, "3s 1m");
+   SY(SYS_extattr_delete_fd, x0+999999, x0, x0+1); FAIL;
 
-   // __setugid                                            374
-
+   /* SYS___setugid               374 */
+   GO(SYS___setugid, "1s 0m");
+   SY(SYS___setugid, x0); FAIL;
+   
    // nfsclnt                                              375
 
    /* SYS_eaccess                 376 */
@@ -1205,7 +1239,9 @@ int main(void)
 
    // afs_syscall                                          377
 
-   // nmount                                               378
+   /* SYS_nmount                  378 */
+   GO(SYS_nmount, "3s 1m");
+   SY(SYS_nmount, x0+1, x0+3, x0); FAIL;
 
    // kse_exit                                             379
 
@@ -1314,12 +1350,18 @@ int main(void)
    
    // __mac_set_link                                       411
 
-   // extattr_set_link                                     412
+   /* SYS_extattr_set_link        412 */
+   GO(SYS_extattr_set_link, "5s 3m");
+   SY(SYS_extattr_set_file, x0+1, x0, x0+2, x0+3, x0); FAIL;
    
-   // extattr_get_link                                     413
-   
-   // extattr_delete_link                                  414
-   
+   /* SYS_extattr_get_link        413 */
+   GO(SYS_extattr_get_link, "5s 3m");
+   SY(SYS_extattr_get_link, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
+
+   /* SYS_extattr_delete_link     414 */
+   GO(SYS_extattr_delete_link, "3s 2m");
+   SY(SYS_extattr_delete_link, x0+1, x0+2, x0+3); FAIL;
+
    // __mac_execve                                         415
 
    /* SYSR_sigaction              416 */
@@ -1343,7 +1385,9 @@ int main(void)
    GO(SYS_swapcontext, "2s 2m");
    SY(SYS_swapcontext, x0+1, x0+2); FAIL;
 
-   // swapoff                     424
+   /* SYS_swapoff                 424 */
+   GO(SYS_swapoff, "1s 1m");
+   SY(SYS_swapoff, x0+1); FAIL;
    
    /* SYS___acl_get_link          425 */
    GO(SYS___acl_get_link, "3s 2m");
@@ -1396,11 +1440,18 @@ int main(void)
    GO(SYS_jail_attach, "1s 0m");
    SY(SYS_jail_attach, x0-1); FAIL;
    
-   // extattr_list_fd                                      437
+   /* SYS_extattr_list_fd         437 */
+   GO(SYS_extattr_list_fd, "3s 1m");
+   SY(SYS_extattr_list_fd, x0+999999, x0+1, x0+16); FAIL;
    
-   // extattr_list_file                                    438
+   /* SYS_extattr_list_file       438 */
+   GO(SYS_extattr_list_file, "3s 2m");
+   SY(SYS_extattr_list_file, x0+1, x0+1, x0+16); FAIL;
    
-   // extattr_list_link                                    439
+   /* SYS_extattr_list_link       439 */
+   GO(SYS_extattr_list_link, "3s 2m");
+   SY(SYS_extattr_list_link, x0+1, x0+1, x0+16); FAIL;
+
 
    // kse_switchin                                         440
    
@@ -1412,7 +1463,9 @@ int main(void)
    GO(SYS_thr_wake, "1s 0m");
    SY(SYS_thr_wake, x0+99); FAIL;
    
-   // kldunloadf                                           444
+   /* SYS_kldunloadf              444 */
+   GO(SYS_kldunloadf, "1s 0m");
+   SY(SYS_kldunloadf, x0+1, x0); FAIL;
 
    // audit                                                445
 
@@ -1445,7 +1498,9 @@ int main(void)
    SY(SYS_thr_new, x0+1, x0+2); FAIL;
    */
 
-   // sigqueue                                             456
+   /* SYS_sigqueue                456 */
+   GO(SYS_sigqueue, "3s 0m");
+   SY(SYS_sigqueue, x0+9999999, x0+2000, x0); FAIL;
 
    /* SYS_kmq_open                457 */
    GO(SYS_kmq_open, "4s 2m");
@@ -1480,7 +1535,12 @@ int main(void)
    GO(SYS_kmq_unlink, "1s 1m");
    SY(SYS_kmq_unlink, x0+1); FAIL;
 
-   // abort2                      463
+   /* abort2                      463 */
+   /* @todo need a specific test for this as it aborts execution */
+   /*
+   GO(SYS_abort2, "3s 2m");
+   SY(SYS_abort2, x0+1, x0+1, x0+1); FAIL;
+   */
 
    /* SYS_thr_set_name            464 */
    /* @todo PJF VG doesn't like this. Causes a SIGSEGV. */
@@ -1489,23 +1549,25 @@ int main(void)
    SY(SYS_thr_set_name, x0+1, x0+2); FAIL;
    */
 
-   // aio_fsync                                            465
+   /* aio_fsync                   465 */
+   GO(SYS_aio_fsync, "2s 1m");
+   SY(SYS_aio_fsync, x0+1, x0+2); FAIL;
 
    /* SYS_rtprio_thread           466 */
    GO(SYS_rtprio_thread, "3s 1m");
    SY(SYS_rtprio_thread, x0+1, x0-2, x0+1); FAIL;
 
-   // __getpath_fromfd                                     469
+   // __getpath_fromfd            469
 
-   // __getpath_fromaddr                                   470
+   // __getpath_fromaddr          470
    
-   // sctp_peeloff                                         471
+   // sctp_peeloff                471
 
-   // sctp_generic_sendmsg                                 472
+   // sctp_generic_sendmsg        472
 
-   // sctp_generic_sendmsg_iov                             473
+   // sctp_generic_sendmsg_iov    473
 
-   // sctp_generic_recvmsg                                 474
+   // sctp_generic_recvmsg        474
    
 
    /* SYS_pread                   475 */
