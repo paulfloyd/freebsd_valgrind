@@ -718,14 +718,18 @@ case "$ARCH_MAX-$VGCONF_OS" in
            VGCONF_ARCH_PRI="x86"
            VGCONF_ARCH_SEC=""
            VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
-          VGCONF_PLATFORM_SEC_CAPS=""
+           VGCONF_PLATFORM_SEC_CAPS=""
         else
            VGCONF_ARCH_PRI="amd64"
            VGCONF_ARCH_SEC="x86"
            VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
            VGCONF_PLATFORM_SEC_CAPS="X86_FREEBSD"
         fi
-        FLAG_32ON64="-B/usr/lib32"
+        if test x$is_clang = xclang ; then
+           FLAG_32ON64="-B/usr/lib32"
+        else
+           FLAG_32ON64="-B/usr/local/lib32/gcc9 -Wl,-rpath,/usr/local/lib32/gcc9/"
+        fi
         valt_load_address_pri_norml="0x38000000"
         valt_load_address_pri_inner="0x28000000"
         valt_load_address_sec_norml="0x38000000"
