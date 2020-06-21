@@ -371,12 +371,10 @@ case "${host_os}" in
         AC_DEFINE([FREEBSD_10], 1000, [FREEBSD_VERS value for FreeBSD 10.x])
         AC_DEFINE([FREEBSD_11], 1100, [FREEBSD_VERS value for FreeBSD 11.x])
         AC_DEFINE([FREEBSD_12], 1200, [FREEBSD_VERS value for FreeBSD 12.x])
-        # @todo add .x versions as necessary
 
         AC_MSG_CHECKING([for the kernel version])
         kernel=`uname -r`
 
-        # @todo add version-specific suppression files as necessary
         case "${kernel}" in
         10.*)
            AC_MSG_RESULT([FreeBSD 10.x (${kernel})])
@@ -396,7 +394,7 @@ case "${host_os}" in
            ;;
         esac
 
-	DEFAULT_SUPP="freebsd.supp freebsd-helgrind.supp freebsd-drd.supp ${DEFAULT_SUPP}"
+        DEFAULT_SUPP="freebsd.supp freebsd-helgrind.supp freebsd-drd.supp ${DEFAULT_SUPP}"
         ;;
 
      *darwin*)
@@ -702,38 +700,38 @@ case "$ARCH_MAX-$VGCONF_OS" in
      x86-freebsd)
         VGCONF_ARCH_PRI="x86"
         VGCONF_ARCH_SEC=""
-	VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
-	VGCONF_PLATFORM_SEC_CAPS=""
+        VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
+        VGCONF_PLATFORM_SEC_CAPS=""
         valt_load_address_pri_norml="0x38000000"
         valt_load_address_pri_inner="0x28000000"
         valt_load_address_sec_norml="0xUNSET"
         valt_load_address_sec_inner="0xUNSET"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
-	;;
+        ;;
      amd64-freebsd)
-	if test x$vg_cv_only64bit = xyes; then
+        if test x$vg_cv_only64bit = xyes; then
            VGCONF_ARCH_PRI="amd64"
            VGCONF_ARCH_SEC=""
-	   VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
-	   VGCONF_PLATFORM_SEC_CAPS=""
-	elif test x$vg_cv_only32bit = xyes; then
-	   VGCONF_ARCH_PRI="x86"
+           VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
+           VGCONF_PLATFORM_SEC_CAPS=""
+        elif test x$vg_cv_only32bit = xyes; then
+           VGCONF_ARCH_PRI="x86"
            VGCONF_ARCH_SEC=""
-	   VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
-	   VGCONF_PLATFORM_SEC_CAPS=""
-	else
+           VGCONF_PLATFORM_PRI_CAPS="X86_FREEBSD"
+          VGCONF_PLATFORM_SEC_CAPS=""
+        else
            VGCONF_ARCH_PRI="amd64"
            VGCONF_ARCH_SEC="x86"
-	   VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
-	   VGCONF_PLATFORM_SEC_CAPS="X86_FREEBSD"
-	fi
+           VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
+           VGCONF_PLATFORM_SEC_CAPS="X86_FREEBSD"
+        fi
         FLAG_32ON64="-B/usr/lib32"
         valt_load_address_pri_norml="0x38000000"
         valt_load_address_pri_inner="0x28000000"
         valt_load_address_sec_norml="0x38000000"
         valt_load_address_sec_inner="0x28000000"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
-	;;
+        ;;
      # Darwin gets identified as 32-bit even when it supports 64-bit.
      # (Not sure why, possibly because 'uname' returns "i386"?)  Just about
      # all Macs support both 32-bit and 64-bit, so we just build both.  If
@@ -2280,6 +2278,7 @@ AC_GCC_WARNING_SUBST_NO([unused-function], [FLAG_W_NO_UNUSED_FUNCTION])
 AC_GCC_WARNING_SUBST_NO([static-local-in-inline], [FLAG_W_NO_STATIC_LOCAL_IN_INLINE])
 AC_GCC_WARNING_SUBST_NO([mismatched-new-delete], [FLAG_W_NO_MISMATCHED_NEW_DELETE])
 AC_GCC_WARNING_SUBST_NO([infinite-recursion], [FLAG_W_NO_INFINITE_RECURSION])
+AC_GCC_WARNING_SUBST_NO([expansion-to-defined], [FLAG_W_NO_EXPANSION_TO_DEFINED])
 
 AC_GCC_WARNING_SUBST([write-strings], [FLAG_W_WRITE_STRINGS])
 AC_GCC_WARNING_SUBST([empty-body], [FLAG_W_EMPTY_BODY])

@@ -323,7 +323,11 @@ void remote_open (const HChar *name)
        (Addr) VG_(threads), VG_N_THREADS, sizeof(ThreadState), 
        offsetof(ThreadState, status),
        offsetof(ThreadState, os_state) + offsetof(ThreadOSstate, lwpid),
-       0, 0};
+       0
+#if VEX_HOST_WORDSIZE == 8
+         , 0
+#endif
+   };
 
    user = VG_(getenv)("LOGNAME");
    if (user == NULL) user = VG_(getenv)("USER");
