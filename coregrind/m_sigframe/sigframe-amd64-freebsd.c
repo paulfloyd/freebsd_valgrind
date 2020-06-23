@@ -31,7 +31,6 @@
 
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
-#include "pub_core_libcsetjmp.h"    // to keep _threadstate.h happy
 #include "pub_core_threadstate.h"
 #include "pub_core_aspacemgr.h"
 #include "pub_core_libcbase.h"
@@ -264,9 +263,8 @@ static Addr build_sigframe(ThreadState *tst,
       frame->psigInfo = (Addr)siginfo->si_code;
    else
       frame->psigInfo = (Addr)&frame->sigInfo;
-   VG_(memcpy)(&frame->sigInfo, siginfo, sizeof(vki_siginfo_t));
 
-   if (siguc != NULL) {
+   if (siguc) {
       trapno = siguc->uc_mcontext.trapno;
       err = siguc->uc_mcontext.err;
    } else {
@@ -274,11 +272,13 @@ static Addr build_sigframe(ThreadState *tst,
       err = 0;
    }
 
-   synth_ucontext(tst->tid, siginfo, trapno, err, mask,
-                  &frame->uContext, &frame->fpstate);
+   VG_(memcpy)(&frame->sigInfo, siginfo, sizeof(vki_siginfo_t));
 
    if (sigNo == VKI_SIGILL && siginfo->si_code > 0)
       frame->sigInfo.si_addr = (void*)tst->arch.vex.guest_RIP;
+
+   synth_ucontext(tst->tid, siginfo, trapno, err, mask,
+                  &frame->uContext, &frame->fpstate);
 
    VG_TRACK( post_mem_write,  Vg_CoreSignal, tst->tid,
              rsp, offsetof(struct sigframe, vg) );
@@ -317,6 +317,16 @@ void VG_(sigframe_create)( ThreadId tid,
    tst->arch.vex.guest_RDI = (ULong) siginfo->si_signo;
    tst->arch.vex.guest_RSI = (Addr) &frame->sigInfo;
    tst->arch.vex.guest_RDX = (Addr) &frame->uContext;
+   /* And tell the tool that these registers have been written. */
+   VG_TRACK( post_reg_write, Vg_CoreSignal, tst->tid,
+             offsetof(VexGuestAMD64State,guest_RIP), sizeof(UWord) );
+   VG_TRACK( post_reg_write, Vg_CoreSignal, tst->tid,
+             offsetof(VexGuestAMD64State,guest_RDI), sizeof(UWord) );
+   VG_TRACK( post_reg_write, Vg_CoreSignal, tst->tid,
+             offsetof(VexGuestAMD64State,guest_RSI), sizeof(UWord) );
+   VG_TRACK( post_reg_write, Vg_CoreSignal, tst->tid,
+             offsetof(VexGuestAMD64State,guest_RDX), sizeof(UWord) );
+
    /* This thread needs to be marked runnable, but we leave that the
       caller to do. */
 }

@@ -77,11 +77,11 @@ struct vki_sigcontext {
 	long    r13;
 	long    r14;
 	long    r15;
-	long    trapno;
+   int     trapno;
 	short   fs;
 	short   gs;
 	long    addr;
-	long    flags;
+   int     flags;
 	short   es;
 	short   ds;
 	long    err;
@@ -199,11 +199,13 @@ struct vki_mcontext {
 	vki_register_t	r13;
 	vki_register_t	r14;
 	vki_register_t	r15;
-	vki_register_t	trapno;
-    // fs and gs
+   vki_uint32_t	trapno;
+   vki_uint16_t	fs;
+   vki_uint16_t	gs;
 	vki_register_t	addr;
-	vki_register_t	flags;
-    // es and ds
+   vki_uint32_t	flags;
+   vki_uint16_t	es;
+   vki_uint16_t	ds;
 	vki_register_t	err;
 	vki_register_t	rip;
 	vki_register_t	cs;
