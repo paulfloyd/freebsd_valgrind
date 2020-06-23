@@ -109,10 +109,6 @@ without too much problem by following these steps:
     stopping on a SIGSEGV or SIGILL:
 
     (gdb) handle SIGILL SIGSEGV nostop noprint
- 
-    If you are using lldb, then the equivalent command is
-
-    (lldb) pro hand -p true -s false -n false SIGILL SIGSEGV
 
     If you are using lldb, then the equivalent command is
 

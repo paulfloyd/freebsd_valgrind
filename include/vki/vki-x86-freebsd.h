@@ -171,28 +171,6 @@ struct vki_user_regs_struct {
 	unsigned int	gs;
 };
 
-struct vki_reg_struct {
-	unsigned int	r_fs;
-	unsigned int	r_es;
-	unsigned int	r_ds;
-	unsigned int	r_edi;
-	unsigned int	r_esi;
-	unsigned int	r_ebp;
-	unsigned int	r_isp;
-	unsigned int	r_ebx;
-	unsigned int	r_edx;
-	unsigned int	r_ecx;
-	unsigned int	r_eax;
-	unsigned int	r_trapno;
-	unsigned int	r_err;
-	unsigned int	r_eip;
-	unsigned int	r_cs;
-	unsigned int	r_eflags;
-	unsigned int	r_esp;
-	unsigned int	r_ss;
-	unsigned int	r_gs;
-};
-
 struct vki_fpreg {
 	unsigned long	fpr_env[7];
 	unsigned char	fpr_acc[8][10];

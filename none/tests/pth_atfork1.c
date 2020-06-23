@@ -24,6 +24,7 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include <string.h>  /* strerror */
+
 static void error (int status, int errnum, char* msg)
 {
    fprintf(stderr, "%s%s%s\n",

@@ -230,11 +230,6 @@ SysRes ML_(am_do_extend_mapping_NO_NOTIFY)(
              0/*flags, meaning: must be at old_addr, else FAIL */,
              0/*new_addr, is ignored*/
           );
-#  elif defined(VGO_freebsd)
-#warning Not implemented
-   ML_(am_barf)("ML_(am_do_extend_mapping_NO_NOTIFY) on FreeBSD");
-   /* NOTREACHED, but gcc doesn't understand that */
-   return VG_(mk_SysRes_Error)(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -256,10 +251,6 @@ SysRes ML_(am_do_relocate_nooverlap_mapping_NO_NOTIFY)(
              VKI_MREMAP_MAYMOVE|VKI_MREMAP_FIXED/*move-or-fail*/,
              new_addr
           );
-#  elif defined(VGO_freebsd)
-   ML_(am_barf)("ML_(am_do_relocate_nooverlap_mapping_NO_NOTIFY) on FreeBSD");
-   /* NOTREACHED, but gcc doesn't understand that */
-   return VG_(mk_SysRes_Error)(0);
 #  else
 #    error Unknown OS
 #  endif

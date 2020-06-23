@@ -121,17 +121,17 @@ struct sigframe
 static 
 void synth_ucontext(ThreadId tid, const vki_siginfo_t *si,
                     UWord trapno, UWord err, const vki_sigset_t *set, 
-                    struct vki_ucontext *uc, struct _vki_fpstate *fpstate)
+                    struct vki_ucontext *ucp, struct _vki_fpstate *fpstate)
 {
    ThreadState *tst = VG_(get_ThreadState)(tid);
-   struct vki_mcontext *sc = &uc->uc_mcontext;
+   struct vki_mcontext *sc = &ucp->uc_mcontext;
 
-   VG_(memset)(uc, 0, sizeof(*uc));
+   VG_(memset)(ucp, 0, sizeof(*ucp));
 
-   uc->uc_flags = 0;
-   uc->uc_link = 0;
-   uc->uc_sigmask = *set;
-   uc->uc_stack = tst->altstack;
+   ucp->uc_flags = 0;
+   ucp->uc_link = 0;
+   ucp->uc_sigmask = *set;
+   ucp->uc_stack = tst->altstack;
    VG_(memcpy)(&sc->fpstate, fpstate, sizeof(*fpstate));
 
 #  define SC2(reg,REG)  sc->reg = tst->arch.vex.guest_##REG
@@ -160,8 +160,8 @@ void synth_ucontext(ThreadId tid, const vki_siginfo_t *si,
    sc->addr = (UWord)si->si_addr;
    sc->err = err;
    sc->fpformat = VKI_FPFMT_NODEV;
-   sc->len = sizeof(*sc);
    sc->ownedfp = VKI_FPOWNED_NONE;
+   sc->len = sizeof(*sc);
    sc->rflags = LibVEX_GuestAMD64_get_rflags(&tst->arch.vex);
    sc->trapno = trapno;
 #  undef SC2

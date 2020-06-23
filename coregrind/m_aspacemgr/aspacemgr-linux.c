@@ -314,8 +314,9 @@ Addr VG_(clo_aspacem_minAddr)
 # endif
 #elif defined(VGO_solaris)
    = (Addr) 0x00100000; // 1MB
-#else
+#elif defined(VGO_freebsd)
    = (Addr) 0x04000000; // 64M
+#else
 #endif
 
 

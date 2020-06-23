@@ -108,58 +108,34 @@ struct vki_sigcontext {
  * Note that on 8.x trapno and err are no-more meaningful, but we
  * don't set them anyway.
  */
-struct vki_user_regs_struct {
-	vki_register_t r15;
-	vki_register_t r14;
-	vki_register_t r13;
-	vki_register_t r12;
-	vki_register_t r11;
-	vki_register_t r10;
-	vki_register_t r9;
-	vki_register_t r8;
-	vki_register_t rdi;
-	vki_register_t rsi;
-	vki_register_t rbp;
-	vki_register_t rbx;
-	vki_register_t rdx;
-	vki_register_t rcx;
-	vki_register_t rax;
-	vki_register_t trapno;
-	vki_register_t err;
-	vki_register_t rip;
-	vki_register_t cs;
-	vki_register_t rflags;
-	vki_register_t rsp;
-	vki_register_t ss;
-};
 
-struct vki_reg_struct {
-	vki_register_t	r_r15;
-	vki_register_t	r_r14;
-	vki_register_t	r_r13;
-	vki_register_t	r_r12;
-	vki_register_t	r_r11;
-	vki_register_t	r_r10;
-	vki_register_t	r_r9;
-	vki_register_t	r_r8;
-	vki_register_t	r_rdi;
-	vki_register_t	r_rsi;
-	vki_register_t	r_rbp;
-	vki_register_t	r_rbx;
-	vki_register_t	r_rdx;
-	vki_register_t	r_rcx;
-	vki_register_t	r_rax;
-	vki_uint32_t	r_trapno;
-	vki_uint16_t	r_fs;
-	vki_uint16_t	r_gs;
-	vki_uint32_t	r_err;
-	vki_uint16_t	r_es;
-	vki_uint16_t	r_ds;
-	vki_register_t	r_rip;
-	vki_register_t	r_cs;
-	vki_register_t	r_rflags;
-	vki_register_t	r_rsp;
-	vki_register_t	r_ss;
+struct vki_user_regs_struct {
+   vki_register_t	r15;
+   vki_register_t	r14;
+   vki_register_t	r13;
+   vki_register_t	r12;
+   vki_register_t	r11;
+   vki_register_t	r10;
+   vki_register_t	r9;
+   vki_register_t	r8;
+   vki_register_t	rdi;
+   vki_register_t	rsi;
+   vki_register_t	rbp;
+   vki_register_t	rbx;
+   vki_register_t	rdx;
+   vki_register_t	rcx;
+   vki_register_t	rax;
+   vki_uint32_t	trapno;
+   vki_uint16_t	fs;
+   vki_uint16_t	gs;
+   vki_uint32_t	err;
+   vki_uint16_t	es;
+   vki_uint16_t	ds;
+   vki_register_t	rip;
+   vki_register_t	cs;
+   vki_register_t	rflags;
+   vki_register_t	rsp;
+   vki_register_t	ss;
 };
 
 struct vki_fpreg {
