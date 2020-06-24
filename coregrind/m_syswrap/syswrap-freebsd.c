@@ -4057,16 +4057,15 @@ POST(sys_extattr_list_file)
 PRE(sys_extattr_list_link)
 {
    PRINT("extattr_list_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1, SARG2, ARG3, ARG4);
-   PRE_REG_READ4(ssize_t, "extattr_list_list", const char *, path, int, attrnamespace, void *,data, size_t, nbytes);
-   PRE_MEM_RASCIIZ("extattr_list_list(path)", ARG1);
-   PRE_MEM_WRITE("extattr_list_list(data)", ARG3, ARG4);
+   PRE_REG_READ4(ssize_t, "extattr_list_link", const char *, path, int, attrnamespace, void *,data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_list_link(path)", ARG1);
+   PRE_MEM_WRITE("extattr_list_link(data)", ARG3, ARG4);
 }
 
 POST(sys_extattr_list_link)
 {
    POST_MEM_WRITE(ARG3, ARG4);
 }
-
 
 // SYS_ksem_timedwait	441
 // @todo

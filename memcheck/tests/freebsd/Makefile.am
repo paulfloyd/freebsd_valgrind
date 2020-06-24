@@ -35,10 +35,13 @@ EXTRA_DIST = \
 	capsicum.vgtest \
 	capsicum.stderr.exp \
 	getfh.vgtest \
-	getfh.stderr.exp
+	getfh.stderr.exp \
+	linkat.vgtest \
+	linkat.stderr.exp
 
 check_PROGRAMS = \
-	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login revoke scalar capsicum getfh
+	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login revoke scalar capsicum getfh \
+	linkat
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)

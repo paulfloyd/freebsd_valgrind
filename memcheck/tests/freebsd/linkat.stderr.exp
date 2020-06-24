@@ -1,0 +1,49 @@
+Syscall param linkat(name1) points to unaddressable byte(s)
+   at 0x........: linkat (in /...libc...)
+   by 0x........: main (linkat.c:41)
+ Address 0x........ is 0 bytes inside a block of size 19 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (linkat.c:40)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (linkat.c:39)
+
+Syscall param linkat(name2) points to unaddressable byte(s)
+   at 0x........: linkat (in /...libc...)
+   by 0x........: main (linkat.c:46)
+ Address 0x........ is 0 bytes inside a block of size 19 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (linkat.c:45)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (linkat.c:44)
+
+Syscall param unlinkat(path) points to unaddressable byte(s)
+   at 0x........: unlinkat (in /...libc...)
+   by 0x........: main (linkat.c:47)
+ Address 0x........ is 0 bytes inside a block of size 19 free'd
+   at 0x........: free (vg_replace_malloc.c:...)
+   by 0x........: main (linkat.c:45)
+ Block was alloc'd at
+   at 0x........: malloc (vg_replace_malloc.c:...)
+   ...
+   by 0x........: main (linkat.c:44)
+
+Syscall param linkat(fd1) contains uninitialised byte(s)
+   at 0x........: linkat (in /...libc...)
+   by 0x........: main (linkat.c:50)
+
+Syscall param linkat(fd2) contains uninitialised byte(s)
+   at 0x........: linkat (in /...libc...)
+   by 0x........: main (linkat.c:50)
+
+Syscall param linkat(flag) contains uninitialised byte(s)
+   at 0x........: linkat (in /...libc...)
+   by 0x........: main (linkat.c:50)
+
+Syscall param unlinkat(fd) contains uninitialised byte(s)
+   at 0x........: unlinkat (in /...libc...)
+   by 0x........: main (linkat.c:51)
+
