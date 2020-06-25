@@ -1534,9 +1534,18 @@ struct vki_dirent {
 #define VKI_F_RDAHEAD		16	/* Darwin compatible read ahead */
 #define VKI_F_DUPFD_CLOEXEC	17	/* dup close_on_exec */
 #define VKI_F_DUP2FD_CLOEXEC	18	/* Like F_DUP2FD, but FD_CLOEXEC is set */
+#define VKI_F_ADD_SEALS		19	/* apply seals to underlying file */
+#define VKI_F_GET_SEALS		20	/* get seals to underlying file */
+#define VKI_F_ISUNIONSTACK	21	/* kludge for libc (part of a union stack?) */
 
 /* for F_[GET|SET]FL */
 #define VKI_FD_CLOEXEC	1	/* actually anything with low bit set goes */
+
+/* for F_[ADD|GET]_SEALS */
+#define VKI_F_SEAL_SEAL		0x0001
+#define VKI_F_SEAL_SHRINK	0x0002
+#define VKI_F_SEAL_GROW		0x0004
+#define VKI_F_SEAL_WRITE	0x0008
 
 //----------------------------------------------------------------------
 // From sys/unistd.h
