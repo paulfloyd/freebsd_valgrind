@@ -371,6 +371,7 @@ case "${host_os}" in
         AC_DEFINE([FREEBSD_10], 1000, [FREEBSD_VERS value for FreeBSD 10.x])
         AC_DEFINE([FREEBSD_11], 1100, [FREEBSD_VERS value for FreeBSD 11.x])
         AC_DEFINE([FREEBSD_12], 1200, [FREEBSD_VERS value for FreeBSD 12.x])
+        AC_DEFINE([FREEBSD_13], 1300, [FREEBSD_VERS value for FreeBSD 13.x])
 
         AC_MSG_CHECKING([for the kernel version])
         kernel=`uname -r`
@@ -388,9 +389,13 @@ case "${host_os}" in
            AC_MSG_RESULT([FreeBSD 12.x (${kernel})])
            AC_DEFINE([FREEBSD_VERS], FREEBSD_12, [FreeBSD version])
            ;;
+        13.*)
+           AC_MSG_RESULT([FreeBSD 13.x (${kernel})])
+           AC_DEFINE([FREEBSD_VERS], FREEBSD_13, [FreeBSD version])
+           ;;
         *)
            AC_MSG_RESULT([unsupported (${kernel})])
-           AC_MSG_ERROR([Valgrind works on FreeBSD 10.x, 11.x, 12.x])
+           AC_MSG_ERROR([Valgrind works on FreeBSD 10.x, 11.x, 12.x, 13.x])
            ;;
         esac
 
