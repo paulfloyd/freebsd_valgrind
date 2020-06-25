@@ -3366,20 +3366,20 @@ Syscall param extattr_list_file(data) points to unaddressable byte(s)
 ---------------------------------------------------------
 439:   SYS_extattr_list_link 3s 2m
 ---------------------------------------------------------
-Syscall param extattr_list_list(path) contains uninitialised byte(s)
+Syscall param extattr_list_link(path) contains uninitialised byte(s)
    ...
 
-Syscall param extattr_list_list(attrnamespace) contains uninitialised byte(s)
+Syscall param extattr_list_link(attrnamespace) contains uninitialised byte(s)
    ...
 
-Syscall param extattr_list_list(data) contains uninitialised byte(s)
+Syscall param extattr_list_link(data) contains uninitialised byte(s)
    ...
 
-Syscall param extattr_list_list(path) points to unaddressable byte(s)
+Syscall param extattr_list_link(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param extattr_list_list(data) points to unaddressable byte(s)
+Syscall param extattr_list_link(data) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
