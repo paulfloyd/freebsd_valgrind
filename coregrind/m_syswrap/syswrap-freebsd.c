@@ -1247,6 +1247,8 @@ PRE(sys_fcntl)
    case VKI_F_GETFD:
    case VKI_F_GETFL:
    case VKI_F_GETOWN:
+   case VKI_F_GET_SEALS:
+   case VKI_F_ISUNIONSTACK:
       PRINT("sys_fcntl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,SARG2);
       PRE_REG_READ2(int, "fcntl", int, fd, int, cmd);
       break;
@@ -1259,6 +1261,7 @@ PRE(sys_fcntl)
    case VKI_F_SETOWN:
    case VKI_F_READAHEAD:
    case VKI_F_RDAHEAD:
+   case VKI_F_ADD_SEALS:
       PRINT("sys_fcntl[ARG3=='arg'] ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,SARG2,SARG3);
       PRE_REG_READ3(int, "fcntl",
                     int, fd, int, cmd, int, arg);
