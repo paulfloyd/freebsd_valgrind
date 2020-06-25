@@ -561,11 +561,6 @@ static Bool do_DebugInfos_overlap ( const DebugInfo* di1, const DebugInfo* di2 )
       for (j = 0; j < VG_(sizeXA)(di2->fsm.maps); j++) {
          const DebugInfoMapping* map2 = VG_(indexXA)(di2->fsm.maps, j);
          if (ranges_overlap(map1->avma, map1->size, map2->avma, map2->size)) {
-            // @todo PJF on FreeBSD this was causing DebugInfos to be skipped
-            // On Linux I only ever see RX and RW maps
-            // On FreeBSD there is a 3rd RO map
-            if (map1->ro && map2->ro)
-               continue;
             return True;
          }
       }
@@ -1210,13 +1205,10 @@ ULong VG_(di_notify_mmap)( Addr a, Bool allow_SkFileV, Int use_fd )
    if (!(is_rx_map || is_rw_map || is_ro_map))
       return 0;
 
-   // @todo PJF keep this or my change above?
    /* Ignore non-fixed read-only mappings.  The dynamic linker may be
     * mapping something for its own transient purposes. */
-/*
    if (!seg->isFF && is_ro_map)
       return 0;
-*/
 
    /* Peer at the first few bytes of the file, to see if it is an ELF */
    /* object file. Ignore the file if we do not have read permission. */

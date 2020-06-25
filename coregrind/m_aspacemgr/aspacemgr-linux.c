@@ -1493,13 +1493,10 @@ static void init_nsegment ( /*OUT*/NSegment* seg )
    seg->mode     = 0;
    seg->offset   = 0;
    seg->fnIdx    = -1;
-   // @todo PJF Martin  Johnston's fix
-/*
+
    seg->hasR     = seg->hasW = seg->hasX = seg->hasT
                  = seg->isCH = seg->isFF = False;
-*/
 
-   seg->hasR = seg->hasW = seg->hasX = seg->hasT = seg->isCH = False;
 }
 
 /* Make an NSegment which holds a reservation. */
@@ -1670,8 +1667,6 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    aspacem_vStart = VG_PGROUNDUP((aspacem_minAddr + aspacem_maxAddr + 1) / 2);
 
 #  ifdef ENABLE_INNER
-   //aspacem_vStart -= 0x10000000; // 256M
-   // @todo PJF try 512M
    aspacem_vStart -= 0x10000000UL; // 512M
 #  endif // ENABLE_INNER
 
@@ -2258,6 +2253,7 @@ VG_(am_notify_client_mmap)( Addr a, SizeT len, UInt prot, UInt flags,
       if (ML_(am_resolve_filename)(fd, buf, VKI_PATH_MAX)) {
          seg.fnIdx = ML_(am_allocate_segname)( buf );
       }
+      seg.isFF = (flags & VKI_MAP_FIXED);
    }
    add_segment( &seg );
    AM_SANITY_CHECK;
@@ -2499,8 +2495,7 @@ SysRes VG_(am_mmap_named_file_fixed_client_flags)
    } else if (ML_(am_resolve_filename)(fd, buf, VKI_PATH_MAX)) {
       seg.fnIdx = ML_(am_allocate_segname)( buf );
    }
-// @todo PJF Martin Johnston's patch
-   //seg.isFF = (flags & VKI_MAP_FIXED);
+   seg.isFF = (flags & VKI_MAP_FIXED);
    add_segment( &seg );
 
    AM_SANITY_CHECK;
@@ -2811,6 +2806,7 @@ static SysRes VG_(am_mmap_file_float_valgrind_flags) ( SizeT length, UInt prot,
    if (ML_(am_resolve_filename)(fd, buf, VKI_PATH_MAX)) {
       seg.fnIdx = ML_(am_allocate_segname)( buf );
    }
+   seg.isFF = (flags & VKI_MAP_FIXED);
    add_segment( &seg );
 
    AM_SANITY_CHECK;

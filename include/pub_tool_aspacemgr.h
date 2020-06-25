@@ -110,8 +110,7 @@ typedef
       Bool    hasT;     // True --> translations have (or MAY have)
                         // been taken from this segment
       Bool    isCH;     // True --> is client heap (SkAnonC ONLY)
-// @todo PJF Martin Johnston's patch
-     // Bool    isFF;     // True --> is a fixed file mapping
+      Bool    isFF;     // True --> is a fixed file mapping
    }
    NSegment;
 
