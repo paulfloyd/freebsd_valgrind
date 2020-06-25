@@ -514,9 +514,9 @@ DECL_TEMPLATE(freebsd, sys_fhlink) // 565
 DECL_TEMPLATE(freebsd, sys_fhlinkat) // 566
 DECL_TEMPLATE(freebsd, sys_fhreadlink) // 567
 
-DECL_TEMPLATE(freebsd, sys_fake_sigreturn)
-
 #endif
+
+DECL_TEMPLATE(freebsd, sys_fake_sigreturn)
 
 #endif   // PRIV_SYSWRAP_FREEBSD_H
 
