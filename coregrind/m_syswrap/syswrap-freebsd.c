@@ -4090,12 +4090,13 @@ PRE(sys_thr_wake)
 {
    PRINT("sys_thr_wake ( %" FMT_REGWORD "d )", SARG1);
    PRE_REG_READ1(long, "thr_wake", long, id);
-
+/*
    if (VG_(is_valid_tid)(ARG1)) {
       VG_(threads)[ARG1].status = VgTs_Runnable;
    } else {
       SET_STATUS_Failure( VKI_ESRCH );
    }
+*/
 }
 
 // SYS_kldunloadf	444
