@@ -1247,6 +1247,8 @@ PRE(sys_fcntl)
    case VKI_F_GETFD:
    case VKI_F_GETFL:
    case VKI_F_GETOWN:
+   case VKI_F_GET_SEALS:
+   case VKI_F_ISUNIONSTACK:
       PRINT("sys_fcntl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,SARG2);
       PRE_REG_READ2(int, "fcntl", int, fd, int, cmd);
       break;
@@ -1259,6 +1261,7 @@ PRE(sys_fcntl)
    case VKI_F_SETOWN:
    case VKI_F_READAHEAD:
    case VKI_F_RDAHEAD:
+   case VKI_F_ADD_SEALS:
       PRINT("sys_fcntl[ARG3=='arg'] ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,SARG2,SARG3);
       PRE_REG_READ3(int, "fcntl",
                     int, fd, int, cmd, int, arg);
@@ -1691,7 +1694,7 @@ POST(sys_rtprio)
 // int setfib(int fib);
 PRE(sys_setfib)
 {
-   PRINT("sys_setfib ( %" FMT_REGWORD "d )", ARG1);
+   PRINT("sys_setfib ( %" FMT_REGWORD "d )", SARG1);
    PRE_REG_READ1(int, "setfib", int, fib);
 }
 
@@ -2119,7 +2122,7 @@ PRE(sys_semop)
 // int msgctl(int msqid, int cmd, struct msqid_ds_old *buf);
 PRE(sys_freebsd7_msgctl)
 {
-   PRINT("sys_freebsd7_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
+   PRINT("sys_freebsd7_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1,SARG2,ARG3 );
 
    PRE_REG_READ3(int, "msgctl", int, msqid, int, cmd, struct msqid_ds_old *, buf);
 
@@ -2148,7 +2151,7 @@ POST(sys_freebsd7_msgctl)
 // int msgget(key_t key, int msgflg);
 PRE(sys_msgget)
 {
-   PRINT("sys_msgget ( %" FMT_REGWORD"d, %" FMT_REGWORD"d )",ARG1,ARG2);
+   PRINT("sys_msgget ( %" FMT_REGWORD"d, %" FMT_REGWORD"d )",SARG1,SARG2);
    PRE_REG_READ2(int, "msgget", key_t, key, int, msgflg);
 }
 
@@ -2156,7 +2159,7 @@ PRE(sys_msgget)
 // int msgsnd(int msqid, struct msgbuf *msgp, size_t msgsz, int msgflg);
 PRE(sys_msgsnd)
 {
-   PRINT("sys_msgsnd ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", ARG1,ARG2,ARG3,ARG4 );
+   PRINT("sys_msgsnd ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,ARG2,SARG3,SARG4 );
    PRE_REG_READ4(int, "msgsnd", int, msqid, struct msgbuf *, msgp, size_t, msgsz, int, msgflg);
    struct vki_msgbuf *msgp = (struct vki_msgbuf *)ARG2;
    PRE_MEM_READ( "msgsnd(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
@@ -2168,7 +2171,7 @@ PRE(sys_msgrcv)
 {
    *flags |= SfMayBlock;
 
-   PRINT("sys_msgrcv ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", ARG1,ARG2,ARG3,ARG4,ARG5 );
+   PRINT("sys_msgrcv ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,ARG2,ARG3,SARG4,SARG5 );
    PRE_REG_READ5(ssize_t, "msgrcv", int, msqid, struct msgbuf *, msgp, size_t, msgsz,
       long, msgtyp, int, msgflg);
    struct vki_msgbuf *msgp = (struct vki_msgbuf *)ARG2;
@@ -2302,7 +2305,7 @@ POST(sys_clock_getres)
 //                       timer_t *restrict timerid);
 PRE(sys_timer_create)
 {
-   PRINT("sys_timer_create( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
+   PRINT("sys_timer_create( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", SARG1,ARG2,ARG3);
    PRE_REG_READ3(int, "timer_create",
                  vki_clockid_t, clockid, struct sigevent *, evp,
                  vki_timer_t *, timerid);
@@ -2809,7 +2812,7 @@ POST(sys___getcwd)
 // int sched_setparam(pid_t pid, const struct sched_param *param);
 PRE(sys_sched_setparam)
 {
-   PRINT("sched_setparam ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2 );
+   PRINT("sched_setparam ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2 );
    PRE_REG_READ2(int, "sched_setparam",
                  vki_pid_t, pid, struct sched_param *, param);
    PRE_MEM_READ( "sched_setparam(param)", ARG2, sizeof(struct vki_sched_param) );
@@ -2824,7 +2827,7 @@ POST(sys_sched_setparam)
 // int sched_getparam(pid_t pid, struct sched_param *param);
 PRE(sys_sched_getparam)
 {
-   PRINT("sched_getparam ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2 );
+   PRINT("sched_getparam ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2 );
    PRE_REG_READ2(int, "sched_getparam",
                  vki_pid_t, pid, struct sched_param *, param);
    PRE_MEM_WRITE( "sched_getparam(param)", ARG2, sizeof(struct vki_sched_param) );
@@ -2840,7 +2843,7 @@ POST(sys_sched_getparam)
 //                        const struct sched_param *param);
 PRE(sys_sched_setscheduler)
 {
-   PRINT("sys_sched_setscheduler ( %ld, %ld, %#lx )", ARG1,ARG2,ARG3);
+   PRINT("sys_sched_setscheduler ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1,SARG2,ARG3);
    PRE_REG_READ3(int, "sched_setscheduler",
                  vki_pid_t, pid, int, policy, struct sched_param *, param);
    if (ARG3 != 0)
@@ -2852,7 +2855,7 @@ PRE(sys_sched_setscheduler)
 // int sched_getscheduler(pid_t pid);
 PRE(sys_sched_getscheduler)
 {
-   PRINT("sys_sched_getscheduler ( %" FMT_REGWORD "d )", ARG1);
+   PRINT("sys_sched_getscheduler ( %" FMT_REGWORD "d )", SARG1);
    PRE_REG_READ1(int, "sched_getscheduler", vki_pid_t, pid);
 }
 
@@ -5194,7 +5197,7 @@ POST(sys___semctl)
 // int msgctl(int msqid, int cmd, struct msqid_ds *buf);
 PRE(sys_msgctl)
 {
-   PRINT("sys_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3 );
+   PRINT("sys_msgctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1,SARG2,ARG3 );
 
    PRE_REG_READ3(int, "msgctl", int, msqid, int, cmd, struct msqid_ds *, buf);
 
@@ -5261,7 +5264,7 @@ PRE(sys_lpathconf)
 // int __cap_rights_get(int version, int fd, cap_rights_t *rights);
 PRE(sys_cap_rights_get)
 {
-   PRINT("sys_cap_rights_get ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3);
+   PRINT("sys_cap_rights_get ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, SARG2, ARG3);
    PRE_REG_READ3(long, "cap_rights_get", int, version, int, fd, vki_cap_rights_t*, rights);
    PRE_MEM_WRITE("cap_rights_get(rights)", ARG3, sizeof(vki_cap_rights_t));
 }
@@ -5846,7 +5849,7 @@ POST(sys_fstat)
 // int fstatat(int fd, const char *path, struct stat *sb, int flag);
 PRE(sys_fstatat)
 {
-   PRINT("sys_fstatat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %" FMT_REGWORD "d )", SARG1,ARG2,(char*)ARG2,ARG3,ARG4);
+   PRINT("sys_fstatat ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %" FMT_REGWORD "d )", SARG1,ARG2,(char*)ARG2,ARG3,SARG4);
    PRE_REG_READ4(int, "fstatat",
                  int, fd, const char *, path, struct stat *, sb, int, flag);
    PRE_MEM_RASCIIZ( "fstatat(path)", ARG2 );

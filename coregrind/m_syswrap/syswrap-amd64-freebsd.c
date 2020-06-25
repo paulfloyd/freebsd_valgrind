@@ -902,7 +902,7 @@ POST(sys_wait6)
 PRE(sys_procctl)
 {
    PRINT("sys_procctl ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD"d, %#" FMT_REGWORD "x )",
-         SARG1, ARG2, SARG3, ARG4);
+         SARG1, SARG2, SARG3, ARG4);
    PRE_REG_READ4(int, "procctl", vki_idtype_t, idtype, vki_id_t, id, int, cmd, void *, arg);
    switch (ARG3)
    {
@@ -972,7 +972,7 @@ POST(sys_procctl)
 PRE(sys_cpuset_getdomain)
 {
    PRINT("sys_cpuset_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
-         SARG1, SARG2, ARG3, ARG4, ARG5, ARG6);
+         SARG1, SARG2, SARG3, ARG4, ARG5, ARG6);
    PRE_REG_READ6(int, "cpuset_getdomain",
                  cpulevel_t, level, cpuwhich_t, which, id_t, id,
                  size_t, setsize, vki_domainset_t *, mask, int *, policy);
@@ -993,7 +993,7 @@ POST(sys_cpuset_getdomain)
 PRE(sys_cpuset_setdomain)
 {
    PRINT("sys_cpuget_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "d, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
-         SARG1, SARG2, ARG3, ARG4, ARG5, SARG6);
+         SARG1, SARG2, SARG3, ARG4, ARG5, SARG6);
    PRE_REG_READ6(int, "cpuset_getdomain",
                  cpulevel_t, level, cpuwhich_t, which, id_t, id,
                  size_t, setsize, vki_domainset_t *, mask, int, policy);

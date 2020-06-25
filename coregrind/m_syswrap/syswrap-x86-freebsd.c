@@ -696,7 +696,7 @@ PRE(sys_preadv)
    struct vki_iovec * vec;
    *flags |= SfMayBlock;
    PRINT("sys_preadv ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %"
-         FMT_REGWORD "d, %lld )", SARG1, ARG2, SARG3, MERGE64(ARG4,ARG5));
+         FMT_REGWORD "d, %llu )", SARG1, ARG2, SARG3, MERGE64(ARG4,ARG5));
    PRE_REG_READ5(ssize_t, "preadv",
                  int, fd, const struct iovec *, iovr,
                  int, iovcnt, vki_uint32_t, MERGE64_FIRST(offset),
@@ -743,7 +743,7 @@ PRE(sys_pwritev)
    struct vki_iovec * vec;
    *flags |= SfMayBlock;
    PRINT("sys_pwritev ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %"
-         FMT_REGWORD "d, %lld )", SARG1, ARG2, SARG3, MERGE64(ARG4,ARG5));
+         FMT_REGWORD "d, %llu )", SARG1, ARG2, SARG3, MERGE64(ARG4,ARG5));
 
    PRE_REG_READ5(ssize_t, "pwritev",
                  int, fd, const struct iovec *, iov,
@@ -1188,7 +1188,7 @@ PRE(sys_ftruncate)
 // int cpuset_setid(cpuwhich_t which, id_t id, cpusetid_t setid);
 PRE(sys_cpuset_setid)
 {
-   PRINT("sys_cpuset_setid ( %" FMT_REGWORD "d, %lld, %#" FMT_REGWORD "x )",
+   PRINT("sys_cpuset_setid ( %" FMT_REGWORD "d, %llu, %#" FMT_REGWORD "x )",
          SARG1, MERGE64(ARG2,ARG3), ARG4);
    PRE_REG_READ4(int, "cpuset_sgetid", vki_cpuwhich_t, which,
                  vki_uint32_t, MERGE64_FIRST(id),
@@ -1201,7 +1201,7 @@ PRE(sys_cpuset_setid)
 //                  cpusetid_t *setid);
 PRE(sys_cpuset_getid)
 {
-    PRINT("sys_cpuset_getid ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %lld, %#" FMT_REGWORD "x )",
+    PRINT("sys_cpuset_getid ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %llu, %#" FMT_REGWORD "x )",
           SARG1, SARG2, MERGE64(ARG3, ARG4), ARG5);
     PRE_REG_READ5(int, "cpuset_getid", vki_cpulevel_t, level,
                   vki_cpuwhich_t, which,
@@ -1250,7 +1250,7 @@ PRE(sys_posix_fadvise)
 //             struct __wrusage *wrusage, siginfo_t *infop);
 PRE(sys_wait6)
 {
-   PRINT("sys_wait6 ( %" FMT_REGWORD "d, %lld, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+   PRINT("sys_wait6 ( %" FMT_REGWORD "d, %llu, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          SARG1, MERGE64(ARG2, ARG3), ARG4, SARG5, ARG6, ARG7);
    PRE_REG_READ7(pid_t, "wait6", vki_idtype_t, idtype,
                  vki_uint32_t, MERGE64_FIRST(id),
@@ -1286,7 +1286,7 @@ POST(sys_wait6)
 // int procctl(idtype_t idtype, id_t id, int cmd, void *arg);
 PRE(sys_procctl)
 {
-   PRINT("sys_procctl ( %" FMT_REGWORD "d, %lld, %" FMT_REGWORD"d, %#" FMT_REGWORD "x )",
+   PRINT("sys_procctl ( %" FMT_REGWORD "d, %llu, %" FMT_REGWORD"d, %#" FMT_REGWORD "x )",
          SARG1, MERGE64(ARG2, ARG3), SARG4, ARG5);
    PRE_REG_READ5(int, "procctl", vki_idtype_t, idtype,
                  vki_uint32_t, MERGE64_FIRST(id),
@@ -1359,7 +1359,7 @@ POST(sys_procctl)
 //                      size_t setsize, domainset_t *mask, int *policy);
 PRE(sys_cpuset_getdomain)
 {
-   PRINT("sys_cpuset_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %lld, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+   PRINT("sys_cpuset_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %llu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          SARG1, SARG2, MERGE64(ARG3, ARG4), ARG5, ARG6, ARG7);
    PRE_REG_READ7(int, "cpuset_getdomain",
                  cpulevel_t, level, cpuwhich_t, which,
@@ -1382,7 +1382,7 @@ POST(sys_cpuset_getdomain)
 //                     size_t setsize, const domainset_t *mask, int policy);
 PRE(sys_cpuset_setdomain)
 {
-   PRINT("sys_cpuget_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %lld, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
+   PRINT("sys_cpuget_getdomain ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %llu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "d )",
          SARG1, SARG2, MERGE64(ARG3, ARG4), ARG5, ARG6, SARG7);
    PRE_REG_READ7(int, "cpuset_getdomain",
                  cpulevel_t, level, cpuwhich_t, which,
