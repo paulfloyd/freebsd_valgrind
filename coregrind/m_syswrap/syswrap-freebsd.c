@@ -1758,7 +1758,7 @@ POST(sys_freebsd11_fstat)
 PRE(sys_freebsd11_lstat)
 {
    PRINT("sys_lstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(sb, "lstat", const char *, path, struct freebsd11_stat *, buf);
+   PRE_REG_READ2(sb, "lstat", const char *, path, struct freebsd11_stat *, sb);
    PRE_MEM_RASCIIZ( "lstat(path)", ARG1 );
    PRE_MEM_WRITE( "lstat(sb)", ARG2, sizeof(struct vki_freebsd11_stat) );
 }

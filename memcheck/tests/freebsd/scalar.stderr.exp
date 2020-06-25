@@ -1320,7 +1320,7 @@ Syscall param fstat(sb) points to unaddressable byte(s)
 Syscall param lstat(path) contains uninitialised byte(s)
    ...
 
-Syscall param lstat(buf) contains uninitialised byte(s)
+Syscall param lstat(sb) contains uninitialised byte(s)
    ...
 
 Syscall param lstat(path) points to unaddressable byte(s)
