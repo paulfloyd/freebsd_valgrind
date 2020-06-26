@@ -282,6 +282,7 @@ EXTRA_DIST = \
 	sem.stderr.exp sem.vgtest \
 	sendmsg.stderr.exp sendmsg.stderr.exp-solaris sendmsg.vgtest \
 	    sendmsg.stderr.exp-freebsd \
+	    sendmsg.stderr.exp-freebsd-x86 \
 	sh-mem.stderr.exp sh-mem.vgtest \
 	sh-mem-random.stderr.exp sh-mem-random.stdout.exp64 \
 	sh-mem-random.stdout.exp sh-mem-random.vgtest \
