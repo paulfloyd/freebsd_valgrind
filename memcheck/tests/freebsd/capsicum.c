@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <err.h>
+#include <sys/ioccom.h>
+#include <net/bpf.h>
 
 int main(void)
 {
@@ -28,14 +30,25 @@ int main(void)
     if (fd < 0)
        err(1, "open() failed");
 
-    cap_rights_init(&setrights, CAP_FSTAT, CAP_READ);
+    cap_rights_init(&setrights, CAP_IOCTL, CAP_FSTAT, CAP_READ);
     if (cap_rights_limit(fd, &setrights) < 0 && errno != ENOSYS)
         err(1, "cap_rights_limit() failed");
+
+    unsigned long cmds[] = { BIOCGSTATS, BIOCROTZBUF };    
+    if (cap_ioctls_limit(fd, cmds, sizeof(cmds) / sizeof(cmds[0])) < 0 && errno != ENOSYS) {
+        err(1, "cap_ioctls_limit() filed");
+    }
 
     if (cap_rights_get(fd, &getrights) < 0 && errno != ENOSYS)
        err(1, "cap_rights_get() failed");
 
     assert(memcmp(&setrights, &getrights, sizeof(setrights)) == 0);
+    
+    unsigned long getcmds[2];
+    if (cap_ioctls_get(fd, getcmds, 2) < 0 && errno != ENOSYS)
+       err(1, "cap_ioctls_get() failed");
+    
+    assert(memcmp(cmds, getcmds, sizeof(cmds)) == 0);
     
    //close(fd);
 

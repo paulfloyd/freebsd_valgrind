@@ -5610,7 +5610,7 @@ PRE(sys_cap_ioctls_get)
 {
    PRINT("sys_cap_ioctls_get ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", SARG1, ARG2, ARG3);
    PRE_REG_READ3(int, "cap_ioctls_get", int, fd, unsigned long *, cmds, size_t, maxcmds);
-   if (ARG3 <= 256) {
+   if (ARG3 < 256) {
       PRE_MEM_WRITE("cap_ioctls_get(cmds)", ARG2, ARG3*sizeof(unsigned long));
    }
 }
@@ -5618,7 +5618,7 @@ PRE(sys_cap_ioctls_get)
 POST(sys_cap_ioctls_get)
 {
    if (ARG3 < 256) {
-      PRE_MEM_WRITE("cap_ioctls_get(cmds)", ARG2, ARG3*sizeof(unsigned long));
+      POST_MEM_WRITE(ARG2, ARG3*sizeof(unsigned long));
    }
 }
 
