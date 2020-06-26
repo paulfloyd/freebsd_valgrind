@@ -213,11 +213,11 @@ EXTRA_DIST = \
 	vgprintf_nvalgrind.stderr.exp vgprintf_nvalgrind.vgtest \
 	process_vm_readv_writev.stderr.exp process_vm_readv_writev.vgtest \
 	sigprocmask.stderr.exp sigprocmask.vgtest \
-	fdleak_cmsg.stderr.exp.freebsd fdleak_creat.stderr.exp.freebsd \
-	fdleak_dup.stderr.exp.freebsd fdleak_dup2.stderr.exp.freebsd \
-	fdleak_fcntl.stderr.exp.freebsd fdleak_ipv4.stderr.exp.freebsd \
-	fdleak_open.stderr.exp.freebsd fdleak_pipe.stderr.exp.freebsd \
-	fdleak_socketpair.stderr.exp.freebsd nocwd.stderr.exp-freebsd
+	fdleak_cmsg.stderr.exp-freebsd fdleak_creat.stderr.exp-freebsd \
+	fdleak_dup.stderr.exp-freebsd fdleak_dup2.stderr.exp-freebsd \
+	fdleak_fcntl.stderr.exp-freebsd fdleak_ipv4.stderr.exp-freebsd \
+	fdleak_open.stderr.exp-freebsd fdleak_pipe.stderr.exp-freebsd \
+	fdleak_socketpair.stderr-exp.freebsd nocwd.stderr.exp-freebsd
 
 
 check_PROGRAMS = \
