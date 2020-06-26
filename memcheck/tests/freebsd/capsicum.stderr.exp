@@ -3,39 +3,39 @@ WARNING: Valgrind may not operate correctly in capability mode.
          See http://valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.clientreq
 Syscall param cap_getmode(modep) points to unaddressable byte(s)
    ...
-   by 0x........: main (capsicum.c:56)
+   by 0x........: main (capsicum.c:69)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 Syscall param cap_rights_get(rights) points to unaddressable byte(s)
    ...
-   by 0x........: main (capsicum.c:58)
+   by 0x........: main (capsicum.c:71)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 Syscall param cap_rights_get(fd) contains uninitialised byte(s)
    ...
-   by 0x........: main (capsicum.c:59)
+   by 0x........: main (capsicum.c:72)
 
 Syscall param cap_rights_get(rights) points to unaddressable byte(s)
    ...
-   by 0x........: main (capsicum.c:63)
+   by 0x........: main (capsicum.c:76)
  Address 0x........ is 0 bytes inside a block of size 16 free'd
    at 0x........: free (vg_replace_malloc.c:...)
-   by 0x........: main (capsicum.c:62)
+   by 0x........: main (capsicum.c:75)
  Block was alloc'd at
    at 0x........: malloc (vg_replace_malloc.c:...)
-   by 0x........: main (capsicum.c:60)
+   by 0x........: main (capsicum.c:73)
 
 Syscall param cap_rights_limit(fd) contains uninitialised byte(s)
    ...
-   by 0x........: main (capsicum.c:65)
+   by 0x........: main (capsicum.c:78)
 
 Syscall param cap_rights_limit(rights) points to unaddressable byte(s)
    ...
-   by 0x........: main (capsicum.c:67)
+   by 0x........: main (capsicum.c:80)
  Address 0x........ is 0 bytes inside a block of size 16 free'd
    at 0x........: free (vg_replace_malloc.c:...)
-   by 0x........: main (capsicum.c:62)
+   by 0x........: main (capsicum.c:75)
  Block was alloc'd at
    at 0x........: malloc (vg_replace_malloc.c:...)
-   by 0x........: main (capsicum.c:60)
+   by 0x........: main (capsicum.c:73)
 
