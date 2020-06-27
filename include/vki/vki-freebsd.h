@@ -805,6 +805,14 @@ typedef struct vki_aiocb {
    struct  vki_sigevent aio_sigevent;
 } aiocb_t;
 
+#define VKI_LIO_NOP                 0x0
+#define VKI_LIO_WRITE               0x1
+#define VKI_LIO_READ                0x2
+
+#define VKI_LIO_NOWAIT              0x0
+#define VKI_LIO_WAIT                0x1
+
+
 #define VKI_LIO_NOWAIT 0x0
 
 //----------------------------------------------------------------------

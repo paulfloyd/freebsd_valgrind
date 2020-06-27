@@ -2460,7 +2460,7 @@ PRE(sys_aio_read)
    PRE_MEM_READ("aio_read(iocb)", ARG1, sizeof(struct vki_aiocb));
    if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
       struct vki_aiocb *iocb = (struct vki_aiocb *)ARG1;
-      PRE_MEM_WRITE( "minherit(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
+      PRE_MEM_WRITE( "aio_read(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
    }
 }
 
@@ -2468,7 +2468,7 @@ POST(sys_aio_read)
 {
    if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
       struct vki_aiocb *iocb = (struct vki_aiocb *)ARG1;
-      PRE_MEM_WRITE( "minherit(iocb->aio_offset)", (Addr)iocb, sizeof(struct vki_aiocb));
+      POST_MEM_WRITE((Addr)iocb, sizeof(struct vki_aiocb));
    }
 }
 
@@ -2510,9 +2510,20 @@ PRE(sys_lio_listio)
          if (list[i]) {
             PRE_MEM_READ("lio_listoio(list[?])", (Addr)list[i], ARG3*sizeof(struct vki_aiocb));
          }
+         // @todo
+         // figure out what gets read/written
+         // when list[i]->aio_lio_opcode == VKI_LIO_READ and
+         // when list[i]->aio_lio_opcode == VKI_LIO_WRITE
+         //if (ML_(safe_to_deref)(list[i], ARG3*sizeof(struct vki_aiocb))) {
+         //}
       }
    }
-   if (ARG4 && (ARG1 & VKI_LIO_NOWAIT)) {
+
+   if (ARG1 & VKI_LIO_WAIT) {
+      *flags |= SfMayBlock;
+   }
+
+   if (ARG4 && (ARG1 == VKI_LIO_NOWAIT)) {
       PRE_MEM_READ("lio_listoio(sig)", ARG4, sizeof(struct vki_sigevent));
    }
 }
@@ -6073,7 +6084,6 @@ POST(sys_fhreadlink)
 {
    POST_MEM_WRITE(ARG2, ARG3);
 }
-
 
 #endif
 

@@ -920,7 +920,9 @@ int main(void)
    GO(SYS_aio_write, "1s 1m");
    SY(SYS_aio_write, x0+1); FAIL;
    
-   // unimpl SYS_lio_listio                                257
+   /* SYS_lio_listio              257 */
+   GO(SYS_lio_listio, "4s 2m");
+   SY(SYS_lio_listio, x0+0, x0+1, x0+10, x0+1); FAIL;
 
    /* SYS_freebsd11_getdents      272 */
    #if (FREEBSD_VERS >= FREEBSD_12)
@@ -951,7 +953,7 @@ int main(void)
 
    /* SYS_preadv                  289 */
    GO(SYS_preadv, "4s 0m");
-   /* 0m because of the bofus fd */
+   /* 0m because of the bogus fd */
    SY(SYS_preadv, x0+9999999, x0+1, x0+16, x0+20); FAIL;
    
    /* _pwritev                    290 */

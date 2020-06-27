@@ -38,6 +38,11 @@ int main(void)
     if (cap_ioctls_limit(fd, cmds, sizeof(cmds) / sizeof(cmds[0])) < 0 && errno != ENOSYS) {
         err(1, "cap_ioctls_limit() filed");
     }
+    
+    uint32_t fcntlrights = CAP_FCNTL_GETFL | CAP_FCNTL_SETFL;
+    if (cap_fcntls_limit(STDIN_FILENO, fcntlrights) < 0 && errno != ENOSYS) {
+        err(1, "cap_fcnls_limit() filed");
+    }
 
     if (cap_rights_get(fd, &getrights) < 0 && errno != ENOSYS)
        err(1, "cap_rights_get() failed");
@@ -49,6 +54,13 @@ int main(void)
        err(1, "cap_ioctls_get() failed");
     
     assert(memcmp(cmds, getcmds, sizeof(cmds)) == 0);
+    
+    uint32_t getfcntlrights;
+    if (cap_fcntls_get(STDIN_FILENO, &getfcntlrights) < 0 && errno != ENOSYS) {
+        err(1, "cap_fcnls_limit() filed");
+    }
+    
+    assert(fcntlrights == getfcntlrights);
     
    //close(fd);
 

@@ -1930,6 +1930,29 @@ Syscall param aio_read(iocb) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+257:          SYS_lio_listio 4s 2m
+---------------------------------------------------------
+Syscall param lio_listio(mode) contains uninitialised byte(s)
+   ...
+
+Syscall param lio_listio(list) contains uninitialised byte(s)
+   ...
+
+Syscall param lio_listio(nent) contains uninitialised byte(s)
+   ...
+
+Syscall param lio_listio(sig) contains uninitialised byte(s)
+   ...
+
+Syscall param lio_listoio(list) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param lio_listoio(sig) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 272:  SYS_freebsd11_getdents 3s 1m
 ---------------------------------------------------------
 Syscall param getdents(fd) contains uninitialised byte(s)
