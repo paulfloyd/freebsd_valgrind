@@ -128,6 +128,7 @@ EXTRA_DIST = \
 	fdleak_open.stderr.exp fdleak_open.vgtest \
 	fdleak_pipe.stderr.exp fdleak_pipe.vgtest \
 	fdleak_socketpair.stderr.exp fdleak_socketpair.vgtest \
+	fdleak_socketpair.stderr-exp-freebsd \
 	floored.stderr.exp floored.stdout.exp floored.vgtest \
 	fork.stderr.exp fork.stdout.exp fork.vgtest \
 	fucomip.stderr.exp fucomip.vgtest \
@@ -217,7 +218,7 @@ EXTRA_DIST = \
 	fdleak_dup.stderr.exp-freebsd fdleak_dup2.stderr.exp-freebsd \
 	fdleak_fcntl.stderr.exp-freebsd fdleak_ipv4.stderr.exp-freebsd \
 	fdleak_open.stderr.exp-freebsd fdleak_pipe.stderr.exp-freebsd \
-	fdleak_socketpair.stderr-exp-freebsd nocwd.stderr.exp-freebsd
+	nocwd.stderr.exp-freebsd
 
 
 check_PROGRAMS = \
