@@ -2502,13 +2502,13 @@ PRE(sys_lio_listio)
          SARG1, ARG2, SARG3, ARG4);
    PRE_REG_READ4(int, "lio_listio", int, mode, struct aiocb * const *, list, int, nent,
                  struct sigevent *,sig);
-   PRE_MEM_READ("lio_listoio(list)", ARG2, ARG3*sizeof(struct vki_aiocb *));
+   PRE_MEM_READ("lio_listio(list)", ARG2, ARG3*sizeof(struct vki_aiocb *));
    // loop check elements
    if (ML_(safe_to_deref)((struct vki_aiocb **)ARG2, ARG3*sizeof(struct vki_aiocb *))) {
       struct vki_aiocb** list = (struct vki_aiocb **)ARG2;
       for (int i = 0; i < (int)ARG3; ++i) {
          if (list[i]) {
-            PRE_MEM_READ("lio_listoio(list[?])", (Addr)list[i], ARG3*sizeof(struct vki_aiocb));
+            PRE_MEM_READ("lio_listio(list[?])", (Addr)list[i], ARG3*sizeof(struct vki_aiocb));
          }
          // @todo
          // figure out what gets read/written
@@ -2524,7 +2524,7 @@ PRE(sys_lio_listio)
    }
 
    if (ARG4 && (ARG1 == VKI_LIO_NOWAIT)) {
-      PRE_MEM_READ("lio_listoio(sig)", ARG4, sizeof(struct vki_sigevent));
+      PRE_MEM_READ("lio_listio(sig)", ARG4, sizeof(struct vki_sigevent));
    }
 }
 

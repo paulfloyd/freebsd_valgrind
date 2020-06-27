@@ -1944,11 +1944,11 @@ Syscall param lio_listio(nent) contains uninitialised byte(s)
 Syscall param lio_listio(sig) contains uninitialised byte(s)
    ...
 
-Syscall param lio_listoio(list) points to unaddressable byte(s)
+Syscall param lio_listio(list) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param lio_listoio(sig) points to unaddressable byte(s)
+Syscall param lio_listio(sig) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
