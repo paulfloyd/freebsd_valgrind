@@ -1968,5 +1968,8 @@ int main(void)
    SY(SYS_fhreadlink, x0+1, x0+1, x0+10);
 
 #endif
-
+   
+   /* SYS_exit                    1 */
+   GO(SYS_exit, "1s 0m");
+   SY(SYS_exit, x0); FAIL;
 }
