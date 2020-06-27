@@ -217,7 +217,7 @@ EXTRA_DIST = \
 	fdleak_dup.stderr.exp-freebsd fdleak_dup2.stderr.exp-freebsd \
 	fdleak_fcntl.stderr.exp-freebsd fdleak_ipv4.stderr.exp-freebsd \
 	fdleak_open.stderr.exp-freebsd fdleak_pipe.stderr.exp-freebsd \
-	fdleak_socketpair.stderr-exp.freebsd nocwd.stderr.exp-freebsd
+	fdleak_socketpair.stderr-exp-freebsd nocwd.stderr.exp-freebsd
 
 
 check_PROGRAMS = \
