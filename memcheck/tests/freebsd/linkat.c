@@ -1,6 +1,6 @@
 /*
  * Test this family of functions
- * linkat, unlinkat
+ * linkat, unlinkat, symlinkat
  */
 
 #include <unistd.h>
@@ -14,6 +14,7 @@ int main()
     char buff[64];
     char tmpfromfile[] = "/tmp/testlinkat1.XXXXXX";
     char tmptolink[] = "/tmp/testlinkat2.XXXXXX";
+    char tmptosymlink[] = "/tmp/testlinkat3.XXXXXX";
     int tmpfd = mkstemp(tmpfromfile);
     mktemp(tmptolink);
 
@@ -28,6 +29,7 @@ int main()
     
         const char* from = tmpfromfile+5;
         const char* to = tmptolink+5;
+        const char* tosym = tmptosymlink+5;
         
        if (-1 == linkat(tmpdirfd, from, tmpdirfd, to, 0)) {
            perror("linkat failed");
@@ -35,19 +37,33 @@ int main()
 
        unlinkat(tmpdirfd, to, 0);
        
+       if (-1 == symlinkat(from, tmpdirfd, tosym)) {
+           perror("symlinkat failed");
+       }
+
+       unlinkat(tmpdirfd, tosym, 0);
+       
        // now some errors
        char* badstring = strdup(from);
        free(badstring);
        linkat(tmpdirfd, badstring, tmpdirfd, to, 0);
+       symlinkat(badstring, tmpdirfd, tosym);
        unlinkat(tmpdirfd, to, 0);
+       unlinkat(tmpdirfd, tosym, 0);
        
        badstring = strdup(to);
        free(badstring);
        linkat(tmpdirfd, from, tmpdirfd, badstring, 0);
        unlinkat(tmpdirfd, badstring, 0);
        
+       badstring = strdup(tosym);
+       free(badstring);
+       symlinkat(from, tmpdirfd, badstring);
+       unlinkat(tmpdirfd, badstring, 0);
+       
        int uninit;
        linkat(uninit, from, uninit, to, uninit);
+       symlinkat(from, uninit, tosym);
        unlinkat(uninit, "dontcare", uninit);
 
        closedir(tmpdir);
@@ -55,3 +71,4 @@ int main()
     
     unlink(tmpfromfile);
 }
+
