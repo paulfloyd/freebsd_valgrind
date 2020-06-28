@@ -120,14 +120,23 @@ EXTRA_DIST = \
 	faultstatus.vgtest faultstatus.stderr.exp faultstatus.stderr.exp-s390x \
 	fcntl_setown.vgtest fcntl_setown.stdout.exp fcntl_setown.stderr.exp \
 	fdleak_cmsg.stderr.exp fdleak_cmsg.vgtest \
+	fdleak_cmsg.stderr.exp-freebsd \
 	fdleak_creat.stderr.exp fdleak_creat.vgtest \
+	fdleak_creat.stderr.exp-freebsd \
 	fdleak_dup.stderr.exp fdleak_dup.vgtest \
+	fdleak_dup.stderr.exp-freebsd \
 	fdleak_dup2.stderr.exp fdleak_dup2.vgtest \
+	fdleak_dup2.stderr.exp-freebsd \
 	fdleak_fcntl.stderr.exp fdleak_fcntl.vgtest \
+	fdleak_fcntl.stderr.exp-freebsd \
 	fdleak_ipv4.stderr.exp fdleak_ipv4.stdout.exp fdleak_ipv4.vgtest \
+	fdleak_ipv4.stderr.exp-freebsd \
 	fdleak_open.stderr.exp fdleak_open.vgtest \
+	fdleak_open.stderr.exp-freebsd \
 	fdleak_pipe.stderr.exp fdleak_pipe.vgtest \
+	fdleak_pipe.stderr.exp-freebsd \
 	fdleak_socketpair.stderr.exp fdleak_socketpair.vgtest \
+	fdleak_socketpair.stderr.exp-freebsd \
 	floored.stderr.exp floored.stdout.exp floored.vgtest \
 	fork.stderr.exp fork.stdout.exp fork.vgtest \
 	fucomip.stderr.exp fucomip.vgtest \
@@ -145,6 +154,7 @@ EXTRA_DIST = \
 	munmap_exe.stderr.exp munmap_exe.vgtest \
 	nestedfns.stderr.exp nestedfns.stdout.exp nestedfns.vgtest \
 	nocwd.stdout.exp nocwd.stderr.exp nocwd.vgtest \
+	nocwd.stderr.exp-freebsd \
 	nodir.stderr.exp nodir.vgtest \
 	pending.stdout.exp pending.stderr.exp pending.vgtest \
 	ppoll_alarm.stdout.exp ppoll_alarm.stderr.exp ppoll_alarm.vgtest \
@@ -212,12 +222,7 @@ EXTRA_DIST = \
 	vgprintf.stderr.exp vgprintf.vgtest \
 	vgprintf_nvalgrind.stderr.exp vgprintf_nvalgrind.vgtest \
 	process_vm_readv_writev.stderr.exp process_vm_readv_writev.vgtest \
-	sigprocmask.stderr.exp sigprocmask.vgtest \
-	fdleak_cmsg.stderr.exp-freebsd fdleak_creat.stderr.exp-freebsd \
-	fdleak_dup.stderr.exp-freebsd fdleak_dup2.stderr.exp-freebsd \
-	fdleak_fcntl.stderr.exp-freebsd fdleak_ipv4.stderr.exp-freebsd \
-	fdleak_open.stderr.exp-freebsd fdleak_pipe.stderr.exp-freebsd \
-	nocwd.stderr.exp-freebsd
+	sigprocmask.stderr.exp sigprocmask.vgtest
 
 
 check_PROGRAMS = \
