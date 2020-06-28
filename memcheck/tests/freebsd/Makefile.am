@@ -47,7 +47,7 @@ EXTRA_DIST = \
 	scalar_pdfork.vgtest \
 	scalar_pdfork.stderr.exp \
 	scalar_vfork.vgtest \
-	scalar_vgtest.stderr.exp
+	scalar_vfork.stderr.exp
 
 check_PROGRAMS = \
 	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login revoke scalar capsicum getfh \

@@ -128,7 +128,6 @@ EXTRA_DIST = \
 	fdleak_open.stderr.exp fdleak_open.vgtest \
 	fdleak_pipe.stderr.exp fdleak_pipe.vgtest \
 	fdleak_socketpair.stderr.exp fdleak_socketpair.vgtest \
-	fdleak_socketpair.stderr-exp-freebsd \
 	floored.stderr.exp floored.stdout.exp floored.vgtest \
 	fork.stderr.exp fork.stdout.exp fork.vgtest \
 	fucomip.stderr.exp fucomip.vgtest \
