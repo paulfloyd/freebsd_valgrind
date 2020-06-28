@@ -2,7 +2,7 @@
   1:                SYS_exit below
 ---------------------------------------------------------
 ---------------------------------------------------------
-  2:                SYS_fork @todo
+  2:                SYS_fork other
 ---------------------------------------------------------
 ---------------------------------------------------------
   3:                SYS_read 1+3s 0m
@@ -3012,7 +3012,11 @@ Syscall param sendfile(sbytes) contains uninitialised byte(s)
 Syscall param sendfile(flags) contains uninitialised byte(s)
    ...
 
-Syscall param sendfile(offset) points to unaddressable byte(s)
+Syscall param sendfile(hdtr) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param sendfile(sbytes) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -3618,6 +3622,9 @@ Syscall param mq_unlink(name) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
+---------------------------------------------------------
+463:              SYS_abort2 other
+---------------------------------------------------------
 ---------------------------------------------------------
 465:           SYS_aio_fsync 2s 1m
 ---------------------------------------------------------
@@ -4258,6 +4265,22 @@ Syscall param semctl(cmd) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
+511:              SYS_msgctl 3s 1m
+---------------------------------------------------------
+Syscall param msgctl(msqid) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(cmd) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(buf) contains uninitialised byte(s)
+   ...
+
+Syscall param msgctl(IPC_STAT, buf) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 512:              SYS_shmctl 3s 1m
 ---------------------------------------------------------
 Syscall param shmctl(shmid) contains uninitialised byte(s)
@@ -4287,10 +4310,36 @@ Syscall param lpathconf(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+515:    SYS___cap_rights_get 3s 1m
+---------------------------------------------------------
+Syscall param cap_rights_get(version) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_rights_get(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_rights_get(rights) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_rights_get(rights) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 516:           SYS_cap_enter other
 ---------------------------------------------------------
 ---------------------------------------------------------
-518:              SYS_pdfork @todo
+517:         SYS_cap_getmode 1s 1m
+---------------------------------------------------------
+Syscall param cap_getmode(modep) contains uninitialised byte(s)
+   ...
+
+Syscall param cap_getmode(modep) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+518:              SYS_pdfork other
 ---------------------------------------------------------
 ---------------------------------------------------------
 519:              SYS_pdkill 2s 0m
@@ -4334,6 +4383,18 @@ Syscall param pselect(timeout) contains uninitialised byte(s)
 
 Syscall param pselect(newsigmask) contains uninitialised byte(s)
    ...
+
+Syscall param pselect(readfds) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param pselect(writefds) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param pselect(exceptfds) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 Syscall param pselect(timeout) points to unaddressable byte(s)
    ...
@@ -4658,7 +4719,7 @@ Syscall param chflagsat(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-541:             SYS_accept4 4s 2m
+541:             SYS_accept4 4s 1m
 ---------------------------------------------------------
 Syscall param accept4(s) contains uninitialised byte(s)
    ...
@@ -4673,6 +4734,22 @@ Syscall param accept4(flags) contains uninitialised byte(s)
    ...
 
 Syscall param socketcall.accept(addrlen_in) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+541:             SYS_accept4 3s 1m
+---------------------------------------------------------
+Syscall param accept4(s) contains uninitialised byte(s)
+   ...
+
+Syscall param accept4(addr) contains uninitialised byte(s)
+   ...
+
+Syscall param accept4(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param socketcall.accept(addr) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -4751,19 +4828,32 @@ Syscall param ppoll(timeout) contains uninitialised byte(s)
 Syscall param ppoll(newsigmask) contains uninitialised byte(s)
    ...
 
-Syscall param ppoll(fds.fd) points to unaddressable byte(s)
+Syscall param ppoll(timeout) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param ppoll(fds.events) points to unaddressable byte(s)
+Syscall param ppoll(newsigmask) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param ppoll(fds.revents) points to unaddressable byte(s)
+---------------------------------------------------------
+545:               SYS_ppoll 2s 2+2m
+---------------------------------------------------------
+Syscall param ppoll(timeout) contains uninitialised byte(s)
    ...
- Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param ppoll(tsp) points to unaddressable byte(s)
+Syscall param ppoll(newsigmask) contains uninitialised byte(s)
+   ...
+
+Syscall param ppoll(fds.fd) points to uninitialised byte(s)
+   ...
+ Address 0x........ is on thread 1's stack
+
+Syscall param ppoll(fds.events) points to uninitialised byte(s)
+   ...
+ Address 0x........ is on thread 1's stack
+
+Syscall param ppoll(timeout) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
