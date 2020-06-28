@@ -10,6 +10,9 @@
 #include <sys/sem.h>
 #include <sys/procctl.h>
 #include <mqueue.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <poll.h>
 #include "scalar.h"
 #include "config.h"
 #include "../../memcheck.h"
@@ -34,8 +37,7 @@ int main(void)
    GO(SYS_exit, "below");
    
    /* SYS_fork                    2 */
-   /* @todo PJF add scalar_fork,c */
-    GO(SYS_fork, "@todo");
+    GO(SYS_fork, "other");
 
    /* SYS_read                    3 */
    GO(SYS_read, "1+3s 0m");
@@ -1106,7 +1108,6 @@ int main(void)
    
    /* SYS_kldsym                  337 */
    GO(SYS_kldsym, "3s 1m");
-   /* @todo if data (arg2) is valid but the symname field is not then that would be a different 1m */
    SY(SYS_kldsym, x0-1, x0+16, x0+1); FAIL;
    
    /* SYS_jail                    338 */
@@ -1270,10 +1271,10 @@ int main(void)
    /* SYS_kenv                    390 */
    GO(SYS_kenv, "(KENV_GET) 4s 1m");
    SY(SYS_kenv, x0+0, x0+2, x0+3, x0+4); FAIL;
-   
+
    GO(SYS_kenv, "(KENV_DUMP) 4s 0m");
    SY(SYS_kenv, x0+3, x0+2, x0+3, x0+4); FAIL;
-   
+
    GO(SYS_kenv, "(bogus) 4s 0m");
    SY(SYS_kenv, x0+20, x0+2, x0+3, x0+4); FAIL;
 
@@ -1287,8 +1288,6 @@ int main(void)
 
    /* SYS_sendfile                393 */
    GO(SYS_sendfile, "7s 2m");
-   /* @todo where is the 1s 1m from sbytes? */
-   /* this may have x86/amd64 differences */
    SY(SYS_sendfile, x0-1, x0+2, x0+3, x0+4, x0+1, x0+1, x0+3); FAIL;
 
    // mac_syscall                                          394
@@ -1414,11 +1413,6 @@ int main(void)
    // thr_create                  430
    
    /* SYS_thr_exit                431 */
-   /* @todo PJF need specific test for this as it terminates the proces */
-   /*
-   GO(SYS_thr_exit, "1s 1m");
-   SY(SYS_thr_exit, x0+1); FAIL;
-   */
    GO(SYS_thr_exit, "other");
 
    /* SYS_thr_self                432 */
@@ -1432,7 +1426,6 @@ int main(void)
 #if (FREEBSD_VERS <= FREEBSD_10)
    
    /* @todo PJF (maybe) FreeBSD 10 or earlier, hmmm */
-
    BSDXY(__NR__umtx_lock,       sys__umtx_lock),        // 434
    
    BSDXY(__NR__umtx_unlock,     sys__umtx_unlock),      // 435
@@ -1538,11 +1531,7 @@ int main(void)
    SY(SYS_kmq_unlink, x0+1); FAIL;
 
    /* abort2                      463 */
-   /* @todo need a specific test for this as it aborts execution */
-   /*
-   GO(SYS_abort2, "3s 2m");
-   SY(SYS_abort2, x0+1, x0+1, x0+1); FAIL;
-   */
+   GO(SYS_abort2, "other");
 
    /* SYS_thr_set_name            464 */
    /* @todo PJF VG doesn't like this. Causes a SIGSEGV. */
@@ -1735,6 +1724,8 @@ int main(void)
    SY(SYS___semctl, x0, x0, x0+3000, x0+1); FAIL;
    
    /* msgctl                      511 */
+   GO(SYS_msgctl, "3s 1m");
+   SY(SYS_msgctl, x0, x0+IPC_STAT, x0+1); FAIL;
    
    /* SYS_shmctl                  512 */
    GO(SYS_shmctl, "3s 1m");
@@ -1746,20 +1737,19 @@ int main(void)
     
     // 514 is obsolete cap_new
     
-    // __cap_rights_get           515
+    /* __cap_rights_get           515 */
+    GO(SYS___cap_rights_get, "3s 1m");
+    SY(SYS___cap_rights_get, x0+1, x0, x0+1); FAIL;
     
     /* SYS_cap_enter              516 */
     GO(SYS_cap_enter, "other");    
     
-    // cap_getmode                517
+    /* SYS_cap_getmode            517 */
+    GO(SYS_cap_getmode, "1s 1m");
+    SY(SYS_cap_getmode, x0+1); FAIL;
     
     /* SYS_pdfork                 518 */
-    /* @todo PJF needs separate test */
-    /*
-    GO(SYS_pdfork, "2s 1m");
-    SY(SYS_pdfork, x0+1, x0); FAIL;
-    */
-    GO(SYS_pdfork, "@todo");
+    GO(SYS_pdfork, "other");
     
     /* SYS_pdkill                 519 */
     GO(SYS_pdkill, "2s 0m");
@@ -1770,9 +1760,8 @@ int main(void)
     SY(SYS_pdgetpid, x0+100000, x0+1); FAIL;
     
     /* SYS_pselect                522 */
-    /* @todo PJF check output, add variations */
     GO(SYS_pselect, "6s 5m");
-    SY(SYS_pselect, x0, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
+    SY(SYS_pselect, x0+64, x0+1, x0+2, x0+3, x0+4, x0+5); FAIL;
     
     /* SYS_getloginclass          523 */
     GO(SYS_getloginclass, "2s 1m");
@@ -1849,9 +1838,14 @@ int main(void)
     SY(SYS_chflagsat, x0+99999, x0+1, x0+2, x0+3); FAIL;
     
    /* SYS_accept4                 541 */
-   /* @todo PJF only 1m ??? */
-   GO(SYS_accept4, "4s 2m");
+   GO(SYS_accept4, "4s 1m");
    SY(SYS_accept4, x0+999999, x0+1, x0+16, x0); FAIL;
+   
+   {
+      socklen_t socklen = 42;
+      GO(SYS_accept4, "3s 1m");
+      SY(SYS_accept4, x0+999999, x0+1, &socklen, x0); FAIL;
+   }
    
    /* SYS_pipe2                   542 */
    GO(SYS_pipe2, "2s 1m");
@@ -1873,9 +1867,15 @@ int main(void)
 #if (FREEBSD_VERS >= FREEBSD_10)
 
    /* SYS_ppoll                   545 */
-   /* @todo PJF check output */
    GO(SYS_ppoll, "4s 2m");
    SY(SYS_ppoll, x0+8, x0+1, x0+1, x0+1); FAIL;
+   
+   {
+       struct pollfd arg1;
+       arg1.fd = arg1.events = arg1.revents = x0;
+        GO(SYS_ppoll, "2s 2+2m");
+        SY(SYS_ppoll, &arg1, 1, x0+1, x0+1); FAIL;
+   }
    
    /* SYS_futimens                546 */
    GO(SYS_futimens, "2s 1m");

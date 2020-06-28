@@ -1273,6 +1273,11 @@
 /memcheck/tests/freebsd/capsicum
 /memcheck/tests/freebsd/getfh
 /memcheck/tests/freebsd/linkat
+/memcheck/tests/freebsd/scalar_fork
+/memcheck/tests/freebsd/scalar_thr_exit
+/memcheck/tests/freebsd/scalar_abort2
+/memcheck/tests/freebsd/scalar_pdfork
+/memcheck/tests/freebsd/scalar_vfork
 
 # /memcheck/tests/amd64-freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff

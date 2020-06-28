@@ -5770,20 +5770,22 @@ PRE(sys_ppoll)
                  struct vki_pollfd *, fds, unsigned int, nfds,
                  struct vki_timespec *, timeout, vki_sigset_t *, newsigmask);
 
-   for (i = 0; i < ARG2; i++) {
-      PRE_MEM_READ( "ppoll(fds.fd)",
-                    (Addr)(&fds[i].fd), sizeof(fds[i].fd) );
-      PRE_MEM_READ( "ppoll(fds.events)",
-                    (Addr)(&fds[i].events), sizeof(fds[i].events) );
-      PRE_MEM_WRITE( "ppoll(fds.revents)",
-                     (Addr)(&fds[i].revents), sizeof(fds[i].revents) );
+   if (ML_(safe_to_deref)(fds, ARG2*sizeof(struct vki_pollfd))) {
+      for (i = 0; i < ARG2; i++) {
+         PRE_MEM_READ( "ppoll(fds.fd)",
+                       (Addr)(&fds[i].fd), sizeof(fds[i].fd) );
+         PRE_MEM_READ( "ppoll(fds.events)",
+                       (Addr)(&fds[i].events), sizeof(fds[i].events) );
+         PRE_MEM_WRITE( "ppoll(fds.revents)",
+                        (Addr)(&fds[i].revents), sizeof(fds[i].revents) );
+      }
    }
 
    if (ARG3) {
-         PRE_MEM_READ( "ppoll(tsp)", ARG3,
+      PRE_MEM_READ( "ppoll(timeout)", ARG3,
                        sizeof(struct vki_timespec) );
    }
-   if (ARG4 != 0) {
+   if (ARG4) {
       const vki_sigset_t *guest_sigmask = (vki_sigset_t *)(Addr)ARG4;
       PRE_MEM_READ( "ppoll(newsigmask)", ARG4, sizeof(vki_sigset_t));
       if (!ML_(safe_to_deref)(guest_sigmask, sizeof(*guest_sigmask))) {
@@ -5800,15 +5802,15 @@ PRE(sys_ppoll)
 
 POST(sys_ppoll)
 {
-    if (SUCCESS && ((Word)RES != -1)) {
-       UInt i;
-       struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;
-       for (i = 0; i < ARG2; i++)
-      POST_MEM_WRITE( (Addr)(&ufds[i].revents), sizeof(ufds[i].revents) );
-    }
-    if (ARG4 != 0 && ARG4 != 1) {
-       VG_(free)((vki_sigset_t *) (Addr)ARG4);
-    }
+   if (SUCCESS && ((Word)RES != -1)) {
+      UInt i;
+      struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;
+      for (i = 0; i < ARG2; i++)
+         POST_MEM_WRITE( (Addr)(&ufds[i].revents), sizeof(ufds[i].revents) );
+   }
+   if (ARG4 != 0 && ARG4 != 1) {
+      VG_(free)((vki_sigset_t *) (Addr)ARG4);
+   }
 }
 
 // SYS_futimens	546

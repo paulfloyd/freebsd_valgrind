@@ -726,6 +726,14 @@ static __inline struct vki_cmsghdr * vki_cmsg_nxthdr (struct vki_msghdr *__msg, 
 
 #define VKI_IPPROTO_TCP  IPPROTO_TCP
 
+struct vki_sf_hdtr {
+   struct iovec *headers;
+   int hdr_cnt;
+   struct iovec *trailers;
+   int trl_cnt;
+};
+
+
 //----------------------------------------------------------------------
 // From netinet/in.h
 //----------------------------------------------------------------------

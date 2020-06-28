@@ -388,8 +388,11 @@ PRE(sys_sendfile)
                  int, fd, int, s, vki_off_t, offset, size_t, nbytes,
                  void *, hdtr, vki_off_t *, sbytes, int, flags);
 
+   if (ARG5 != 0)
+      PRE_MEM_READ("sendfile(hdtr)", ARG5, sizeof(struct vki_sf_hdtr));
+
    if (ARG6 != 0)
-      PRE_MEM_WRITE( "sendfile(offset)", ARG6, sizeof(vki_off_t) );
+      PRE_MEM_WRITE( "sendfile(sbytes)", ARG6, sizeof(vki_off_t) );
 }
 
 POST(sys_sendfile)
