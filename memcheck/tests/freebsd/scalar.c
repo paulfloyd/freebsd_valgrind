@@ -954,13 +954,23 @@ int main(void)
    /* netbsd lstat                280 */
 
    /* SYS_preadv                  289 */
+#if defined(VGP_amd64_freebsd)
    GO(SYS_preadv, "4s 0m");
    /* 0m because of the bogus fd */
    SY(SYS_preadv, x0+9999999, x0+1, x0+16, x0+20); FAIL;
+#else
+   GO(SYS_preadv, "5s 0m");
+   SY(SYS_preadv, x0+9999999, x0+1, x0+16, x0, x0+20); FAIL;
+#endif
    
-   /* _pwritev                    290 */
+   /* SYS_pwritev                    290 */
+#if defined(VGP_amd64_freebsd)
    GO(SYS_pwritev, "4s 0m");
    SY(SYS_pwritev, x0+9999999, x0+1, x0+16, x0+20); FAIL;
+#else
+   GO(SYS_pwritev, "5s 0m");
+   SY(SYS_pwritev, x0+9999999, x0+1, x0+16, x0, x0+20); FAIL;
+#endif
    
    /* freebsd 4 fhstatfs          297 */
 
@@ -1574,8 +1584,13 @@ int main(void)
    SY(SYS_mmap, x0+1, x0, x0+123456, x0+234567, x0+99, x0+3); FAIL;
 
    /* SYS_lseek                   478 */
+#if defined(VGP_amd64_freebsd)
    GO(SYS_lseek, "3s 0m");
    SY(SYS_lseek, x0+99, x0+1, x0+55); FAIL;
+#else
+   GO(SYS_lseek, "4s 0m");
+   SY(SYS_lseek, x0+99, x0+1, x0+1, x0+55); FAIL;
+#endif
 
    /* SYS_truncate                479 */
    GO(SYS_truncate, "2s 1m");
@@ -1606,8 +1621,13 @@ int main(void)
    SY(SYS_cpuset, x0+1); FAIL;
 
    /* cpuset_setid                485 */
+#if defined (VGP_amd64_freebsd)
    GO(SYS_cpuset_setid, "3s 0m");
    SY(SYS_cpuset_setid, x0, x0, x0); FAIL;
+#else
+   GO(SYS_cpuset_setid, "4s 0m");
+   SY(SYS_cpuset_setid, x0, x0, x0, x0); FAIL;
+#endif
 
    /* cpuset_getid                486 */
    GO(SYS_cpuset_getid, "4s 1m");
@@ -1794,8 +1814,13 @@ int main(void)
     SY(SYS_rctl_remove_rule, x0+1, x0+1, x0+2, x0+16); FAIL;
     
     /* SYS_posix_fallocate        530 */
+#if defined(VGP_amd64_freebsd)
     GO(SYS_posix_fallocate, "3s 0m");
     SY(SYS_posix_fallocate, x0+99999, x0+10, x0+20); SUCC;
+#else
+    GO(SYS_posix_fallocate, "5s 0m");
+    SY(SYS_posix_fallocate, x0+99999, x0, x0+10, x0, x0+20); SUCC;
+#endif
     
     /* SYS_posix_fadvise          531 */
     GO(SYS_posix_fadvise, "4s 0m");
@@ -1856,11 +1881,19 @@ int main(void)
     SY(SYS_aio_mlock, x0+1); FAIL;
     
     /* SYS_procctl                544 */
+#if defined(VGP_amd64_freebsd)
     GO(SYS_procctl, "(PROC_REAP_RELEASE) 3s 0m");
     SY(SYS_procctl, x0+9999, x0+9999, x0+PROC_REAP_RELEASE); FAIL;
     
     GO(SYS_procctl, "(PROC_REAP_GETPIDS) 4s 1m");
     SY(SYS_procctl, x0+9999, x0+9999, x0+PROC_REAP_GETPIDS, x0+1); FAIL;
+#else
+    GO(SYS_procctl, "(PROC_REAP_RELEASE) 4s 0m");
+    SY(SYS_procctl, x0+9999, x0, x0+9999, x0+PROC_REAP_RELEASE); FAIL;
+    
+    GO(SYS_procctl, "(PROC_REAP_GETPIDS) 5s 1m");
+    SY(SYS_procctl, x0+9999, x0, x0+9999, x0+PROC_REAP_GETPIDS, x0+1); FAIL;
+#endif
 
     // 544 is the highest syscall on FreeBSD 9
 

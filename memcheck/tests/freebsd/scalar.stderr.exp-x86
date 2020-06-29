@@ -2005,7 +2005,7 @@ Syscall param lutimes(times) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-289:              SYS_preadv 4s 0m
+289:              SYS_preadv 5s 0m
 ---------------------------------------------------------
 Syscall param preadv(fd) contains uninitialised byte(s)
    ...
@@ -2023,7 +2023,7 @@ Syscall param preadv(offset_high) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
-290:             SYS_pwritev 4s 0m
+290:             SYS_pwritev 5s 0m
 ---------------------------------------------------------
 Syscall param pwritev(fd) contains uninitialised byte(s)
    ...
@@ -3703,10 +3703,10 @@ Syscall param pwrite(buf) contains uninitialised byte(s)
 Syscall param pwrite(count) contains uninitialised byte(s)
    ...
 
-Syscall param pwrite(off_low) contains uninitialised byte(s)
+Syscall param pwrite(offset_low) contains uninitialised byte(s)
    ...
 
-Syscall param pwrite(off_high) contains uninitialised byte(s)
+Syscall param pwrite(offset_high) contains uninitialised byte(s)
    ...
 
 Syscall param pwrite(buf) points to unaddressable byte(s)
@@ -3731,14 +3731,14 @@ Syscall param mmap(flags) contains uninitialised byte(s)
 Syscall param mmap(fd) contains uninitialised byte(s)
    ...
 
-Syscall param mmap(offset_lo) contains uninitialised byte(s)
+Syscall param mmap(offset_low) contains uninitialised byte(s)
    ...
 
-Syscall param mmap(offset_hi) contains uninitialised byte(s)
+Syscall param mmap(offset_high) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
-478:               SYS_lseek 3s 0m
+478:               SYS_lseek 4s 0m
 ---------------------------------------------------------
 Syscall param lseek(fd) contains uninitialised byte(s)
    ...
@@ -3749,6 +3749,9 @@ Syscall param lseek(offset_low) contains uninitialised byte(s)
 Syscall param lseek(offset_high) contains uninitialised byte(s)
    ...
 
+Syscall param lseek(whence) contains uninitialised byte(s)
+   ...
+
 ---------------------------------------------------------
 479:            SYS_truncate 2s 1m
 ---------------------------------------------------------
@@ -3756,6 +3759,9 @@ Syscall param truncate(path) contains uninitialised byte(s)
    ...
 
 Syscall param truncate(length_low) contains uninitialised byte(s)
+   ...
+
+Syscall param truncate(length_high) contains uninitialised byte(s)
    ...
 
 Syscall param truncate(path) points to unaddressable byte(s)
@@ -3769,6 +3775,9 @@ Syscall param ftruncate(fd) contains uninitialised byte(s)
    ...
 
 Syscall param ftruncate(length_low) contains uninitialised byte(s)
+   ...
+
+Syscall param ftruncate(length_high) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
@@ -3816,7 +3825,7 @@ Syscall param cpuset(setid) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-485:        SYS_cpuset_setid 3s 0m
+485:        SYS_cpuset_setid 4s 0m
 ---------------------------------------------------------
 Syscall param cpuset_setid(which) contains uninitialised byte(s)
    ...
@@ -3825,6 +3834,9 @@ Syscall param cpuset_setid(id_low) contains uninitialised byte(s)
    ...
 
 Syscall param cpuset_setid(id_high) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setid(setid) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
@@ -4538,7 +4550,7 @@ Syscall param rctl_remove_rule(inbufp) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-530:     SYS_posix_fallocate 3s 0m
+530:     SYS_posix_fallocate 5s 0m
 ---------------------------------------------------------
 Syscall param posix_fallocate(fd) contains uninitialised byte(s)
    ...
@@ -4547,6 +4559,9 @@ Syscall param posix_fallocate(offset_low) contains uninitialised byte(s)
    ...
 
 Syscall param posix_fallocate(offset_high) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_fallocate(len_low) contains uninitialised byte(s)
    ...
 
 Syscall param posix_fallocate(len_high) contains uninitialised byte(s)
@@ -4792,7 +4807,7 @@ Syscall param aio_mlock(iocb points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-544:             SYS_procctl (PROC_REAP_RELEASE) 3s 0m
+544:             SYS_procctl (PROC_REAP_RELEASE) 4s 0m
 ---------------------------------------------------------
 Syscall param procctl(idtype) contains uninitialised byte(s)
    ...
@@ -4803,11 +4818,14 @@ Syscall param procctl(id_low) contains uninitialised byte(s)
 Syscall param procctl(id_high) contains uninitialised byte(s)
    ...
 
+Syscall param procctl(cmd) contains uninitialised byte(s)
+   ...
+
 Syscall param procctl(arg) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
-544:             SYS_procctl (PROC_REAP_GETPIDS) 4s 1m
+544:             SYS_procctl (PROC_REAP_GETPIDS) 5s 1m
 ---------------------------------------------------------
 Syscall param procctl(idtype) contains uninitialised byte(s)
    ...
