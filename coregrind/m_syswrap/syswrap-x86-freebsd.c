@@ -1302,7 +1302,7 @@ PRE(sys_procctl)
                  vki_uint32_t, MERGE64_FIRST(id),
                  vki_uint32_t, MERGE64_SECOND(id),
                  int, cmd, void *, arg);
-   switch (ARG3)
+   switch (ARG4)
    {
    case PROC_ASLR_CTL:
    case PROC_SPROTECT:
@@ -1348,7 +1348,7 @@ PRE(sys_procctl)
 
 POST(sys_procctl)
 {
-   switch (ARG3)
+   switch (ARG4)
    {
    case PROC_REAP_KILL:
       POST_MEM_WRITE(ARG5+offsetof(struct vki_procctl_reaper_kill, rk_killed), sizeof(u_int) + sizeof(vki_pid_t));
