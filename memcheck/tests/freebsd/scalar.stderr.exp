@@ -4168,9 +4168,15 @@ Syscall param symlinkat(name2) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-503:            SYS_unlinkat 1s 1m
+503:            SYS_unlinkat 3s 1m
 ---------------------------------------------------------
 Syscall param unlinkat(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param unlinkat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param unlinkat(flag) contains uninitialised byte(s)
    ...
 
 Syscall param unlinkat(path) points to unaddressable byte(s)

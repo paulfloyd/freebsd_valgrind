@@ -3927,10 +3927,15 @@ PRE(sys_thr_exit)
    ThreadState *tst;
 
    PRINT( "sys_thr_exit ( %#" FMT_REGWORD "x )", ARG1 );
-   PRE_REG_READ1(int, "thr_exit", long *, state);
+   PRE_REG_READ1(void, "thr_exit", long *, state);
 
-   if (ARG1)
+   /*
+   VG_(message)(Vg_DebugMsg, "thr_exit: state pointer %p\n", (void*)ARG1);
+   if (ARG1) {
+      VG_(message)(Vg_DebugMsg, "thr_exit: state value %ld\n", *(long*)ARG1);
       PRE_MEM_WRITE( "thr_exit(state)", ARG1, sizeof(long) );
+   }
+   */
    tst = VG_(get_ThreadState)(tid);
    tst->exitreason = VgSrc_ExitThread;
    tst->os_state.exitcode = ARG1;
@@ -4184,21 +4189,20 @@ PRE(sys__umtx_op)
    case VKI_UMTX_OP_WAIT:
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ5(long, "_umtx_op_wait",
-                    struct umtx *, obj, int, op, unsigned long, id,
+                    long *, obj, int, op, unsigned long, val,
                     void *, zero, struct vki_timespec *, timeout);
-      /*
-      PRE_MEM_READ( "_umtx_op_wait(mtx)", ARG1, sizeof(struct vki_umtx) );
-      if (ARG5)
-     PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
-      */
-      if (ARG1)
+      if (ARG1) {
           PRE_MEM_READ( "_umtx_op_wait(val)", ARG1, sizeof(long) );
-      *flags |= SfMayBlock;
+          if (*(long*)ARG1 == (long)ARG3) {
+             *flags |= SfMayBlock;
+          }
+      }
+
       break;
    case VKI_UMTX_OP_WAKE:
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, WAKE, %" FMT_REGWORD "u)", ARG1, ARG3);
       PRE_REG_READ3(long, "_umtx_op_wake",
-                    struct umtx *, obj, int, op, unsigned long, id);
+                    struct umtx *, obj, int, op, unsigned long, val);
       PRE_MEM_READ( "_umtx_op_wake(mtx)", ARG1, sizeof(struct vki_umtx) );
       break;
    case VKI_UMTX_OP_MUTEX_TRYLOCK:
@@ -5100,7 +5104,7 @@ PRE(sys_unlinkat)
 {
    *flags |= SfMayBlock;
    PRINT("sys_unlinkat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s) )", ARG1,ARG2,(char*)ARG2);
-   PRE_REG_READ2(int, "unlinkat", int, fd, const char *, path);
+   PRE_REG_READ3(int, "unlinkat", int, fd, const char *, path, int, flag);
    PRE_MEM_RASCIIZ( "unlinkat(path)", ARG2 );
 }
 

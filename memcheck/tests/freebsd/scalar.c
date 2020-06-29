@@ -1720,8 +1720,8 @@ int main(void)
    SY(SYS_symlinkat, x0+1, x0, x0+1); FAIL;
    
    /* SYS_unlinkat                503 */
-   GO(SYS_unlinkat, "1s 1m");
-   SY(SYS_unlinkat, x0+1); FAIL;
+   GO(SYS_unlinkat, "3s 1m");
+   SY(SYS_unlinkat, x0+9999999, x0+1, x0); FAIL;
 
    /* SYS_posix_openpt            504 */
    GO(SYS_posix_openpt, "1s 1m");
