@@ -1124,10 +1124,11 @@ PRE(sys_pwrite)
 {
    Bool ok;
    *flags |= SfMayBlock;
-   PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3, ARG4, ARG5);
+   PRINT("sys_pwrite ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %llu )", ARG1, ARG2, ARG3, MERGE64(ARG4, ARG5));
    PRE_REG_READ5(ssize_t, "pwrite",
                  unsigned int, fd, const char *, buf, vki_size_t, count,
-                 unsigned int, off_low, unsigned int, off_high);
+                 vki_uint32_t, MERGE64_FIRST(offset),
+                 vki_uint32_t, MERGE64_SECOND(offset));
    /* check to see if it is allowed.  If not, try for an exemption from
       --sim-hints=enable-outer (used for self hosting). */
    ok = ML_(fd_allowed)(ARG1, "pwrite", tid, False);
@@ -1146,11 +1147,12 @@ PRE(sys_mmap)
 {
    SysRes r;
 
-   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, lo0x%" FMT_REGWORD "x hi0x%" FMT_REGWORD "x)",
-         ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, ARG6, ARG7 );
+   PRINT("sys_mmap ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %llu )",
+         ARG1, (UWord)ARG2, ARG3, ARG4, ARG5, MERGE64(ARG6, ARG7) );
    PRE_REG_READ7(void *, "mmap",
-                 void *, addr, size_t, len, int, prot,  int, flags,
-                 int, fd, unsigned long, offset_lo, unsigned long, offset_hi);
+                 void *, addr, size_t, len, int, prot,  int, flags, int, fd,
+                 vki_uint32_t, MERGE64_FIRST(offset),
+                 vki_uint32_t, MERGE64_SECOND(offset));
 
    r = ML_(generic_PRE_sys_mmap)( tid, ARG1, ARG2, ARG3, ARG4, ARG5, MERGE64(ARG6,ARG7) );
    SET_STATUS_from_SysRes(r);
@@ -1160,10 +1162,12 @@ PRE(sys_mmap)
 // off_t lseek(int fildes, off_t offset, int whence);
 PRE(sys_lseek)
 {
-   PRINT("sys_lseek ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3,ARG4);
+   PRINT("sys_lseek ( %" FMT_REGWORD "d, %llu, %" FMT_REGWORD "d )", SARG1,MERGE64(ARG2,ARG3),SARG4);
    PRE_REG_READ4(long, "lseek",
-                 unsigned int, fd, unsigned int, offset_low,
-                 unsigned int, offset_high, unsigned int, whence);
+                 unsigned int, fd,
+                 vki_uint32_t, MERGE64_FIRST(offset),
+                 vki_uint32_t, MERGE64_SECOND(offset),
+                 unsigned int, whence);
 }
 
 // SYS_truncate 479
@@ -1171,10 +1175,11 @@ PRE(sys_lseek)
 PRE(sys_truncate)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,(char *)ARG1,ARG2,ARG3);
+   PRINT("sys_truncate ( %#" FMT_REGWORD "x(%s), %llu )", ARG1,(char *)ARG1,MERGE64(ARG2,ARG3));
    PRE_REG_READ3(long, "truncate",
                  const char *, path,
-       unsigned int, length_low, unsigned int, length_high);
+                 vki_uint32_t, MERGE64_FIRST(length),
+                 vki_uint32_t, MERGE64_SECOND(length));
    PRE_MEM_RASCIIZ( "truncate(path)", ARG1 );
 }
 
@@ -1183,9 +1188,10 @@ PRE(sys_truncate)
 PRE(sys_ftruncate)
 {
    *flags |= SfMayBlock;
-   PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
-   PRE_REG_READ3(long, "ftruncate", unsigned int, fd,
-		  unsigned int, length_low, unsigned int, length_high);
+   PRINT("sys_ftruncate ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", SARG1,ARG2,ARG3);
+   PRE_REG_READ3(int, "ftruncate", int, fd,
+                 vki_uint32_t, MERGE64_FIRST(length),
+                 vki_uint32_t, MERGE64_SECOND(length));
 }
 
 // SYS_cpuset_setid	485
