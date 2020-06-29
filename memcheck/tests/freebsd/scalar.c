@@ -103,8 +103,8 @@ int main(void)
    SY(SYS_chown, x0, x0, x0); FAIL;
    
    /* break                       17 */
-   GO(SYS_break, "ni");
-   SY(SYS_break); SUCC;
+   GO(SYS_break, "1s 1m");
+   SY(SYS_break, x0+1); SUCC;
    
    /* freebsd4 getfsstat          18 */
 
