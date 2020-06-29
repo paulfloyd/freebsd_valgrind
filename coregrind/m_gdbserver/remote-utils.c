@@ -534,7 +534,7 @@ void remote_close (void)
 
    Bool unlinkPossible = True;
 #if defined(VGO_freebsd)
-   unlinkPossible = (VG_(getCapabilityMode)() == False);
+   unlinkPossible = (VG_(get_capability_mode)() == False);
 #endif
 
    if (unlinkPossible == True) {

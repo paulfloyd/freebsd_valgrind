@@ -45,8 +45,6 @@ AC_PROG_CXX
 #         AC_SUBST([OBJCFLAGS])
 #        ])
 AC_PROG_RANLIB
-AC_PROG_EGREP
-
 # Set LTO_RANLIB variable to an lto enabled ranlib
 if test "x$LTO_RANLIB" = "x"; then
   AC_PATH_PROGS([LTO_RANLIB], [gcc-ranlib])
@@ -82,9 +80,6 @@ fi
 
 # figure out where perl lives
 AC_PATH_PROG(PERL, perl)
-
-# find sed
-AC_PATH_PROG(SED, sed)
 
 # figure out where gdb lives
 AC_PATH_PROG(GDB, gdb, "/no/gdb/was/found/at/configure/time")
@@ -1034,15 +1029,20 @@ AM_CONDITIONAL(VGCONF_OS_IS_LINUX,
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)
- AM_CONDITIONAL(VGCONF_OS_IS_FREEBSD,
-                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
-                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD)
+AM_CONDITIONAL(VGCONF_OS_IS_FREEBSD,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD)
 AM_CONDITIONAL(VGCONF_OS_IS_DARWIN,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
 AM_CONDITIONAL(VGCONF_OS_IS_SOLARIS,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_SOLARIS \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_SOLARIS)
+AM_CONDITIONAL(VGCONF_OS_IS_DARWIN_OR_FREEBSD,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
 
 
 # Sometimes, in the Makefile.am files, it's useful to know whether or not

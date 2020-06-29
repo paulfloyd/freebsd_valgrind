@@ -491,11 +491,9 @@ LDADD = -lpthread
 
 bug322621_SOURCES           = bug322621.cpp
 concurrent_close_SOURCES    = concurrent_close.cpp
-
 if !VGCONF_OS_IS_FREEBSD
 dlopen_main_LDADD           = -ldl
 endif
-
 dlopen_lib_so_SOURCES       = dlopen_lib.c
 dlopen_lib_so_CFLAGS        = -fPIC
 dlopen_lib_so_LDFLAGS       = -shared -fPIC

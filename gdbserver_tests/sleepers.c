@@ -23,7 +23,6 @@ static pid_t gettid_sys()
    return getpid();
 #endif
 }
-
 // will be invoked from gdb.
 void whoami(char *msg)
 {

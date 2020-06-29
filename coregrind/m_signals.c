@@ -1074,7 +1074,6 @@ asm(
 );
 
 
-
 static void handle_SCSS_change ( Bool force_update )
 {
    Int  res, sig;
@@ -2525,8 +2524,6 @@ void async_signalhandler ( Int sigNo,
 
    /* The thread isn't currently running, make it so before going on */
    VG_(acquire_BigLock)(tid, "async_signalhandler");
-
-   //VG_(printf)("********** async_signalhandler **********\n");
 
    info->si_code = sanitize_si_code(info->si_code);
 

@@ -279,7 +279,7 @@ if HAVE_NESTED_FUNCTIONS
 endif
 
 # This doesn't appear to be compilable on Darwin.
-if VGCONF_OS_IS_LINUX
+if ! VGCONF_OS_IS_DARWIN_OR_FREEBSD
    check_PROGRAMS += rlimit64_nofile \
         ppoll_alarm
 endif

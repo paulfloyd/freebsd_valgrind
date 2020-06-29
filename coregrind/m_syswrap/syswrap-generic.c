@@ -4538,6 +4538,7 @@ POST(sys_newstat)
 }
 #endif
 
+#if !defined(VGP_nanomips_linux)
 PRE(sys_statfs)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
@@ -4565,6 +4566,7 @@ POST(sys_statfs64)
 {
    POST_MEM_WRITE( ARG3, ARG2 );
 }
+#endif
 
 PRE(sys_symlink)
 {

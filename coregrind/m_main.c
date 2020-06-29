@@ -2510,6 +2510,7 @@ static void final_tidyup(ThreadId tid)
 /*====================================================================*/
 /*=== Getting to main() alive: LINUX                               ===*/
 /*====================================================================*/
+
 #if defined(VGO_linux)
 
 /* If linking of the final executables is done with glibc present,
@@ -3014,7 +3015,6 @@ asm(
 /* This is in order to get AT_NULL and AT_PAGESIZE. */
 #include <elf.h>
 /* --- !!! --- EXTERNAL HEADERS end --- !!! --- */
-
 
 /* Avoid compiler warnings: this fn _is_ used, but labelling it
    'static' causes gcc to complain it isn't.

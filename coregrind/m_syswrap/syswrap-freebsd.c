@@ -64,7 +64,7 @@
 
 static Bool capabiltyMode = False;
 
-Bool VG_(getCapabilityMode)(void)
+Bool VG_(get_capability_mode)(void)
 {
     return capabiltyMode;
 }

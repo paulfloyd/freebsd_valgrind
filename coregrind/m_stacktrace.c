@@ -658,7 +658,6 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
          continue;
       }
 
-
       /* If VG_(use_CF_info) fails, it won't modify ip/sp/fp, so
          we can safely try the old-fashioned method. */
       /* This bit is supposed to deal with frames resulting from
