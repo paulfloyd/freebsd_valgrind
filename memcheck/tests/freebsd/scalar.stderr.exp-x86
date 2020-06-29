@@ -173,8 +173,11 @@ Syscall param chown(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
- 17:               SYS_break ni
+ 17:               SYS_break 1s 1m
 ---------------------------------------------------------
+Syscall param brk(end_data_segment) contains uninitialised byte(s)
+   ...
+
 ---------------------------------------------------------
  20:              SYS_getpid 0s 0m
 ---------------------------------------------------------
@@ -459,12 +462,12 @@ Conditional jump or move depends on uninitialised value(s)
 Syscall param ioctl(fd) contains uninitialised byte(s)
    ...
 
-Syscall param ioctl(request) contains uninitialised byte(s)
-   ...
-
 
 More than 100 errors detected.  Subsequent errors
 will still be recorded, but in less detail than before.
+Syscall param ioctl(request) contains uninitialised byte(s)
+   ...
+
 Syscall param ioctl(arg) contains uninitialised byte(s)
    ...
 
