@@ -205,9 +205,12 @@ Syscall param mount(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
- 22:             SYS_unmount 1s 1m
+ 22:             SYS_unmount 2s 1m
 ---------------------------------------------------------
 Syscall param unmount(dir) contains uninitialised byte(s)
+   ...
+
+Syscall param unmount(flags) contains uninitialised byte(s)
    ...
 
 Syscall param unmount(path) points to unaddressable byte(s)
@@ -459,15 +462,15 @@ Conditional jump or move depends on uninitialised value(s)
 ---------------------------------------------------------
  54:               SYS_ioctl 3s 1m
 ---------------------------------------------------------
+
+More than 100 errors detected.  Subsequent errors
+will still be recorded, but in less detail than before.
 Syscall param ioctl(fd) contains uninitialised byte(s)
    ...
 
 Syscall param ioctl(request) contains uninitialised byte(s)
    ...
 
-
-More than 100 errors detected.  Subsequent errors
-will still be recorded, but in less detail than before.
 Syscall param ioctl(arg) contains uninitialised byte(s)
    ...
 
@@ -3358,7 +3361,7 @@ Syscall param jail_attach(jid) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
-437:     SYS_extattr_list_fd 3s 1m
+437:     SYS_extattr_list_fd 4s 1m
 ---------------------------------------------------------
 Syscall param extattr_list_fd(id) contains uninitialised byte(s)
    ...
@@ -3369,12 +3372,15 @@ Syscall param extattr_list_fd(attrnamespace) contains uninitialised byte(s)
 Syscall param extattr_list_fd(data) contains uninitialised byte(s)
    ...
 
+Syscall param extattr_list_fd(nbytes) contains uninitialised byte(s)
+   ...
+
 Syscall param extattr_list_fd(data) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-438:   SYS_extattr_list_file 3s 2m
+438:   SYS_extattr_list_file 4s 2m
 ---------------------------------------------------------
 Syscall param extattr_list_file(path) contains uninitialised byte(s)
    ...
@@ -3383,6 +3389,9 @@ Syscall param extattr_list_file(attrnamespace) contains uninitialised byte(s)
    ...
 
 Syscall param extattr_list_file(data) contains uninitialised byte(s)
+   ...
+
+Syscall param extattr_list_file(nbytes) contains uninitialised byte(s)
    ...
 
 Syscall param extattr_list_file(path) points to unaddressable byte(s)
@@ -3394,7 +3403,7 @@ Syscall param extattr_list_file(data) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-439:   SYS_extattr_list_link 3s 2m
+439:   SYS_extattr_list_link 4s 2m
 ---------------------------------------------------------
 Syscall param extattr_list_link(path) contains uninitialised byte(s)
    ...
@@ -3403,6 +3412,9 @@ Syscall param extattr_list_link(attrnamespace) contains uninitialised byte(s)
    ...
 
 Syscall param extattr_list_link(data) contains uninitialised byte(s)
+   ...
+
+Syscall param extattr_list_link(nbytes) contains uninitialised byte(s)
    ...
 
 Syscall param extattr_list_link(path) points to unaddressable byte(s)

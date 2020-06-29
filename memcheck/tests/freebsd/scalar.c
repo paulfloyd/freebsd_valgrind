@@ -120,8 +120,8 @@ int main(void)
    SY(SYS_mount, x0, x0, x0, x0); FAIL;
 
    /* unmount                     22 */
-   GO(SYS_unmount, "1s 1m");
-   SY(SYS_unmount, x0); FAIL;
+   GO(SYS_unmount, "2s 1m");
+   SY(SYS_unmount, x0+1, x0); FAIL;
 
    /* setuid                      23 */
    GO(SYS_setuid, "1s 0m");
@@ -1436,16 +1436,16 @@ int main(void)
    SY(SYS_jail_attach, x0-1); FAIL;
    
    /* SYS_extattr_list_fd         437 */
-   GO(SYS_extattr_list_fd, "3s 1m");
-   SY(SYS_extattr_list_fd, x0+999999, x0+1, x0+16); FAIL;
+   GO(SYS_extattr_list_fd, "4s 1m");
+   SY(SYS_extattr_list_fd, x0+999999, x0+1, x0+1, x0+16); FAIL;
    
    /* SYS_extattr_list_file       438 */
-   GO(SYS_extattr_list_file, "3s 2m");
-   SY(SYS_extattr_list_file, x0+1, x0+1, x0+16); FAIL;
+   GO(SYS_extattr_list_file, "4s 2m");
+   SY(SYS_extattr_list_file, x0+1, x0+1, x0+1, x0+16); FAIL;
    
    /* SYS_extattr_list_link       439 */
-   GO(SYS_extattr_list_link, "3s 2m");
-   SY(SYS_extattr_list_link, x0+1, x0+1, x0+16); FAIL;
+   GO(SYS_extattr_list_link, "4s 2m");
+   SY(SYS_extattr_list_link, x0+1, x0+1, x0+1, x0+16); FAIL;
 
 
    // kse_switchin                                         440
