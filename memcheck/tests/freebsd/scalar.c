@@ -238,7 +238,6 @@ int main(void)
    SY(SYS_acct, x0-1); FAIL;
 
    /* 4.3 sigpending              52 */
-   
    /* sigaltstack                 53 */
    {
       struct our_sigaltstack {
@@ -814,7 +813,7 @@ int main(void)
    
    /* SYS_msgget                  225 */
    GO(SYS_msgget, "2s 0m");
-   SY(SYS_msgget, x0, x0); SUCC;
+   SY(SYS_msgget, x0-1, x0); FAIL;
    
    /* SYS_msgsnd                  226 */
    GO(SYS_msgsnd, "4s 1m");
@@ -1593,12 +1592,22 @@ int main(void)
 #endif
 
    /* SYS_truncate                479 */
+#if defined(VGP_amd64_freebsd)
    GO(SYS_truncate, "2s 1m");
    SY(SYS_truncate, x0+1, x0+1); FAIL;
+#else
+   GO(SYS_truncate, "3s 1m");
+   SY(SYS_truncate, x0+1, x0, x0+1); FAIL;
+#endif
 
    /* SYS_ftruncate               480 */
+#if defined(VGP_amd64_freebsd)
    GO(SYS_ftruncate, "2s 0m");
    SY(SYS_ftruncate, x0+99, x0+1); FAIL;
+#else
+   GO(SYS_ftruncate, "3s 0m");
+   SY(SYS_ftruncate, x0+99, x0, x0+1); FAIL;
+#endif
 
    /* SYS_thr_kill2               481 */
    GO(SYS_thr_kill2, "3s 0m");

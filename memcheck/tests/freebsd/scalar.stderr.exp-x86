@@ -3753,7 +3753,7 @@ Syscall param lseek(whence) contains uninitialised byte(s)
    ...
 
 ---------------------------------------------------------
-479:            SYS_truncate 2s 1m
+479:            SYS_truncate 3s 1m
 ---------------------------------------------------------
 Syscall param truncate(path) contains uninitialised byte(s)
    ...
@@ -3769,7 +3769,7 @@ Syscall param truncate(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-480:           SYS_ftruncate 2s 0m
+480:           SYS_ftruncate 3s 0m
 ---------------------------------------------------------
 Syscall param ftruncate(fd) contains uninitialised byte(s)
    ...
