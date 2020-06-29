@@ -1194,7 +1194,7 @@ PRE(sys_cpuset_setid)
 {
    PRINT("sys_cpuset_setid ( %" FMT_REGWORD "d, %llu, %#" FMT_REGWORD "x )",
          SARG1, MERGE64(ARG2,ARG3), ARG4);
-   PRE_REG_READ4(int, "cpuset_sgetid", vki_cpuwhich_t, which,
+   PRE_REG_READ4(int, "cpuset_setid", vki_cpuwhich_t, which,
                  vki_uint32_t, MERGE64_FIRST(id),
                  vki_uint32_t, MERGE64_SECOND(id),
                  vki_cpusetid_t,setid);
