@@ -1231,8 +1231,8 @@ PRE(sys_posix_fallocate)
    PRE_REG_READ5(long, "posix_fallocate",
                  int, fd, vki_uint32_t, MERGE64_FIRST(offset),
                  vki_uint32_t, MERGE64_SECOND(offset),
-                 vki_uint32_t, MERGE_FIRST(len),
-                 vki_uint32_t, MERGE_SECOND(len));
+                 vki_uint32_t, MERGE64_FIRST(len),
+                 vki_uint32_t, MERGE64_SECOND(len));
 }
 
 // SYS_posix_fadvise	531
