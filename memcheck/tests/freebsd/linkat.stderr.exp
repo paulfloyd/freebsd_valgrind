@@ -84,3 +84,7 @@ Syscall param unlinkat(fd) contains uninitialised byte(s)
    at 0x........: unlinkat (in /...libc...)
    by 0x........: main (linkat.c:67)
 
+Syscall param unlinkat(flag) contains uninitialised byte(s)
+   at 0x........: unlinkat (in /...libc...)
+   by 0x........: main (linkat.c:67)
+
