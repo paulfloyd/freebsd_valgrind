@@ -165,7 +165,6 @@ EXTRA_DIST = \
 		tc22_exit_w_lock.stderr.exp-solaris \
 		tc22_exit_w_lock.stderr.exp-clang \
 		tc22_exit_w_lock.stderr.exp-freebsd-clang \
-		tc22_exit_w_lock.stderr.exp-x86-freebsd-clang \
 	tc23_bogus_condwait.vgtest tc23_bogus_condwait.stdout.exp \
 		tc23_bogus_condwait.stderr.exp \
 		tc23_bogus_condwait.stderr.exp-mips32 \
