@@ -232,6 +232,16 @@ static void build_vg_sigframe(struct vg_sigframe *frame,
    frame->magicE        = 0x27182818;
 }
 
+/*
+ * According to the comments in lib/libc/i386/gen/signalcontext.c
+ * the stack sould look like this [where n = 4 = sizeof(int)]
+ *
+ * 2n+sizeof(struct sigframe)	ucp
+ * 2n				struct sigframe
+ * 1n				&func
+ * 0n				&_ctx_start
+ *
+ */
 static Addr build_sigframe(ThreadState *tst,
                               Addr esp_top_of_frame,
                               const vki_siginfo_t *siginfo,

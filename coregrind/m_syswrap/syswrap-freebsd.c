@@ -3929,13 +3929,10 @@ PRE(sys_thr_exit)
    PRINT( "sys_thr_exit ( %#" FMT_REGWORD "x )", ARG1 );
    PRE_REG_READ1(void, "thr_exit", long *, state);
 
-   /*
-   VG_(message)(Vg_DebugMsg, "thr_exit: state pointer %p\n", (void*)ARG1);
    if (ARG1) {
-      VG_(message)(Vg_DebugMsg, "thr_exit: state value %ld\n", *(long*)ARG1);
       PRE_MEM_WRITE( "thr_exit(state)", ARG1, sizeof(long) );
    }
-   */
+
    tst = VG_(get_ThreadState)(tid);
    tst->exitreason = VgSrc_ExitThread;
    tst->os_state.exitcode = ARG1;
