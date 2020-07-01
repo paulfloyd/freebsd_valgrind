@@ -3422,8 +3422,8 @@ PRE(sys___setugid)
 PRE(sys_eaccess)
 {
    PRINT("sys_eaccess ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char*)ARG1,ARG2);
-   PRE_REG_READ2(long, "eaccess", const char *, pathname, int, mode);
-   PRE_MEM_RASCIIZ( "eaccess(pathname)", ARG1 );
+   PRE_REG_READ2(int, "eaccess", const char *, path, int, mode);
+   PRE_MEM_RASCIIZ( "eaccess(path)", ARG1 );
 }
 
 // SYS_afs3_syscall	377

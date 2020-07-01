@@ -53,13 +53,15 @@ EXTRA_DIST = \
 	file_locking_wait6.vgtest \
 	file_locking_wait6.stderr.exp \
 	utimens.vgtest \
-	utimens.stderr.exp
+	utimens.stderr.exp \
+	access.vgtest \
+	access.stderr.exp
 
 check_PROGRAMS = \
 	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr \
 	sigwait chflags get_set_login revoke scalar capsicum getfh \
 	linkat scalar_fork scalar_thr_exit scalar_abort2 scalar_pdfork \
-	scalar_vfork stat file_locking_wait6 utimens
+	scalar_vfork stat file_locking_wait6 utimens access
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
