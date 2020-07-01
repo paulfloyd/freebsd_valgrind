@@ -2,6 +2,7 @@
  * Tests for various stat functions
  * 
  * stat - tests fstatat with 1st arg AT_FDCWD
+ * fstatat
  * 
  */
 
@@ -24,7 +25,7 @@ int main()
       perror("stat failed:");
    }
    
-   assert(sb.st_size == 1195);
+   assert(sb.st_size == 1206);
    
    int fd = openat(AT_FDCWD, "stat.c", O_RDONLY);
    if (-1 == fd)

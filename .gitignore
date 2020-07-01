@@ -1279,6 +1279,7 @@
 /memcheck/tests/freebsd/scalar_pdfork
 /memcheck/tests/freebsd/scalar_vfork
 /memcheck/tests/freebsd/stat
+/memcheck/tests/freebsd/file_locking_wait6
 
 # /memcheck/tests/amd64-freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff
