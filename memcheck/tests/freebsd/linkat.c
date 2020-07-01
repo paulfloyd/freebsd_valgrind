@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
+int main(void)
 {
     char buff[64];
     char tmpfromfile[] = "/tmp/testlinkat1.XXXXXX";

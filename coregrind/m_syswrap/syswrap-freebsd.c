@@ -5820,7 +5820,7 @@ PRE(sys_futimens)
 {
    PRINT("sys_futimens ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1, ARG2);
    PRE_REG_READ2(int, "futimens", int, fd, const struct timespec *, times);
-   PRE_MEM_READ("utimensat(times)", ARG2, 2*sizeof(struct vki_timespec));
+   PRE_MEM_READ("futimens(times)", ARG2, 2*sizeof(struct vki_timespec));
 }
 
 // SYS_utimensat	547
