@@ -47,11 +47,13 @@ EXTRA_DIST = \
 	scalar_pdfork.vgtest \
 	scalar_pdfork.stderr.exp \
 	scalar_vfork.vgtest \
-	scalar_vfork.stderr.exp
+	scalar_vfork.stderr.exp \
+	stat.vgtest
+	stat.stderr.exp
 
 check_PROGRAMS = \
 	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr sigwait chflags get_set_login revoke scalar capsicum getfh \
-	linkat scalar_fork scalar_thr_exit scalar_abort2 scalar_pdfork scalar_vfork
+	linkat scalar_fork scalar_thr_exit scalar_abort2 scalar_pdfork scalar_vfork stat
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
