@@ -54,7 +54,7 @@
    drd:ConflictingAccess
    ...
    fun:dl_iterate_phdr
-   obj:/lib/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
 }
 {
    DRD-PTHREAD-DETACH1
@@ -90,7 +90,7 @@
    drd:ConflictingAccess
    fun:_Unwind_GetCFA
    obj:/lib/libthr.so.3
-   obj:/lib/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
 }
 {
    DRD-UNWIND2
@@ -130,12 +130,12 @@
 {
    DRD-LIBGCC-S
    drd:ConflictingAccess
-   obj:/usr/lib*/libgcc_s.so.1
-   obj:/usr/lib*/libgcc_s.so.1
-   obj:/usr/lib*/libgcc_s.so.1
-   obj:/usr/lib*/libgcc_s.so.1
-   obj:/usr/lib*/libgcc_s.so.1
-   obj:/usr/lib*/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
+   obj:*/lib*/libgcc_s.so.1
 }
 {
    DRD-DLOPEN
