@@ -3889,12 +3889,15 @@ Syscall param faccessat(path) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-490:            SYS_fchmodat 3s 1m
+490:            SYS_fchmodat 4s 1m
 ---------------------------------------------------------
 Syscall param fchmodat(fd) contains uninitialised byte(s)
    ...
 
 Syscall param fchmodat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param fchmodat(mode) contains uninitialised byte(s)
    ...
 
 Syscall param fchmodat(flag) contains uninitialised byte(s)

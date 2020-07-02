@@ -4866,8 +4866,8 @@ PRE(sys_faccessat)
 PRE(sys_fchmodat)
 {
    PRINT("sys_fchmodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,ARG2,(char*)ARG2,ARG3);
-   PRE_REG_READ3(int, "fchmodat",
-                 int, fd, const char *, path, vki_mode_t, flag);
+   PRE_REG_READ4(int, "fchmodat",
+                 int, fd, const char *, path, vki_mode_t, mode, int, flag);
    PRE_MEM_RASCIIZ( "fchmodat(path)", ARG2 );
 }
 

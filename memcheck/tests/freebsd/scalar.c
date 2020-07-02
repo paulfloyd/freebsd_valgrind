@@ -1655,8 +1655,8 @@ int main(void)
    SY(SYS_faccessat, x0+1, x0, x0); FAIL;
 
    /* SYS_fchmodat                490 */
-   GO(SYS_fchmodat, "3s 1m");
-   SY(SYS_fchmodat, x0, x0+1, x0); FAIL;
+   GO(SYS_fchmodat, "4s 1m");
+   SY(SYS_fchmodat, x0, x0+1, x0, x0); FAIL;
 
    /* SYS_fchownat                491 */
    GO(SYS_fchownat, "5s 1m");
