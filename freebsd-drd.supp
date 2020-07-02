@@ -119,3 +119,38 @@
    drd:ConflictingAccess
    fun:_ZNSt3__121__thread_specific_ptrINS_15__thread_structEE11set_pointerEPS1_
 }
+{
+   DRD-DL-ITERATE-PHDR
+   drd:ConflictingAccess
+   ...
+   obj:/usr/lib*/libthr.so.3
+   obj:/libexec/ld-elf*.so.1
+   fun:dl_iterate_phdr
+}
+{
+   DRD-LIBGCC-S
+   drd:ConflictingAccess
+   obj:/usr/lib*/libgcc_s.so.1
+   obj:/usr/lib*/libgcc_s.so.1
+   obj:/usr/lib*/libgcc_s.so.1
+   obj:/usr/lib*/libgcc_s.so.1
+   obj:/usr/lib*/libgcc_s.so.1
+   obj:/usr/lib*/libgcc_s.so.1
+}
+{
+   DRD-DLOPEN
+   drd:ConflictingAccess
+   obj:/usr/lib*/libthr.so.3
+   obj:/libexec/ld-elf*.so.1
+   obj:/libexec/ld-elf*.so.1
+   obj:/libexec/ld-elf*.so.1
+   fun:dlopen
+}
+{
+   DRD-LD-ELF
+   drd:ConflictingAccess
+   obj:/usr/lib*/libthr.so.3
+   ...
+   obj:/libexec/ld-elf*.so.1
+}
+
