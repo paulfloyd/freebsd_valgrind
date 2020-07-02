@@ -2968,13 +2968,13 @@ Warning: Bad action 20 in kenv
 ---------------------------------------------------------
 391:            SYS_lchflags 2s 1m
 ---------------------------------------------------------
-Syscall param lchglags(path) contains uninitialised byte(s)
+Syscall param lchflags(path) contains uninitialised byte(s)
    ...
 
-Syscall param lchglags(flags) contains uninitialised byte(s)
+Syscall param lchflags(flags) contains uninitialised byte(s)
    ...
 
-Syscall param chflags(path) points to unaddressable byte(s)
+Syscall param lchflags(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
