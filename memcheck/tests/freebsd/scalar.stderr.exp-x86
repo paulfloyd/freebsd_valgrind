@@ -2889,13 +2889,13 @@ Syscall param __setugid(flag) contains uninitialised byte(s)
 ---------------------------------------------------------
 376:             SYS_eaccess 2s 1m
 ---------------------------------------------------------
-Syscall param eaccess(pathname) contains uninitialised byte(s)
+Syscall param eaccess(path) contains uninitialised byte(s)
    ...
 
 Syscall param eaccess(mode) contains uninitialised byte(s)
    ...
 
-Syscall param eaccess(pathname) points to unaddressable byte(s)
+Syscall param eaccess(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -4909,7 +4909,7 @@ Syscall param futimens(fd) contains uninitialised byte(s)
 Syscall param futimens(times) contains uninitialised byte(s)
    ...
 
-Syscall param utimensat(times) points to unaddressable byte(s)
+Syscall param futimens(times) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

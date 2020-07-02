@@ -50,6 +50,7 @@ EXTRA_DIST = \
 	scalar_vfork.stderr.exp \
 	stat.vgtest \
 	stat.stderr.exp \
+		stat.stderr.exp-x86 \
 	file_locking_wait6.vgtest \
 	file_locking_wait6.stderr.exp \
 	utimens.vgtest \
