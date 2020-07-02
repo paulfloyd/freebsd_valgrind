@@ -3496,9 +3496,9 @@ POST(sys_kenv)
 PRE(sys_lchflags)
 {
    PRINT("sys_lchflags ( %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(int, "lchglags",
+   PRE_REG_READ2(int, "lchflags",
                  const char *, path, unsigned long, flags);
-   PRE_MEM_RASCIIZ( "chflags(path)", ARG1 );
+   PRE_MEM_RASCIIZ( "lchflags(path)", ARG1 );
 }
 
 // SYS_uuidgen	392
