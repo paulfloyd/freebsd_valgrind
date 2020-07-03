@@ -618,6 +618,9 @@
 #define __NR_fhlinkat            566
 #define __NR_fhreadlink          567
 
+// @todo for FreeBSD 11 (and 10?)
+#define __NR_max_syscall __NR_fhreadlink
+
 #endif // (FREEBSD_VERS >= FREEBSD_12)
 
 #define __NR_fake_sigreturn      1000

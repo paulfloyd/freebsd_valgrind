@@ -814,17 +814,6 @@ PRE(sys_ftruncate)
         unsigned long, length);
 }
 
-// SYS_posix_fallocate 530
-// int posix_fallocate(int fd, off_t offset, off_t len);
-PRE(sys_posix_fallocate)
-{
-   PRINT("sys_posix_fallocate ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",
-         SARG1, ARG2, ARG3);
-   PRE_REG_READ3(long, "posix_fallocate",
-                 int, fd, vki_uint32_t, offset,
-                 vki_uint32_t, len);
-}
-
 // SYS_cpuset_setid	485
 // int cpuset_setid(cpuwhich_t which, id_t id, cpusetid_t setid);
 PRE(sys_cpuset_setid)
@@ -851,6 +840,17 @@ PRE(sys_cpuset_getid)
 POST(sys_cpuset_getid)
 {
    POST_MEM_WRITE(ARG4, sizeof(vki_cpusetid_t));
+}
+
+// SYS_posix_fallocate 530
+// int posix_fallocate(int fd, off_t offset, off_t len);
+PRE(sys_posix_fallocate)
+{
+   PRINT("sys_posix_fallocate ( %" FMT_REGWORD "d, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",
+         SARG1, ARG2, ARG3);
+   PRE_REG_READ3(long, "posix_fallocate",
+                 int, fd, vki_off_t, offset,
+                 vki_off_t, len);
 }
 
 // SYS_posix_fadvise	531

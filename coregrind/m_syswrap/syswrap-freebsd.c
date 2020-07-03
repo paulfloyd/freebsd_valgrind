@@ -1229,6 +1229,7 @@ PRE(sys_swapon)
 // generic
 
 // SYS_getdtablesize	89
+// int getdtablesize(void);
 PRE(sys_getdtablesize)
 {
    PRINT("%s", "sys_getdtablesize ( )");

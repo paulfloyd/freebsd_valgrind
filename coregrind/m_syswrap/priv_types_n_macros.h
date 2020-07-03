@@ -226,8 +226,11 @@ SyscallTableEntry* ML_(get_linux_syscall_entry)( UInt sysno );
    array(s) and size(s) directly to syswrap-main.c.  This should be
    fixed. */
 
+// @todo PJF same applies to FreeBSD
+
 extern const SyscallTableEntry ML_(syscall_table)[];
 extern const UInt ML_(syscall_table_size);
+extern const int ML_(syscall_arg_counts)[];
 
 #elif defined(VGO_solaris)
 extern

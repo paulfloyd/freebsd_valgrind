@@ -1466,6 +1466,586 @@ PRE(sys_fake_sigreturn)
 #undef PRE
 #undef POST
 
+const int ML_(syscall_arg_counts)[] = {
+   8, // syscall 0
+   1, // __NR_exit 1
+   0, // _NR_fork 2
+   3, // __NR_read 3
+   3, // __NR_write 4
+   3, // __NR_open 5
+   1, // __NR_close 6
+   4, // __NR_wait4 7
+   8, // 4.3 creat 8
+   2, // __NR_link 9
+   1, // __NR_unlink 10
+   8, // obsol execv 11
+   1, // __NR_chdir 12
+   1, // __NR_fchdir 13
+   3, // __NR_freebsd11_mknod 14
+   2, // __NR_chmod 15
+   3, // __NR_chown 16
+   1, // __NR_break 17
+   8, // freebsd 4 getfsstat 18
+   8, // 4.3 lseek 19
+   0, // __NR_getpid 20
+   4, // __NR_mount 21
+   2, // __NR_unmount 22
+   1, // __NR_setuid 23
+   0, // __NR_getuid 24
+   0, // __NR_geteuid 25
+   4, // __NR_ptrace 26
+   3, // __NR_recvmsg 27
+   3, // __NR_sendmsg 28
+   6, // __NR_recvfrom 29
+   3, // __NR_accept 30
+   3, // __NR_getpeername 31
+   3, // __NR_getsockname 32
+   2, // __NR_access 33
+   2, // __NR_chflags 34
+   2, // __NR_fchflags 35
+   0, // __NR_sync 36
+   2, // __NR_kill 37
+   8, // 4.3 stat 38
+   0, // __NR_getppid
+   8, // 4.3 lstat 40
+   1, // __NR_dup 41
+   0, // __NR_freebsd10_pipe 42
+   0, // __NR_getegid 43
+   8, // ni _NR_profil 44
+   8, // ni __NR_ktrace 45
+   8, // 4.3 sigaction 46
+   0, // __NR_getgid 47
+   8, // 4.3 sigaction (int sigset) 48
+   2, // __NR_getlogin 49
+   1, // __NR_setlogin 50
+   1, // __NR_acct 51
+   8, // 4.3 sigpending 52
+   2, // __NR_sigaltstack 53
+   3, // __NR_ioctl 54
+   1, // __NR_reboot 55
+   1, // __NR_revoke 56
+   2, // __NR_symlink 57
+   3, // __NR_readlink 58
+   2, // __NR_execve 59
+   1, // __NR_umask 60
+   1, // __NR_chroot 61
+   8, // 4.3 fstat 62
+   8, // 4.3 getgerninfo 63
+   8, // 4.3 getpagesize 64
+   3, // __NR_msync 65
+   0, // _NR_vfork 66
+   8, // obsol vread 67
+   8, // obsol vwrite 68
+   1, // __NR_sbrk 69
+   8, // not implemented in OS sstk 70
+   8, // 4.3 mmap 71
+   8, // freebsd11 vadvise 72
+   2, // __NR_munmap 73
+   3, // __NR_mprotect 74
+   3, // __NR_madvise 75
+   8, // obsol vhangup 76
+   8, // obsol vlimit 77
+   3, // __NR_mincore 78
+   2, // __NR_getgroups 79
+   2, // __NR_setgroups 80
+   0, // __NR_getpgrp 81
+   1, // __NR_setpgid 82
+   3, // __NR_setitimer 83
+   8, // 4.3 wait 84
+   1, // __NR_swapon 85
+   2, // __NR_getitimer 86
+   8, // 4.3 gethostname 87
+   8, // 4.3 sethostname 88
+   0, // __NR_getdtablesize 89
+   2, // __NR_dup2 90
+   8, // 91
+   3, // __NR_fcntl 92
+   5, // __NR_select 93
+   8, // 94
+   1, // __NR_fsync 95
+   3, // __NR_setpriority 96
+   3, // __NR_socket 97
+   3, // __NR_connect 98
+   8, // 4.3 accept 99
+   2, // __NR_getpriority 100
+   8, // 4.3 send 101
+   8, // 4.3 recv 102
+   8, // 4.3 sigreturn 103
+   3, // __NR_bind 104
+   5, // __NR_setsockopt 105
+   2, // __NR_listen 106
+   8, // obsol vtimes 107
+   8, // 4.3 sigvec 108
+   8, // 4.3 sigblock 109
+   8, // 4.3 sigsetmask 110
+   8, // 4.3 sigsuspend 111
+   8, // 4.3 sigstack 112
+   8, // 4.3 recvmsg 113
+   8, // 4.3 sendmsg 114
+   8, // 4.3 vtrace 115
+   2, // __NR_gettimeofday 116
+   2, // __NR_getrusage 117
+   5, // __NR_getsockopt 118
+   8, // 119
+   3, // __NR_readv 120
+   3, // __NR_writev 121
+   2, // __NR_settimeofday 122
+   3, // __NR_fchown  123
+   2, // __NR_fchmod 124
+   8, // 4.3 recvfrom 125
+   2, // __NR_setreuid 126
+   2, // __NR_setregid 127
+   2, // __NR_rename 128
+   8, // 4.3 truncate 129
+   8, // 4.3 ftruncate 130
+   2, // __NR_flock 131
+   2, // __NR_mkfifo 132
+   6, // __NR_sendto 133
+   2, // __NR_shutdown 134
+   4, // __NR_socketpair 135
+   2, // __NR_mkdir 136
+   1, // __NR_rmdir 137
+   2, // __NR_utimes 138
+   8, // 4.2 sigreturn 139
+   2, // __NR_adjtime 140
+   8, // 4.3 getpeername 141
+   8, // 4.3 gethostid 142
+   8, // 4.3 sethostid 143
+   8, // 4.3 getrlimit`144
+   8, // 4.3 setrlimit 145
+   8, // 4.3 killpg 146
+   0, // __NR_setsid 147
+   4, // __NR_quotactl 148
+   8, // 4.3 quota 149
+   8, // 4.3 getsockname 150
+   8, // bsd/os sem_lock 151
+   8, // bsd/os sem_wakeup 152
+   8, // bsd/os asyncdaemon 153
+   8, // unimp SYS_nlm_syscall 154
+   8, // unimp SYS_nfssvc 155
+   8, // 4.3 getdirentries 156
+   8, // freebsd 4 statfs 157
+   8, // freebsd 4 fstatfs 158
+   8, // 159
+   2, // __NR_lgetfh 160
+   2, // __NR_getfh 161
+   2, // __NR_freebsd4_getdomainname 162
+   2, // __NR_freebsd4_setdomainname 163
+   2, // __NR_freebsd4_uname 164
+   2, // __NR_sysarch 165
+   3, // __NR_rtprio 166
+   8, // 167
+   8, // 168
+   8, // semsys 169
+   8, // msgsys 170
+   8, // shmsys 171
+   9, // 172
+   6, // __NR_freebsd6_pread 173 64 5
+   6, // __NR_freebsd6_pwrite 174 64 5
+   1, // __NR_setfib 175
+   8, // unimpl __NR_ntp_adjtime 176
+   8, // bsd/os sfork 177
+   8, // bsd/os getdescriptor 178
+   8, // bsd/os setdescriptor 179
+   8, // 180
+   1, // __NR_setgid 181
+   1, // __NR_setegid 182
+   1, // __NR_seteuid 183
+   8, // obs lfs_bmapv 184
+   8, // obs lfs_markv 185
+   8, // obs lfs_segclean 186
+   8, // obs lfs_segwait 187
+   2, // __NR_freebsd11_stat 188
+   2, // __NR_freebsd11_fstat 189
+   2, // __NR_freebsd11_lstat 190
+   2, // __NR_pathconf 191
+   2, // __NR_fpathconf 192
+   8, // 193
+   2, // __NR_getrlimit 194
+   2, // __NR_setrlimit, 195
+   4, // __NR_freebsd11_getdirentries 196
+   8, // __NR_freebsd6_mmap 197 64 7
+   8, // __syscall (handled specially) 198
+   5, // __NR_freebsd6_lseek 199 64 4
+   4, // __NR_freebsd6_truncate 200 64 3
+   4, // __NR_freebsd6_ftruncate 201 64 3
+   6, // __NR___sysctl 202
+   2, // __NR_mlock 203
+   2, // __NR_munlock 204
+   1, // __NR_undelete 205
+   2, // __NR_futimes 206
+   1, // __NR_getpgid 207
+   8, // netbsd newreboot 208
+   3, // __NR_poll 209
+   8, // 210
+   8, // 211
+   8, // 212
+   8, // 213
+   8, // 214
+   8, // 215
+   8, // 216
+   8, // 217
+   8, // 218
+   8, // 219
+   4, // __NR_freebsd7___semctl 220
+   3, // __NR_semget 221
+   3, // __NR_semop 222
+   8, // obs semconfig 223
+   3, // __NR_freebsd7_msgctl 224
+   2, // __NR_msgget 225
+   4, // __NR_msgsnd 226
+   5, // _NR_msgrcv 227
+   3, // __NR_shmat 228
+   3, // __NR_freebsd7_shmctl 229
+   1, // __NR_shmdt 230
+   2, // __NR_shmget 231
+   2, // __NR_clock_gettime 232
+   2, // __NR_clock_settime 233
+   2, // __NR_clock_getres 234
+   3, // __NR_ktimer_create 235
+   1, // __NR_ktimer_delete 236
+   4, // __NR_ktimer_settime 237
+   2, // __NR_ktimer_gettime 238
+   1, // __NR_ktimer_getoverrun 239
+   2, // _NR_nanosleep 240
+   8, // unimpl SYS_ffclock_getcounter 241
+   8, // unimpl SYS_ffclock_setestimate 242
+   8, // unimpl SYS_ffclock_getestimate 243
+   4, // __NR_clock_nanosleep 244
+   8, // 245
+   8, // 246
+   8, // unimpl SYS_clock_getcpuclockid2 247
+   8, // unimpl SYS_ntp_gettime 248
+   8, // 249
+   3, // __NR_minherit 250
+   1, // __NR_rfork 251
+   8, // openbsd_poll 252
+   0, // __NR_issetugid 253
+   3, // __NR_lchown 254
+   1, // __NR_aio_read 255
+   1, // __NR_aio_write 256
+   4, // __NR_lio_listio 257
+   8, // 258
+   8, // 259
+   8, // 260
+   8, // 261
+   8, // 262
+   8, // 263
+   8, // 264
+   8, // 265
+   8, // 266
+   8, // 267
+   8, // 268
+   8, // 269
+   8, // 270
+   8, // 271
+   3, // __NR_freebsd11_getdents 272
+   8, // 273
+   2, // __NR_lchmod 274
+   8, // netbsd_lchown 275
+   2, // __NR_lutimes 276
+   8, // netbsd msync 277
+   8, // unimpl SYS_freebsd11_nstat 278
+   8, // unimpl SYS_freebsd11_nfstat 279
+   8, // unimpl SYS_freebsd11_nlstat 280
+   8, // 281
+   8, // 282
+   8, // 283
+   8, // 284
+   8, // 285
+   8, // 286
+   8, // 287
+   8, // 288
+   5, // __NR_preadv 289 4 64
+   5, // __NR_pwritev 290 4 64
+   8, // 291
+   8, // 292
+   8, // 293
+   8, // 294
+   8, // 295
+   8, // 296
+   8, // freebsd 4 fhstatfs 297
+   2, // __NR_fhopen 298
+   2, // __NR_freebsd11_fhstat 299
+   1, // __NR_modnext 300
+   2, // __NR_modstat 301
+   1, // __NR_modfnext 302
+   1, // __NR_modfind 303
+   1, // __NR_kldload 304
+   1, // __NR_kldunload 305
+   1, // __NR_kldfind 306
+   1, // __NR_kldnext 307
+   2, // __NR_kldstat 308
+   1, // __NR_kldfirstmod 309
+   1, // __NR_getsid 310
+   3, // __NR_setresuid 311
+   3, // __NR_setresgid 312
+   8, // obsol signanosleep 313
+   1, // __NR_aio_return 314
+   3, // __NR_aio_suspend 315
+   2, // __NR_aio_cancel 316
+   1, // __NR_aio_error 317
+   8, // freebsd 6 aio_read 318
+   8, // freebsd 6 aio_write 319
+   8, // freebsd 6 lio_listio 320
+   0, // __NR_yield 321
+   8, // obs thr_sleep 322
+   8, // obs thr_wakeup 323
+   1, // __NR_mlockall 324
+   0, // __NR_munlockall 325
+   2, // __NR___getcwd 326
+   2, // __NR_sched_setparam 327
+   2, // __NR_sched_getparam 328
+   3, // __NR_sched_setscheduler 329
+   1, // __NR_sched_getscheduler 330
+   0, // __NR_sched_yield 331
+   1, // __NR_sched_get_priority_max 332
+   1, // __NR_sched_get_priority_min 333
+   2, // __NR_sched_rr_get_interval 334
+   2, // __NR_utrace 335
+   8, // freebsd 4 sendfile 336
+   3, // __NR_kldsym 337
+   1, // __NR_jail 338
+   8, // unimpl SYS_nnpfs_syscall 339
+   3, // __NR_sigprocmask 340
+   1, // __NR_sigsuspend 341
+   8, // freebsd 4 sigaction 342
+   1, // __NR_sigpending 343
+   8, // freebsd 4 sigreturn 344
+   3, // __NR_sigtimedwait 345
+   2, // __NR_sigwaitinfo 346
+   3, // __NR___acl_get_file 347
+   3, // __NR___acl_set_file 348
+   3, // __NR___acl_get_fd 349
+   3, // __NR___acl_set_fd 350
+   2, // __NR___acl_delete_file 351
+   2, // __NR___acl_delete_fd 352
+   3, // __NR___acl_aclcheck_file 353
+   3, // __NR___acl_aclcheck_fd 354
+   5, // __NR_extattrctl 355
+   5, // __NR_extattr_set_file 356
+   5, // __NR_extattr_get_file 357
+   3, // __NR_extattr_delete_file 358
+   2, // __NR_aio_waitcomplete 359
+   3, // __NR_getresuid 360
+   3, // __NR_getresgid 361
+   0, // __NR_kqueue 362
+   6, // __NR_freebsd11_kevent 363
+   8, // obs __cap_get_proc 364
+   8, // obs __cap_set_proc 365
+   8, // obs __cap_get_fd 366
+   8, // obs __cap_get_file 367
+   8, // obs __cap_set_fd 368
+   8, // obs __cap_set_file 369
+   8, // 370
+   5, // __NR_extattr_set_fd 371
+   5, // __NR_extattr_get_fd 372
+   3, // __NR_extattr_delete_fd 373
+   1, // __NR___setugid 374
+   8, // obs nfsclnt 375
+   2, // __NR_eaccess 376
+   8, // unimpl afs3_syscall 377
+   3, // __NR_nmount 378
+   8, // obs kse_exit 379
+   8, // obs kse_wakeup 380
+   8, // obs kse_create 381
+   8, // obs kse_thr_interrupt 382
+   8, // obs kse_release 383
+   8, // unimpl __mac_get_proc 384
+   8, // unimpl __mac_set_proc 385
+   8, // unimpl __mac_get_fd 386
+   8, // unimpl __mac_get_file 387
+   8, // unimpl __mac_set_fd 388
+   8, // unimpl __mac_set_file 389
+   4, // __NR_kenv 390
+   2, // __NR_lchflags 391
+   2, // __NR_uuidgen 392
+   8, // __NR_sendfile 393 7 64
+   8, // unimpl mac_syscall 394
+   3, // __NR_freebsd11_getfsstat 395
+   2, // __NR_freebsd11_statfs 396
+   2, // __NR_freebsd11_fstatfs 397
+   2, // __NR_freebsd11_fhstatfs 398
+   8, // 399
+   8, // unimpl ksem_close 400
+   8, // unimpl ksem_post 401
+   8, // unimpl ksem_wait 402
+   8, // unimpl ksem_trywait 403
+   8, // unimpl ksem_init 404
+   8, // unimpl ksem_open 405
+   8, // unimpl ksem_unlink 406
+   8, // unimpl ksem_getvalue 407
+   8, // unimpl ksem_destroy 408
+   8, // unimpl __mac_get_pid 409
+   8, // unimpl __mac_get_link 410
+   8, // unimpl __mac_set_link 411
+   5, // __NR_extattr_set_link 412
+   5, // __NR_extattr_get_link 413
+   3, // __NR_extattr_delete_link 414
+   8, // unimpl __mac_execve 415
+   3, // __NR_sigaction 416
+   1, // __NR_sigreturn 417
+   8, // 418
+   8, // 419
+   8, // 420
+   1, // __NR_getcontext 421
+   1, // __NR_setcontext 422
+   2, // __NR_swapcontext 423
+   1, // __NR_swapoff 424
+   3, // __NR___acl_get_link 425
+   3, // __NR___acl_set_link 426
+   2, // __NR___acl_delete_link 427
+   3, // __NR___acl_aclcheck_link 428
+   2, // __NR_sigwait 429
+   3, // __NR_thr_create 430
+   1, // __NR_thr_exit 431
+   1, // __NR_thr_self 432
+   2, // __NR_thr_kill 433
+   1, // __NR__umtx_lock 434
+   1, // __NR__umtx_unlock 435
+   1, // __NR_jail_attach 436
+   4, // __NR_extattr_list_fd 437
+   4, // __NR_extattr_list_file 438
+   4, // __NR_extattr_list_link 439
+   8, // obs kse_switchin 440
+   8, // unimpl ksem_timedwait 441
+   1, // __NR_thr_suspend 442
+   1, // __NR_thr_wake 443
+   2, // __NR_kldunloadf 444
+   8, // unimpl audit 445
+   8, // unimpl auditon 446
+   8, // unimpl getauid 447
+   8, // unimpl setauid 448
+   8, // unimpl getaudit 449
+   8, // unimpl setaudit 450
+   8, // unimpl getaudit_addr 451
+   8, // unimpl setaudit_addr 452
+   8, // unimpl auditctl 453
+   5, // __NR__umtx_op 454
+   2, // __NR_thr_new 455
+   3, // __NR_sigqueue 456
+   4, // __NR_kmq_open 457
+   3, // __NR_kmq_setattr 458
+   5, // __NR_kmq_timedreceive 459
+   5, // __NR_kmq_timedsend 460
+   2, // __NR_kmq_notify 461
+   1, // __NR_kmq_unlink 462
+   3, // __NR_abort2 463
+   2, // __NR_thr_set_name 464
+   2, // __NR_aio_fsync 465
+   3, // __NR_rtprio_thread 466
+   8, // 467
+   8, // 468
+   8, // 469
+   8, // 470
+   8, // unimpl sctp_peeloff 471
+   8, // unimpl sctp_generic_sendmsg 472
+   8, // unimpl sctp_generic_sendmsg_iov 473
+   8, // unimpl sctp_generic_recvmsg 474
+   5, // __NR_pread 475 64 4
+   5, // __NR_pwrite 476 64 4
+   7, // __NR_mmap 477 64 6
+   4, // __NR_lseek 478 64 3
+   3, // __NR_truncate 479 64 2
+   3, // __NR_ftruncate 480 64 2
+   3, // __NR_thr_kill2 481
+   3, // __NR_shm_open 482
+   1, // __NR_shm_unlink 483
+   1, // __NR_cpuset 484
+   4, // __NR_cpuset_setidt_setid 485 64 3
+   5, // __NR_cpuset_getid 486 64 4
+   5, // __NR_cpuset_getaffinity 487
+   5, // __NR_cpuset_setaffinity 488
+   3, // __NR_faccessat 489
+   4, // __NR_fchmodat 490
+   5, // __NR_fchownat 491
+   3, // __NR_fexecve 492
+   4, // __NR_freebsd11_fstatat 493
+   3, // __NR_futimesat 494
+   5, // __NR_linkat 495
+   3, // __NR_mkdirat 496
+   3, // __NR_mkfifoat 497
+   4, // __NR_freebsd11_mknodat 498
+   4, // __NR_openat 499
+   4, // __NR_readlinkat 500
+   4, // __NR_renameat 501
+   3, // __NR_symlinkat 502
+   3, // __NR_unlinkat 503
+   1, // __NR_posix_openpt 504
+   8, // unimp gssd_syscall 505
+   3, // __NR_jail_get 506
+   3, // __NR_jail_set 507
+   1, // __NR_jail_remove 508
+   1, // __NR_closefrom 509
+   4, // __NR___semctl 510
+   3, // __NR_msgctl 511
+   3, // __NR_shmctl 512
+   2, // __NR_lpathconf 513
+   8, /* 514 is obsolete cap_new */
+   3, // __NR___cap_rights_get 515
+   0, // __NR_cap_enter 516
+   1, // __NR_cap_getmode 517
+   2, // __NR_pdfork 518
+   2, // __NR_pdkill 519
+   2, // __NR_pdgetpid 520
+   8, // 521
+   6, // __NR_pselect 522
+   2, // __NR_getloginclass 523
+   1, // __NR_setloginclass 524
+   4, // __NR_rctl_get_racct 525
+   4, // __NR_rctl_get_rules 526
+   4, // __NR_rctl_get_limits 527
+   2, // __NR_rctl_add_rule 528
+   2, // __NR_rctl_remove_rule 529
+   5, // __NR_posix_fallocate 530 64 3
+   6, // __NR_posix_fadvise 531 64 4
+   7, // __NR_wait6 532 64 6
+   2, // __NR_cap_rights_limit 533
+   3, // __NR_cap_ioctls_limit 534
+   3, // __NR_cap_ioctls_get 535
+   2, // __NR_cap_fcntls_limit 536
+   2, // __NR_cap_fcntls_get 537
+   4, // __NR_bindat 538
+   4, // __NR_connectat 539
+   4, // __NR_chflagsat 540
+   4, // __NR_accept4m541
+   2, // __NR_pipe2 542
+   1, // __NR_aio_mlock 543
+   5, // __NR_procctl 544 64 4
+#if (FREEBSD_VERS >= FREEBSD_10)
+   4, // __NR_ppoll 545
+   2, // __NR_futimens 546
+   4, // __NR_utimensat 547
+#endif // FREEBSD_VERS >= FREEBSD_11
+#if (FREEBSD_VERS >= FREEBSD_11)
+   8, /* 548 is obsolete numa_getaffinity */
+   8, /* 549 is obsolete numa_setaffinity */
+   1, // __NR_fdatasync 550
+#endif // FREEBSD_VERS >= FREEBSD_11
+#if (FREEBSD_VERS >= FREEBSD_12)
+   2, // __NR_fstat 551
+   4, // __NR_fstatat 552
+   2, // __NR_fhstat 553
+   4, // __NR_getdirentries 554
+   2, // _NR_statfs 555
+   2, // __NR_fstatfs 556
+   3, // __NR_getfsstat 557
+   2, // _NR_fhstatfs 558
+   4, // __NR_mknodat 559
+   6, // __NR_kevent 560
+   7, // __NR_cpuset_getdomain 561 64 6
+   7, // __NR_cpuset_setdomain 562 64 6
+   3, // __NR_getrandom 563
+   4, // __NR_getfhat 564
+   2, // __NR_fhlink 565
+   3, // __NR_fhlinkat 566
+   3, // __NR_fhreadlink 567
+#endif // FREEBSD_VERS >= FREEBSD_12
+};
+
+STATIC_ASSERT(sizeof(ML_(syscall_arg_counts))/sizeof(ML_(syscall_arg_counts)[0]) == __NR_max_syscall+1);
+
+
 #endif /* defined(VGP_x86_freebsd) */
 
 
