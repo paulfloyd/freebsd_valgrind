@@ -335,9 +335,9 @@
 #define __NR_aio_cancel          316
 #define __NR_aio_error           317
 #if (FREEBSD_VERS <= FREEBSD_10)
-#define __NR_aio_read            318
-#define __NR_aio_write           319
-#define __NR_lio_listio          320
+#define __NR_oaio_read           318
+#define __NR_oaio_write          319
+#define __NR_olio_listio         320
 #endif
 #define __NR_yield               321
 /* obs thr_sleep                 323 */

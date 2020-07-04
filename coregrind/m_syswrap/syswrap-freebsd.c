@@ -1640,7 +1640,7 @@ POST(sys_freebsd4_getdomainname)
 PRE(sys_freebsd4_setdomainname)
 {
    PRINT("sys_freebsd4_setdomainname ( %#" FMT_REGWORD "x )",ARG1);
-   PRE_REG_READ2(int, "setdomainname", char *, domainname, int len);
+   PRE_REG_READ2(int, "setdomainname", char *, domainname, int, len);
    PRE_MEM_RASCIIZ( "setdomainname(domainname)", ARG1 );
 }
 
