@@ -601,7 +601,7 @@
 
 #define __NR_fdatasync           550
 #if (FREEBSD_VERS == FREEBSD_11)
-#define __NR_max_syscall __NR_fhdatasync
+#define __NR_max_syscall __NR_fdatasync
 #endif
 
 #endif // (FREEBSD_VERS >= FREEBSD_11)
