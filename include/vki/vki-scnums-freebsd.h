@@ -590,11 +590,19 @@
 #define __NR_ppoll               545
 #define __NR_futimens            546
 #define __NR_utimensat           547
+
+#if (FREEBSD_VERS == FREEBSD_10)
+#define __NR_max_syscall __NR_utimensat
+#endif
+
 /* obs numa_getaffinity          548 */
 /* obs numa_setaffinity          549 */
 #if (FREEBSD_VERS >= FREEBSD_11)
 
 #define __NR_fdatasync           550
+#if (FREEBSD_VERS == FREEBSD_11)
+#define __NR_max_syscall __NR_fhdatasync
+#endif
 
 #endif // (FREEBSD_VERS >= FREEBSD_11)
 
@@ -618,7 +626,6 @@
 #define __NR_fhlinkat            566
 #define __NR_fhreadlink          567
 
-// @todo for FreeBSD 11 (and 10?)
 #define __NR_max_syscall __NR_fhreadlink
 
 #endif // (FREEBSD_VERS >= FREEBSD_12)

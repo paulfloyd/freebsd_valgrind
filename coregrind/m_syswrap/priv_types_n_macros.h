@@ -230,7 +230,7 @@ SyscallTableEntry* ML_(get_linux_syscall_entry)( UInt sysno );
 
 extern const SyscallTableEntry ML_(syscall_table)[];
 extern const UInt ML_(syscall_table_size);
-extern const int ML_(syscall_arg_counts)[];
+extern const UChar ML_(syscall_arg_counts)[];
 
 #elif defined(VGO_solaris)
 extern

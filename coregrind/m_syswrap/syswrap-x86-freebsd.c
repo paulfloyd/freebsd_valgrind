@@ -1466,7 +1466,7 @@ PRE(sys_fake_sigreturn)
 #undef PRE
 #undef POST
 
-const int ML_(syscall_arg_counts)[] = {
+const UChar ML_(syscall_arg_counts)[] = {
    8, // syscall 0
    1, // __NR_exit 1
    0, // _NR_fork 2

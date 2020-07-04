@@ -6749,7 +6749,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_futimens,         sys_futimens),          // 546
    BSDX_(__NR_utimensat,        sys_utimensat),         // 547
 
-#endif // FREEBSD_VERS >= FREEBSD_11
+#endif // FREEBSD_VERS >= FREEBSD_10
 
 #if (FREEBSD_VERS >= FREEBSD_11)
 
