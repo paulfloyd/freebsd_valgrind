@@ -418,7 +418,7 @@ static Addr ML_(make_safe_mask) ( const HChar* malloc_message, Addr mask_pointer
    return (Addr)new_mask;
 }
 
-static Addr ML_(free_safe_mask) ( Addr mask_pointer )
+static void ML_(free_safe_mask) ( Addr mask_pointer )
 {
    if (mask_pointer != 0 && mask_pointer != 1) {
       VG_(free)((vki_sigset_t *) mask_pointer);
