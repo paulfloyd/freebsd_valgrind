@@ -3,7 +3,7 @@
 {
    HELGRIND-LIBTHR1
    Helgrind:Race
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
 }
 {
    HELGRIND-LIB-LDRT1
