@@ -992,6 +992,11 @@ extern unsigned int __vki_invalid_size_argument_for_IOC;
 #define _VKI_IOC_SIZE(nr)	(((nr) >> _VKI_IOC_SIZESHIFT) & _VKI_IOC_SIZEMASK)
 #define _VKI_IOC_BASE(nr)	(((nr) >> _VKI_IOC_BASESHIFT) & _VKI_IOC_BASEMASK)
 
+//----------------------------------------------------------------------
+// From sys/random.h
+//----------------------------------------------------------------------
+
+#define VKI_GRND_NONBLOCK 0x1
 
 //----------------------------------------------------------------------
 // From sys/termios.h

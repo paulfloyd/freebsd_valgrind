@@ -1285,6 +1285,7 @@
 /memcheck/tests/freebsd/utimens
 /memcheck/tests/freebsd/access
 /memcheck/tests/freebsd/chmod_chown
+/memcheck/tests/freebsd/misc
 
 # /memcheck/tests/amd64-freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff

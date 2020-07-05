@@ -6020,6 +6020,9 @@ PRE(sys_getrandom)
    PRE_REG_READ3(ssize_t, "getrandom",
                  void *, buf, vki_size_t, buflen, unsigned int, flags);
    PRE_MEM_WRITE( "getrandom(buf)", ARG1, ARG2 );
+   if ((ARG3 & VKI_GRND_NONBLOCK) == 0) {
+      *flags |= SfMayBlock;
+   }
 }
 
 POST(sys_getrandom)

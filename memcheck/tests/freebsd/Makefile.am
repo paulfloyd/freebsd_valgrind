@@ -58,13 +58,16 @@ EXTRA_DIST = \
 	access.vgtest \
 	access.stderr.exp \
 	chmod_chown.vgtest \
-	chmod_chown.stderr.exp
+	chmod_chown.stderr.exp \
+	misc.vgtest \
+	misc.stderr.exp
 
 check_PROGRAMS = \
 	statfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr \
 	sigwait chflags get_set_login revoke scalar capsicum getfh \
 	linkat scalar_fork scalar_thr_exit scalar_abort2 scalar_pdfork \
-	scalar_vfork stat file_locking_wait6 utimens access chmod_chown
+	scalar_vfork stat file_locking_wait6 utimens access chmod_chown \
+	misc
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
