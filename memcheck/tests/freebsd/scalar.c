@@ -362,7 +362,7 @@ int main(void)
 
    /* SYS_getitimer               86 */
    GO(SYS_getitimer, "2s 1m");
-   SY(SYS_getitimer, x0, x0, x0); FAIL;
+   SY(SYS_getitimer, x0+4, x0+1); FAIL;
    
    /* 4.3 gethostname             87 */
 
