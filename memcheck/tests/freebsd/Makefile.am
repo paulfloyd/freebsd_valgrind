@@ -5,9 +5,9 @@ dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout filter_sigwait \
 	filter_scalar
 
 EXTRA_DIST = \
-	statvfs.vgtest \
-	statvfs.stderr.exp \
-	statvfs.stderr.exp-x86 \
+	statfs.vgtest \
+	statfs.stderr.exp \
+	statfs.stderr.exp-x86 \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
 	pdfork_pdkill.stderr.exp-pts \
@@ -61,7 +61,7 @@ EXTRA_DIST = \
 	chmod_chown.stderr.exp
 
 check_PROGRAMS = \
-	statvfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr \
+	statfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr \
 	sigwait chflags get_set_login revoke scalar capsicum getfh \
 	linkat scalar_fork scalar_thr_exit scalar_abort2 scalar_pdfork \
 	scalar_vfork stat file_locking_wait6 utimens access chmod_chown
@@ -77,4 +77,4 @@ inlinfo_nested_so_SOURCES = inlinfo_nested.c
 inlinfo_nested_so_CFLAGS = $(AM_CFLAGS) -fPIC @FLAG_W_NO_UNINITIALIZED@
 inlinfo_nested_so_LDFLAGS = -Wl,-rpath,$(top_builddir)/memcheck/tests/freebsd -shared -fPIC
 
-scalar_CFLAGS = -g
+scalar_CFLAGS = ${AM_CFLAGS} -g
