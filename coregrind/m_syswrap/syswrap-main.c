@@ -956,28 +956,14 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
       break;
    }
 
-   vg_assert(ML_(syscall_arg_counts)[canonical->sysno] <= 8);
-
-   switch (ML_(syscall_arg_counts)[canonical->sysno]) {
-   case 8:
-      stack[8] = canonical->arg8;
-   case 7:
-      stack[7] = canonical->arg7;
-   case 6:
-      stack[6] = canonical->arg6;
-   case 5:
-      stack[5] = canonical->arg5;
-   case 4:
-      stack[4] = canonical->arg4;
-   case 3:
-      stack[3] = canonical->arg3;
-   case 2:
-      stack[2] = canonical->arg2;
-   case 1:
-      stack[1] = canonical->arg1;
-   case 0:
-      break;
-   }
+   stack[1] = canonical->arg1;
+   stack[2] = canonical->arg2;
+   stack[3] = canonical->arg3;
+   stack[4] = canonical->arg4;
+   stack[5] = canonical->arg5;
+   stack[6] = canonical->arg6;
+   stack[7] = canonical->arg7;
+   stack[8] = canonical->arg8;
    
 #elif defined(VGP_amd64_freebsd)
    VexGuestAMD64State* gst = (VexGuestAMD64State*)gst_vanilla;

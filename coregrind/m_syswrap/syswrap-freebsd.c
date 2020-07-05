@@ -402,6 +402,29 @@ SysRes ML_(do_fork) ( ThreadId tid )
    return res;
 }
 
+static Addr ML_(make_safe_mask) ( const HChar* malloc_message, Addr mask_pointer )
+{
+   vki_sigset_t* new_mask;
+   const vki_sigset_t* old_mask = (vki_sigset_t *)mask_pointer;
+
+   if (!ML_(safe_to_deref)(old_mask, sizeof(vki_sigset_t))) {
+      new_mask = (vki_sigset_t*)1; /* Something recognisable to POST() hook. */
+   } else {
+      new_mask = VG_(malloc)(malloc_message, sizeof(vki_sigset_t));
+      *new_mask = *old_mask;
+      VG_(sanitize_client_sigmask)(new_mask);
+   }
+
+   return (Addr)new_mask;
+}
+
+static Addr ML_(free_safe_mask) ( Addr mask_pointer )
+{
+   if (mask_pointer != 0 && mask_pointer != 1) {
+      VG_(free)((vki_sigset_t *) mask_pointer);
+   }
+}
+
 
 /* ---------------------------------------------------------------------
    PRE/POST wrappers for arch-generic, FreeBSD-specific syscalls
@@ -2997,21 +3020,16 @@ PRE(sys_sigsuspend)
 {
    *flags |= SfMayBlock;
    PRINT("sys_sigsuspend ( %#" FMT_REGWORD "x )", ARG1 );
-   PRE_REG_READ1(int, "sigsuspend", const vki_sigset_t *, sigmask)
-   if (ARG1 != (Addr)NULL) {
-      PRE_MEM_READ( "sigsuspend(sigmask)", ARG1, sizeof(vki_sigset_t) );
-      if (ML_(safe_to_deref)((vki_sigset_t *) (Addr)ARG1, sizeof(vki_sigset_t))) {
-
-         VG_(sigdelset)((vki_sigset_t *) (Addr)ARG1, VG_SIGVGKILL);
-         /* We cannot mask VG_SIGVGKILL, as otherwise this thread would not
-            be killable by VG_(nuke_all_threads_except).
-            We thus silently ignore the user request to mask this signal.
-            Note that this is similar to what is done for e.g.
-            sigprocmask (see m_signals.c calculate_SKSS_from_SCSS). */
-      } else {
-         SET_STATUS_Failure(VKI_EFAULT);
-      }
+   PRE_REG_READ1(int, "sigsuspend", const vki_sigset_t *, sigmask);
+   PRE_MEM_READ( "sigsuspend(sigmask)", ARG1, sizeof(vki_sigset_t) );
+   if (ARG1) {
+      ARG1 = ML_(make_safe_mask)("syswrap.sigsuspend.1", (Addr)ARG1);
    }
+}
+
+POST(sys_sigsuspend)
+{
+   ML_(free_safe_mask) ( (Addr)ARG1 );
 }
 
 // SYS_sigpending	343
@@ -5414,10 +5432,6 @@ POST(sys_pdgetpid)
    POST_MEM_WRITE( ARG2, sizeof(vki_pid_t) );
 }
 
-struct pselect_adjusted_sigset {
-    vki_sigset_t adjusted_ss;
-};
-
 // SYS_pselect	522
 
 // int pselect(int nfds, fd_set * restrict readfds, fd_set * restrict writefds,
@@ -5447,30 +5461,15 @@ PRE(sys_pselect)
    if (ARG5 != 0)
       PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
 
-   // @todo PJF is newsigmask allowed to be NULL?
-   // this won't generate any warnings if it is
-
    if (ARG6 != 0) {
-      vki_sigset_t *ss = (vki_sigset_t *)(Addr)ARG6;
-      PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(*ss) );
-      if (!ML_(safe_to_deref)(ss, sizeof(*ss))) {
-         ARG6 = 1; /* Something recognisable to POST() hook. */
-      } else {
-         // copy sigmask with VGKILL cleared
-         vki_sigset_t *adjss;
-         adjss = VG_(malloc)("syswrap.pselect.1", sizeof(*adjss));
-         *adjss = *ss;
-         VG_(sanitize_client_sigmask)(adjss);
-         ARG6 = (Addr)adjss;
-      }
+      PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(vki_sigset_t) );
+      ARG6 = ML_(make_safe_mask)("syswrap.pselect.1", (Addr)ARG6);
    }
 }
 
 POST(sys_pselect)
 {
-   if (ARG6 != 0 && ARG6 != 1) {
-       VG_(free)((struct pselect_adjusted_sigset *)(Addr)ARG6);
-   }
+   ML_(free_safe_mask) ( (Addr)ARG6 );
 }
 
 // SYS_getloginclass	523
@@ -5788,17 +5787,8 @@ PRE(sys_ppoll)
                        sizeof(struct vki_timespec) );
    }
    if (ARG4) {
-      const vki_sigset_t *guest_sigmask = (vki_sigset_t *)(Addr)ARG4;
       PRE_MEM_READ( "ppoll(newsigmask)", ARG4, sizeof(vki_sigset_t));
-      if (!ML_(safe_to_deref)(guest_sigmask, sizeof(*guest_sigmask))) {
-         ARG4 = 1; /* Something recognisable to POST() hook. */
-      } else {
-         vki_sigset_t *vg_sigmask =
-             VG_(malloc)("syswrap.ppoll.1", sizeof(*vg_sigmask));
-         ARG4 = (Addr)vg_sigmask;
-         *vg_sigmask = *guest_sigmask;
-         VG_(sanitize_client_sigmask)(vg_sigmask);
-      }
+      ARG4 = ML_(make_safe_mask)("syswrap.ppoll.1", (Addr)ARG4);
    }
 }
 
@@ -5810,9 +5800,7 @@ POST(sys_ppoll)
       for (i = 0; i < ARG2; i++)
          POST_MEM_WRITE( (Addr)(&ufds[i].revents), sizeof(ufds[i].revents) );
    }
-   if (ARG4 != 0 && ARG4 != 1) {
-      VG_(free)((vki_sigset_t *) (Addr)ARG4);
-   }
+   ML_(free_safe_mask) ( (Addr)ARG4 );
 }
 
 // SYS_futimens	546
@@ -6490,7 +6478,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl SYS_nnpfs_syscall                             339
 
    BSDXY(__NR_sigprocmask,      sys_sigprocmask),       // 340
-   BSDX_(__NR_sigsuspend,       sys_sigsuspend),        // 341
+   BSDXY(__NR_sigsuspend,       sys_sigsuspend),        // 341
    // freebsd 4 sigaction                                  342
    BSDXY(__NR_sigpending,       sys_sigpending),        // 343
 
