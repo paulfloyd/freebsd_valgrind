@@ -8,7 +8,7 @@ typedef struct {
         int type;                                                               
 } Elf_AuxStr;                                                                   
                                                                                 
-Elf_AuxStr aux_map[AT_COUNT][2] = {                                                
+Elf_AuxStr aux_map[AT_COUNT] = {                                                
         {"AT_NLL",      0},                                                     
         {"AT_IGNORE",   1},                                                     
         {"AT_EXECFD",   2},                                                     
@@ -42,7 +42,6 @@ Elf_AuxStr aux_map[AT_COUNT][2] = {
                                                                                 
 int main(int argc, char* argv[], char* envp[])                                      
 {                                                                               
-    Elf_Auxinfo *aux_info;                                                  
     Elf_Auxinfo *auxp;                                                      
     Elf_AuxStr *aux_str;                                                    
     while(*envp++ != NULL)
@@ -50,7 +49,7 @@ int main(int argc, char* argv[], char* envp[])
                                                                                 
     for (auxp = (Elf_Auxinfo *)envp; auxp->a_type != AT_NULL; auxp++)       
     {                                                                       
-        aux_str = aux_map[auxp->a_type];                                   
+        aux_str = &aux_map[auxp->a_type];                                   
         fprintf(stderr, "val: %s int: %02d ptr: 0x%lx\n", aux_str->str_val, aux_str->type, auxp->a_un.a_val);
     }                                                                       
 }
