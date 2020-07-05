@@ -416,7 +416,11 @@ check_PROGRAMS =      \
   threaded-fork       \
   trylock             \
   unit_bitmap         \
-  unit_vc
+  unit_vc             \
+  std_atomic          \
+  std_list            \
+  std_mutex	      \
+  std_string
 
 if HAVE_BOOST_1_35
 check_PROGRAMS += boost_thread
@@ -445,10 +449,6 @@ endif
 if CXX_CAN_INCLUDE_THREAD_HEADER
 if HAVE_SHARED_POINTER_ANNOTATION
 check_PROGRAMS += \
-  std_atomic      \
-  std_list        \
-  std_mutex	  \
-  std_string      \
   std_thread      \
   std_thread2
 endif
