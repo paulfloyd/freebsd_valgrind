@@ -1261,7 +1261,7 @@
 /memcheck/tests/freebsd/.deps
 /memcheck/tests/freebsd/Makefile
 /memcheck/tests/freebsd/Makefile.in
-/memcheck/tests/freebsd/statvfs
+/memcheck/tests/freebsd/statfs
 /memcheck/tests/freebsd/pdfork_pdkill
 /memcheck/tests/freebsd/getfsstat
 /memcheck/tests/freebsd/inlinfo
