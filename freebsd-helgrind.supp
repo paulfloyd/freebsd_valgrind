@@ -14,15 +14,15 @@
    HELGRIND-PTHREAD-EXIT0
    Helgrind:Race
    fun:thr_exit
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
 }
 {
    HELGRIND-PTHREAD-EXIT1
    Helgrind:Race
    fun:_pthread_exit_mask
    fun:pthread_exit
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
 }  
 {
    HELGRIND-PTHREAD-EXIT2
@@ -30,13 +30,13 @@
    fun:__sys_thr_exit
    fun:_pthread_exit_mask
    fun:pthread_exit
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
 } 
 {
    HELGRIND-PTHREAD-EXIT4
    Helgrind:Race
    fun:_thr_try_gc
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:pthread_join_WRK
    fun:pthread_join
 }
@@ -44,7 +44,7 @@
    HELGRIND-PTHREAD-EXIT5
    Helgrind:Race
    fun:__sys_thr_exit
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:_pthread_exit_mask
    fun:pthread_exit
    obj:/lib/libthr.so.3
@@ -101,15 +101,15 @@
    Helgrind:Race
    obj:/libexec/ld-elf*.so.1
    fun:_rtld_allocate_tls
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:pthread_create
 }
 {
    HELGRIND-PTHREAD-CREATE2
    Helgrind:Race
    fun:memset
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:pthread_create
 }
 # PJF again a pthread_self() hazard
@@ -117,7 +117,7 @@
    HELGRIND-PTHREAD-SELF1
    Helgrind:Race
    fun:mythread_wrapper
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
 }
 {
    HELGRIND-SEM-CLOCKWAIT1
@@ -153,5 +153,5 @@
    HELGRIND-MUTEX-LOCK1
    Helgrind:Race
    fun:memset
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
 }

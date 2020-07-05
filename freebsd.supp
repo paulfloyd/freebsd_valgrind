@@ -23,7 +23,7 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/usr/local/lib/gcc9/libstdc++.so.*
+   obj:/usr/local/lib*/gcc9/libstdc++.so.*
    obj:/libexec/ld-elf*.so.1
    obj:/libexec/ld-elf*.so.1
    obj:/libexec/ld-elf*.so.1
@@ -33,9 +33,9 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/libc.so.7
-   obj:/lib/libc.so.7
-   obj:/lib/libc.so.7
+   obj:*/lib*/libc.so.7
+   obj:*/lib*/libc.so.7
+   obj:*/lib*/libc.so.7
    fun:vfprintf_l
 }
 # clang only, should check that this is not a genuine error

@@ -306,11 +306,13 @@ ansi_CFLAGS		= $(AM_CFLAGS) -ansi
 execve_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_NONNULL@
 if VGCONF_OS_IS_SOLARIS
 fcntl_setown_LDADD	= -lsocket -lnsl
-fdleak_cmsg_CFLAGS	= $(AM_CFLAGS) -D_XOPEN_SOURCE=600
+fdleak_cmsg_CFLAGS	= ${AM_CFLAGS} -D_XOPEN_SOURCE=600
 fdleak_cmsg_LDADD	= -lsocket -lnsl
 fdleak_ipv4_LDADD	= -lsocket -lnsl
 fdleak_creat_LDADD	= -lsocket -lnsl
 fdleak_socketpair_LDADD	= -lsocket -lnsl
+else
+fdleak_cmsg_CFLAGS      = ${AM_CFLAGS}
 endif
 floored_LDADD 		= -lm
 manythreads_LDADD	= -lpthread
@@ -389,7 +391,7 @@ else
 endif
 
 vgprintf_nvalgrind_SOURCES = vgprintf.c
-vgprintf_nvalgrind_CFLAGS = -DNVALGRIND
+vgprintf_nvalgrind_CFLAGS = ${AM_CFLAGS} -DNVALGRIND
 
 valgrind_cpp_test_SOURCES = valgrind_cpp_test.cpp
 valgrind_cpp_test_LDADD   = -lstdc++

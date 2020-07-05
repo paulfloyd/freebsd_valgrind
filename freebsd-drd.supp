@@ -20,7 +20,7 @@
 {
    DRD-PTHREAD-EXIT2
    drd:ConflictingAccess
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:pthread_exit
 }
 {
@@ -37,16 +37,16 @@
 {
    DRD-MANY2
    drd:ConflictingAccess
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
    obj:/libexec/ld-elf*.so.1
 }
 {
    DRD-MANY3
    drd:ConflictingAccess
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3   
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3   
    obj:/libexec/ld-elf*.so.1
 }
 {
@@ -59,7 +59,7 @@
 {
    DRD-PTHREAD-DETACH1
    drd:ConflictingAccess
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:pthread_detach
 }
 {
@@ -70,7 +70,7 @@
 {
    DRD-LIBGOMP2
    drd:ConflictingAccess
-   obj:/usr/lib/libomp.so
+   obj:/usr/lib*/libomp.so
 }
 {
    DRD-LIBGOMP3
@@ -80,16 +80,16 @@
 {
    DRD-LIBGOMP4
    drd:ConflictingAccess
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
    fun:pthread_setspecific
 }
 {
    DRD-UNWIND1
    drd:ConflictingAccess
    fun:_Unwind_GetCFA
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
    obj:*/lib*/libgcc_s.so.1
 }
 {
@@ -112,7 +112,7 @@
    DRD-MEMSET
    drd:ConflictingAccess
    fun:memset
-   obj:/lib/libthr.so.3
+   obj:*/lib*/libthr.so.3
 }
 {
    DRD-SET-POINTER
@@ -123,7 +123,7 @@
    DRD-DL-ITERATE-PHDR
    drd:ConflictingAccess
    ...
-   obj:/usr/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
    obj:/libexec/ld-elf*.so.1
    fun:dl_iterate_phdr
 }
@@ -140,7 +140,7 @@
 {
    DRD-DLOPEN
    drd:ConflictingAccess
-   obj:/usr/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
    obj:/libexec/ld-elf*.so.1
    obj:/libexec/ld-elf*.so.1
    obj:/libexec/ld-elf*.so.1
@@ -149,8 +149,7 @@
 {
    DRD-LD-ELF
    drd:ConflictingAccess
-   obj:/usr/lib*/libthr.so.3
+   obj:*/lib*/libthr.so.3
    ...
    obj:/libexec/ld-elf*.so.1
 }
-
