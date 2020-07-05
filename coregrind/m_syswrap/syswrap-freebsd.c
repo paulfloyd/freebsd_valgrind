@@ -5908,7 +5908,7 @@ POST(sys_getdirentries)
 PRE(sys_statfs)
 {
    PRINT("sys_statfs ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",ARG1,(char *)ARG1,ARG2);
-   PRE_REG_READ2(long, "statfs", const char *, path, struct statfs *, buf);
+   PRE_REG_READ2(int, "statfs", const char *, path, struct statfs *, buf);
    PRE_MEM_RASCIIZ( "statfs(path)", ARG1 );
    PRE_MEM_WRITE( "statfs(buf)", ARG2, sizeof(struct vki_statfs) );
 }
@@ -5922,9 +5922,9 @@ POST(sys_statfs)
 // int fstatfs(int fd, struct statfs *buf);
 PRE(sys_fstatfs)
 {
-   PRINT("sys_fstatfs ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2);
-   PRE_REG_READ2(long, "fstatfs",
-                 unsigned int, fd, struct statfs *, buf);
+   PRINT("sys_fstatfs ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x )",SARG1,ARG2);
+   PRE_REG_READ2(int, "fstatfs",
+                 int, fd, struct vki_statfs *, buf);
    PRE_MEM_WRITE( "fstatfs(buf)", ARG2, sizeof(struct vki_statfs) );
 }
 

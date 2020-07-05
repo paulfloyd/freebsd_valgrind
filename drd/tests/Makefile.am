@@ -231,7 +231,6 @@ EXTRA_DIST =                                        \
 	pth_spinlock.stderr.exp                     \
 	pth_spinlock.vgtest                         \
 	pth_uninitialized_cond.stderr.exp           \
-	pth_uninitialized_cond.stderr.exp-freebsd   \
 	pth_uninitialized_cond.vgtest               \
 	read_and_free_race.stderr.exp		    \
 	read_and_free_race.vgtest		    \
@@ -405,7 +404,6 @@ check_PROGRAMS =      \
   pth_inconsistent_cond_wait \
   pth_mutex_reinit    \
   pth_process_shared_mutex   \
-  pth_uninitialized_cond \
   recursive_mutex     \
   rwlock_race         \
   rwlock_test         \
@@ -441,7 +439,8 @@ check_PROGRAMS +=        \
 endif
 
 if !VGCONF_OS_IS_FREEBSD
-check_PROGRAMS += tsan_unittest
+check_PROGRAMS += tsan_unittest \
+  pth_uninitialized_cond
 endif
 
 # clang 3.3 will generate errors about libstdc++ headers from 
