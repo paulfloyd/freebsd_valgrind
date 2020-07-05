@@ -5,6 +5,7 @@ dist_noinst_SCRIPTS = filter_stderr
 EXTRA_DIST = \
 	auxv.vgtest \
 	auxv.stderr.exp \
+	auxv.stderr.exp-32on64 \
 	osrel.vgtest \
 	osrel.stderr.exp \
 	osrel.stdout.exp
@@ -14,3 +15,7 @@ check_PROGRAMS = \
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
+
+auxv_CFLAGS = ${AM_CFLAGS}
+osrel_CFLAGS = ${AM_CFLAGS}
+
