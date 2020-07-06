@@ -35,7 +35,7 @@ Elf_AuxStr aux_map[AT_COUNT] = {
         {"AT_STACKPROT", 23},
         {"AT_EHDRFLAGS", 24},
         {"AT_HWCAP", 25},
-        {"AT_HWCAP4", 26},
+        {"AT_HWCAP2", 26},
 //        {"AT_COUNT", 27},
                                                                                 
 };                                                                              
