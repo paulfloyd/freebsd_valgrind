@@ -6097,7 +6097,7 @@ PRE(sys___sysctlbyname)
    // this is very much like SYS___sysctl, instead of having an OID with length
    // here threre is an ascii string
    // @todo PJF factor out the common functionality of the two
-   PRINT("sys___sysctlbyname ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG1,ARG2,ARG3,ARG4,ARG4 );
+   PRINT("sys___sysctlbyname ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,(const char*)ARG1,ARG2,ARG3,ARG4,ARG5 );
    PRE_REG_READ5(int, "__sysctlbyname", const char *, name, void *, oldp,
                  vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
    PRE_MEM_RASCIIZ("sysctlbyname(name)", ARG1);
