@@ -30,13 +30,14 @@ A fair chunk of the history can be read in [this thread](https://sourceforge.net
 
 ## Building the code
 
-The following packages shoule be installed
+The following packages should be installed
+* git
 * autoconf
 * automake
 * libtool
-* GNU make
-* GCC (optional, but currently gives the best results)
-* GNU sed (optional, but it is used in the regtest scripts)
+* gmake (GNU make)
+* GCC (optional, build will use clang if GCC is not installed)
+* gsed (GNU sed - optional, but it is used in the regtest scripts)
 
 Follow the instructions in the regular README to build Valgrind.
 
