@@ -6095,38 +6095,54 @@ POST(sys_fhreadlink)
 PRE(sys___sysctlbyname)
 {
    // this is very much like SYS___sysctl, instead of having an OID with length
-   // here threre is an ascii string
+   // here threre is an ascii string with length
    // @todo PJF factor out the common functionality of the two
    PRINT("sys___sysctlbyname ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,(const char*)ARG1,ARG2,ARG3,ARG4,ARG5 );
-   PRE_REG_READ5(int, "__sysctlbyname", const char *, name, void *, oldp,
-                 vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
-   PRE_MEM_RASCIIZ("sysctlbyname(name)", ARG1);
+   PRE_REG_READ6(int, "__sysctlbyname", const char *, name, vki_size_t, namelen,
+                 void *, oldp, vki_size_t *, oldlenp,
+                 void *, newp, vki_size_t, newlen);
+   // read number of ints specified in ARG2 from mem pointed to by ARG1
+   PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
 
-   if (ARG3 != (UWord)NULL) {
-      if (ARG2 != (UWord)NULL) {
-         PRE_MEM_READ("sysctlbyname(oldlenp)", (Addr)ARG3, sizeof(vki_size_t));
-         if (ML_(safe_to_deref)((void*)(Addr)ARG3, sizeof(vki_size_t))) {
-            PRE_MEM_WRITE("sysctlbyname(oldp)", (Addr)ARG2, *(vki_size_t *)ARG4);
+   // if 'newp' is not NULL can read namelen bytes from that addess
+   if (ARG5 != (UWord)NULL)
+      PRE_MEM_READ("sysctl(newp)", (Addr)ARG5, ARG6);
+
+   // there are two scenarios for oldlenp/oldp
+   // 1. oldval is NULL and oldlenp is non-NULL
+   //    this is a query of oldlenp so oldlenp will be written
+   // 2. Both are non-NULL
+   //    this is a query of oldp, oldlenp will be read and oldp will
+   //    be written
+
+   // is oldlenp is not NULL, can write
+   if (ARG4 != (UWord)NULL) {
+      if (ARG3 != (UWord)NULL) {
+         // case 2 above
+         PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+         if (ML_(safe_to_deref)((void*)(Addr)ARG4, sizeof(vki_size_t))) {
+            PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
          } else {
-            VG_(dmsg)("Warning: Bad oldlenp address %p in sysctlbyname\n",
-                      (void *)(Addr)ARG3);
+            VG_(dmsg)("Warning: Bad oldlenp address %p in sysctl\n",
+                      (void *)(Addr)ARG4);
             SET_STATUS_Failure ( VKI_EFAULT );
          }
       } else {
          // case 1 above
-          PRE_MEM_WRITE("sysctlbyname(oldlenp)", (Addr)ARG3, sizeof(vki_size_t));
+          PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       }
    }
 }
 
 POST(sys___sysctlbyname)
 {
-   if (ARG3 != (UWord)NULL) {
-      if (ARG2 != (UWord)NULL) {
-         POST_MEM_WRITE((Addr)ARG2, *(vki_size_t *)ARG4);
+   if (ARG4 != (UWord)NULL) {
+      if (ARG3 != (UWord)NULL) {
+         //POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
+         POST_MEM_WRITE((Addr)ARG3, *(vki_size_t *)ARG4);
       }
       else
-         POST_MEM_WRITE((Addr)ARG3, sizeof(vki_size_t));
+         POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
    }
 }
 
