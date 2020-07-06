@@ -61,14 +61,16 @@ EXTRA_DIST = \
 	misc.vgtest \
 	misc.stderr.exp \
 	set_get_context.vgtest \
-	set_get_context.stderr.exp
+	set_get_context.stderr.exp \
+	utimes.vgtest \
+	utimes.stderr.exp
 
 check_PROGRAMS = \
 	statfs pdfork_pdkill getfsstat inlinfo inlinfo_nested.so extattr \
 	sigwait chflags get_set_login revoke scalar capsicum getfh \
 	linkat scalar_fork scalar_thr_exit scalar_abort2 scalar_pdfork \
 	scalar_vfork stat file_locking_wait6 utimens access chmod_chown \
-	misc get_set_context
+	misc get_set_context utimes
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)

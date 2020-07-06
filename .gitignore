@@ -1287,6 +1287,7 @@
 /memcheck/tests/freebsd/chmod_chown
 /memcheck/tests/freebsd/misc
 /memcheck/tests/freebsd/get_set_context
+/memcheck/tests/freebsd/utimes
 
 # /memcheck/tests/amd64-freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff
