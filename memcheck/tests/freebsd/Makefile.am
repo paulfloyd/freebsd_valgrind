@@ -7,7 +7,6 @@ dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout filter_sigwait \
 EXTRA_DIST = \
 	statfs.vgtest \
 	statfs.stderr.exp \
-	statfs.stderr.exp-x86 \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
 	pdfork_pdkill.stderr.exp-pts \
