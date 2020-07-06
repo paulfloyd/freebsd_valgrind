@@ -2008,7 +2008,7 @@ PRE(sys___sysctl)
          if (ML_(safe_to_deref)((void*)(Addr)ARG4, sizeof(vki_size_t))) {
             PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
          } else {
-            VG_(dmsg)("Warning: Bad oldlenp address %p in syctl\n",
+            VG_(dmsg)("Warning: Bad oldlenp address %p in sysctl\n",
                       (void *)(Addr)ARG4);
             SET_STATUS_Failure ( VKI_EFAULT );
          }
@@ -6082,6 +6082,56 @@ POST(sys_fhreadlink)
 
 #endif
 
+#if (FREEBSD_VERS >= FREEBSD_13)
+
+// SYS___sysctlbyname
+// int sysctlbyname(const char *name, void *oldp, size_t *oldlenp,
+//                  const void *newp, size_t newlen);
+// syscalls.master:
+// int __sysctlbyname(_In_reads_(namelen) const char *name, size_t namelen,
+//                    _Out_writes_bytes_opt_(*oldlenp) void *old,
+//                    _Inout_opt_ size_t *oldlenp, _In_reads_bytes_opt_(newlen) void *new,
+//                    size_t newlen );
+PRE(sys___sysctlbyname)
+{
+   // this is very much like SYS___sysctl, instead of having an OID with length
+   // here threre is an ascii string
+   // @todo PJF factor out the common functionality of the two
+   PRINT("sys___sysctlbyname ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG1,ARG2,ARG3,ARG4,ARG4 );
+   PRE_REG_READ5(int, "__sysctlbyname", const char *, name, void *, oldp,
+                 vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
+   PRE_MEM_RASCIIZ("sysctlbyname(name)", ARG1);
+
+   if (ARG3 != (UWord)NULL) {
+      if (ARG2 != (UWord)NULL) {
+         PRE_MEM_READ("sysctlbyname(oldlenp)", (Addr)ARG3, sizeof(vki_size_t));
+         if (ML_(safe_to_deref)((void*)(Addr)ARG3, sizeof(vki_size_t))) {
+            PRE_MEM_WRITE("sysctlbyname(oldp)", (Addr)ARG2, *(vki_size_t *)ARG4);
+         } else {
+            VG_(dmsg)("Warning: Bad oldlenp address %p in sysctlbyname\n",
+                      (void *)(Addr)ARG3);
+            SET_STATUS_Failure ( VKI_EFAULT );
+         }
+      } else {
+         // case 1 above
+          PRE_MEM_WRITE("sysctlbyname(oldlenp)", (Addr)ARG3, sizeof(vki_size_t));
+      }
+   }
+}
+
+POST(sys___sysctlbyname)
+{
+   if (ARG3 != (UWord)NULL) {
+      if (ARG2 != (UWord)NULL) {
+         POST_MEM_WRITE((Addr)ARG2, *(vki_size_t *)ARG4);
+      }
+      else
+         POST_MEM_WRITE((Addr)ARG3, sizeof(vki_size_t));
+   }
+}
+
+#endif
+
 #undef PRE
 #undef POST
 
@@ -6769,6 +6819,21 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_fhlinkat,         sys_fhlinkat),          // 566
    BSDXY(__NR_fhreadlink,       sys_fhreadlink),        // 567
 #endif // FREEBSD_VERS >= FREEBSD_12
+
+#if (FREEBSD_VERS >= FREEBSD_13)
+   // unimpl __NR_funlinkat           568
+   // unimpl __NR_copy_file_range     569
+   BSDXY(__NR___sysctlbyname,   sys___sysctlbyname),    // 570
+   // unimpl __NR_shm_open2           571
+   // unimpl __NR_shm_rename          572
+   // unimpl __NR_sigfastblock        573
+   // unimpl __NR___realpathat        574
+   // unimpl __NR_close_range         575
+   // unimpl __NR_rpctls_syscall      576
+
+#endif
+
+
    BSDX_(__NR_fake_sigreturn,   sys_fake_sigreturn),    // 1000, fake sigreturn
 
 };

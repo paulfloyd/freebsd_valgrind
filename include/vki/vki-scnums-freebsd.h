@@ -514,6 +514,8 @@
 #define __NR_truncate            479
 #define __NR_ftruncate           480
 #define __NR_thr_kill2           481
+
+// __NR_freebsd12_shm_open from FreeBSD 13
 #define __NR_shm_open            482
 #define __NR_shm_unlink          483
 #define __NR_cpuset              484
@@ -552,6 +554,8 @@
 #define __NR_jail_get            506
 #define __NR_jail_set            507
 #define __NR_jail_remove         508
+
+// __NR_freebsd12_closefrom from FreeBSD 13
 #define __NR_closefrom           509
 #define __NR___semctl            510
 #define __NR_msgctl              511
@@ -620,6 +624,20 @@
 #define __NR_fhreadlink          567
 
 #endif // (FREEBSD_VERS >= FREEBSD_12)
+
+#if (FREEBSD_VERS >= FREEBSD_13)
+
+#define __NR_funlinkat           568
+#define __NR_copy_file_range     569
+#define __NR___sysctlbyname      570
+#define __NR_shm_open2           571
+#define __NR_shm_rename          572
+#define __NR_sigfastblock        573
+#define __NR___realpathat        574
+#define __NR_close_range         575
+#define __NR_rpctls_syscall      576
+
+#endif
 
 #define __NR_fake_sigreturn      1000
 

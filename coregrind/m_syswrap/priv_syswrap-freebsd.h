@@ -516,6 +516,21 @@ DECL_TEMPLATE(freebsd, sys_fhreadlink) // 567
 
 #endif
 
+#if (FREEBSD_VERS >= FREEBSD_13)
+
+// unimpl __NR_funlinkat           568
+// unimpl __NR_copy_file_range     569
+DECL_TEMPLATE(freebsd, sys___sysctlbyname) // 570
+// unimpl __NR_shm_open2           571
+// unimpl __NR_shm_rename          572
+// unimpl __NR_sigfastblock        573
+// unimpl __NR___realpathat        574
+// unimpl __NR_close_range         575
+// unimpl __NR_rpctls_syscall      576
+
+
+#endif
+
 DECL_TEMPLATE(freebsd, sys_fake_sigreturn)
 
 #endif   // PRIV_SYSWRAP_FREEBSD_H
