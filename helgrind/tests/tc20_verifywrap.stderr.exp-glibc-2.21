@@ -13,7 +13,7 @@ Thread #x is the program's root thread
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
+   by 0x........: pthread_create@* (hg_intercepts.c:...)
    by 0x........: main (tc20_verifywrap.c:86)
 
 ----------------------------------------------------------------
@@ -144,7 +144,7 @@ FIXME: can't figure out how to verify wrap of pthread_broadcast_signal
 
 Thread #x: pthread_cond_{timed}wait called with un-held mutex
    at 0x........: pthread_cond_timedwait_WRK (hg_intercepts.c:...)
-   by 0x........: pthread_cond_timedwait (hg_intercepts.c:...)
+   by 0x........: pthread_cond_timedwait@* (hg_intercepts.c:...)
    by 0x........: main (tc20_verifywrap.c:180)
 
 ----------------------------------------------------------------
@@ -152,7 +152,7 @@ Thread #x: pthread_cond_{timed}wait called with un-held mutex
 Thread #x's call to pthread_cond_timedwait failed
    with error code 22 (EINVAL: Invalid argument)
    at 0x........: pthread_cond_timedwait_WRK (hg_intercepts.c:...)
-   by 0x........: pthread_cond_timedwait (hg_intercepts.c:...)
+   by 0x........: pthread_cond_timedwait@* (hg_intercepts.c:...)
    by 0x........: main (tc20_verifywrap.c:180)
 
 
@@ -222,7 +222,7 @@ Thread #x unlocked a not-locked lock at 0x........
 Thread #x's call to sem_init failed
    with error code 22 (EINVAL: Invalid argument)
    at 0x........: sem_init_WRK (hg_intercepts.c:...)
-   by 0x........: sem_init (hg_intercepts.c:...)
+   by 0x........: sem_init@* (hg_intercepts.c:...)
    by 0x........: main (tc20_verifywrap.c:267)
 
 

@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+
+# Replace pthread_create with pthread_create@* which is expected on Linux
+s/pthread_create \(hg_intercepts.c:/pthread_create@* \(hg_intercepts.c:/g;
+
+# ditto pthread_cond_destroy
+s/pthread_cond_destroy \(hg_intercepts.c:/pthread_cond_destroy@* \(hg_intercepts.c:/g;
+
+# ditto pthread_cond_timedwait
+s/pthread_cond_timedwait \(hg_intercepts.c:/pthread_cond_timedwait@* \(hg_intercepts.c:/g;

@@ -22,7 +22,7 @@ Thread #x unlocked a not-locked lock at 0x........
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
+   by 0x........: pthread_create@* (hg_intercepts.c:...)
    by 0x........: nearly_main (tc09_bad_unlock.c:36)
    by 0x........: main (tc09_bad_unlock.c:52)
 

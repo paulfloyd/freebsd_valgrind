@@ -21,6 +21,13 @@ else
    cat
 fi |
 
+# And FreeBSD
+if $dir/../../tests/os_test freebsd; then
+   perl -p $dir/filter_stderr_freebsd
+else
+   cat
+fi |
+
 # get rid of the numbers in bits of text "Thread #n", "thread #n",
 # "Thread n" and "thread n", "tid n"
 # as these make some tests more scheduling sensitive -- those where
@@ -41,16 +48,7 @@ awk 'BEGIN{begin=1} {if ($0 == "More than 100 errors detected.  Subsequent error
 # sem_post.
 $sed \
  -e "s/sem_wait@\*/sem_wait/" \
- -e "s/sem_post@\*/sem_post/" \
- -e "s/sem_init@\*/sem_init/" |
-
-
- # Remove version
- $sed \
- -e "s/pthread_create@\*/pthread_create/" \
- -e "s/pthread_cond_destroy@\*/pthread_cond_destroy/" \
- -e "s/pthread_cond_timedwait@\*/pthread_cond_timedwait/" |
-
+ -e "s/sem_post@\*/sem_post/" |
 
 # Remove "Helgrind, ..." line and the following copyright line;
 # also the standard postamble (does such a word exist?)
