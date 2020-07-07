@@ -9,23 +9,26 @@ s/pthread_cond_destroy \(hg_intercepts.c:/pthread_cond_destroy@* \(hg_intercepts
 # ditto pthread_cond_timedwait
 s/pthread_cond_timedwait \(hg_intercepts.c:/pthread_cond_timedwait@* \(hg_intercepts.c:/g;
 
-# because of clang optimization, there's one less line in the callstack wh
-s/   by 0x........: pthread_create_WRK \(hg_intercepts.c:...\).(?!   by 0x........: pthread_create@\* \(hg_intercepts.c:...\))/   by 0x........: pthread_create_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_create@* \(hg_intercepts.c:...\)\n/gms;
+# because of optimization, there's one less line in the callstack when VG is built with clang
+# not this is a host difference, not a client one
+s/0x[0-9A-F]+: pthread_create_WRK \(hg_intercepts.c:[0-9]+\).(?!   by 0x[0-9A-F]+: pthread_create@\* \(hg_intercepts.c:[0-9]+\))/0x........: pthread_create_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_create@* \(hg_intercepts.c:...\)\n/gms;
 
-s/0x........: pthread_cond_timedwait_WRK \(hg_intercepts.c:....\).(?!   by 0x........: pthread_cond_timedwait@\* \(hg_intercepts.c:....\))/0x........: pthread_cond_timedwait_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_cond_timedwait@* \(hg_intercepts.c:...\)\n/gms;
+s/0x[0-9A-F]+: pthread_destroy_WRK \(hg_intercepts.c:[0-9]+\).(?!   by 0x[0-9A-F]+: pthread_destroy@\* \(hg_intercepts.c:[0-9]+\))/0x........: pthread_destroy_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_destroy@* \(hg_intercepts.c:...\)\n/gms;
 
-s/0x........: mutex_lock_WRK \(hg_intercepts.c:...\).(?!   by 0x........: pthread_mutex_lock \(hg_intercepts.c:...\))/0x........: mutex_lock_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_mutex_lock \(hg_intercepts.c:...\)\n/gms;
+s/0x[0-9A-F]+: pthread_cond_timedwait_WRK \(hg_intercepts.c:.[0-9]+\).(?!   by 0x[0-9A-F]+: pthread_cond_timedwait@\* \(hg_intercepts.c:.[0-9]+\))/0x........: pthread_cond_timedwait_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_cond_timedwait@* \(hg_intercepts.c:...\)\n/gms;
 
-s/0x........: mutex_unlock_WRK \(hg_intercepts.c:....\).(?!   by 0x........: pthread_mutex_unlock \(hg_intercepts.c:....\))/0x........: mutex_unlock_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_mutex_unlock \(hg_intercepts.c:...\)\n/gms;
+s/0x[0-9A-F]+: mutex_lock_WRK \(hg_intercepts.c:[0-9]+\).(?!   by 0x[0-9A-F]+: pthread_mutex_lock \(hg_intercepts.c:[0-9]+\))/0x........: mutex_lock_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_mutex_lock \(hg_intercepts.c:...\)\n/gms;
 
-s/0x........: pthread_cond_wait_WRK \(hg_intercepts.c:....\).(?!   by 0x........: pthread_cond_wait \(hg_intercepts.c:....\))/0x........: pthread_cond_wait_WRK (hg_intercepts.c:...)\n   by 0x........: pthread_cond_wait (hg_intercepts.c:...)\n/gms;
+s/0x[0-9A-F]+: mutex_unlock_WRK \(hg_intercepts.c:.[0-9]+\).(?!   by 0x[0-9A-F]+: pthread_mutex_unlock \(hg_intercepts.c:.[0-9]+\))/0x........: mutex_unlock_WRK \(hg_intercepts.c:...\)\n   by 0x........: pthread_mutex_unlock \(hg_intercepts.c:...\)\n/gms;
 
-s/0x........: pthread_cond_signal_WRK \(hg_intercepts.c:....\).(?!   by 0x........: pthread_cond_signal \(hg_intercepts.c:....\))/0x........: pthread_cond_signal_WRK (hg_intercepts.c:...)\n   by 0x........: pthread_cond_signal (hg_intercepts.c:...)\n/gms;
+s/0x[0-9A-F]+: pthread_cond_wait_WRK \(hg_intercepts.c:.[0-9]+\).(?!   by 0x[0-9A-F]+: pthread_cond_wait \(hg_intercepts.c:.[0-9]+\))/0x........: pthread_cond_wait_WRK (hg_intercepts.c:...)\n   by 0x........: pthread_cond_wait (hg_intercepts.c:...)\n/gms;
 
-s/0x........: sem_init_WRK \(hg_intercepts.c:....\).(?!   by 0x........: sem_init \(hg_intercepts.c:....\))/0x........: sem_init_WRK (hg_intercepts.c:...)\n   by 0x........: sem_init (hg_intercepts.c:...)\n/gms;
+s/0x[0-9A-F]+: pthread_cond_signal_WRK \(hg_intercepts.c:....\).(?!   by 0x[0-9A-F]+: pthread_cond_signal \(hg_intercepts.c:....\))/0x........: pthread_cond_signal_WRK (hg_intercepts.c:...)\n   by 0x........: pthread_cond_signal (hg_intercepts.c:...)\n/gms;
 
-s/0x........: sem_wait_WRK \(hg_intercepts.c:....\).(?!   by 0x........: sem_wait \(hg_intercepts.c:....\))/0x........: sem_wait_WRK (hg_intercepts.c:...)\n   by 0x........: sem_wait (hg_intercepts.c:...)\n/gms;
+s/0x[0-9A-F]+: sem_init_WRK \(hg_intercepts.c:.[0-9]+\).(?!   by 0x[0-9A-F]+: sem_init \(hg_intercepts.c:.[0-9]+\))/0x........: sem_init_WRK (hg_intercepts.c:...)\n   by 0x........: sem_init (hg_intercepts.c:...)\n/gms;
 
-s/0x........: sem_post_WRK \(hg_intercepts.c:....\).(?!   by 0x........: sem_post \(hg_intercepts.c:....\))/0x........: sem_post_WRK (hg_intercepts.c:...)\n   by 0x........: sem_post (hg_intercepts.c:...)\n/gms;
+s/0x[0-9A-F]+: sem_wait_WRK \(hg_intercepts.c:....\).(?!   by 0x[0-9A-F]+: sem_wait \(hg_intercepts.c:....\))/0x........: sem_wait_WRK (hg_intercepts.c:...)\n   by 0x........: sem_wait (hg_intercepts.c:...)\n/gms;
 
-s/0x........: sem_destroy_WRK \(hg_intercepts.c:....\).(?!   by 0x........: sem_destroy \(hg_intercepts.c:....\))/0x........: sem_destroy_WRK (hg_intercepts.c:...)\n   by 0x........: sem_destroy (hg_intercepts.c:...)\n/gms;
+s/0x[0-9A-F]+: sem_post_WRK \(hg_intercepts.c:.[0-9]+\).(?!   by 0x[0-9A-F]+: sem_post \(hg_intercepts.c:.[0-9]+\))/0x........: sem_post_WRK (hg_intercepts.c:...)\n   by 0x........: sem_post (hg_intercepts.c:...)\n/gms;
+
+s/0x[0-9A-F]+: sem_destroy_WRK \(hg_intercepts.c:....\).(?!   by 0x[0-9A-F]+: sem_destroy \(hg_intercepts.c:....\))/0x........: sem_destroy_WRK (hg_intercepts.c:...)\n   by 0x........: sem_destroy (hg_intercepts.c:...)\n/gms;
