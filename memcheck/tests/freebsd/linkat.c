@@ -1,6 +1,9 @@
 /*
  * Test this family of functions
  * linkat, unlinkat, symlinkat
+ * 
+ * and whilst we have an open filehandle, gratuitously test
+ * fdatasync
  */
 
 #include <unistd.h>
@@ -21,6 +24,7 @@ int main(void)
     memset(buff, 0, sizeof(buff));
     sprintf(buff, "some data");
     write(tmpfd, buff, strlen(buff)+1);
+    fdatasync(tmpfd);
     close (tmpfd);
     
     DIR* tmpdir = opendir("/tmp");
@@ -70,5 +74,7 @@ int main(void)
     }
     
     unlink(tmpfromfile);
+    int badint;
+    fdatasync(badint);
 }
 

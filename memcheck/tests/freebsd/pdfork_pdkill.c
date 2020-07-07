@@ -74,6 +74,8 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         } else if (ret == 0) {
              fprintf(stderr, "parent: kill fd %d\n", fd);
+             pid_t pid;
+             pdgetpid(fd, &pid);
              pdkill(fd, 9);
         } else {
             fprintf(stderr, "parent: child exited\n");
@@ -88,8 +90,13 @@ int main(int argc, char *argv[]) {
        fprintf(stderr, "parent after 1st bad pdfork\n");
        int anotherfd;
        int badflag;
+       pid_t* pbadpid = malloc(sizeof(pid_t));
+       free(pbadpid);
+       pdgetpid(anotherfd, pbadpid);
        pdfork(&anotherfd, badflag);
+       
     }
+    
 
     return EXIT_SUCCESS;
 }
