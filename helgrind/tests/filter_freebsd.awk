@@ -34,6 +34,17 @@
    }
    next;
 }
+/pthread_cond_signal_WRK \(hg_intercepts.c/ {
+   print;
+   getline;
+   if (!match($0, /pthread_cond_signal \(hg_intercepts.c/)) {
+      print "   by 0x........: pthread_cond_signal (hg_intercepts.c:...)";
+      print;
+   } else {
+      print;
+   }
+   next;
+}
 /mutex_lock_WRK \(hg_intercepts.c/ {
    print;
    getline;
