@@ -211,7 +211,7 @@ static inline void my_exit ( int x )
 #elif defined(VGO_freebsd)
  STRRCHR(VG_Z_LIBC_SONAME,   strrchr)
  STRRCHR(VG_Z_LIBC_SONAME,   rindex)
- STRRCHR(VG_Z_LD_ELF_SO_1, strrchr)
+ STRRCHR(VG_Z_LD_ELF_SO_1,   strrchr)
  STRRCHR(VG_Z_LD_ELF32_SO_1, strrchr)
 
 #elif defined(VGO_darwin)
@@ -268,8 +268,8 @@ static inline void my_exit ( int x )
 #elif defined(VGO_freebsd)
  STRCHR(VG_Z_LIBC_SONAME,          strchr)
  STRCHR(VG_Z_LIBC_SONAME,          index)
- STRCHR(VG_Z_LD_ELF_SO_1, strchr)
- STRCHR(VG_Z_LD_ELF32_SO_1, strchr)
+ STRCHR(VG_Z_LD_ELF_SO_1,          strchr)
+ STRCHR(VG_Z_LD_ELF32_SO_1,        strchr)
 
 #elif defined(VGO_darwin)
  STRCHR(VG_Z_LIBC_SONAME, strchr)
@@ -321,8 +321,8 @@ static inline void my_exit ( int x )
  STRCAT(VG_Z_LIBC_SONAME, __GI_strcat)
 
 #elif defined(VGO_freebsd)
- STRCAT(VG_Z_LIBC_SONAME, strcat)
- STRCAT(VG_Z_LD_ELF_SO_1, strcat)
+ STRCAT(VG_Z_LIBC_SONAME,   strcat)
+ STRCAT(VG_Z_LD_ELF_SO_1,   strcat)
  STRCAT(VG_Z_LD_ELF32_SO_1, strcat)
 
 #elif defined(VGO_darwin)
@@ -419,8 +419,8 @@ static inline void my_exit ( int x )
 #if defined(VGO_linux)
 
 #elif defined(VGO_freebsd)
- STRLCAT(VG_Z_LD_ELF_SO_1, strlcat)
- STRLCAT(VG_Z_LIBC_SONAME, strlcat)
+ STRLCAT(VG_Z_LD_ELF_SO_1,   strlcat)
+ STRLCAT(VG_Z_LIBC_SONAME,   strlcat)
  STRLCAT(VG_Z_LD_ELF32_SO_1, strlcat)
 
 #elif defined(VGO_darwin)
@@ -495,8 +495,8 @@ static inline void my_exit ( int x )
 # endif
 
 #elif defined(VGO_freebsd)
- STRLEN(VG_Z_LIBC_SONAME, strlen)
- STRLEN(VG_Z_LD_ELF_SO_1, strlen)
+ STRLEN(VG_Z_LIBC_SONAME,   strlen)
+ STRLEN(VG_Z_LD_ELF_SO_1,   strlen)
  STRLEN(VG_Z_LD_ELF32_SO_1, strlen)
 
 #elif defined(VGO_darwin)
@@ -542,8 +542,8 @@ static inline void my_exit ( int x )
  STRCPY(VG_Z_LIBC_SONAME, __GI_strcpy)
 
 #elif defined(VGO_freebsd)
- STRCPY(VG_Z_LIBC_SONAME, strcpy)
- STRCPY(VG_Z_LD_ELF_SO_1, strcpy)
+ STRCPY(VG_Z_LIBC_SONAME,   strcpy)
+ STRCPY(VG_Z_LD_ELF_SO_1,   strcpy)
  STRCPY(VG_Z_LD_ELF32_SO_1, strcpy)
 
 #elif defined(VGO_darwin)
@@ -588,8 +588,8 @@ static inline void my_exit ( int x )
  STRNCPY(VG_Z_LIBC_SONAME, __strncpy_sse2_unaligned)
 
 #elif defined(VGO_freebsd)
- STRNCPY(VG_Z_LIBC_SONAME, strncpy)
- STRNCPY(VG_Z_LD_ELF_SO_1, strncpy)
+ STRNCPY(VG_Z_LIBC_SONAME,   strncpy)
+ STRNCPY(VG_Z_LD_ELF_SO_1,   strncpy)
  STRNCPY(VG_Z_LD_ELF32_SO_1, strncpy)
 
 #elif defined(VGO_darwin)
@@ -644,9 +644,9 @@ static inline void my_exit ( int x )
 
 #elif defined(VGO_freebsd)
  #define STRLCPY_CHECK_FOR_DSTSIZE_ZERO
- STRLCPY(VG_Z_LD_ELF_SO_1, strlcpy)
+ STRLCPY(VG_Z_LD_ELF_SO_1,   strlcpy)
  STRLCPY(VG_Z_LD_ELF32_SO_1, strlcpy)
- STRLCPY(VG_Z_LIBC_SONAME, strlcpy)
+ STRLCPY(VG_Z_LIBC_SONAME,   strlcpy)
 
 #elif defined(VGO_darwin)
  #define STRLCPY_CHECK_FOR_DSTSIZE_ZERO
@@ -1239,13 +1239,13 @@ static inline void my_exit ( int x )
  STPCPY(VG_Z_LD_LINUX_AARCH64_SO_1,stpcpy)
 
 #elif defined(VGO_freebsd)
- STPCPY(VG_Z_LD_ELF_SO_1, stpcpy)
- STPCPY(VG_Z_LD_ELF32_SO_1, stpcpy)
+ STPCPY(VG_Z_LD_ELF_SO_1,          stpcpy)
+ STPCPY(VG_Z_LD_ELF32_SO_1,        stpcpy)
  STPCPY(VG_Z_LIBC_SONAME,          stpcpy)
 
 #elif defined(VGO_freebsd)
- STPCPY(VG_Z_LD_ELF_SO_1, stpcpy)
- STPCPY(VG_Z_LD_ELF32_SO_1, stpcpy)
+ STPCPY(VG_Z_LD_ELF_SO_1,          stpcpy)
+ STPCPY(VG_Z_LD_ELF32_SO_1,        stpcpy)
  STPCPY(VG_Z_LIBC_SONAME,          stpcpy)
 
 #elif defined(VGO_darwin)
@@ -1339,8 +1339,8 @@ static inline void my_exit ( int x )
  MEMSET(VG_Z_LIBC_SONAME, memset)
 
 #elif defined(VGO_freebsd)
- MEMSET(VG_Z_LIBC_SONAME, memset)
- MEMSET(VG_Z_LD_ELF_SO_1, memset)
+ MEMSET(VG_Z_LIBC_SONAME,   memset)
+ MEMSET(VG_Z_LD_ELF_SO_1,   memset)
  MEMSET(VG_Z_LD_ELF32_SO_1, memset)
 
 #elif defined(VGO_darwin)
@@ -1368,9 +1368,9 @@ static inline void my_exit ( int x )
  MEMMOVE(VG_Z_LD64_SO_1, memmove)
 
 #elif defined(VGO_freebsd)
- MEMMOVE(VG_Z_LD_ELF_SO_1, memmove)
+ MEMMOVE(VG_Z_LD_ELF_SO_1,   memmove)
  MEMMOVE(VG_Z_LD_ELF32_SO_1, memmove)
- MEMMOVE(VG_Z_LIBC_SONAME, memmove)
+ MEMMOVE(VG_Z_LIBC_SONAME,   memmove)
 
 #elif defined(VGO_darwin)
 # if DARWIN_VERS <= DARWIN_10_6
@@ -1417,8 +1417,8 @@ static inline void my_exit ( int x )
  BCOPY(VG_Z_LIBC_SONAME, bcopy)
 
 #elif defined(VGO_freebsd)
- BCOPY(VG_Z_LIBC_SONAME, bcopy)
- BCOPY(VG_Z_LD_ELF_SO_1, bcopy)
+ BCOPY(VG_Z_LIBC_SONAME,   bcopy)
+ BCOPY(VG_Z_LD_ELF_SO_1,   bcopy)
  BCOPY(VG_Z_LD_ELF32_SO_1, bcopy)
 
 #elif defined(VGO_darwin)
