@@ -1,5 +1,6 @@
 #include <stdio.h>                                                              
 #include <elf.h>                                                                
+#include "../../../config.h"
                                                                                 
 /* /usr/include/x86/elf.h AT_* defs */                                          
                                                                                 
@@ -36,8 +37,17 @@ Elf_AuxStr aux_map[AT_COUNT] = {
         {"AT_EHDRFLAGS", 24},
         {"AT_HWCAP", 25},
         {"AT_HWCAP2", 26},
+// FreeBSD 12 and 11
 //        {"AT_COUNT", 27},
-                                                                                
+#if (FREEBSD_VERS >= FREEBSD_13)
+        {"AT_BSDFLAGS", 27}, 
+        {"AT_ARGC", 28}, 
+        {"AT_ARGV", 29}, 
+        {"AT_ENVC", 30}, 
+        {"AT_ENVV", 31}, 
+        {"AT_PS_STRINGS", 32}, 
+//        {"AT_COUNT", 33},
+#endif
 };                                                                              
                                                                                 
 int main(int argc, char* argv[], char* envp[])                                      
