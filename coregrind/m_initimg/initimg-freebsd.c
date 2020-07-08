@@ -675,6 +675,15 @@ Addr setup_client_stack( void*  init_sp,
         // case AT_TIMEKEEP:
             break;
 
+#if (FREEBSD_VERS >= FREEBSD_13)
+         case AT_BSDFLAGS:
+         case AT_ARGC:
+         // case AT_ARGV:
+         case AT_ENVC:
+         // case AT_ENVV:
+         // case AT_PS_STRINGS:
+#endif
+
          case AT_PHDR:
             if (info->phdr == 0)
                auxv->a_type = AT_IGNORE;
