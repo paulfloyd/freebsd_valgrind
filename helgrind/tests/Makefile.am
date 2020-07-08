@@ -77,7 +77,7 @@ EXTRA_DIST = \
 		tc06_two_races.stderr.exp \
 	tc06_two_races_xml.vgtest tc06_two_races_xml.stdout.exp \
 		tc06_two_races_xml.stderr.exp \
-		tc06_two_races_xml.stderr.exp-freebsd \		
+		tc06_two_races_xml.stderr.exp-freebsd \
 	tc07_hbl1.vgtest tc07_hbl1.stdout.exp tc07_hbl1.stderr.exp \
 	tc08_hbl2.vgtest tc08_hbl2.stdout.exp tc08_hbl2.stderr.exp \
 	tc09_bad_unlock.vgtest tc09_bad_unlock.stdout.exp \
