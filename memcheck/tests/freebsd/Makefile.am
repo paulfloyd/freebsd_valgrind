@@ -60,8 +60,8 @@ EXTRA_DIST = \
 	chmod_chown.stderr.exp \
 	misc.vgtest \
 	misc.stderr.exp \
-	set_get_context.vgtest \
-	set_get_context.stderr.exp \
+	get_set_context.vgtest \
+	get_set_context.stderr.exp \
 	utimes.vgtest \
 	utimes.stderr.exp
 

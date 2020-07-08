@@ -78,6 +78,17 @@
    }
    next;
 }
+/pthread_rwlock_init_WRK \(hg_intercepts.c/ {
+   print;
+   getline;
+   if (!match($0, /pthread_rwlock_init \(hg_intercepts.c/)) {
+      print "   by 0x........: pthread_rwlock_init (hg_intercepts.c:...)";
+      print;
+   } else {
+      print;
+   }
+   next;
+}
 /sem_init_WRK \(hg_intercepts.c/ {
    print;
    getline;
