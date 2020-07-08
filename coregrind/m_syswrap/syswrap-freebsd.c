@@ -1011,7 +1011,7 @@ PRE(sys_ioctl)
       * drivers with a large number of strange ioctl
       * commands becomes very tiresome.
       */
-   } else if (/* size == 0 || */ dir == _VKI_IOC_NONE) {
+   } else if ((dir == _VKI_IOC_NONE) && size > 0) {
       static UWord unknown_ioctl[10];
       static Int moans = sizeof(unknown_ioctl) / sizeof(unknown_ioctl[0]);
       if (moans > 0 && !VG_(clo_xml)) {
