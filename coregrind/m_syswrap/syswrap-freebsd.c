@@ -6854,8 +6854,23 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
 };
 
-const UInt ML_(syscall_table_size) =
-        sizeof(ML_(syscall_table)) / sizeof(ML_(syscall_table)[0]);
+const SyscallTableEntry* ML_(get_freebsd_syscall_entry) ( UInt sysno )
+{
+   const UInt syscall_table_size
+      = sizeof(ML_(syscall_table)) / sizeof(ML_(syscall_table)[0]);
+
+   /* Is it in the contiguous initial section of the table? */
+   if (sysno < syscall_table_size) {
+      const SyscallTableEntry* sys = &ML_(syscall_table)[sysno];
+      if (sys->before == NULL)
+         return NULL; /* no entry */
+      else
+         return sys;
+   }
+
+   /* Can't find a wrapper */
+   return NULL;
+}
 
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/

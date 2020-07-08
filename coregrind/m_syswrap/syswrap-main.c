@@ -1890,9 +1890,7 @@ static const SyscallTableEntry* get_syscall_entry ( Int syscallno )
    sys = ML_(get_linux_syscall_entry)( syscallno );
 
 #  elif defined(VGO_freebsd)
-   if (syscallno >= 0 && syscallno < ML_(syscall_table_size) &&
-       ML_(syscall_table)[syscallno].before != NULL)
-      sys = &ML_(syscall_table)[syscallno];
+   sys = ML_(get_freebsd_syscall_entry)( syscallno );
 
 #  elif defined(VGO_darwin)
    Int idx = VG_DARWIN_SYSNO_INDEX(syscallno);

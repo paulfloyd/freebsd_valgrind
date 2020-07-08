@@ -22,6 +22,18 @@
    }
    next;
 }
+/pthread_cond_wait_WRK \(hg_intercepts.c/ {
+   print;
+   getline;
+   if (!match($0, /pthread_cond_wait \(hg_intercepts.c/)) {
+      print "   by 0x........: pthread_cond_wait@* (hg_intercepts.c:...)";
+      print;
+   } else {
+      sub(/pthread_cond_wait/, "pthread_cond_wait@*");
+      print;
+   }
+   next;
+}
 /pthread_cond_destroy_WRK \(hg_intercepts.c/ {
    print;
    getline;

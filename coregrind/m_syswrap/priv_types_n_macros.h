@@ -221,12 +221,10 @@ typedef
 extern
 SyscallTableEntry* ML_(get_linux_syscall_entry)( UInt sysno );
 
-#elif defined(VGO_darwin) || defined(VGO_freebsd)
+#elif defined(VGO_darwin)
 /* XXX: Darwin still uses the old scheme of exposing the table
    array(s) and size(s) directly to syswrap-main.c.  This should be
    fixed. */
-
-// @todo PJF same applies to FreeBSD
 
 extern const SyscallTableEntry ML_(syscall_table)[];
 extern const UInt ML_(syscall_table_size);
@@ -234,6 +232,10 @@ extern const UInt ML_(syscall_table_size);
 #elif defined(VGO_solaris)
 extern
 SyscallTableEntry* ML_(get_solaris_syscall_entry)( UInt sysno );
+
+#elif defined(VGO_freebsd)
+extern
+const SyscallTableEntry* ML_(get_freebsd_syscall_entry)( UInt sysno );
 
 #else
 #  error Unknown OS
