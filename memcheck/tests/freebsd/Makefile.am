@@ -62,7 +62,9 @@ EXTRA_DIST = \
 	misc.stderr.exp \
 	get_set_context.vgtest \
 	get_set_context.stderr.exp \
+	get_set_context.stderr.exp-x86 \
 	utimes.vgtest \
+	utimes.stderr.exp-x86 \
 	utimes.stderr.exp
 
 check_PROGRAMS = \
