@@ -401,6 +401,7 @@ static void* mythread_wrapper ( void* xargsV )
 // glibc:  pthread_create@@GLIBC_2.2.5
 // darwin: pthread_create
 // darwin: pthread_create_suspended_np (trapped)
+// FreeBSD: pthread_create
 //
 /* ensure this has its own frame, so as to make it more distinguishable
    in suppressions */
@@ -552,6 +553,7 @@ static int thr_create_WRK(void *stk, size_t stksize, void *(*start)(void *),
 // darwin: pthread_join
 // darwin: pthread_join$NOCANCEL$UNIX2003
 // darwin  pthread_join$UNIX2003
+// FreeBSD: pthread_join
 __attribute__((noinline))
 static int pthread_join_WRK(pthread_t thread, void** value_pointer)
 {
@@ -778,6 +780,7 @@ void I_WRAP_SONAME_FNNAME_ZU
 #if !defined(VGO_solaris)
 // glibc:  pthread_mutex_init
 // darwin: pthread_mutex_init
+// FreeBSD: pthread_mutex_init
 PTH_FUNC(int, pthreadZumutexZuinit, // pthread_mutex_init
               pthread_mutex_t *mutex,
               pthread_mutexattr_t* attr)
@@ -850,6 +853,7 @@ PTH_FUNC(int, mutexZuinit, // mutex_init
 // glibc:   pthread_mutex_destroy
 // darwin:  pthread_mutex_destroy
 // Solaris: mutex_destroy (pthread_mutex_destroy is a weak alias)
+// FreeBSD: pthread_mutex_destroy
 __attribute__((noinline))
 static int mutex_destroy_WRK(pthread_mutex_t *mutex)
 {
@@ -903,6 +907,7 @@ static int mutex_destroy_WRK(pthread_mutex_t *mutex)
 // glibc:   pthread_mutex_lock
 // darwin:  pthread_mutex_lock
 // Solaris: mutex_lock (pthread_mutex_lock is a weak alias)
+// FreeBSD: pthread_mutex_lock
 __attribute__((noinline))
 static int mutex_lock_WRK(pthread_mutex_t *mutex)
 {
@@ -981,6 +986,7 @@ PTH_FUNC(void, lmutexZulock, // lmutex_lock
 // glibc:   pthread_mutex_trylock
 // darwin:  pthread_mutex_trylock
 // Solaris: mutex_trylock (pthread_mutex_trylock is a weak alias)
+// FreeBSD: pthread_mutext_trylock
 //
 // pthread_mutex_trylock.  The handling needed here is very similar
 // to that for pthread_mutex_lock, except that we need to tell
@@ -1041,6 +1047,7 @@ static int mutex_trylock_WRK(pthread_mutex_t *mutex)
 // glibc:   pthread_mutex_timedlock
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_mutex_timedlock
+// FreeBSD: pthread_mutex_timedlock
 //
 // pthread_mutex_timedlock.  Identical logic to pthread_mutex_trylock.
 __attribute__((noinline))
@@ -1097,6 +1104,7 @@ PTH_FUNC(int, pthreadZumutexZureltimedlock, // pthread_mutex_reltimedlock
 // glibc:   pthread_mutex_unlock
 // darwin:  pthread_mutex_unlock
 // Solaris: mutex_unlock (pthread_mutex_unlock is a weak alias)
+// FreeBSD: pthread_mutex_unlock
 __attribute__((noinline))
 static int mutex_unlock_WRK(pthread_mutex_t *mutex)
 {
@@ -1184,6 +1192,7 @@ PTH_FUNC(void, lmutexZuunlock, // lmutex_unlock
 // darwin:  pthread_cond_wait$NOCANCEL$UNIX2003
 // darwin:  pthread_cond_wait$UNIX2003
 // Solaris: cond_wait (pthread_cond_wait is built atop of cond_wait)
+// FreeBSD: pthread_cond_wait
 //
 __attribute__((noinline))
 static int pthread_cond_wait_WRK(pthread_cond_t* cond,
@@ -1276,6 +1285,7 @@ static int pthread_cond_wait_WRK(pthread_cond_t* cond,
 // darwin:  pthread_cond_timedwait_relative_np (trapped)
 // Solaris: cond_timedwait (pthread_cond_timedwait is built on cond_timedwait)
 // Solaris: cond_reltimedwait (pthread_cond_reltimedwait_np is built on this)
+// FreeBSD: pthread_cond_timedwait
 //
 __attribute__((noinline))
 static int pthread_cond_timedwait_WRK(pthread_cond_t* cond,
@@ -1396,6 +1406,7 @@ static int pthread_cond_timedwait_WRK(pthread_cond_t* cond,
 // darwin:  pthread_cond_signal
 // darwin:  pthread_cond_signal_thread_np (don't intercept this)
 // Solaris: cond_signal (pthread_cond_signal is a weak alias)
+// FreeBSD: pthread_cond_signal
 //
 __attribute__((noinline))
 static int pthread_cond_signal_WRK(pthread_cond_t* cond)
@@ -1458,6 +1469,7 @@ static int pthread_cond_signal_WRK(pthread_cond_t* cond)
 // glibc:   pthread_cond_broadcast@@GLIBC_2.3.2
 // darwin:  pthread_cond_broadcast
 // Solaris: cond_broadcast (pthread_cond_broadcast is a weak alias)
+// FreeBSD: pthread_cond_broadcast
 //
 // Note, this is pretty much identical, from a dependency-graph
 // point of view, with cond_signal, so the code is duplicated.
@@ -1522,6 +1534,7 @@ static int pthread_cond_broadcast_WRK(pthread_cond_t* cond)
 // glibc:   pthread_cond_init@@GLIBC_2.3.2
 // darwin:  pthread_cond_init
 // Solaris: cond_init (pthread_cond_init is built atop on this function)
+// FreeBSD: pthread_cond_init
 // Easy way out: Handling of attr could have been messier.
 // It turns out that pthread_cond_init under linux ignores
 // all information in cond_attr, so do we.
@@ -1610,9 +1623,9 @@ PTH_FUNC(int, condZuinit, // cond_init
 // glibc:   pthread_cond_destroy@@GLIBC_2.3.2
 // glibc:   pthread_cond_destroy@GLIBC_2.2.5
 // glibc:   pthread_cond_destroy@GLIBC_2.0
-// FreeBSD: pthread_cond_destroy
 // darwin:  pthread_cond_destroy
 // Solaris: cond_destroy (pthread_cond_destroy is a weak alias)
+// FreeBSD: pthread_cond_destroy
 //
 __attribute__((noinline))
 static int pthread_cond_destroy_WRK(pthread_cond_t* cond)
@@ -1696,6 +1709,7 @@ static int pthread_cond_destroy_WRK(pthread_cond_t* cond)
 // glibc:   pthread_barrier_init
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_barrier_init
+// FreeBSD: pthread_barrier_init
 PTH_FUNC(int, pthreadZubarrierZuinit, // pthread_barrier_init
          pthread_barrier_t* bar,
          pthread_barrierattr_t* attr, unsigned long count)
@@ -1733,6 +1747,7 @@ PTH_FUNC(int, pthreadZubarrierZuinit, // pthread_barrier_init
 // glibc:   pthread_barrier_wait
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_barrier_wait
+// FreeBSD: pthread_barrier_wait
 PTH_FUNC(int, pthreadZubarrierZuwait, // pthread_barrier_wait
               pthread_barrier_t* bar)
 {
@@ -1771,6 +1786,7 @@ PTH_FUNC(int, pthreadZubarrierZuwait, // pthread_barrier_wait
 // glibc:   pthread_barrier_destroy
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_barrier_destroy
+// FreeBSD: pthread_barrier_destroy
 PTH_FUNC(int, pthreadZubarrierZudestroy, // pthread_barrier_destroy
          pthread_barrier_t* bar)
 {
@@ -1829,6 +1845,8 @@ PTH_FUNC(int, pthreadZubarrierZudestroy, // pthread_barrier_destroy
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_spin_init
 // Solaris: pthread_spin_unlock
+// FreeBSD: pthread_spin_init
+// FreeBSD: pthread_spin_unlock
 __attribute__((noinline))
 static int pthread_spin_init_or_unlock_WRK(pthread_spinlock_t* lock,
                                            int pshared) {
@@ -1895,6 +1913,7 @@ static int pthread_spin_init_or_unlock_WRK(pthread_spinlock_t* lock,
 // glibc:   pthread_spin_destroy
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_spin_destroy
+// FreeBSD: pthread_spin_destroy
 __attribute__((noinline))
 static int pthread_spin_destroy_WRK(pthread_spinlock_t *lock)
 {
@@ -1940,6 +1959,7 @@ static int pthread_spin_destroy_WRK(pthread_spinlock_t *lock)
 // glibc:   pthread_spin_lock
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_spin_lock
+// FreeBSD: pthread_spin_lock
 __attribute__((noinline))
 static int pthread_spin_lock_WRK(pthread_spinlock_t *lock)
 {
@@ -1993,6 +2013,7 @@ static int pthread_spin_lock_WRK(pthread_spinlock_t *lock)
 // glibc:   pthread_spin_trylock
 // darwin:  (doesn't appear to exist)
 // Solaris: pthread_spin_trylock
+// FreeBSD: pthread_spin_trylock
 __attribute__((noinline))
 static int pthread_spin_trylock_WRK(pthread_spinlock_t *lock)
 {
@@ -2069,6 +2090,7 @@ static int pthread_spin_trylock_WRK(pthread_spinlock_t *lock)
 // darwin:  pthread_rwlock_init
 // darwin:  pthread_rwlock_init$UNIX2003
 // Solaris: rwlock_init (pthread_rwlock_init is built atop of rwlock_init)
+// FreeBSD: pthread_rwlock_init
 __attribute__((noinline))
 static int pthread_rwlock_init_WRK(pthread_rwlock_t *rwl,
                                    pthread_rwlockattr_t* attr)
@@ -2155,6 +2177,7 @@ PTH_FUNC(int, rwlockZuinit, // rwlock_init
 // darwin:  pthread_rwlock_destroy
 // darwin:  pthread_rwlock_destroy$UNIX2003
 // Solaris: rwlock_destroy (pthread_rwlock_destroy is a weak alias)
+// FreeBSD: pthread_rwlock_destroy
 //
 __attribute__((noinline))
 static int pthread_rwlock_destroy_WRK(pthread_rwlock_t* rwl)
@@ -2210,6 +2233,7 @@ static int pthread_rwlock_destroy_WRK(pthread_rwlock_t* rwl)
 // darwin:  pthread_rwlock_wrlock
 // darwin:  pthread_rwlock_wrlock$UNIX2003
 // Solaris: rw_wrlock (pthread_rwlock_wrlock is a weak alias)
+// FreeBSD: pthread_rwlock_wrlock
 //
 __attribute__((noinline))
 static int pthread_rwlock_wrlock_WRK(pthread_rwlock_t* rwlock)
@@ -2295,6 +2319,7 @@ PTH_FUNC(void, lrwZuwrlock, // lrw_wrlock
 // darwin:  pthread_rwlock_rdlock
 // darwin:  pthread_rwlock_rdlock$UNIX2003
 // Solaris: rw_rdlock (pthread_rwlock_rdlock is a weak alias)
+// FreeBSD: pthread_rwlock_rdlock
 //
 __attribute__((noinline))
 static int pthread_rwlock_rdlock_WRK(pthread_rwlock_t* rwlock)
@@ -2380,6 +2405,7 @@ PTH_FUNC(void, lrwZurdlock, // lrw_rdlock
 // darwin:  pthread_rwlock_trywrlock
 // darwin:  pthread_rwlock_trywrlock$UNIX2003
 // Solaris: rw_trywrlock (pthread_rwlock_trywrlock is a weak alias)
+// FreeBSD: pthread_rwlock_trywrlock
 //
 __attribute__((noinline))
 static int pthread_rwlock_trywrlock_WRK(pthread_rwlock_t* rwlock)
@@ -2445,6 +2471,7 @@ static int pthread_rwlock_trywrlock_WRK(pthread_rwlock_t* rwlock)
 // darwin:  pthread_rwlock_tryrdlock
 // darwin:  pthread_rwlock_tryrdlock$UNIX2003
 // Solaris: rw_tryrdlock (pthread_rwlock_tryrdlock is a weak alias)
+// FreeBSD: pthread_rwlock_tryrdlock
 //
 __attribute__((noinline))
 static int pthread_rwlock_tryrdlock_WRK(pthread_rwlock_t* rwlock)
@@ -2511,6 +2538,7 @@ static int pthread_rwlock_tryrdlock_WRK(pthread_rwlock_t* rwlock)
 // darwin:  Unhandled
 // Solaris: pthread_rwlock_timedrdlock
 // Solaris: pthread_rwlock_reltimedrdlock_np
+// FreeBSD: pthread_rwlock_timedrdlock
 //
 __attribute__((noinline)) __attribute__((unused))
 static int pthread_rwlock_timedrdlock_WRK(pthread_rwlock_t *rwlock,
@@ -2544,6 +2572,11 @@ static int pthread_rwlock_timedrdlock_WRK(pthread_rwlock_t *rwlock,
 #if defined(VGO_linux)
 #elif defined(VGO_darwin)
 #elif defined(VGO_freebsd)
+PTH_FUNC(int, pthreadZurwlockZutimedrdlock, // pthread_rwlock_timedrdlock
+              pthread_rwlock_t *rwlock,
+              const struct timespec *timeout) {
+   return pthread_rwlock_timedrdlock_WRK(rwlock, timeout);
+}
 #elif defined(VGO_solaris)
    PTH_FUNC(int, pthreadZurwlockZutimedrdlock, // pthread_rwlock_timedrdlock
                  pthread_rwlock_t *rwlock,
@@ -2565,6 +2598,7 @@ static int pthread_rwlock_timedrdlock_WRK(pthread_rwlock_t *rwlock,
 // darwin:  Unhandled
 // Solaris: pthread_rwlock_timedwrlock
 // Solaris: pthread_rwlock_reltimedwrlock_np
+// FreeBSD: pthread_rwlock_timedwrlock
 //
 __attribute__((noinline)) __attribute__((unused))
 static int pthread_rwlock_timedwrlock_WRK(pthread_rwlock_t *rwlock,
@@ -2598,6 +2632,11 @@ static int pthread_rwlock_timedwrlock_WRK(pthread_rwlock_t *rwlock,
 #if defined(VGO_linux)
 #elif defined(VGO_darwin)
 #elif defined(VGO_freebsd)
+PTH_FUNC(int, pthreadZurwlockZutimedwrlock, // pthread_rwlock_timedwrlock
+              pthread_rwlock_t *rwlock,
+              const struct timespec *timeout) {
+   return pthread_rwlock_timedwrlock_WRK(rwlock, timeout);
+}
 #elif defined(VGO_solaris)
    PTH_FUNC(int, pthreadZurwlockZutimedwrlock, // pthread_rwlock_timedwrlock
                  pthread_rwlock_t *rwlock,
@@ -2619,6 +2658,7 @@ static int pthread_rwlock_timedwrlock_WRK(pthread_rwlock_t *rwlock,
 // darwin:  pthread_rwlock_unlock
 // darwin:  pthread_rwlock_unlock$UNIX2003
 // Solaris: rw_unlock (pthread_rwlock_unlock is a weak alias)
+// FreeBSD: pthread_rwlock_unlock
 __attribute__((noinline))
 static int pthread_rwlock_unlock_WRK(pthread_rwlock_t* rwlock)
 {
@@ -2703,6 +2743,7 @@ static int pthread_rwlock_unlock_WRK(pthread_rwlock_t* rwlock)
 // glibc:   sem_init@GLIBC_2.0
 // darwin:  sem_init
 // Solaris: sema_init (sem_init is built on top of sem_init)
+// FreeBSD: sem_init (libc)
 //
 #if !defined(VGO_solaris)
 __attribute__((noinline))
@@ -2793,6 +2834,7 @@ PTH_FUNC(int, semaZuinit, // sema_init
 // glibc:   sem_destroy@@GLIBC_2.2.5
 // darwin:  sem_destroy
 // Solaris: sema_destroy (sem_destroy is built on top of sema_destroy)
+// FreeBSD: sem_destroy (libc)
 __attribute__((noinline))
 static int sem_destroy_WRK(sem_t* sem)
 {
@@ -2853,6 +2895,7 @@ static int sem_destroy_WRK(sem_t* sem)
 // darwin:  sem_wait$NOCANCEL$UNIX2003
 // darwin:  sem_wait$UNIX2003
 // Solaris: sema_wait (sem_wait is built on top of sema_wait)
+// FreeBSD: sem_wait (libc)
 //
 /* wait: decrement semaphore - acquire lockage */
 __attribute__((noinline))
@@ -2918,6 +2961,7 @@ static int sem_wait_WRK(sem_t* sem)
 // glibc:   sem_post@@GLIBC_2.1
 // darwin:  sem_post
 // Solaris: sema_post (sem_post is built on top of sema_post)
+// FreeBSD: sem_post (libc)
 //
 /* post: increment semaphore - release lockage */
 __attribute__((noinline))
@@ -2978,7 +3022,7 @@ static int sem_post_WRK(sem_t* sem)
 // glibc:   sem_open
 // darwin:  sem_open
 // Solaris: sem_open
-// FreeBSD: sem_open but in libc
+// FreeBSD: sem_open (libc)
 //
 #if defined(VGO_freebsd)
 LIBC_FUNC(sem_t*, semZuopen,
@@ -3025,6 +3069,7 @@ PTH_FUNC(sem_t*, semZuopen,
 // glibc:   sem_close
 // darwin:  sem_close
 // Solaris: sem_close
+// FreeBSD: sem_close (libc)
 # if defined(VGO_freebsd)
 LIBC_FUNC(int, sem_close, sem_t* sem)
 #else
