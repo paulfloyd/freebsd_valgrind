@@ -130,8 +130,6 @@ none/tests/pth_self_kill_15_other        (stderr)
 
 ```
 
-sigsusp hangs - see issue #59  
-
 manythreads - fails after 8192 threads have run, see issue #85  
 pth_self_kill_15_other - SIGSEGV in host, see issue #83  
 
@@ -173,7 +171,7 @@ helgrind/tests/tc22_exit_w_lock          (stderr)
 helgrind/tests/tc23_bogus_condwait       (stderr)
 ```
 
-tc22_exit_w_lock - callstack diff because of function prolog, see issue #97  
+tc22_exit_w_lock - callstack diff because of function prologue, see issue #97  
 tc23_bogus_condwait - a minor issue with callstack display, see issue #128  
 
 
