@@ -99,7 +99,7 @@ drd/tests/tc04_free_lock                 (stderr)
 drd/tests/tc23_bogus_condwait            (stderr)
 ```
 
-Not fully analyzed.
+tc04_free_lock - line number differences (two are zero)  
 
 ## x86 / GCC results
 
@@ -162,17 +162,6 @@ annotate* - extra errors, see issue #126
 concurrent_close - extra errors, see issue #126  
 pth_uninitialized_cond - SIGSEGV, see issue #127  
 sigalrm - same as issue #122  
-
-## Tests in helgrind
-
-```
-== 55 tests, 4 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-helgrind/tests/tc22_exit_w_lock          (stderr)
-helgrind/tests/tc23_bogus_condwait       (stderr)
-```
-
-tc22_exit_w_lock - callstack diff because of function prologue, see issue #97  
-tc23_bogus_condwait - a minor issue with callstack display, see issue #128  
 
 
 ## Linux results
