@@ -51,7 +51,7 @@ Thread #x: pthread_barrier_destroy: threads are waiting at barrier
 
 Thread #x was created
    ...
-   by 0x........: pthread_create (hg_intercepts.c:...)
+   by 0x........: pthread_create@* (hg_intercepts.c:...)
    by 0x........: main (bar_bad.c:77)
 
 ----------------------------------------------------------------
