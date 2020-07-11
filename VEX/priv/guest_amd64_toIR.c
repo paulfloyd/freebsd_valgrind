@@ -10085,6 +10085,36 @@ static void gen_SEGV_if_not_64_aligned ( IRTemp effective_addr ) {
    gen_SEGV_if_not_XX_aligned(effective_addr, 64-1);
 }
 
+#if defined(VGO_freebsd)
+static
+void gen_SIGBUS_if_not_XX_aligned ( IRTemp effective_addr, ULong mask )
+{
+   stmt(
+      IRStmt_Exit(
+         binop(Iop_CmpNE64,
+               binop(Iop_And64,mkexpr(effective_addr),mkU64(mask)),
+               mkU64(0)),
+         Ijk_SigBUS,
+         IRConst_U64(guest_RIP_curr_instr),
+         OFFB_RIP
+      )
+   );
+}
+
+static void gen_SIGBUS_if_not_16_aligned ( IRTemp effective_addr ) {
+   gen_SIGBUS_if_not_XX_aligned(effective_addr, 16-1);
+}
+
+static void gen_SIGBUS_if_not_32_aligned ( IRTemp effective_addr ) {
+   gen_SIGBUS_if_not_XX_aligned(effective_addr, 32-1);
+}
+
+static void gen_SIGBUS_if_not_64_aligned ( IRTemp effective_addr ) {
+   gen_SIGBUS_if_not_XX_aligned(effective_addr, 64-1);
+}
+
+#endif
+
 /* Helper for deciding whether a given insn (starting at the opcode
    byte) may validly be used with a LOCK prefix.  The following insns
    may be used with LOCK when their destination operand is in memory.
@@ -12887,7 +12917,11 @@ Long dis_ESC_0F__SSE2 ( Bool* decode_OK,
             delta += 1;
          } else {
             addr = disAMode ( &alen, vbi, pfx, delta, dis_buf, 0 );
+#if defined(VGO_freebsd)
+            gen_SIGBUS_if_not_16_aligned( addr );
+#else
             gen_SEGV_if_not_16_aligned( addr );
+#endif
             putXMMReg( gregOfRexRM(pfx,modrm), 
                        loadLE(Ity_V128, mkexpr(addr)) );
             DIP("movaps %s,%s\n", dis_buf,
@@ -12911,7 +12945,11 @@ Long dis_ESC_0F__SSE2 ( Bool* decode_OK,
             delta += 1;
          } else {
             addr = disAMode ( &alen, vbi, pfx, delta, dis_buf, 0 );
+#if defined(VGO_freebsd)
+            gen_SIGBUS_if_not_16_aligned( addr );
+#else
             gen_SEGV_if_not_16_aligned( addr );
+#endif
             storeLE( mkexpr(addr), getXMMReg(gregOfRexRM(pfx,modrm)) );
             DIP("movaps %s,%s\n", nameXMMReg(gregOfRexRM(pfx,modrm)),
                                   dis_buf );
@@ -16205,7 +16243,11 @@ Long dis_ESC_0F38__SupSSE3 ( Bool* decode_OK,
                                        nameXMMReg(gregOfRexRM(pfx,modrm)));
          } else {
             addr = disAMode ( &alen, vbi, pfx, delta, dis_buf, 0 );
+#if defined(VGO_freebsd)
+            gen_SIGBUS_if_not_16_aligned( addr );
+#else
             gen_SEGV_if_not_16_aligned( addr );
+#endif
             assign( sV, loadLE(Ity_V128, mkexpr(addr)) );
             delta += alen;
             DIP("pabs%s %s,%s\n", str, dis_buf,
