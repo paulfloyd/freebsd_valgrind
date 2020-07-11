@@ -166,11 +166,8 @@ sigalrm - same as issue #122
 
 ## Linux results
 
-(Debug build)
-
 ```
-== 783 tests, 3 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-memcheck/tests/linux/sys-preadv2_pwritev2 (stderr)
-memcheck/tests/origin5-bz2               (stderr)
-memcheck/tests/varinfo5                  (stderr)
+== 784 tests, 1 stderr failure, 0 stdout failures, 0 stderrB failures, 1 stdoutB failure, 0 post failures ==
+gdbserver_tests/nlcontrolc               (stdoutB)
+memcheck/tests/linux/sys-preadv2_pwritev2 (stderr))
 ```
