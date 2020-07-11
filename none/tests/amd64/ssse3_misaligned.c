@@ -18,7 +18,7 @@ void maybe_fault ( int delta )
 
 void handler ( int signo )
 {
-#if defined(__FreeBSD__) && defined(__clang__)    
+#if defined(__FreeBSD__)
    assert(signo == SIGBUS);
 #else
    assert(signo == SIGSEGV);
@@ -29,7 +29,7 @@ void handler ( int signo )
 
 int main ( void )
 {
-#if defined(__FreeBSD__) && defined(__clang__)
+#if defined(__FreeBSD__)
    signal(SIGBUS, handler);
 #else
    signal(SIGSEGV, handler);
