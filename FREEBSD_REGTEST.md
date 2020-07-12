@@ -1,4 +1,4 @@
-### regtest status for FreeBSD
+# regtest status for FreeBSD
 
 All tests are on FreeBSD 12.1.
 
@@ -6,7 +6,7 @@ All tests are on FreeBSD 12.1.
 
 ## amd64 / GCC results
 
-# Tests in none
+### Tests in none
 
 99.5% good
 
@@ -17,7 +17,7 @@ none/tests/rlimit_nofile                 (stderr)
 
 The one failure seems to because of a socket opened by KDE/krunner. See issue #34  
 
-# Tests in memcheck
+### Tests in memcheck
 
 99.2% good
 
@@ -30,9 +30,9 @@ memcheck/tests/gone_abrt_xml             (stderr)
 descr_belowsp - missing info on stack guard in message. See issue #101  
 gone_abrt_xml - differences in signal details. See issue #102  
 
-## Tests in massif, callgrind and cachegrind, dhat, gdbserver_tests
+### Tests in massif, callgrind and cachegrind, dhat, gdbserver_tests
 
-# Tests in helgrind
+### Tests in helgrind
 
 Helgrind - 96.4% good
 
@@ -45,7 +45,7 @@ helgrind/tests/tls_threads               (stderr)
 pth_cond_destroy_busy - one missing race error  
 tls_threads - a test for Linux-specific detection of tls which can't work on FreeBSD. See issue #113  
 
-# Tests in drd
+### Tests in drd
 
 DRD - 98.4% good
 
@@ -63,14 +63,7 @@ std_list - lots of errors related to setlocale
 
 As amd64 / GCC except the following extra failures
 
-# Tests in none
-
-```
-none/tests/amd64/ssse3_misaligned
-```
-See issue #46
-
-# Tests in memcheck
+### Tests in memcheck
 
 ```
 memcheck/tests/amd64/insn-pmovmskb       (stderr)
@@ -88,7 +81,7 @@ clientperm - clang optimization issue
 leak* and lks - problem with client requests. See issue #89  
 origin5-bz2/varinfo6 - missing line number. See issue #70  
 
-# Tests in drd
+### Tests in drd
 
 ```
 drd/tests/atomic_var                     (stderr)
@@ -105,7 +98,7 @@ tc04_free_lock - line number differences (two are zero)
 
 As amd64 / gcc except the following extra failures
 
-# Tests in none
+### Tests in none
 
 ```
 none/tests/fdleak_cmsg
@@ -116,11 +109,11 @@ fdleak_cmsg - looks like a minor issue filtering open file descriptors
 manythreads - aborts after running 8192 threads, see issue #85  
 th_self_kill_15_other - signal mask / exitreason problem, see issue #83
 
-# Tests in memcheck
+### Tests in memcheck
 
 ## x86 / clang results
 
-# Tests in none
+### Tests in none
 
 ```
 == 162 tests, 2 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
@@ -133,7 +126,7 @@ none/tests/pth_self_kill_15_other        (stderr)
 manythreads - fails after 8192 threads have run, see issue #85  
 pth_self_kill_15_other - SIGSEGV in host, see issue #83  
 
-# Tests in memcheck
+### Tests in memcheck
 
 ```
 == 235 tests, 12 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
@@ -146,7 +139,7 @@ memcheck/tests/varinfo5
 memcheck/tests/dw4 - one different error message and one difference to location of error. See issue #125  
 Some more clang leak/clientreq and varindo issues.
 
-# Tests in DRD
+### Tests in DRD
 
 ```
 == 126 tests, 12 stderr failures, 1 stdout failure, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
