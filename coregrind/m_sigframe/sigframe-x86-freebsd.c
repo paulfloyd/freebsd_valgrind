@@ -270,9 +270,14 @@ static Addr build_sigframe(ThreadState *tst,
    UWord trapno;
    UWord err;
 
+#if defined(__clang__)
    esp -= 4;
    esp = VG_ROUNDDN(esp, 16);
    esp -= sizeof(*frame) + 4;
+#else
+   esp -= sizeof(*frame);
+   esp = VG_ROUNDDN(esp, 16);
+#endif
 
    frame = (struct sigframe *)esp;
 
