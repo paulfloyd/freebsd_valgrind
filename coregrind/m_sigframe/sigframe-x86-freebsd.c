@@ -269,44 +269,15 @@ static Addr build_sigframe(ThreadState *tst,
    Int  sigNo = siginfo->si_signo;
    UWord trapno;
    UWord err;
-/*
-   if (VG_(clo_trace_signals))
-      VG_(message)(
-         Vg_DebugMsg,
-         "build_sigframe esp_top_of_frame=%#x tst->arch.vex.guest_ESP=%#x\n",
-         esp_top_of_frame,
-         tst->arch.vex.guest_ESP);
-*/
 
    esp -= 4;
    esp = VG_ROUNDDN(esp, 16);
    esp -= sizeof(*frame) + 4;
 
-/*
-   if (VG_(clo_trace_signals))
-      VG_(message)(
-         Vg_DebugMsg,
-         "build_sigframe esp after frame shift=%#x\n", esp);
-
-   //esp = VG_ROUNDDN(esp, 16);
-
-   if (VG_(clo_trace_signals))
-      VG_(message)(
-         Vg_DebugMsg,
-         "build_sigframe esp after 16 rnddn=%#x\n", esp);
-*/
-
    frame = (struct sigframe *)esp;
 
    if (!extend(tst, esp, sizeof(*frame)))
       return esp_top_of_frame;
-
-/*
-   if (VG_(clo_trace_signals))
-      VG_(message)(
-         Vg_DebugMsg,
-         "build_sigframe extend returned true\n");
-*/
 
    /* retaddr, siginfo, uContext fields are to be written */
    VG_TRACK( pre_mem_write, Vg_CoreSignal, tst->tid, "signal handler frame",
@@ -373,14 +344,10 @@ void VG_(sigframe_create)( ThreadId tid,
    /* This thread needs to be marked runnable, but we leave that the
       caller to do. */
 
-/*
-   if (VG_(clo_trace_signals))
-      VG_(message)(
-         Vg_DebugMsg,
-         "pushed signal frame; %%ESP now = %#lx, "
+   if (0)
+      VG_(printf)("pushed signal frame; %%ESP now = %#lx, "
                   "next %%EIP = %#x, status=%u\n",
 		  esp, tst->arch.vex.guest_EIP, tst->status);
-*/
 }
 
 
