@@ -454,6 +454,7 @@
 /drd/tests/tc24_nonzero_sem
 /drd/tests/threaded-fork
 /drd/tests/thread_name
+/drd/tests/thread_name_freebsd
 /drd/tests/trylock
 /drd/tests/tsan_unittest
 /drd/tests/unit_bitmap

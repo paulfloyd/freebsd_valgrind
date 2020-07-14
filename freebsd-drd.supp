@@ -153,3 +153,11 @@
    ...
    obj:/libexec/ld-elf*.so.1
 }
+{
+   DRD-SNPRINTF
+   drd:ConflictingAccess
+   ...
+   obj:*/lib*/libc.so.7
+   fun:snprintf
+}
+

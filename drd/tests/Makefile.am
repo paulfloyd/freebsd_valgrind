@@ -356,6 +356,8 @@ EXTRA_DIST =                                        \
 	thread_name.vgtest			    \
 	thread_name_xml.stderr.exp		    \
 	thread_name_xml.vgtest			    \
+	thread_name_freebsd.stderr.exp		    \
+	thread_name_freebsd.vgtest		    \
 	threaded-fork.stderr.exp		    \
 	threaded-fork.vgtest			    \
 	threaded-fork-vcs.stderr.exp		    \
@@ -478,6 +480,10 @@ endif
 
 if !VGCONF_OS_IS_DARWIN
 check_PROGRAMS += sem_wait
+endif
+
+if VGCONF_OS_IS_FREEBSD
+check_PROGRAMS += thread_name_freebsd
 endif
 
 
