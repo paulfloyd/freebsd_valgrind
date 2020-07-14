@@ -1683,7 +1683,7 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    // There is less of an issue on amd64 as we just choose some arbitrary address rather then trying
    // to squeeze in just below the host stack
 
-   // Some of this is in sys/vm/vm_map.c, sor instance vm_map_stack and vm_map_stack_locked
+   // Some of this is in sys/vm/vm_map.c, for instance vm_map_stack and vm_map_stack_locked
    // These refer to the kernel global sgrowsiz, which seems to be the initial size
    // of the user stack, 128k on my system
    //

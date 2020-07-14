@@ -4214,6 +4214,10 @@ PRE(sys__umtx_op)
           }
       }
 
+      if (ARG6) {
+         PRE_MEM_READ( "_umtx_op_wait(timeout)", ARG1, sizeof(struct vki_timespec) );
+      }
+
       break;
    case VKI_UMTX_OP_WAKE:
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, WAKE, %" FMT_REGWORD "u)", ARG1, ARG3);
