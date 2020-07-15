@@ -37,12 +37,10 @@ gone_abrt_xml - differences in signal details. See issue #102
 Helgrind - 96.4% good
 
 ```
-== 55 tests, 2 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
-helgrind/tests/pth_cond_destroy_busy     (stderr)
+== 55 tests, 1 stderr failures, 0 stdout failures, 0 stderrB failures, 0 stdoutB failures, 0 post failures ==
 helgrind/tests/tls_threads               (stderr)
 
 ```
-pth_cond_destroy_busy - one missing race error  
 tls_threads - a test for Linux-specific detection of tls which can't work on FreeBSD. See issue #113  
 
 ### Tests in drd

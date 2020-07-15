@@ -13,7 +13,7 @@ int main(void)
    name[2] = KERN_PROC_OSREL;
    name[3] = getpid();
    size_t newlen = sizeof(osrel);
-   int error = sysctl(name, 4, &osrel, &newlen, NULL, 0U);
+   sysctl(name, 4, &osrel, &newlen, NULL, 0U);
    
    // this doesn't change much for each release
    u_int32_t shortProcOsrel = osrel/1000;

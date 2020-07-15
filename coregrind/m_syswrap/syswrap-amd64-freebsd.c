@@ -494,7 +494,7 @@ PRE(sys_getcontext)
    PRE_MEM_WRITE( "getcontext(ucp)", ARG1, sizeof(struct vki_ucontext) );
    uc = (struct vki_ucontext *)ARG1;
    if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext))) {
-      SET_STATUS_Failure(VKI_EINVAL);
+      SET_STATUS_Failure(VKI_EFAULT);
       return;
    }
    tst = VG_(get_ThreadState)(tid);
@@ -528,7 +528,7 @@ PRE(sys_setcontext)
    tst = VG_(get_ThreadState)(tid);
    uc = (struct vki_ucontext *)ARG1;
    if (!ML_(safe_to_deref)(uc, sizeof(struct vki_ucontext)) || uc->uc_mcontext.len != sizeof(uc->uc_mcontext)) {
-      SET_STATUS_Failure(VKI_EINVAL);
+      SET_STATUS_Failure(VKI_EFAULT);
       return;
    }
 
