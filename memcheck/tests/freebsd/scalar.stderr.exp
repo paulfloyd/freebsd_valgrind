@@ -3452,7 +3452,7 @@ Syscall param _umtx_op_wait_uint_private(op) contains uninitialised byte(s)
 Syscall param _umtx_op_wait_uint_private(id) contains uninitialised byte(s)
    ...
 
-Syscall param _umtx_op_wait_uint_private(zero) contains uninitialised byte(s)
+Syscall param _umtx_op_wait_uint_private(timeout_size) contains uninitialised byte(s)
    ...
 
 Syscall param _umtx_op_wait_uint_private(timeout) contains uninitialised byte(s)
