@@ -37,7 +37,6 @@
    ADD NEW INCLUDES ONLY TO priv_aspacemgr.h
    AND THEN ONLY AFTER READING DIRE WARNINGS THERE TOO.
    ************************************************************* */
-
 #include "priv_aspacemgr.h"
 #include "config.h"
 
@@ -1689,11 +1688,28 @@ Addr VG_(am_startup) ( Addr sp_at_startup )
    //
    // This seems to be in the sysctl kern.sgrowsiz
    // Then there is kern.maxssiz which is the total stack size (grow size + guard area)
-   // In other words guard are = maxssiz - sgrowsiz
+   // In other words guard area = maxssiz - sgrowsiz
 
 #if (__FreeBSD_version >= 1003516)
+
+#if 0
+   // this block implements what is described above
+   // this makes no changes to the regression tests
+   // I'm keeping it for a rainy day.
+   // note this needs
+   // #include "pub_core_libcproc.h"
+   SizeT kern_maxssiz;
+   SizeT kern_sgrowsiz;
+   SizeT sysctl_size = sizeof(SizeT);
+   VG_(sysctlbyname)("kern.maxssiz", &kern_maxssiz, &sysctl_size, NULL, 0);
+   VG_(sysctlbyname)("kern.sgrowsiz", &kern_sgrowsiz, &sysctl_size, NULL, 0);
+
+   suggested_clstack_end = aspacem_maxAddr - (kern_maxssiz - kern_sgrowsiz) + VKI_PAGE_SIZE;
+#endif
+
    suggested_clstack_end = aspacem_maxAddr - 64*1024*1024UL
                                            + VKI_PAGE_SIZE;
+
 #else
    suggested_clstack_end = aspacem_maxAddr - 16*1024*1024UL
                                            + VKI_PAGE_SIZE;
