@@ -3016,7 +3016,7 @@ void pp_ksigaction ( vki_sigaction_toK_t* sa )
    VG_(printf)("pp_ksigaction: handler %p, flags 0x%x, restorer %p\n", 
                sa->ksa_handler, 
                (UInt)sa->sa_flags, 
-#              if !defined(VGO_) && !defined(VGO_freebsd) && \
+#              if !defined(VGO_darwin) && !defined(VGO_freebsd) && \
                   !defined(VGO_solaris)
                   sa->sa_restorer
 #              else
