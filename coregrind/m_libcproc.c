@@ -582,7 +582,7 @@ Int VG_(system) ( const HChar* cmd )
    return zzz == -1 ? -1 : 0;
 }
 
-Int VG_(sysctl)(Int *name, UInt namelen, void *oldp, SizeT *oldlenp, void *newp, SizeT newlen)
+Int VG_(sysctl)(Int *name, UInt namelen, void *oldp, SizeT *oldlenp, const void *newp, SizeT newlen)
 {
    SysRes res;
 #  if defined(VGO_darwin) || defined(VGO_freebsd)
@@ -1138,7 +1138,7 @@ void VG_(do_atfork_child)(ThreadId tid)
    ------------------------------------------------------------------ */
 
 #if defined(VGO_freebsd)
-Int VG_(sysctlbyname)(const HChar *name, void *oldp, SizeT *oldlenp, void *newp, SizeT newlen)
+Int VG_(sysctlbyname)(const HChar *name, void *oldp, SizeT *oldlenp, const void *newp, SizeT newlen)
 {
    Int oid[2];
    Int real_oid[10];
@@ -1148,7 +1148,7 @@ Int VG_(sysctlbyname)(const HChar *name, void *oldp, SizeT *oldlenp, void *newp,
    oid[0] = 0;		/* magic */
    oid[1] = 3;		/* undocumented */
    oidlen = sizeof(real_oid);
-   error = VG_(sysctl)(oid, 2, real_oid, &oidlen, (void *)name, VG_(strlen)(name));
+   error = VG_(sysctl)(oid, 2, real_oid, &oidlen, name, VG_(strlen)(name));
    if (error < 0)
       return error;
    oidlen /= sizeof(int);

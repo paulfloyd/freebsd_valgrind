@@ -2,6 +2,7 @@
 #include "tests/malloc.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <malloc_np.h>
 
 int main(void)
 {

@@ -3,7 +3,7 @@
 int main(void)
 {
    long* px  = malloc(sizeof(long));
-   long  x0  = px[0];
+   x0  = px[0];
 
    /* SYS_pdfork                  518 */
    GO(SYS_pdfork, "2s 0m");

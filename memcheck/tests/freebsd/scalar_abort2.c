@@ -3,7 +3,7 @@
 int main(void)
 {
    long* px  = malloc(sizeof(long));
-   long  x0  = px[0];
+   x0  = px[0];
 
    /* SYS_abort2                  2 */
    GO(SYS_abort2, "3s 2m");
