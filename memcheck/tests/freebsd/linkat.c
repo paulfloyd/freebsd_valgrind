@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../../../config.h"
 
 int main(void)
 {
@@ -24,7 +25,9 @@ int main(void)
     memset(buff, 0, sizeof(buff));
     sprintf(buff, "some data");
     write(tmpfd, buff, strlen(buff)+1);
+#if (FREEBSD_VERS >= FREEBSD_11)
     fdatasync(tmpfd);
+#endif
     close (tmpfd);
     
     DIR* tmpdir = opendir("/tmp");
@@ -75,6 +78,8 @@ int main(void)
     
     unlink(tmpfromfile);
     int badint;
+#if (FREEBSD_VERS >= FREEBSD_11)
     fdatasync(badint);
+#endif
 }
 

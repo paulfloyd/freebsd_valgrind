@@ -885,10 +885,12 @@ int main(void)
    
    // unimpl SYS_ffclock_getestimate                       243
 
+#if (FREEBSD_VERS >= FREEBSD_11)
    /* SYS_clock_nanosleep         244 */
    /* this succeeds ? */
    GO(SYS_clock_nanosleep, "4s 2m");
    SY(SYS_clock_nanosleep, x0+5000, x0+3000, x0, x0+1); SUCC;
+#endif
 
    // unimpl SYS_clock_getcpuclockid2                      247
 
@@ -926,7 +928,7 @@ int main(void)
    SY(SYS_lio_listio, x0+0, x0+1, x0+10, x0+1); FAIL;
 
    /* SYS_freebsd11_getdents      272 */
-   #if (FREEBSD_VERS >= FREEBSD_12)
+#if (FREEBSD_VERS >= FREEBSD_12)
    GO(SYS_freebsd11_getdents, "3s 1m");
    SY(SYS_freebsd11_getdents, x0+9, x0+1, x0+2); FAIL;
 #else
@@ -1435,9 +1437,9 @@ int main(void)
 #if (FREEBSD_VERS <= FREEBSD_10)
    
    /* @todo PJF (maybe) FreeBSD 10 or earlier, hmmm */
-   BSDXY(__NR__umtx_lock,       sys__umtx_lock),        // 434
+   // BSDXY(__NR__umtx_lock,       sys__umtx_lock),        // 434
    
-   BSDXY(__NR__umtx_unlock,     sys__umtx_unlock),      // 435
+   // BSDXY(__NR__umtx_unlock,     sys__umtx_unlock),      // 435
 #endif
 
    /* SYS_jail_attach             436 */
