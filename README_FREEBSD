@@ -1,14 +1,66 @@
-So, install ports for autoconf, automake and gmake.
+Building Valgrind
+~~~~~~~~~~~~~~~~~
+
+Install ports for autoconf, automake, libtool and gmake.
+
 $ sh autogen.sh
 $ ./configure --prefix=/where/ever
 $ gmake
 $ gmake install
 
-Sun Aug 19 20:26:48 UTC 2007 PS_STRINGS
-	Valgrind barfs all over the place on setproctitle.
+Known Limitations (July 2020)
 
-	This also manifests itself in a corrupted environment in
-	children of child processes when --trace-children=yes is used.
+0. Be aware that if you use a wrapper script and run Valgrind on the wrapper script
+   Valgrind may hit restrictions if the wrapper script runs any Capsicum enabled
+   applications. Examples of Capsicum enabled applications are echo, basename, tee,
+   uniq and wc. It is recommended that you either avoid these applications or that you
+   run Valgrind directly on your test application.
+1. There are some limitations when running Valgrind on code that was compiled with clang.
+   These issues are not present with code compiled with GCC.
+   a) There may be missing source information concerning variables.
+   b) The client request mechanism may not work entirely correctly.
+   c) Code that uses OpenMP will generate spurious errors.
+2. There are some limitations specific to i386
+   a) In some cases signals are mishandled causing Valgrind to terminate and report a SIGSEGV.
+   b) Applications that create and join many threads may crash.
+3. Finally there are limitations on all platforms
+   a) Multithreaded applications that use dlopen may crash when run under DRD.
+   
+Notes for Developers
+~~~~~~~~~~~~~~~~~~~~
 
-	To cope correctly Valgrind must install the modified argv/envp
-	pointers in the ps-strings area, and mark it as accessible.
+0. Adding syscalls.
+
+When adding syscalls, you need to look at the manpage and also syscalls.master
+(online at
+https://github.com/freebsd/freebsd/blob/master/sys/kern/syscalls.master
+
+and if you installed the src package there should also be
+
+/usr/src/sys/amd64/linux32/syscalls.master
+and
+/usr/src/sys/i386/linux/syscalls.master)
+
+syscalls.master is particularly useful for seeing quickly whether parameters are inputs
+or outputs.
+
+When you add syscalls you will need to modify several files
+   a) include/vki/vki-scnums-freebsd.h
+      This file contains one #define for each syscall. The _NR_ prefix (Linux style) us
+      used rather than SYS_ for compatibility with the rest of the Valgrind source.
+   b) coregrind/m_syswrap/priv_syswrap-freebsd.h
+      This uses the DECL_TEMPLATE macro to generate declatations for the syscall
+      before and after wrappers.
+   c) coregrind/m_syswrap/syswrap-freebsd.c
+      This is where the bulk of the code resides. Toward the end of the file
+      the BSDX_/BSDXY macros are used to generate entries in the table of
+      syscalls. BSDX_ is used for wrappers that only have a 'before', BSDXY
+      if both wrappers are required.
+   d) If the syscall uses 64bit arguments (long long) then instead of putting
+      the wrapper definitions in syswrap-freebsd.c there will be one defintion
+      for each platform amd64 and x86 in syswrap-x86-freebsd.c and syswrap-amd64-freebsd.c
+   
+Feedback
+~~~~~~~~
+
+If you have find any problems, please use the issues forms at https://github.com/paulfloyd/freebsd_valgrind/issues
