@@ -62,12 +62,11 @@
 // so we need to duplicate it exactly.
 
 /* Valgrind-specific parts of the signal frame */
-struct vg_sigframe
-{
+struct vg_sigframe {
    /* Sanity check word. */
    UInt magicPI;
 
-   UInt handlerflags;	/* flags for signal handler */
+   UInt handlerflags;   /* flags for signal handler */
 
 
    /* Safely-saved version of sigNo, as described above. */
@@ -83,15 +82,14 @@ struct vg_sigframe
    /* end HACK ALERT */
 
    /* saved signal mask to be restored when handler returns */
-   vki_sigset_t	mask;
+   vki_sigset_t   mask;
 
    /* Sanity check word.  Is the highest-addressed word; do not
       move!*/
    UInt magicE;
 };
 
-struct sigframe
-{
+struct sigframe {
    /* Sig handler's return address */
    Addr retaddr;
 
@@ -118,9 +116,9 @@ struct sigframe
 /* Create a plausible-looking sigcontext from the thread's
    Vex guest state.
 */
-static 
+static
 void synth_ucontext(ThreadId tid, const vki_siginfo_t *si,
-                    UWord trapno, UWord err, const vki_sigset_t *set, 
+                    UWord trapno, UWord err, const vki_sigset_t *set,
                     struct vki_ucontext *ucp, struct _vki_fpstate *fpstate)
 {
    ThreadState *tst = VG_(get_ThreadState)(tid);
@@ -151,11 +149,11 @@ void synth_ucontext(ThreadId tid, const vki_siginfo_t *si,
    SC2(rax,RAX);
    SC2(rcx,RCX);
    SC2(rsp,RSP);
-/*
-   SC2(cs,CS);
-   SC2(gs,SS);
-   XXX
-*/
+   /*
+      SC2(cs,CS);
+      SC2(gs,SS);
+      XXX
+   */
    SC2(rip,RIP);
    sc->addr = (UWord)si->si_addr;
    sc->err = err;
@@ -180,8 +178,8 @@ static Bool extend ( ThreadState *tst, Addr addr, SizeT size )
    if (VG_(extend_stack)(tid, addr)) {
       stackseg = VG_(am_find_nsegment)(addr);
       if (0 && stackseg)
-	 VG_(printf)("frame=%#lx seg=%#lx-%#lx\n",
-		     addr, stackseg->start, stackseg->end);
+         VG_(printf)("frame=%#lx seg=%#lx-%#lx\n",
+                     addr, stackseg->start, stackseg->end);
    }
 
    if (stackseg == NULL || !stackseg->hasR || !stackseg->hasW) {
@@ -199,7 +197,7 @@ static Bool extend ( ThreadState *tst, Addr addr, SizeT size )
       VG_(synth_fault_mapping)(tid, addr);
 
       /* The whole process should be about to die, since the default
-	 action of SIGSEGV to kill the whole process. */
+      action of SIGSEGV to kill the whole process. */
       return False;
    }
 
@@ -215,10 +213,10 @@ static Bool extend ( ThreadState *tst, Addr addr, SizeT size )
 /* Build the Valgrind-specific part of a signal frame. */
 
 static void build_vg_sigframe(struct vg_sigframe *frame,
-			      ThreadState *tst,
-			      const vki_sigset_t *mask,
-			      UInt flags,
-			      Int sigNo)
+                              ThreadState *tst,
+                              const vki_sigset_t *mask,
+                              UInt flags,
+                              Int sigNo)
 {
    frame->sigNo_private = sigNo;
    frame->magicPI       = 0x31415927;
@@ -233,12 +231,12 @@ static void build_vg_sigframe(struct vg_sigframe *frame,
 }
 
 static Addr build_sigframe(ThreadState *tst,
-                              Addr rsp_top_of_frame,
-                              const vki_siginfo_t *siginfo,
-                              const struct vki_ucontext *siguc,
-                              void *handler, UInt flags,
-                              const vki_sigset_t *mask,
-                              void *restorer)
+                           Addr rsp_top_of_frame,
+                           const vki_siginfo_t *siginfo,
+                           const struct vki_ucontext *siguc,
+                           void *handler, UInt flags,
+                           const vki_sigset_t *mask,
+                           void *restorer)
 {
    struct sigframe *frame;
    Addr rsp = rsp_top_of_frame;
@@ -289,22 +287,22 @@ static Addr build_sigframe(ThreadState *tst,
 }
 
 
-void VG_(sigframe_create)( ThreadId tid, 
-                            Bool on_altstack,
-                            Addr rsp_top_of_frame,
-                            const vki_siginfo_t *siginfo,
-                            const struct vki_ucontext *siguc,
-                            void *handler, 
-                            UInt flags,
-                            const vki_sigset_t *mask,
-                            void *restorer )
+void VG_(sigframe_create)( ThreadId tid,
+                           Bool on_altstack,
+                           Addr rsp_top_of_frame,
+                           const vki_siginfo_t *siginfo,
+                           const struct vki_ucontext *siguc,
+                           void *handler,
+                           UInt flags,
+                           const vki_sigset_t *mask,
+                           void *restorer )
 {
    Addr rsp;
    struct sigframe *frame;
    ThreadState* tst = VG_(get_ThreadState)(tid);
 
    rsp = build_sigframe(tst, rsp_top_of_frame, siginfo, siguc, handler,
-      flags, mask, restorer);
+                        flags, mask, restorer);
    frame = (struct sigframe *)rsp;
 
    /* Set the thread so it will next run the handler. */
@@ -338,15 +336,15 @@ void VG_(sigframe_create)( ThreadId tid,
 
 /* Return False and don't do anything, just set the client to take a
    segfault, if it looks like the frame is corrupted. */
-static 
-Bool restore_vg_sigframe ( ThreadState *tst, 
+static
+Bool restore_vg_sigframe ( ThreadState *tst,
                            struct vg_sigframe *frame, Int *sigNo )
 {
    if (frame->magicPI != 0x31415927 ||
-       frame->magicE  != 0x27182818) {
+         frame->magicE  != 0x27182818) {
       VG_(message)(Vg_UserMsg, "Thread %u return signal frame "
-                               "corrupted.  Killing process.\n",
-		   tst->tid);
+                   "corrupted.  Killing process.\n",
+                   tst->tid);
       VG_(set_default_handler)(VKI_SIGSEGV);
       VG_(synth_fault)(tst->tid);
       *sigNo = VKI_SIGSEGV;
@@ -363,16 +361,16 @@ Bool restore_vg_sigframe ( ThreadState *tst,
    return True;
 }
 
-static 
-void restore_sigcontext( ThreadState *tst, 
-                         struct vki_mcontext *sc, 
+static
+void restore_sigcontext( ThreadState *tst,
+                         struct vki_mcontext *sc,
                          struct _vki_fpstate *fpstate )
 {
    tst->arch.vex.guest_RAX     = sc->rax;
    tst->arch.vex.guest_RCX     = sc->rcx;
    tst->arch.vex.guest_RDX     = sc->rdx;
    tst->arch.vex.guest_RBX     = sc->rbx;
-   tst->arch.vex.guest_RBP     = sc->rbp; 
+   tst->arch.vex.guest_RBP     = sc->rbp;
    tst->arch.vex.guest_RSP     = sc->rsp;
    tst->arch.vex.guest_RSI     = sc->rsi;
    tst->arch.vex.guest_RDI     = sc->rdi;
@@ -384,22 +382,22 @@ void restore_sigcontext( ThreadState *tst,
    tst->arch.vex.guest_R13     = sc->r13;
    tst->arch.vex.guest_R14     = sc->r14;
    tst->arch.vex.guest_R15     = sc->r15;
-/*
-   XXX:
-   tst->arch.vex.guest_rflags  = sc->rflags;
-*/
+   /*
+      XXX:
+      tst->arch.vex.guest_rflags  = sc->rflags;
+   */
    tst->arch.vex.guest_RIP     = sc->rip;
-/*
-   XXX
-   tst->arch.vex.guest_CS      = sc->cs; 
-   tst->arch.vex.guest_SS      = sc->ss;
-*/
+   /*
+      XXX
+      tst->arch.vex.guest_CS      = sc->cs;
+      tst->arch.vex.guest_SS      = sc->ss;
+   */
    VG_(memcpy)(fpstate, &sc->fpstate, sizeof(*fpstate));
 }
 
 static
 SizeT restore_sigframe ( ThreadState *tst,
-   struct sigframe *frame, Int *sigNo )
+                         struct sigframe *frame, Int *sigNo )
 {
    if (restore_vg_sigframe(tst, &frame->vg, sigNo))
       restore_sigcontext(tst, &frame->uContext.uc_mcontext, &frame->fpstate);
@@ -411,8 +409,8 @@ void VG_(sigframe_destroy)( ThreadId tid )
 {
    Addr          rsp;
    ThreadState*  tst;
-   SizeT	 size;
-   Int		 sigNo;
+   SizeT  size;
+   Int       sigNo;
 
    tst = VG_(get_ThreadState)(tid);
 
@@ -426,7 +424,7 @@ void VG_(sigframe_destroy)( ThreadId tid )
 
    if (VG_(clo_trace_signals))
       VG_(message)(
-         Vg_DebugMsg, 
+         Vg_DebugMsg,
          "VG_(signal_return) (thread %u): valid magic; RIP=%#llx\n",
          tid, tst->arch.vex.guest_RIP);
 

@@ -7,7 +7,7 @@
    This file is part of Valgrind, a dynamic binary instrumentation
    framework.
 
-   Copyright (C) 2000-2009 Julian Seward 
+   Copyright (C) 2000-2009 Julian Seward
       jseward@acm.org
 
    This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@
 
 #include "pub_core_debuglog.h"
 #include "pub_core_vki.h"       // Avoids warnings from
-                                // pub_core_libcfile.h
+// pub_core_libcfile.h
 #include "pub_core_libcproc.h"  // For VALGRIND_LIB, VALGRIND_LAUNCHER
 #include "pub_core_ume.h"
 
@@ -84,15 +84,11 @@ static const char *find_client(const char *clientname)
    const char *path = getenv("PATH");
    const char *colon;
 
-   while (path)
-   {
-      if ((colon = strchr(path, ':')) == NULL)
-      {
+   while (path) {
+      if ((colon = strchr(path, ':')) == NULL) {
          strcpy(fullname, path);
          path = NULL;
-      }
-      else
-      {
+      } else {
          memcpy(fullname, path, colon - path);
          fullname[colon - path] = '\0';
          path = colon + 1;
@@ -161,7 +157,7 @@ static const char *select_platform(const char *clientname)
 
          if (header[EI_DATA] == ELFDATA2LSB) {
             if (ehdr->e_machine == EM_386 &&
-                ehdr->e_ident[EI_OSABI] == ELFOSABI_FREEBSD) {
+                  ehdr->e_ident[EI_OSABI] == ELFOSABI_FREEBSD) {
                platform = "x86-freebsd";
             }
          }
@@ -170,7 +166,7 @@ static const char *select_platform(const char *clientname)
 
          if (header[EI_DATA] == ELFDATA2LSB) {
             if (ehdr->e_machine == EM_X86_64 &&
-                ehdr->e_ident[EI_OSABI] == ELFOSABI_FREEBSD) {
+                  ehdr->e_ident[EI_OSABI] == ELFOSABI_FREEBSD) {
                platform = "amd64-freebsd";
             }
          }
@@ -201,7 +197,7 @@ int main(int argc, char** argv, char** envp)
    int oid[4];
    vki_size_t len;
 
-   /* Start the debugging-log system ASAP.  First find out how many 
+   /* Start the debugging-log system ASAP.  First find out how many
       "-d"s were specified.  This is a pre-scan of the command line.
       At the same time, look for the tool name. */
    loglevel = 0;
@@ -215,9 +211,9 @@ int main(int argc, char** argv, char** envp)
             clientname = argv[i+1];
          break;
       }
-      if (0 == strcmp(argv[i], "-d")) 
+      if (0 == strcmp(argv[i], "-d"))
          loglevel++;
-      if (0 == strncmp(argv[i], "--tool=", 7)) 
+      if (0 == strncmp(argv[i], "--tool=", 7))
          toolname = argv[i] + 7;
    }
 
@@ -229,8 +225,8 @@ int main(int argc, char** argv, char** envp)
    if (toolname) {
       VG_(debugLog)(1, "launcher", "tool '%s' requested\n", toolname);
    } else {
-      VG_(debugLog)(1, "launcher", 
-                       "no tool requested, defaulting to 'memcheck'\n");
+      VG_(debugLog)(1, "launcher",
+                    "no tool requested, defaulting to 'memcheck'\n");
       toolname = "memcheck";
    }
 
@@ -253,19 +249,19 @@ int main(int argc, char** argv, char** envp)
    /* Work out what platform to use, or use the default platform if
       not possible. */
    if (clientname == NULL) {
-      VG_(debugLog)(1, "launcher", 
-                       "no client specified, defaulting platform to '%s'\n",
-                        default_platform);
+      VG_(debugLog)(1, "launcher",
+                    "no client specified, defaulting platform to '%s'\n",
+                    default_platform);
       platform = default_platform;
    } else if ((platform = select_platform(clientname)) != NULL) {
       VG_(debugLog)(1, "launcher", "selected platform '%s'\n", platform);
    } else {
-      VG_(debugLog)(1, "launcher", 
-                       "no platform detected, defaulting platform to '%s'\n",
-                       default_platform);
+      VG_(debugLog)(1, "launcher",
+                    "no platform detected, defaulting platform to '%s'\n",
+                    default_platform);
       platform = default_platform;
    }
-   
+
    /* Figure out the name of this executable (viz, the launcher), so
       we can tell stage2.  stage2 will use the name for recursive
       invocations of valgrind on child processes. */
@@ -279,13 +275,13 @@ int main(int argc, char** argv, char** envp)
    r = sysctl(oid, 4, launcher_name, &len, 0, 0);
    if (r != 0) {
       fprintf(stderr, "valgrind: warning (non-fatal): "
-                      "sysctl(\"kern.proc.pathname\") failed.\n");
+              "sysctl(\"kern.proc.pathname\") failed.\n");
       fprintf(stderr, "valgrind: continuing, however --trace-children=yes "
-                      "will not work.\n");
+              "will not work.\n");
    }
 
    /* tediously augment the env: VALGRIND_LAUNCHER=launcher_name */
-   new_line = malloc(strlen(VALGRIND_LAUNCHER) + 1 
+   new_line = malloc(strlen(VALGRIND_LAUNCHER) + 1
                      + strlen(launcher_name) + 1);
    if (new_line == NULL)
       barf("malloc of new_line failed.");
@@ -321,7 +317,7 @@ int main(int argc, char** argv, char** envp)
    execve(toolfile, argv, new_env);
 
    fprintf(stderr, "valgrind: failed to start tool '%s' for platform '%s': %s\n",
-                   toolname, platform, strerror(errno));
+           toolname, platform, strerror(errno));
 
    exit(1);
 }

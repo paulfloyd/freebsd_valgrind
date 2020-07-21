@@ -66,7 +66,7 @@ static Bool capabiltyMode = False;
 
 Bool VG_(get_capability_mode)(void)
 {
-    return capabiltyMode;
+   return capabiltyMode;
 }
 
 
@@ -78,9 +78,9 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    ThreadId     tid = (ThreadId)tidW;
    ThreadState* tst = VG_(get_ThreadState)(tid);
 
-   VG_(debugLog)(1, "syswrap-freebsd", 
-                    "thread_wrapper(tid=%u): entry\n",
-                    tid);
+   VG_(debugLog)(1, "syswrap-freebsd",
+                 "thread_wrapper(tid=%u): entry\n",
+                 tid);
 
    vg_assert(tst->status == VgTs_Init);
 
@@ -89,7 +89,7 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
 
    if (0)
       VG_(printf)("thread tid %u started: stack = %p\n",
-                   tid, (void*)&tid);
+                  tid, (void*)&tid);
 
    /* Make sure error reporting is enabled in the new thread. */
    tst->err_disablement_level = 0;
@@ -107,13 +107,13 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    ret = VG_(scheduler)(tid);
 
    vg_assert(VG_(is_exiting)(tid));
-   
+
    vg_assert(tst->status == VgTs_Runnable);
    vg_assert(VG_(is_running_thread)(tid));
 
-   VG_(debugLog)(1, "syswrap-freebsd", 
-                    "thread_wrapper(tid=%u): exit, schedreturncode %s\n", 
-                    tid, VG_(name_of_VgSchedReturnCode)(ret));
+   VG_(debugLog)(1, "syswrap-freebsd",
+                 "thread_wrapper(tid=%u): exit, schedreturncode %s\n",
+                 tid, VG_(name_of_VgSchedReturnCode)(ret));
 
    /* Return to caller, still holding the lock. */
    return ret;
@@ -137,9 +137,9 @@ static void run_a_thread_NORETURN ( Word tidW )
    Int               registered_vgstack_id;
 #endif
 
-   VG_(debugLog)(1, "syswrap-freebsd", 
-                    "run_a_thread_NORETURN(tid=%u): pre-thread_wrapper\n",
-                    tid);
+   VG_(debugLog)(1, "syswrap-freebsd",
+                 "run_a_thread_NORETURN(tid=%u): pre-thread_wrapper\n",
+                 tid);
 
    tst = VG_(get_ThreadState)(tid);
    vg_assert(tst);
@@ -153,16 +153,16 @@ static void run_a_thread_NORETURN ( Word tidW )
       is the stack to use by the outer to e.g. do stacktraces.
    */
    INNER_REQUEST
-      (registered_vgstack_id 
-       = VALGRIND_STACK_REGISTER (tst->os_state.valgrind_stack_base,
-                                  tst->os_state.valgrind_stack_init_SP));
-   
-   /* Run the thread all the way through. */
-   src = thread_wrapper(tid);  
+   (registered_vgstack_id
+    = VALGRIND_STACK_REGISTER (tst->os_state.valgrind_stack_base,
+                               tst->os_state.valgrind_stack_init_SP));
 
-   VG_(debugLog)(1, "syswrap-freebsd", 
-                    "run_a_thread_NORETURN(tid=%u): post-thread_wrapper\n",
-                    tid);
+   /* Run the thread all the way through. */
+   src = thread_wrapper(tid);
+
+   VG_(debugLog)(1, "syswrap-freebsd",
+                 "run_a_thread_NORETURN(tid=%u): post-thread_wrapper\n",
+                 tid);
 
    c = VG_(count_living_threads)();
    vg_assert(c >= 1); /* stay sane */
@@ -187,31 +187,31 @@ static void run_a_thread_NORETURN ( Word tidW )
          "WARNING: of the VALGRIND_DISABLE_ERROR_REPORTING macros.\n"
       );
       VG_(debugLog)(
-         1, "syswrap-freebsd", 
-            "run_a_thread_NORETURN(tid=%u): "
-            "WARNING: exiting thread has err_disablement_level = %u\n",
-            tid, tst->err_disablement_level
+         1, "syswrap-freebsd",
+         "run_a_thread_NORETURN(tid=%u): "
+         "WARNING: exiting thread has err_disablement_level = %u\n",
+         tid, tst->err_disablement_level
       );
    }
    tst->err_disablement_level = 0;
 
    if (c == 1) {
 
-      VG_(debugLog)(1, "syswrap-freebsd", 
-                       "run_a_thread_NORETURN(tid=%u): "
-                          "last one standing\n",
-                          tid);
+      VG_(debugLog)(1, "syswrap-freebsd",
+                    "run_a_thread_NORETURN(tid=%u): "
+                    "last one standing\n",
+                    tid);
 
       /* We are the last one standing.  Keep hold of the lock and
-         carry on to show final tool results, then exit the entire system. 
+         carry on to show final tool results, then exit the entire system.
          Use the continuation pointer set at startup in m_main. */
       ( * VG_(address_of_m_main_shutdown_actions_NORETURN) ) (tid, src);
    } else {
 
-      VG_(debugLog)(1, "syswrap-freebsd", 
-                       "run_a_thread_NORETURN(tid=%u): "
-                          "not last one standing\n",
-                          tid);
+      VG_(debugLog)(1, "syswrap-freebsd",
+                    "run_a_thread_NORETURN(tid=%u): "
+                    "not last one standing\n",
+                    tid);
 
       /* OK, thread is dead, but others still exist.  Just exit. */
 
@@ -309,10 +309,10 @@ Addr ML_(allocstack)(ThreadId tid)
 
    if (0)
       VG_(printf)( "stack for tid %u at %p; init_SP=%p\n",
-                   tid, 
-                   (void*)tst->os_state.valgrind_stack_base, 
+                   tid,
+                   (void*)tst->os_state.valgrind_stack_base,
                    (void*)tst->os_state.valgrind_stack_init_SP );
-                  
+
    return tst->os_state.valgrind_stack_init_SP;
 }
 
@@ -325,8 +325,8 @@ __attribute__((noreturn))
 void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
 {
    Addr sp;
-   VG_(debugLog)(1, "syswrap-freebsd", 
-                    "entering VG_(main_thread_wrapper_NORETURN)\n");
+   VG_(debugLog)(1, "syswrap-freebsd",
+                 "entering VG_(main_thread_wrapper_NORETURN)\n");
 
    sp = ML_(allocstack)(tid);
 #if defined(ENABLE_INNER_CLIENT_REQUEST)
@@ -336,9 +336,9 @@ void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
       // reports 'write error' on the non registered stack.
       ThreadState* tst = VG_(get_ThreadState)(tid);
       INNER_REQUEST
-         ((void) 
-          VALGRIND_STACK_REGISTER (tst->os_state.valgrind_stack_base,
-                                   tst->os_state.valgrind_stack_init_SP));
+      ((void)
+       VALGRIND_STACK_REGISTER (tst->os_state.valgrind_stack_base,
+                                tst->os_state.valgrind_stack_init_SP));
    }
 #endif
 
@@ -349,7 +349,7 @@ void VG_(main_thread_wrapper_NORETURN)(ThreadId tid)
    /* shouldn't be any other threads around yet */
    vg_assert( VG_(count_living_threads)() == 1 );
 
-   ML_(call_on_new_stack_0_1)( 
+   ML_(call_on_new_stack_0_1)(
       (Addr)sp,               /* stack */
       0,                      /* bogus return address */
       run_a_thread_NORETURN,  /* fn to call */
@@ -376,7 +376,7 @@ SysRes ML_(do_fork) ( ThreadId tid )
    VG_(do_atfork_pre)(tid);
 
    res = VG_(do_syscall0)( __NR_fork );
-   
+
    if (!sr_isError(res)) {
       if (sr_Res(res) == 0) {
          /* child */
@@ -385,14 +385,13 @@ SysRes ML_(do_fork) ( ThreadId tid )
          /* restore signal mask */
          VG_(sigprocmask)(VKI_SIG_SETMASK, &fork_saved_mask, NULL);
 
-      } 
-      else { 
+      } else {
          /* parent */
          VG_(do_atfork_parent)(tid);
 
          if (VG_(clo_trace_syscalls))
-         VG_(printf)("   clone(fork): process %d created child %lu\n",
-                         VG_(getpid)(), sr_Res(res));
+            VG_(printf)("   clone(fork): process %d created child %lu\n",
+                        VG_(getpid)(), sr_Res(res));
 
          /* restore signal mask */
          VG_(sigprocmask)(VKI_SIG_SETMASK, &fork_saved_mask, NULL);
@@ -439,7 +438,7 @@ static void ML_(free_safe_mask) ( Addr mask_pointer )
 /* On FreeBSD, if any thread calls exit(2), then they are all shut down, pretty
  * much like linux's exit_group().
  */
-// SYS_exit	1
+// SYS_exit 1
 // void exit(int status);
 PRE(sys_exit)
 {
@@ -456,8 +455,8 @@ PRE(sys_exit)
       //VG_(threads)[t].exitreason = VgSrc_ExitThread;
       VG_(threads)[t].os_state.exitcode = ARG1;
 
-     // if (t != tid)
-    // VG_(get_thread_out_of_syscall)(t);    /* unblock it, if blocked */
+      // if (t != tid)
+      // VG_(get_thread_out_of_syscall)(t);    /* unblock it, if blocked */
    }
 
    VG_(nuke_all_threads_except)( tid, VgSrc_ExitProcess );
@@ -468,7 +467,7 @@ PRE(sys_exit)
    SET_STATUS_Success(0);
 }
 
-// SYS_fork	2
+// SYS_fork 2
 // pid_t fork(void);
 PRE(sys_fork)
 {
@@ -483,48 +482,48 @@ PRE(sys_fork)
    }
 }
 
-// SYS_read	3
+// SYS_read 3
 // generic
 
-// SYS_write	4
+// SYS_write   4
 // generic
 
-//	SYS_open	5
+// SYS_open 5
 // generic
 
-// SYS_close	6
+// SYS_close   6
 // generic
 
-// SYS_wait4	7
+// SYS_wait4   7
 // generic
 
-// SYS_link	9
+// SYS_link 9
 // generic
 
-// SYS_unlink	10
+// SYS_unlink  10
 // generic
 
-// SYS_chdir	12
+// SYS_chdir   12
 
-// SYS_fchdir	13
+// SYS_fchdir  13
 // generic
 
-// SYS_freebsd11_mknod	14
+// SYS_freebsd11_mknod  14
 // generic
 
-// SYS_chmod	15
+// SYS_chmod   15
 // generic
 
-// SYS_chown	16
+// SYS_chown   16
 // generic
 
-// SYS_break	17
+// SYS_break   17
 // generic
 
-// SYS_getpid	20
+// SYS_getpid  20
 // generic
 
-// SYS_mount	21
+// SYS_mount   21
 // int mount(const char *type, const char *dir, int flags, void *data);
 PRE(sys_mount)
 {
@@ -532,7 +531,7 @@ PRE(sys_mount)
    // We are conservative and check everything, except the memory pointed to
    // by 'data'.
    *flags |= SfMayBlock;
-   PRINT( "sys_mount( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )" ,ARG1,ARG2,ARG3,ARG4);
+   PRINT( "sys_mount( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
    PRE_REG_READ4(int, "mount",
                  const char *, type, char *, dir, int, flags,
                  void *, data);
@@ -540,7 +539,7 @@ PRE(sys_mount)
    PRE_MEM_RASCIIZ( "mount(path)", ARG2);
 }
 
-//  SYS_unmount	22
+//  SYS_unmount   22
 // int unmount(const char *dir, int flags);
 PRE(sys_unmount)
 {
@@ -549,16 +548,16 @@ PRE(sys_unmount)
    PRE_MEM_RASCIIZ( "unmount(path)", ARG1);
 }
 
-// SYS_setuid	23
+// SYS_setuid  23
 // generic
 
-// SYS_getuid	24
+// SYS_getuid  24
 // gerneric
 
-// SYS_geteuid	25
+// SYS_geteuid 25
 // generic
 
-// SYS_ptrace	26
+// SYS_ptrace  26
 // int ptrace(int request, pid_t pid, caddr_t addr, int data);
 PRE(sys_ptrace)
 {
@@ -568,108 +567,108 @@ PRE(sys_ptrace)
    PRE_REG_READ4(int, "ptrace", int, request, pid_t, pid, caddr_t, addr, int, data);
 
    switch (ARG1) {
-      case VKI_PTRACE_TRACEME:
-         break;
-      case VKI_PTRACE_READ_I:
-      case VKI_PTRACE_READ_D:
-         break;
+   case VKI_PTRACE_TRACEME:
+      break;
+   case VKI_PTRACE_READ_I:
+   case VKI_PTRACE_READ_D:
+      break;
 
-      case VKI_PTRACE_WRITE_I:
-      case VKI_PTRACE_WRITE_D:
-         break;
+   case VKI_PTRACE_WRITE_I:
+   case VKI_PTRACE_WRITE_D:
+      break;
 
-      case VKI_PTRACE_IO:
-         PRE_MEM_READ("ptrace", ARG3, sizeof(struct vki_ptrace_io_desc));
-         io_desc = (struct vki_ptrace_io_desc *)ARG3;
-         switch (io_desc->piod_op) {
-            case VKI_PIOD_READ_D:
-            case VKI_PIOD_READ_I:
-               PRE_MEM_WRITE( "ptrace", (UWord)io_desc->piod_addr, io_desc->piod_len);
-               break;
-            case VKI_PIOD_WRITE_D:
-            case VKI_PIOD_WRITE_I:
-               PRE_MEM_READ( "ptrace", (UWord)io_desc->piod_addr, io_desc->piod_len);
-               break;
-         }
+   case VKI_PTRACE_IO:
+      PRE_MEM_READ("ptrace", ARG3, sizeof(struct vki_ptrace_io_desc));
+      io_desc = (struct vki_ptrace_io_desc *)ARG3;
+      switch (io_desc->piod_op) {
+      case VKI_PIOD_READ_D:
+      case VKI_PIOD_READ_I:
+         PRE_MEM_WRITE( "ptrace", (UWord)io_desc->piod_addr, io_desc->piod_len);
          break;
+      case VKI_PIOD_WRITE_D:
+      case VKI_PIOD_WRITE_I:
+         PRE_MEM_READ( "ptrace", (UWord)io_desc->piod_addr, io_desc->piod_len);
+         break;
+      }
+      break;
 
-      case VKI_PTRACE_CONTINUE:
-         break;
+   case VKI_PTRACE_CONTINUE:
+      break;
 
-      case VKI_PTRACE_STEP:
-         break;
+   case VKI_PTRACE_STEP:
+      break;
 
-      case VKI_PTRACE_KILL:
-         break;
+   case VKI_PTRACE_KILL:
+      break;
 
-      case VKI_PTRACE_ATTACH:
-         break;
+   case VKI_PTRACE_ATTACH:
+      break;
 
-      case VKI_PTRACE_DETACH:
-         break;
+   case VKI_PTRACE_DETACH:
+      break;
 
-      case VKI_PTRACE_GETREGS:
-         PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_user_regs_struct));
-         break;
+   case VKI_PTRACE_GETREGS:
+      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_user_regs_struct));
+      break;
 
-      case VKI_PTRACE_SETREGS:
-         PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_user_regs_struct));
-         break;
+   case VKI_PTRACE_SETREGS:
+      PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_user_regs_struct));
+      break;
 
-      case VKI_PTRACE_GETFPREGS:
-         PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_fpreg));
-         break;
+   case VKI_PTRACE_GETFPREGS:
+      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_fpreg));
+      break;
 
-      case VKI_PTRACE_SETFPREGS:
-         PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_fpreg));
-         break;
+   case VKI_PTRACE_SETFPREGS:
+      PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_fpreg));
+      break;
 
-      case VKI_PTRACE_GETDBREGS:
-         PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_dbreg));
-         break;
+   case VKI_PTRACE_GETDBREGS:
+      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_dbreg));
+      break;
 
-      case VKI_PTRACE_SETDBREGS:
-         PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_dbreg));
-         break;
+   case VKI_PTRACE_SETDBREGS:
+      PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_dbreg));
+      break;
 
-      case VKI_PTRACE_LWPINFO:
-         PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_ptrace_lwpinfo));
-         break;
+   case VKI_PTRACE_LWPINFO:
+      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_ptrace_lwpinfo));
+      break;
 
-      case VKI_PTRACE_GETNUMLWPS:
-         break;
+   case VKI_PTRACE_GETNUMLWPS:
+      break;
 
-      case VKI_PTRACE_GETLWPLIST:
-         PRE_MEM_WRITE( "ptrace", ARG3, sizeof(vki_lwpid_t) * ARG4);
-         break;
+   case VKI_PTRACE_GETLWPLIST:
+      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(vki_lwpid_t) * ARG4);
+      break;
 
-      case VKI_PTRACE_SETSTEP:
-         break;
+   case VKI_PTRACE_SETSTEP:
+      break;
 
-      case VKI_PTRACE_CLEARSTEP:
-         break;
+   case VKI_PTRACE_CLEARSTEP:
+      break;
 
-      case VKI_PTRACE_SUSPEND:
-         break;
+   case VKI_PTRACE_SUSPEND:
+      break;
 
-      case VKI_PTRACE_RESUME:
-         break;
+   case VKI_PTRACE_RESUME:
+      break;
 
-      case VKI_PTRACE_TO_SCE:
-         break;
+   case VKI_PTRACE_TO_SCE:
+      break;
 
-      case VKI_PTRACE_TO_SCX:
-         break;
+   case VKI_PTRACE_TO_SCX:
+      break;
 
-      case VKI_PTRACE_SYSCALL:
-         break;
+   case VKI_PTRACE_SYSCALL:
+      break;
 
-      case VKI_PTRACE_VM_TIMESTAMP:
-         break;
+   case VKI_PTRACE_VM_TIMESTAMP:
+      break;
 
-      case VKI_PTRACE_VM_ENTRY:
-         PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_ptrace_vm_entry));
-         break;
+   case VKI_PTRACE_VM_ENTRY:
+      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_ptrace_vm_entry));
+      break;
    }
 }
 
@@ -678,114 +677,114 @@ POST(sys_ptrace)
    struct vki_ptrace_io_desc *io_desc;
 
    switch (ARG1) {
-      case VKI_PTRACE_TRACEME:
-         break;
-      case VKI_PTRACE_READ_I:
-      case VKI_PTRACE_READ_D:
-         break;
+   case VKI_PTRACE_TRACEME:
+      break;
+   case VKI_PTRACE_READ_I:
+   case VKI_PTRACE_READ_D:
+      break;
 
-      case VKI_PTRACE_WRITE_I:
-      case VKI_PTRACE_WRITE_D:
-         break;
+   case VKI_PTRACE_WRITE_I:
+   case VKI_PTRACE_WRITE_D:
+      break;
 
-      case VKI_PTRACE_IO:
-         io_desc = (struct vki_ptrace_io_desc *)ARG3;
-         switch (io_desc->piod_op) {
-            case VKI_PIOD_READ_D:
-            case VKI_PIOD_READ_I:
-               if ((Word)RES != -1)
-                  POST_MEM_WRITE((UWord)io_desc->piod_addr, io_desc->piod_len);
-               break;
-            case VKI_PIOD_WRITE_D:
-            case VKI_PIOD_WRITE_I:
-               break;
-         }
-         break;
-
-      case VKI_PTRACE_CONTINUE:
-         break;
-
-      case VKI_PTRACE_STEP:
-         break;
-
-      case VKI_PTRACE_KILL:
-         break;
-
-      case VKI_PTRACE_ATTACH:
-         break;
-
-      case VKI_PTRACE_DETACH:
-         break;
-
-      case VKI_PTRACE_GETREGS:
+   case VKI_PTRACE_IO:
+      io_desc = (struct vki_ptrace_io_desc *)ARG3;
+      switch (io_desc->piod_op) {
+      case VKI_PIOD_READ_D:
+      case VKI_PIOD_READ_I:
          if ((Word)RES != -1)
-            POST_MEM_WRITE(ARG3, sizeof(struct vki_user_regs_struct));
+            POST_MEM_WRITE((UWord)io_desc->piod_addr, io_desc->piod_len);
          break;
+      case VKI_PIOD_WRITE_D:
+      case VKI_PIOD_WRITE_I:
+         break;
+      }
+      break;
 
-      case VKI_PTRACE_SETREGS:
-         break;
+   case VKI_PTRACE_CONTINUE:
+      break;
 
-      case VKI_PTRACE_GETFPREGS:
-         if ((Word)RES != -1)
-            POST_MEM_WRITE(ARG3, sizeof(struct vki_fpreg));
-         break;
+   case VKI_PTRACE_STEP:
+      break;
 
-      case VKI_PTRACE_SETFPREGS:
-         break;
+   case VKI_PTRACE_KILL:
+      break;
 
-      case VKI_PTRACE_GETDBREGS:
-         if ((Word)RES != -1)
-            POST_MEM_WRITE(ARG3, sizeof(struct vki_dbreg));
-         break;
+   case VKI_PTRACE_ATTACH:
+      break;
 
-      case VKI_PTRACE_SETDBREGS:
-         break;
+   case VKI_PTRACE_DETACH:
+      break;
 
-      case VKI_PTRACE_LWPINFO:
-         if ((Word)RES != -1)
-            POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_lwpinfo));
-         break;
+   case VKI_PTRACE_GETREGS:
+      if ((Word)RES != -1)
+         POST_MEM_WRITE(ARG3, sizeof(struct vki_user_regs_struct));
+      break;
 
-      case VKI_PTRACE_GETNUMLWPS:
-         break;
+   case VKI_PTRACE_SETREGS:
+      break;
 
-      case VKI_PTRACE_GETLWPLIST:
-         if ((Word)RES != -1)
-            POST_MEM_WRITE(ARG3, sizeof(vki_lwpid_t) * RES);
-         break;
+   case VKI_PTRACE_GETFPREGS:
+      if ((Word)RES != -1)
+         POST_MEM_WRITE(ARG3, sizeof(struct vki_fpreg));
+      break;
 
-      case VKI_PTRACE_SETSTEP:
-         break;
+   case VKI_PTRACE_SETFPREGS:
+      break;
 
-      case VKI_PTRACE_CLEARSTEP:
-         break;
+   case VKI_PTRACE_GETDBREGS:
+      if ((Word)RES != -1)
+         POST_MEM_WRITE(ARG3, sizeof(struct vki_dbreg));
+      break;
 
-      case VKI_PTRACE_SUSPEND:
-         break;
+   case VKI_PTRACE_SETDBREGS:
+      break;
 
-      case VKI_PTRACE_RESUME:
-         break;
+   case VKI_PTRACE_LWPINFO:
+      if ((Word)RES != -1)
+         POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_lwpinfo));
+      break;
 
-      case VKI_PTRACE_TO_SCE:
-         break;
+   case VKI_PTRACE_GETNUMLWPS:
+      break;
 
-      case VKI_PTRACE_TO_SCX:
-         break;
+   case VKI_PTRACE_GETLWPLIST:
+      if ((Word)RES != -1)
+         POST_MEM_WRITE(ARG3, sizeof(vki_lwpid_t) * RES);
+      break;
 
-      case VKI_PTRACE_SYSCALL:
-         break;
+   case VKI_PTRACE_SETSTEP:
+      break;
 
-      case VKI_PTRACE_VM_TIMESTAMP:
-         break;
+   case VKI_PTRACE_CLEARSTEP:
+      break;
 
-      case VKI_PTRACE_VM_ENTRY:
-         if ((Word)RES != -1)
-            POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_vm_entry));
-         break;
+   case VKI_PTRACE_SUSPEND:
+      break;
+
+   case VKI_PTRACE_RESUME:
+      break;
+
+   case VKI_PTRACE_TO_SCE:
+      break;
+
+   case VKI_PTRACE_TO_SCX:
+      break;
+
+   case VKI_PTRACE_SYSCALL:
+      break;
+
+   case VKI_PTRACE_VM_TIMESTAMP:
+      break;
+
+   case VKI_PTRACE_VM_ENTRY:
+      if ((Word)RES != -1)
+         POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_vm_entry));
+      break;
    }
 }
 
-// SYS_recvmsg	27
+// SYS_recvmsg 27
 // ssize_t recvmsg(int s, struct msghdr *msg, int flags);
 PRE(sys_recvmsg)
 {
@@ -801,7 +800,7 @@ POST(sys_recvmsg)
    ML_(generic_POST_sys_recvmsg)(tid, "recvmsg", (struct vki_msghdr *)ARG2, RES);
 }
 
-// SYS_sendmsg	28
+// SYS_sendmsg 28
 // ssize_t sendmsg(int s, const struct msghdr *msg, int flags);
 PRE(sys_sendmsg)
 {
@@ -812,7 +811,7 @@ PRE(sys_sendmsg)
    ML_(generic_PRE_sys_sendmsg)(tid, "sendmsg", (struct vki_msghdr *)ARG2);
 }
 
-// SYS_recvfrom	29
+// SYS_recvfrom   29
 // ssize_t recvfrom(int s, void *buf, size_t len, int flags,
 //                  struct sockaddr * restrict from, socklen_t * restrict fromlen);
 PRE(sys_recvfrom)
@@ -829,10 +828,10 @@ POST(sys_recvfrom)
 {
    vg_assert(SUCCESS);
    ML_(generic_POST_sys_recvfrom)(tid, VG_(mk_SysRes_Success)(RES),
-                                       ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
+                                  ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
 }
 
-// SYS_accept	30
+// SYS_accept  30
 // int accept(int s, struct sockaddr * restrict addr,
 //            socklen_t * restrict addrlen);
 PRE(sys_accept)
@@ -849,11 +848,11 @@ POST(sys_accept)
    SysRes r;
    vg_assert(SUCCESS);
    r = ML_(generic_POST_sys_accept)(tid, VG_(mk_SysRes_Success)(RES),
-                                         ARG1,ARG2,ARG3);
+                                    ARG1,ARG2,ARG3);
    SET_STATUS_from_SysRes(r);
 }
 
-// SYS_getpeername	31
+// SYS_getpeername   31
 // int getpeername(int s, struct sockaddr * restrict name,
 //                 socklen_t * restrict namelen);
 PRE(sys_getpeername)
@@ -868,10 +867,10 @@ POST(sys_getpeername)
 {
    vg_assert(SUCCESS);
    ML_(generic_POST_sys_getpeername)(tid, VG_(mk_SysRes_Success)(RES),
-                                          ARG1,ARG2,ARG3);
+                                     ARG1,ARG2,ARG3);
 }
 
-// SYS_getsockname	32
+// SYS_getsockname   32
 // int getsockname(int s, struct sockaddr * restrict name,
 //                 socklen_t * restrict namelen);
 PRE(sys_getsockname)
@@ -886,13 +885,13 @@ POST(sys_getsockname)
 {
    vg_assert(SUCCESS);
    ML_(generic_POST_sys_getsockname)(tid, VG_(mk_SysRes_Success)(RES),
-                                          ARG1,ARG2,ARG3);
+                                     ARG1,ARG2,ARG3);
 }
 
-// SYS_access	33
+// SYS_access  33
 // generic
 
-// SYS_chflags	34
+// SYS_chflags 34
 // int fchflags(int fd, unsigned long flags)
 PRE(sys_chflags)
 {
@@ -902,7 +901,7 @@ PRE(sys_chflags)
    PRE_MEM_RASCIIZ( "chflags(path)", ARG1 );
 }
 
-// SYS_fchflags	35
+// SYS_fchflags   35
 // int  fchflags(int fd, unsigned long flags);
 PRE(sys_fchflags)
 {
@@ -910,20 +909,20 @@ PRE(sys_fchflags)
    PRE_REG_READ2(int, "fchflags", int, fd, unsigned long, flags);
 }
 
-// SYS_sync	36
+// SYS_sync 36
 // generic
 
-// SYS_kill	37
+// SYS_kill 37
 // generic
 
-// SYS_getppid	39
+// SYS_getppid 39
 // generic
 
-// SYS_dup	41
+// SYS_dup  41
 // generic
 
 // Pipe on freebsd doesn't have args, and uses dual returns!
-// SYS_freebsd10_pipe	42
+// SYS_freebsd10_pipe   42
 // int pipe(void);
 PRE(sys_pipe)
 {
@@ -933,7 +932,7 @@ PRE(sys_pipe)
 POST(sys_pipe)
 {
    if (!ML_(fd_allowed)(RES, "pipe", tid, True) ||
-       !ML_(fd_allowed)(RESHI, "pipe", tid, True)) {
+         !ML_(fd_allowed)(RESHI, "pipe", tid, True)) {
       VG_(close)(RES);
       VG_(close)(RESHI);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -945,19 +944,19 @@ POST(sys_pipe)
    }
 }
 
-// SYS_getegid	43
+// SYS_getegid 43
 // generic
 
-// SYS_profil	44
+// SYS_profil  44
 // generic
 
-// SYS_ktrace	45
+// SYS_ktrace  45
 // generic
 
-// SYS_getgid	47
+// SYS_getgid  47
 // generic
 
-// SYS_getlogin	49
+// SYS_getlogin   49
 // syscall.master refers to namelen and namebuf for the argument names
 // man getlogin has just getlogin(void) but also
 // int getlogin_r(char *name, int len);
@@ -974,7 +973,7 @@ POST(sys_getlogin)
    POST_MEM_WRITE(ARG1, ARG2 );
 }
 
-// SYS_setlogin	50
+// SYS_setlogin   50
 // int setlogin(const char *name);
 PRE(sys_setlogin)
 {
@@ -983,13 +982,13 @@ PRE(sys_setlogin)
    PRE_MEM_RASCIIZ( "setlogin(buf)", ARG1 );
 }
 
-// SYS_acct	51
+// SYS_acct 51
 // generic
 
-// SYS_sigaltstack	53
+// SYS_sigaltstack   53
 // generic
 
-// SYS_ioctl	54
+// SYS_ioctl   54
 // int ioctl(int fd, unsigned long request, ...);
 PRE(sys_ioctl)
 {
@@ -1001,7 +1000,7 @@ PRE(sys_ioctl)
    PRE_REG_READ3(int, "ioctl",
                  int, fd, unsigned long, request, unsigned long, arg);
 
-/* On FreeBSD, ALL ioctl's are IOR/IOW encoded.  Just use the default decoder */
+   /* On FreeBSD, ALL ioctl's are IOR/IOW encoded.  Just use the default decoder */
    if (SimHintiS(SimHint_lax_ioctls, VG_(clo_sim_hints))) {
       /*
       * Be very lax about ioctl handling; the only
@@ -1034,10 +1033,10 @@ PRE(sys_ioctl)
          }
       }
    } else {
-     if ((dir & _VKI_IOC_WRITE) && size > 0)
-        PRE_MEM_READ( "ioctl(generic)", ARG3, size);
-     if ((dir & _VKI_IOC_READ) && size > 0)
-        PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
+      if ((dir & _VKI_IOC_WRITE) && size > 0)
+         PRE_MEM_READ( "ioctl(generic)", ARG3, size);
+      if ((dir & _VKI_IOC_READ) && size > 0)
+         PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
    }
 
    // The block below is from Ryan Stone
@@ -1066,7 +1065,7 @@ PRE(sys_ioctl)
          PRE_MEM_READ("ioctl(PCIOCGETCONF).patterns",
                       (Addr)(pci->patterns), pci->pat_buf_len);
          PRE_MEM_WRITE("ioctl(PCIOCGETCONF).matches",
-                      (Addr)(pci->matches), pci->match_buf_len);
+                       (Addr)(pci->matches), pci->match_buf_len);
       }
       break;
 
@@ -1074,8 +1073,8 @@ PRE(sys_ioctl)
       if (ARG3) {
          union vki_ccb* ccb = (union vki_ccb*)ARG3;
          if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
-             PRE_MEM_WRITE("ioctl(CAMIOCOMMAND:XPT_DEV_MATCH).matches",
-                           (Addr)(ccb->cdm.matches), ccb->cdm.match_buf_len);
+            PRE_MEM_WRITE("ioctl(CAMIOCOMMAND:XPT_DEV_MATCH).matches",
+                          (Addr)(ccb->cdm.matches), ccb->cdm.match_buf_len);
          } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
             struct vki_ccb_scsiio* scsiio = (struct vki_ccb_scsiio*)ccb;
             if (scsiio->dxfer_len) {
@@ -1093,8 +1092,8 @@ PRE(sys_ioctl)
             // do nothing
          } else {
             VG_(message)(Vg_UserMsg,
-                "Warning: unhandled ioctl CAMIOCOMMAND function 0x%lx\n",
-                ccb->ccb_h.func_code);
+                         "Warning: unhandled ioctl CAMIOCOMMAND function 0x%lx\n",
+                         ccb->ccb_h.func_code);
          }
       }
       break;
@@ -1104,12 +1103,12 @@ PRE(sys_ioctl)
 
 POST(sys_ioctl)
 {
-  UInt dir  = _VKI_IOC_DIR(ARG2);
-  UInt size = _VKI_IOC_SIZE(ARG2);
-  vg_assert(SUCCESS);
-  if (size > 0 && (dir & _VKI_IOC_READ)
-     && RES == 0 && ARG3 != (Addr)NULL)
-     POST_MEM_WRITE(ARG3, size);
+   UInt dir  = _VKI_IOC_DIR(ARG2);
+   UInt size = _VKI_IOC_SIZE(ARG2);
+   vg_assert(SUCCESS);
+   if (size > 0 && (dir & _VKI_IOC_READ)
+         && RES == 0 && ARG3 != (Addr)NULL)
+      POST_MEM_WRITE(ARG3, size);
 
 #if 0
    /* Handle specific ioctls which pass structures which may have pointers to other
@@ -1135,7 +1134,7 @@ POST(sys_ioctl)
       if (ARG3) {
          union vki_ccb* ccb = (union vki_ccb*)ARG3;
          if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
-             POST_MEM_WRITE((Addr)(ccb->cdm.matches), ccb->cdm.num_matches*sizeof(struct vki_dev_match_result));
+            POST_MEM_WRITE((Addr)(ccb->cdm.matches), ccb->cdm.num_matches*sizeof(struct vki_dev_match_result));
          } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
             struct vki_ccb_scsiio* scsiio = (struct vki_ccb_scsiio*)ccb;
             if (scsiio->dxfer_len) {
@@ -1150,7 +1149,7 @@ POST(sys_ioctl)
 #endif
 }
 
-// SYS_reboot	55
+// SYS_reboot  55
 // int reboot(int howto);
 PRE(sys_reboot)
 {
@@ -1158,7 +1157,7 @@ PRE(sys_reboot)
    PRE_REG_READ1(int, "reboot", int, howto);
 }
 
-// SYS_revoke	56
+// SYS_revoke  56
 // int revoke(const char *path);
 PRE(sys_revoke)
 {
@@ -1167,22 +1166,22 @@ PRE(sys_revoke)
    PRE_MEM_RASCIIZ( "revoke(path)", ARG1);
 }
 
-// SYS_symlink	57
+// SYS_symlink 57
 // generic
 
-// SYS_readlink	58
+// SYS_readlink   58
 // generic
 
-// SYS_execve	59
+// SYS_execve  59
 // generic
 
-// SYS_umask	60
+// SYS_umask   60
 // generic
 
-// SYS_chroot	61
+// SYS_chroot  61
 // generic
 
-// SYS_msync	65
+// SYS_msync   65
 // generic
 
 // SYS_vfork 66
@@ -1201,7 +1200,7 @@ PRE(sys_vfork)
    }
 }
 
-// SYS_sbrk	69
+// SYS_sbrk 69
 // void * sbrk(intptr_t incr);
 PRE(sys_sbrk)
 {
@@ -1209,37 +1208,37 @@ PRE(sys_sbrk)
    PRE_REG_READ1(void*, "sbrk", vki_intptr_t, incr);
 }
 
-// SYS_freebsd11_vadvise	72
+// SYS_freebsd11_vadvise   72
 // @todo maybe
 
-// SYS_munmap	73
+// SYS_munmap  73
 // generic
 
-// SYS_mprotect	74
+// SYS_mprotect   74
 // generic
 
-// SYS_madvise	75
+// SYS_madvise 75
 // generic
 
-// SYS_mincore	78
+// SYS_mincore 78
 // generic
 
-// SYS_getgroups	79
+// SYS_getgroups  79
 // generic
 
-// SYS_setgroups	80
+// SYS_setgroups  80
 // generic
 
-// SYS_getpgrp	81
+// SYS_getpgrp 81
 // generic
 
-// SYS_setpgid	82
+// SYS_setpgid 82
 // generic
 
-// SYS_setitimer	83
+// SYS_setitimer  83
 // generic
 
-// SYS_swapon	85
+// SYS_swapon  85
 // int swapon(const char *special);
 PRE(sys_swapon)
 {
@@ -1248,10 +1247,10 @@ PRE(sys_swapon)
    PRE_MEM_RASCIIZ( "swapon(special)", ARG1 );
 }
 
-// SYS_getitimer	86
+// SYS_getitimer  86
 // generic
 
-// SYS_getdtablesize	89
+// SYS_getdtablesize 89
 // int getdtablesize(void);
 PRE(sys_getdtablesize)
 {
@@ -1259,10 +1258,10 @@ PRE(sys_getdtablesize)
    PRE_REG_READ0(long, "getdtablesize");
 }
 
-// SYS_dup2	90
+// SYS_dup2 90
 // generic
 
-// SYS_fcntl	92
+// SYS_fcntl   92
 // int fcntl(int fd, int cmd, ...);
 PRE(sys_fcntl)
 {
@@ -1294,7 +1293,7 @@ PRE(sys_fcntl)
    // These ones use ARG3 as "lock" - obsolete.
    case VKI_F_OSETLKW:
       *flags |= SfMayBlock;
-      /* FALLTHROUGH */
+   /* FALLTHROUGH */
    case VKI_F_OGETLK:
    case VKI_F_OSETLK:
       PRINT("sys_fcntl[ARG3=='lock'] ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2,ARG3);
@@ -1307,7 +1306,7 @@ PRE(sys_fcntl)
    case VKI_F_DUP2FD:
    case VKI_F_DUP2FD_CLOEXEC:
       PRINT("sys_fcntl[ARG3=='oldd', ARG4=='newd'] ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u )",
-         ARG1,ARG2,ARG3,ARG4);
+            ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(int, "fcntl",
                     int, fd, int, cmd,
                     unsigned long, oldd, unsigned long, newd);
@@ -1316,7 +1315,7 @@ PRE(sys_fcntl)
    // These ones use ARG3 as "lock".
    case VKI_F_SETLKW:
       *flags |= SfMayBlock;
-      /* FALLTHROUGH */
+   /* FALLTHROUGH */
    case VKI_F_GETLK:
    case VKI_F_SETLK:
    case VKI_F_SETLK_REMOTE:
@@ -1354,16 +1353,16 @@ POST(sys_fcntl)
    }
 }
 
-// SYS_select	93
+// SYS_select  93
 // generic
 
-// SYS_fsync	95
+// SYS_fsync   95
 // generic
 
-// SYS_setpriority	9
+// SYS_setpriority   9
 // generic
 
-// SYS_socket	97
+// SYS_socket  97
 // int socket(int domain, int type, int protocol);
 PRE(sys_socket)
 {
@@ -1379,7 +1378,7 @@ POST(sys_socket)
    SET_STATUS_from_SysRes(r);
 }
 
-// SYS_connect	98
+// SYS_connect 98
 // int connect(int s, const struct sockaddr *name, socklen_t namelen);
 PRE(sys_connect)
 {
@@ -1390,10 +1389,10 @@ PRE(sys_connect)
    ML_(generic_PRE_sys_connect)(tid, ARG1,ARG2,ARG3);
 }
 
-// SYS_getpriority	100
+// SYS_getpriority   100
 // generic
 
-// SYS_bind	104
+// SYS_bind 104
 // int bind(int s, const struct sockaddr *addr, socklen_t addrlen);
 PRE(sys_bind)
 {
@@ -1403,7 +1402,7 @@ PRE(sys_bind)
    ML_(generic_PRE_sys_bind)(tid, ARG1,ARG2,ARG3);
 }
 
-// SYS_setsockopt	105
+// SYS_setsockopt 105
 // int setsockopt(int s, int level, int optname, const void *optval,
 //                socklen_t optlen);
 PRE(sys_setsockopt)
@@ -1415,7 +1414,7 @@ PRE(sys_setsockopt)
    ML_(generic_PRE_sys_setsockopt)(tid, ARG1,ARG2,ARG3,ARG4,ARG5);
 }
 
-// SYS_listen	106
+// SYS_listen  106
 // int listen(int s, int backlog);
 PRE(sys_listen)
 {
@@ -1423,13 +1422,13 @@ PRE(sys_listen)
    PRE_REG_READ2(int, "listen", int, s, int, backlog);
 }
 
-//SYS_gettimeofday	116
+//SYS_gettimeofday   116
 // generic
 
-// SYS_getrusage	117
+// SYS_getrusage  117
 // generic
 
-// SYS_getsockopt	118
+// SYS_getsockopt 118
 // int getsockopt(int s, int level, int optname, void * restrict optval,
 //                socklen_t * restrict optlen);
 PRE(sys_getsockopt)
@@ -1459,34 +1458,34 @@ POST(sys_getsockopt)
    }
 }
 
-// SYS_readv	120
+// SYS_readv   120
 // generic
 
-// SYS_writev	121
+// SYS_writev  121
 // generic
 
-// SYS_settimeofday	122
+// SYS_settimeofday  122
 // generic
 
-// SYS_fchown	123
+// SYS_fchown  123
 // generic
 
-// SYS_fchmod	124
+// SYS_fchmod  124
 // generic
 
-// SYS_setreuid	126
+// SYS_setreuid   126
 // generic
 
-// SYS_setregid	127
+// SYS_setregid   127
 // generic
 
-// SYS_rename	128
+// SYS_rename  128
 // generic
 
-// SYS_flock	131
+// SYS_flock   131
 // generic
 
-// SYS_mkfifo	132
+// SYS_mkfifo  132
 // int mkfifo(const char *path, mode_t mode);
 PRE(sys_mkfifo)
 {
@@ -1495,7 +1494,7 @@ PRE(sys_mkfifo)
    PRE_MEM_RASCIIZ( "mkfifo(path)", ARG1 );
 }
 
-// SYS_sendto	133
+// SYS_sendto  133
 // ssize_t sendto(int s, const void *msg, size_t len, int flags,
 //                const struct sockaddr *to, socklen_t tolen);
 PRE(sys_sendto)
@@ -1509,7 +1508,7 @@ PRE(sys_sendto)
    ML_(generic_PRE_sys_sendto)(tid, ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
 }
 
-// SYS_shutdown	134
+// SYS_shutdown   134
 // int shutdown(int s, int how);
 PRE(sys_shutdown)
 {
@@ -1518,7 +1517,7 @@ PRE(sys_shutdown)
    PRE_REG_READ2(int, "shutdown", int, s, int, how);
 }
 
-// SYS_socketpair	135
+// SYS_socketpair 135
 // int socketpair(int domain, int type, int protocol, int *sv);
 PRE(sys_socketpair)
 {
@@ -1532,19 +1531,19 @@ POST(sys_socketpair)
 {
    vg_assert(SUCCESS);
    ML_(generic_POST_sys_socketpair)(tid, VG_(mk_SysRes_Success)(RES),
-                                         ARG1,ARG2,ARG3,ARG4);
+                                    ARG1,ARG2,ARG3,ARG4);
 }
 
-// SYS_mkdir	136
+// SYS_mkdir   136
 // generic
 
-// SYS_rmdir	137
+// SYS_rmdir   137
 // generic
 
-// SYS_utimes	138
+// SYS_utimes  138
 // generic
 
-// SYS_adjtime	140
+// SYS_adjtime 140
 // int adjtime(const struct timeval *delta, struct timeval *olddelta);
 PRE(sys_adjtime)
 {
@@ -1564,10 +1563,10 @@ POST(sys_adjtime)
    }
 }
 
-// SYS_setsid	147
+// SYS_setsid  147
 // generic
 
-// SYS_quotactl	148
+// SYS_quotactl   148
 /* int quotactl(const char *path, int cmd, int id, void *addr); */
 PRE(sys_quotactl)
 {
@@ -1584,7 +1583,8 @@ PRE(sys_quotactl)
       PRE_MEM_RASCIIZ( "quotactl(path)", ARG1 );
       break;
    case VKI_Q_GETQUOTA:
-      if (VG_(tdict).track_pre_reg_read) { \
+      if (VG_(tdict).track_pre_reg_read) {
+         \
          PRRSN;
          PRA1("quotactl",const char*,path);
          PRA2("quotactl",int,cmd);
@@ -1601,16 +1601,16 @@ PRE(sys_quotactl)
    }
 }
 
-// SYS_nlm_syscall	154
+// SYS_nlm_syscall   154
 // syscall.master says ; 154 is initialised by the NLM code, if present.
 // @todo
 
-// SYS_nfssvc	155
+// SYS_nfssvc  155
 // int nfssvc(int flags, void *argstructp);
 // lengthy manpage, at least 3 types of struct that argstructp can point to
 // @todo
 
-// SYS_lgetfh	160
+// SYS_lgetfh  160
 // int lgetfh(const char *path, fhandle_t *fhp);
 PRE(sys_lgetfh)
 {
@@ -1625,7 +1625,7 @@ POST(sys_lgetfh)
    POST_MEM_WRITE(ARG2, sizeof(vki_fhandle_t));
 }
 
-// SYS_getfh	161
+// SYS_getfh   161
 // int getfh(const char *path, fhandle_t *fhp);
 PRE(sys_getfh)
 {
@@ -1684,21 +1684,21 @@ POST(sys_freebsd4_uname)
 }
 #endif
 
-// SYS_sysarch	165
+// SYS_sysarch 165
 // x86/amd64
 
-// SYS_rtprio	166
+// SYS_rtprio  166
 PRE(sys_rtprio)
 {
    PRINT( "sys_rtprio ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3 );
    PRE_REG_READ3(int, "rtprio",
-      int, function, pid_t, pid, struct rtprio *, rtp);
+                 int, function, pid_t, pid, struct rtprio *, rtp);
    if (ARG1 == VKI_RTP_SET) {
       PRE_MEM_READ( "rtprio(rtp#set)", ARG3, sizeof(struct vki_rtprio));
    } else if (ARG1 == VKI_RTP_LOOKUP) {
       PRE_MEM_WRITE( "rtprio(rtp#lookup)", ARG3, sizeof(struct vki_rtprio));
    } else {
-    /* PHK ?? */
+      /* PHK ?? */
    }
 }
 
@@ -1714,7 +1714,7 @@ POST(sys_rtprio)
 // freebsd6_pwrite 174 FREEBSD_VERS <= 10
 // x86/amd64
 
-// SYS_setfib	175
+// SYS_setfib  175
 // int setfib(int fib);
 PRE(sys_setfib)
 {
@@ -1722,14 +1722,14 @@ PRE(sys_setfib)
    PRE_REG_READ1(int, "setfib", int, fib);
 }
 
-// SYS_ntp_adjtime	176
+// SYS_ntp_adjtime   176
 // int ntp_adjtime(struct timex *);
 // @todo
 
-// SYS_setgid	181
+// SYS_setgid  181
 // generic
 
-// SYS_setegid	182
+// SYS_setegid 182
 // int setegid(gid_t egid);
 PRE(sys_setegid)
 {
@@ -1737,7 +1737,7 @@ PRE(sys_setegid)
    PRE_REG_READ1(int, "setegid", vki_gid_t, gid);
 }
 
-// SYS_seteuid	183
+// SYS_seteuid 183
 // int seteuid(uid_t euid);
 PRE(sys_seteuid)
 {
@@ -1748,7 +1748,7 @@ PRE(sys_seteuid)
 
 #if (FREEBSD_VERS >= FREEBSD_12)
 
-// SYS_freebsd11_stat	188
+// SYS_freebsd11_stat   188
 // int stat(char *path, struct freebsd11_stat *sb);
 PRE(sys_freebsd11_stat)
 {
@@ -1763,7 +1763,7 @@ POST(sys_freebsd11_stat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
-// SYS_freebsd11_fstat	189
+// SYS_freebsd11_fstat  189
 // int fstat(int fd, struct stat *sb);
 PRE(sys_freebsd11_fstat)
 {
@@ -1777,7 +1777,7 @@ POST(sys_freebsd11_fstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_stat) );
 }
 
-// SYS_freebsd11_lstat	190
+// SYS_freebsd11_lstat  190
 // int lstat(const char * restrict path, struct stat * restrict sb);
 PRE(sys_freebsd11_lstat)
 {
@@ -1841,7 +1841,7 @@ POST(sys_lstat)
 
 #endif
 
-// SYS_pathconf	191
+// SYS_pathconf   191
 // long pathconf(const char *path, int name);
 PRE(sys_pathconf)
 {
@@ -1850,7 +1850,7 @@ PRE(sys_pathconf)
    PRE_MEM_RASCIIZ( "pathconf(path)", ARG1 );
 }
 
-// SYS_fpathconf	192
+// SYS_fpathconf  192
 // long fpathconf(int fd, int name);
 PRE(sys_fpathconf)
 {
@@ -1858,14 +1858,14 @@ PRE(sys_fpathconf)
    PRE_REG_READ2(long, "fpathconf", int, fd, int, name);
 }
 
-// SYS_getrlimit	194
+// SYS_getrlimit  194
 // generic
 
-// SYS_setrlimit	195
+// SYS_setrlimit  195
 // generic
 
 
-// SYS_freebsd11_getdirentries	196
+// SYS_freebsd11_getdirentries   196
 // int getdirentries(int fd, char *buf, int nbytes, long *basep);
 #if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_getdirentries)
@@ -1919,7 +1919,7 @@ POST(sys_getdirentries)
 // amd64 / x86
 
 
-// SYS___syscall	198
+// SYS___syscall  198
 // special handling
 
 // freebsd6_lseek 199 FREEBSD_VERS <= 10
@@ -1931,7 +1931,7 @@ POST(sys_getdirentries)
 // freebsd6_ftruncate 201 FREEBSD_VERS <= 10
 // x86/amd64
 
-// SYS___sysctl	202
+// SYS___sysctl   202
 /* int __sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp, size_t newlen); */
 /*               ARG1        ARG2          ARG3         ARG4           ARG5        ARG6 */
 PRE(sys___sysctl)
@@ -1979,7 +1979,7 @@ PRE(sys___sysctl)
          }
       }
       if (SARG2 >= 2 && ML_(safe_to_deref)(name, 2*sizeof(int))) {
-          PRINT(" mib[1]: %d\n", name[1]);
+         PRINT(" mib[1]: %d\n", name[1]);
       }
    }
 
@@ -2014,7 +2014,7 @@ PRE(sys___sysctl)
          }
       } else {
          // case 1 above
-          PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+         PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       }
    }
 }
@@ -2025,19 +2025,18 @@ POST(sys___sysctl)
       if (ARG3 != (UWord)NULL) {
          //POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
          POST_MEM_WRITE((Addr)ARG3, *(vki_size_t *)ARG4);
-      }
-      else
+      } else
          POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
    }
 }
 
-// SYS_mlock	203
+// SYS_mlock   203
 // generic
 
-// SYS_munlock	204
+// SYS_munlock 204
 // generic
 
-// SYS_undelete	205
+// SYS_undelete   205
 // int undelete(const char *path);
 PRE(sys_undelete)
 {
@@ -2047,7 +2046,7 @@ PRE(sys_undelete)
    PRE_MEM_RASCIIZ( "undelete(path)", ARG1 );
 }
 
-// SYS_futimes	206
+// SYS_futimes 206
 // int futimes(int fd, const struct timeval *times);
 PRE(sys_futimes)
 {
@@ -2057,35 +2056,35 @@ PRE(sys_futimes)
       PRE_MEM_READ( "futimes(times)", ARG2, sizeof(struct vki_timeval) );
 }
 
-// SYS_getpgid	207
+// SYS_getpgid 207
 // generic
 
-// SYS_poll	209
+// SYS_poll 209
 // generic
 
 // @todo PJF should be in vki-freebsd.h
 struct ipc_perm7 {
-    unsigned short    cuid;
-    unsigned short    cgid;
-    unsigned short    uid;
-    unsigned short    gid;
-    unsigned short    mode;
-    unsigned short    seq;
-    vki_key_t    key;
+   unsigned short    cuid;
+   unsigned short    cgid;
+   unsigned short    uid;
+   unsigned short    gid;
+   unsigned short    mode;
+   unsigned short    seq;
+   vki_key_t    key;
 };
 
 struct semid_ds7 {
-    struct ipc_perm7 sem_perm;
-    struct sem    *sem_base;
-    unsigned short    sem_nsems;
-    vki_time_t    sem_otime;
-    long        sem_pad1;
-    vki_time_t    sem_ctime;
-    long        sem_pad2;
-    long        sem_pad3[4];
+   struct ipc_perm7 sem_perm;
+   struct sem    *sem_base;
+   unsigned short    sem_nsems;
+   vki_time_t    sem_otime;
+   long        sem_pad1;
+   vki_time_t    sem_ctime;
+   long        sem_pad2;
+   long        sem_pad3[4];
 };
 
-// SYS_freebsd7___semctl	220
+// SYS_freebsd7___semctl   220
 // int semctl(int semid, int semnum, int cmd, ...);
 PRE(sys_freebsd7___semctl)
 {
@@ -2123,7 +2122,7 @@ POST(sys_freebsd7___semctl)
    ML_(generic_POST_sys_semctl)(tid, RES,ARG1,ARG2,ARG3,ARG4);
 }
 
-// SYS_semget	221
+// SYS_semget  221
 // int semget(key_t key, int nsems, int flag);
 PRE(sys_semget)
 {
@@ -2131,7 +2130,7 @@ PRE(sys_semget)
    PRE_REG_READ3(int, "semget", vki_key_t, key, int, nsems, int, flag);
 }
 
-// SYS_semop	222
+// SYS_semop   222
 // int semop(int semid, struct sembuf *array, size_t nops);
 PRE(sys_semop)
 {
@@ -2142,7 +2141,7 @@ PRE(sys_semop)
    ML_(generic_PRE_sys_semop)(tid, ARG1,ARG2,ARG3);
 }
 
-// SYS_freebsd7_msgctl	224
+// SYS_freebsd7_msgctl  224
 // int msgctl(int msqid, int cmd, struct msqid_ds_old *buf);
 PRE(sys_freebsd7_msgctl)
 {
@@ -2171,7 +2170,7 @@ POST(sys_freebsd7_msgctl)
    }
 }
 
-// SYS_msgget	225
+// SYS_msgget  225
 // int msgget(key_t key, int msgflg);
 PRE(sys_msgget)
 {
@@ -2179,7 +2178,7 @@ PRE(sys_msgget)
    PRE_REG_READ2(int, "msgget", key_t, key, int, msgflg);
 }
 
-// SYS_msgsnd	226
+// SYS_msgsnd  226
 // int msgsnd(int msqid, struct msgbuf *msgp, size_t msgsz, int msgflg);
 PRE(sys_msgsnd)
 {
@@ -2189,7 +2188,7 @@ PRE(sys_msgsnd)
    PRE_MEM_READ( "msgsnd(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
    PRE_MEM_READ( "msgsnd(msgp->mtext)", (Addr)&msgp->mtext, ARG3 );
 }
-// SYS_msgrcv	227
+// SYS_msgrcv  227
 // ssize_t msgrcv(int msqid, struct msgbuf *msgp, size_t msgsz, long msgtyp, int msgflg);
 PRE(sys_msgrcv)
 {
@@ -2197,7 +2196,7 @@ PRE(sys_msgrcv)
 
    PRINT("sys_msgrcv ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "d, %" FMT_REGWORD "d )", SARG1,ARG2,ARG3,SARG4,SARG5 );
    PRE_REG_READ5(ssize_t, "msgrcv", int, msqid, struct msgbuf *, msgp, size_t, msgsz,
-      long, msgtyp, int, msgflg);
+                 long, msgtyp, int, msgflg);
    struct vki_msgbuf *msgp = (struct vki_msgbuf *)ARG2;
    PRE_MEM_WRITE( "msgrcv(msgp->mtype)", (Addr)&msgp->mtype, sizeof(msgp->mtype) );
    PRE_MEM_WRITE( "msgrcv(msgp->mtext)", (Addr)&msgp->mtext, ARG3 );
@@ -2210,7 +2209,7 @@ POST(sys_msgrcv)
    POST_MEM_WRITE( (Addr)&msgp->mtext, RES );
 }
 
-// SYS_shmat	228
+// SYS_shmat   228
 // void * shmat(int shmid, const void *addr, int flag);
 PRE(sys_shmat)
 {
@@ -2230,7 +2229,7 @@ POST(sys_shmat)
    ML_(generic_POST_sys_shmat)(tid, RES,ARG1,ARG2,ARG3);
 }
 
-// SYS_freebsd7_shmctl	229
+// SYS_freebsd7_shmctl  229
 // int shmctl(int shmid, int cmd, struct shmid_ds *buf);
 PRE(sys_freebsd7_shmctl)
 {
@@ -2256,7 +2255,7 @@ POST(sys_freebsd7_shmctl)
    }
 }
 
-// SYS_shmdt	230
+// SYS_shmdt   230
 // int shmdt(const void *addr);
 PRE(sys_shmdt)
 {
@@ -2271,7 +2270,7 @@ POST(sys_shmdt)
    ML_(generic_POST_sys_shmdt)(tid, RES,ARG1);
 }
 
-// SYS_shmget	231
+// SYS_shmget  231
 // int shmget(key_t key, size_t size, int flag);
 PRE(sys_shmget)
 {
@@ -2280,11 +2279,11 @@ PRE(sys_shmget)
 }
 
 
-// SYS_clock_gettime	232
+// SYS_clock_gettime 232
 // int clock_gettime(clockid_t clock_id, struct timespec *tp);
 PRE(sys_clock_gettime)
 {
-   PRINT("sys_clock_gettime( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )" , ARG1,ARG2);
+   PRINT("sys_clock_gettime( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2);
    PRE_REG_READ2(int, "clock_gettime",
                  vki_clockid_t, clk_id, struct timespec *, tp);
    PRE_MEM_WRITE( "clock_gettime(tp)", ARG2, sizeof(struct vki_timespec) );
@@ -2295,7 +2294,7 @@ POST(sys_clock_gettime)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_timespec) );
 }
 
-// SYS_clock_settime	233
+// SYS_clock_settime 233
 // int clock_settime(clockid_t clock_id, const struct timespec *tp);
 PRE(sys_clock_settime)
 {
@@ -2305,11 +2304,11 @@ PRE(sys_clock_settime)
    PRE_MEM_READ( "clock_settime(tp)", ARG2, sizeof(struct vki_timespec) );
 }
 
-// SYS_clock_getres	234
+// SYS_clock_getres  234
 // int clock_getres(clockid_t clock_id, struct timespec *tp);
 PRE(sys_clock_getres)
 {
-   PRINT("sys_clock_getres( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )" , ARG1,ARG2);
+   PRINT("sys_clock_getres( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2);
    // Nb: we can't use "RES" as the param name because that's a macro
    // defined above!
    PRE_REG_READ2(int, "clock_getres",
@@ -2324,7 +2323,7 @@ POST(sys_clock_getres)
       POST_MEM_WRITE( ARG2, sizeof(struct vki_timespec) );
 }
 
-// SYS_ktimer_create	235
+// SYS_ktimer_create 235
 // int      timer_create(clockid_t clockid, struct sigevent *restrict evp,
 //                       timer_t *restrict timerid);
 PRE(sys_timer_create)
@@ -2343,7 +2342,7 @@ POST(sys_timer_create)
    POST_MEM_WRITE( ARG3, sizeof(vki_timer_t) );
 }
 
-// SYS_ktimer_delete	236
+// SYS_ktimer_delete 236
 // int timer_delete(timer_t timerid);
 PRE(sys_timer_delete)
 {
@@ -2351,7 +2350,7 @@ PRE(sys_timer_delete)
    PRE_REG_READ1(long, "timer_delete", vki_timer_t, timerid);
 }
 
-// SYS_ktimer_settime	237
+// SYS_ktimer_settime   237
 // int timer_settime(timer_t timerid, int flags,
 //                   const struct itimerspec *restrict value,
 //                   struct itimerspec *restrict ovalue);
@@ -2363,10 +2362,10 @@ PRE(sys_timer_settime)
                  const struct itimerspec *, value,
                  struct itimerspec *, ovalue);
    PRE_MEM_READ( "timer_settime(value)", ARG3,
-                  sizeof(struct vki_itimerspec) );
+                 sizeof(struct vki_itimerspec) );
    if (ARG4 != 0)
-       PRE_MEM_WRITE( "timer_settime(ovalue)", ARG4,
-                      sizeof(struct vki_itimerspec) );
+      PRE_MEM_WRITE( "timer_settime(ovalue)", ARG4,
+                     sizeof(struct vki_itimerspec) );
 }
 
 POST(sys_timer_settime)
@@ -2375,7 +2374,7 @@ POST(sys_timer_settime)
       POST_MEM_WRITE( ARG4, sizeof(struct vki_itimerspec) );
 }
 
-// SYS_ktimer_gettime	238
+// SYS_ktimer_gettime   238
 // int timer_gettime(timer_t timerid, struct itimerspec *value);
 PRE(sys_timer_gettime)
 {
@@ -2391,7 +2390,7 @@ POST(sys_timer_gettime)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_itimerspec) );
 }
 
-// SYS_ktimer_getoverrun	239
+// SYS_ktimer_getoverrun   239
 // int timer_getoverrun(timer_t timerid);
 PRE(sys_timer_getoverrun)
 {
@@ -2399,18 +2398,18 @@ PRE(sys_timer_getoverrun)
    PRE_REG_READ1(int, "timer_getoverrun", vki_timer_t, timerid);
 }
 
-// SYS_nanosleep	240
+// SYS_nanosleep  240
 // generic
 
-// SYS_ffclock_getcounter	241
+// SYS_ffclock_getcounter  241
 // int ffclock_getcounter(ffcounter *ffcount);
 // @todo
 
-// SYS_ffclock_setestimate	242
+// SYS_ffclock_setestimate 242
 // int ffclock_setestimate(struct ffclock_estimate *cest);
 // @todo
 
-// SYS_ffclock_getestimate	243
+// SYS_ffclock_getestimate 243
 // int ffclock_getestimate(struct ffclock_estimate *cest);
 // @todo
 
@@ -2436,19 +2435,19 @@ POST(sys_clock_nanosleep)
       PRE_MEM_WRITE( "clock_nanosleep(rmtp)", ARG2, sizeof(struct vki_timespec) );
 }
 
-// SYS_clock_getcpuclockid2	247
+// SYS_clock_getcpuclockid2   247
 // no manpage for this
 // @todo
 
-// SYS_ntp_gettime	248
+// SYS_ntp_gettime   248
 // int ntp_gettime(struct ntptimeval *);
 // @todo
 
-// SYS_minherit	250
+// SYS_minherit   250
 // int minherit(void *addr, size_t len, int inherit);
 PRE(sys_minherit)
 {
-   PRINT("sys_minherit( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )" , ARG1,ARG2,ARG3);
+   PRINT("sys_minherit( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(int, "minherit",
                  void *, addr, vki_size_t, len, int, inherit);
    if (ARG2 != 0)
@@ -2457,14 +2456,14 @@ PRE(sys_minherit)
 
 POST(sys_minherit)
 {
-    if (ARG2 != 0)
-       POST_MEM_WRITE( ARG1, ARG2 );
+   if (ARG2 != 0)
+      POST_MEM_WRITE( ARG1, ARG2 );
 }
 
-// SYS_rfork	251
+// SYS_rfork   251
 // x86/amd64 not functional
 
-// SYS_issetugid	253
+// SYS_issetugid  253
 // int issetugid(void);
 PRE(sys_issetugid)
 {
@@ -2472,14 +2471,14 @@ PRE(sys_issetugid)
    PRE_REG_READ0(long, "issetugid");
 }
 
-// SYS_lchown	254
+// SYS_lchown  254
 // generic
 
-// SYS_aio_read	255
+// SYS_aio_read   255
 // int aio_read(struct aiocb *iocb);
 PRE(sys_aio_read)
 {
-   PRINT("sys_aio_read ( %#" FMT_REGWORD "x )" , ARG1);
+   PRINT("sys_aio_read ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(int, "aio_read", struct vki_aiocb *, iocb);
    PRE_MEM_READ("aio_read(iocb)", ARG1, sizeof(struct vki_aiocb));
    if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
@@ -2496,11 +2495,11 @@ POST(sys_aio_read)
    }
 }
 
-// SYS_aio_write	256
+// SYS_aio_write  256
 // int aio_write(struct aiocb *iocb);
 PRE(sys_aio_write)
 {
-   PRINT("sys_aio_write ( %#" FMT_REGWORD "x )" , ARG1);
+   PRINT("sys_aio_write ( %#" FMT_REGWORD "x )", ARG1);
    PRE_REG_READ1(int, "aio_write", struct vki_aiocb *, iocb);
    PRE_MEM_READ("aio_read(iocb)", ARG1, sizeof(struct vki_aiocb));
    if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
@@ -2517,7 +2516,7 @@ POST(sys_aio_write)
    }
 }
 
-// SYS_lio_listio	257
+// SYS_lio_listio 257
 // int lio_listio(int mode, struct aiocb * const list[], int nent,
 //                struct sigevent *sig);
 PRE(sys_lio_listio)
@@ -2552,10 +2551,10 @@ PRE(sys_lio_listio)
    }
 }
 
-// SYS_freebsd11_getdents	272
+// SYS_freebsd11_getdents  272
 // generic
 
-// SYS_lchmod	274
+// SYS_lchmod  274
 // int lchmod(const char *path, mode_t mode);
 PRE(sys_lchmod)
 {
@@ -2564,7 +2563,7 @@ PRE(sys_lchmod)
    PRE_MEM_RASCIIZ( "lchmod(path)", ARG1 );
 }
 
-// SYS_lutimes	276
+// SYS_lutimes 276
 // int lutimes(const char *path, const struct timeval *times);
 PRE(sys_lutimes)
 {
@@ -2575,22 +2574,22 @@ PRE(sys_lutimes)
       PRE_MEM_READ( "lutimes(times)", ARG2, sizeof(struct vki_timeval) );
 }
 
-// SYS_freebsd11_nstat	278
+// SYS_freebsd11_nstat  278
 // @todo, maybe
 
-// SYS_freebsd11_nfstat	279
+// SYS_freebsd11_nfstat 279
 // @todo, maybe
 
-// SYS_freebsd11_nlstat	280
+// SYS_freebsd11_nlstat 280
 // @todo, maybe
 
-// SYS_preadv	289
+// SYS_preadv  289
 // amd64 / x86
 
-// SYS_pwritev	290
+// SYS_pwritev 290
 // amd64 / x86
 
-// SYS_fhopen	298
+// SYS_fhopen  298
 // int fhopen(const fhandle_t *fhp, int flags);
 PRE(sys_fhopen)
 {
@@ -2615,7 +2614,7 @@ POST(sys_fhopen)
    }
 }
 
-// SYS_freebsd11_fhstat	299
+// SYS_freebsd11_fhstat 299
 // int fhstat(const fhandle_t *fhp, struct stat *sb);
 #if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_fhstat)
@@ -2646,7 +2645,7 @@ POST(sys_fhstat)
 
 #endif
 
-// SYS_modnext	300
+// SYS_modnext 300
 // int modnext(int modid);
 PRE(sys_modnext)
 {
@@ -2654,7 +2653,7 @@ PRE(sys_modnext)
    PRE_REG_READ1(int, "modnext", int, modid);
 }
 
-// SYS_modstat	301
+// SYS_modstat 301
 // int modstat(int modid, struct module_stat *stat);
 PRE(sys_modstat)
 {
@@ -2668,7 +2667,7 @@ POST(sys_modstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_module_stat) );
 }
 
-// SYS_modfnext	302
+// SYS_modfnext   302
 // int modfnext(int modid);
 PRE(sys_modfnext)
 {
@@ -2676,7 +2675,7 @@ PRE(sys_modfnext)
    PRE_REG_READ1(int, "modfnext", int, modid);
 }
 
-// SYS_modfind	303
+// SYS_modfind 303
 // int modfind(const char *modname);
 PRE(sys_modfind)
 {
@@ -2685,7 +2684,7 @@ PRE(sys_modfind)
    PRE_MEM_RASCIIZ( "modfind(modname)", ARG1 );
 }
 
-// SYS_kldload	304
+// SYS_kldload 304
 // int kldload(const char *file);
 PRE(sys_kldload)
 {
@@ -2694,7 +2693,7 @@ PRE(sys_kldload)
    PRE_MEM_RASCIIZ( "kldload(file)", ARG1 );
 }
 
-// SYS_kldunload	305
+// SYS_kldunload  305
 // int kldunload(int fileid);
 PRE(sys_kldunload)
 {
@@ -2702,7 +2701,7 @@ PRE(sys_kldunload)
    PRE_REG_READ1(int, "kldunload", int, "fileid");
 }
 
-// SYS_kldfind	306
+// SYS_kldfind 306
 // int kldfind(const char *file);
 PRE(sys_kldfind)
 {
@@ -2711,7 +2710,7 @@ PRE(sys_kldfind)
    PRE_MEM_RASCIIZ( "kldfind(file)", ARG1 );
 }
 
-// SYS_kldnext	307
+// SYS_kldnext 307
 // int kldnext(int fileid);
 PRE(sys_kldnext)
 {
@@ -2719,7 +2718,7 @@ PRE(sys_kldnext)
    PRE_REG_READ1(int, "kldnext", int, fileid);
 }
 
-// SYS_kldstat	308
+// SYS_kldstat 308
 // int kldstat(int fileid, struct kld_file_stat *stat);
 PRE(sys_kldstat)
 {
@@ -2733,7 +2732,7 @@ POST(sys_kldstat)
    POST_MEM_WRITE(ARG2, sizeof(struct vki_kld_file_stat));
 }
 
-// SYS_kldfirstmod	309
+// SYS_kldfirstmod   309
 // int kldfirstmod(int fileid);
 PRE(sys_kldfirstmod)
 {
@@ -2741,7 +2740,7 @@ PRE(sys_kldfirstmod)
    PRE_REG_READ1(int, "kldfirstmod", int, fileid);
 }
 
-// SYS_setresuid	311
+// SYS_setresuid  311
 // int setresuid(uid_t *ruid, uid_t *euid, uid_t *suid);
 PRE(sys_setresuid)
 {
@@ -2750,7 +2749,7 @@ PRE(sys_setresuid)
                  vki_uid_t, ruid, vki_uid_t, euid, vki_uid_t, suid);
 }
 
-// SYS_setresgid	312
+// SYS_setresgid  312
 // int setresgid(gid_t rgid, gid_t egid, gid_t sgid);
 PRE(sys_setresgid)
 {
@@ -2759,7 +2758,7 @@ PRE(sys_setresgid)
                  vki_gid_t, rgid, vki_gid_t, egid, vki_gid_t, sgid);
 }
 
-// SYS_aio_return	314
+// SYS_aio_return 314
 // ssize_t aio_return(struct aiocb *iocb);
 PRE(sys_aio_return)
 {
@@ -2770,7 +2769,7 @@ PRE(sys_aio_return)
    PRE_MEM_READ("aio_return(iocb)", ARG1, sizeof(struct vki_aiocb));
 }
 
-// SYS_aio_suspend	315
+// SYS_aio_suspend   315
 // int aio_suspend(const struct aiocb *const iocbs[], int niocb,
 //                 const struct timespec *timeout);
 PRE(sys_aio_suspend)
@@ -2781,7 +2780,7 @@ PRE(sys_aio_suspend)
    PRE_MEM_READ("aio_suspend(timeout)", ARG3, sizeof(struct vki_timespec));
 }
 
-// SYS_aio_cancel	316
+// SYS_aio_cancel 316
 // int aio_cancel(int fildes, struct aiocb *iocb);
 PRE(sys_aio_cancel)
 {
@@ -2792,7 +2791,7 @@ PRE(sys_aio_cancel)
    }
 }
 
-// SYS_aio_error	317
+// SYS_aio_error  317
 // int aio_error(const struct aiocb *iocb);
 PRE(sys_aio_error)
 {
@@ -2801,7 +2800,7 @@ PRE(sys_aio_error)
    PRE_MEM_READ("aio_error(iocb)", ARG1, sizeof(struct vki_aiocb));
 }
 
-// SYS_yield	321
+// SYS_yield   321
 int yield(void);
 PRE(sys_yield)
 {
@@ -2810,10 +2809,10 @@ PRE(sys_yield)
    PRE_REG_READ0(long, "yield");
 }
 
-// SYS_mlockall	324
+// SYS_mlockall   324
 // generic
 
-// SYS_munlockall	325
+// SYS_munlockall 325
 // int munlockall(void);
 PRE(sys_munlockall)
 {
@@ -2822,7 +2821,7 @@ PRE(sys_munlockall)
    PRE_REG_READ0(int, "munlockall");
 }
 
-// SYS___getcwd	326
+// SYS___getcwd   326
 // int __getcwd(char *buf, size_t buflen);
 PRE(sys___getcwd)
 {
@@ -2843,7 +2842,7 @@ POST(sys___getcwd)
    }
 }
 
-//SYS_sched_setparam	327
+//SYS_sched_setparam 327
 // int sched_setparam(pid_t pid, const struct sched_param *param);
 PRE(sys_sched_setparam)
 {
@@ -2858,7 +2857,7 @@ POST(sys_sched_setparam)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_sched_param) );
 }
 
-// SYS_sched_getparam	328
+// SYS_sched_getparam   328
 // int sched_getparam(pid_t pid, struct sched_param *param);
 PRE(sys_sched_getparam)
 {
@@ -2873,7 +2872,7 @@ POST(sys_sched_getparam)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_sched_param) );
 }
 
-// SYS_sched_setscheduler	329
+// SYS_sched_setscheduler  329
 // int sched_setscheduler(pid_t pid, int policy,
 //                        const struct sched_param *param);
 PRE(sys_sched_setscheduler)
@@ -2886,7 +2885,7 @@ PRE(sys_sched_setscheduler)
                    ARG3, sizeof(struct vki_sched_param));
 }
 
-// SYS_sched_getscheduler	330
+// SYS_sched_getscheduler  330
 // int sched_getscheduler(pid_t pid);
 PRE(sys_sched_getscheduler)
 {
@@ -2894,7 +2893,7 @@ PRE(sys_sched_getscheduler)
    PRE_REG_READ1(int, "sched_getscheduler", vki_pid_t, pid);
 }
 
-// SYS_sched_yield	331
+// SYS_sched_yield   331
 // int sched_yield(void);
 PRE(sys_sched_yield)
 {
@@ -2903,7 +2902,7 @@ PRE(sys_sched_yield)
    PRE_REG_READ0(int, "sched_yield");
 }
 
-// SYS_sched_get_priority_max	332
+// SYS_sched_get_priority_max 332
 // int sched_get_priority_max(int policy);
 PRE(sys_sched_get_priority_max)
 {
@@ -2911,7 +2910,7 @@ PRE(sys_sched_get_priority_max)
    PRE_REG_READ1(long, "sched_get_priority_max", int, policy);
 }
 
-// SYS_sched_get_priority_min	333
+// SYS_sched_get_priority_min 333
 // int sched_get_priority_min(int policy);
 PRE(sys_sched_get_priority_min)
 {
@@ -2919,7 +2918,7 @@ PRE(sys_sched_get_priority_min)
    PRE_REG_READ1(long, "sched_get_priority_min", int, policy);
 }
 
-// SYS_sched_rr_get_interval	334
+// SYS_sched_rr_get_interval  334
 // int sched_rr_get_interval(pid_t pid, struct timespec *interval);
 PRE(sys_sched_rr_get_interval)
 {
@@ -2933,7 +2932,7 @@ POST(sys_sched_rr_get_interval)
    POST_MEM_WRITE(ARG2, sizeof(struct vki_timespec));
 }
 
-// SYS_utrace	335
+// SYS_utrace  335
 // int utrace(const void *addr, size_t len);
 PRE(sys_utrace)
 {
@@ -2942,7 +2941,7 @@ PRE(sys_utrace)
    PRE_MEM_READ( "utrace(addr)", ARG2, ARG3 );
 }
 
-// SYS_kldsym	337
+// SYS_kldsym  337
 // int kldsym(int fileid, int cmd, void *data);
 PRE(sys_kldsym)
 {
@@ -2962,7 +2961,7 @@ POST(sys_kldsym)
    POST_MEM_WRITE( (Addr)&kslp->symsize, sizeof(kslp->symsize) );
 }
 
-// SYS_jail	338
+// SYS_jail 338
 // int jail(struct jail *jail);
 PRE(sys_jail)
 {
@@ -2974,7 +2973,7 @@ PRE(sys_jail)
 // SYS_nnpfs_syscall 338
 // @todo
 
-// SYS_sigprocmask	340
+// SYS_sigprocmask   340
 // int sigprocmask(int how, const sigset_t * restrict set,
 //                 sigset_t * restrict oset);
 PRE(sys_sigprocmask)
@@ -2988,7 +2987,7 @@ PRE(sys_sigprocmask)
       PRE_MEM_WRITE( "sigprocmask(oset)", ARG3, sizeof(vki_sigset_t));
 
    if (ARG2 != 0  &&
-       !ML_(safe_to_deref)((void *)(Addr)ARG2, sizeof(vki_sigset_t))) {
+         !ML_(safe_to_deref)((void *)(Addr)ARG2, sizeof(vki_sigset_t))) {
       VG_(dmsg)("Warning: Bad set handler address %p in sigprocmask\n",
                 (void *)(Addr)ARG2);
       SET_STATUS_Failure ( VKI_EFAULT );
@@ -2999,8 +2998,8 @@ PRE(sys_sigprocmask)
       SET_STATUS_Failure ( VKI_EFAULT );
    } else {
       SET_STATUS_from_SysRes(VG_(do_sys_sigprocmask)(tid, ARG1 /*how*/,
-                                                     (vki_sigset_t*)(Addr)ARG2,
-                                                     (vki_sigset_t*)(Addr)ARG3));
+                             (vki_sigset_t*)(Addr)ARG2,
+                             (vki_sigset_t*)(Addr)ARG3));
    }
 
    if (SUCCESS)
@@ -3014,7 +3013,7 @@ POST(sys_sigprocmask)
       POST_MEM_WRITE( ARG3, sizeof(vki_sigset_t));
 }
 
-// SYS_sigsuspend	341
+// SYS_sigsuspend 341
 // int sigsuspend(const sigset_t *sigmask);
 PRE(sys_sigsuspend)
 {
@@ -3032,7 +3031,7 @@ POST(sys_sigsuspend)
    ML_(free_safe_mask) ( (Addr)ARG1 );
 }
 
-// SYS_sigpending	343
+// SYS_sigpending 343
 // int sigpending(sigset_t *set);
 PRE(sys_sigpending)
 {
@@ -3047,7 +3046,7 @@ POST(sys_sigpending)
 }
 
 
-// SYS_sigtimedwait	345
+// SYS_sigtimedwait  345
 // int sigtimedwait(const sigset_t *restrict set, siginfo_t *restrict info,
 //                  const struct timespec *restrict timeout);
 PRE(sys_sigtimedwait)
@@ -3073,7 +3072,7 @@ POST(sys_sigtimedwait)
       POST_MEM_WRITE( ARG2, sizeof(vki_siginfo_t) );
 }
 
-// SYS_sigwaitinfo	346
+// SYS_sigwaitinfo   346
 // int sigwaitinfo(const sigset_t * restrict set, siginfo_t * restrict info);
 PRE(sys_sigwaitinfo)
 {
@@ -3094,7 +3093,7 @@ POST(sys_sigwaitinfo)
       POST_MEM_WRITE( ARG2, sizeof(vki_siginfo_t) );
 }
 
-// SYS___acl_get_file	347
+// SYS___acl_get_file   347
 // int __acl_get_file(const char *path, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_get_file)
 {
@@ -3113,7 +3112,7 @@ POST(sys___acl_get_file)
    }
 }
 
-// SYS___acl_set_file	348
+// SYS___acl_set_file   348
 // int __acl_set_file(const char *path, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_set_file)
 {
@@ -3124,7 +3123,7 @@ PRE(sys___acl_set_file)
    PRE_MEM_READ("acl_set_file(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
-// SYS___acl_get_fd	349
+// SYS___acl_get_fd  349
 // int __acl_get_fd(int filedes, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_get_fd)
 {
@@ -3142,7 +3141,7 @@ POST(sys___acl_get_fd)
    }
 }
 
-// SYS___acl_set_fd	350
+// SYS___acl_set_fd  350
 // int __acl_set_fd(int filedes, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_set_fd)
 {
@@ -3152,7 +3151,7 @@ PRE(sys___acl_set_fd)
    PRE_MEM_READ( "acl_get_file(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
-// SYS___acl_delete_file	351
+// SYS___acl_delete_file   351
 // int __acl_delete_file(const char *path, acl_type_t type);
 PRE(sys___acl_delete_file)
 {
@@ -3161,7 +3160,7 @@ PRE(sys___acl_delete_file)
    PRE_REG_READ2(int, "acl_delete_file",
                  const char *, path, int, type);
 }
-// SYS___acl_delete_fd	352
+// SYS___acl_delete_fd  352
 // int __acl_delete_fd(int filedes, acl_type_t type);
 PRE(sys___acl_delete_fd)
 {
@@ -3170,7 +3169,7 @@ PRE(sys___acl_delete_fd)
                  int, filedes, int, acltype);
 }
 
-// SYS___acl_aclcheck_file	353
+// SYS___acl_aclcheck_file 353
 // int __acl_aclcheck_file(const char *path, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_aclcheck_file)
 {
@@ -3181,7 +3180,7 @@ PRE(sys___acl_aclcheck_file)
    PRE_MEM_READ( "acl_aclcheck_file(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
-// SYS___acl_aclcheck_fd	354
+// SYS___acl_aclcheck_fd   354
 // int __acl_aclcheck_fd(int filedes, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_aclcheck_fd)
 {
@@ -3191,67 +3190,67 @@ PRE(sys___acl_aclcheck_fd)
    PRE_MEM_READ( "acl_aclcheck_fd(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
-// SYS_extattrctl	355
+// SYS_extattrctl 355
 // no manpage?
 // syscalls.master: int extattrctl(_In_z_ const char *path, int cmd, _In_z_opt_ const char *filename, int attrnamespace, _In_z_ const char *attrname);
 PRE(sys_extattrctl)
 {
-    PRINT("sys_extattrctl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3,SARG4,ARG5);
-    PRE_REG_READ5(ssize_t, "extattrctl",
-                  const char *, path, int, cmd, const char *, filename, int, attrnamespace, const char *, attrname);
-    PRE_MEM_RASCIIZ("extattrctl(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattrctl(filename)", ARG3);
-    PRE_MEM_RASCIIZ("extattrctl(attrname)", ARG5);
+   PRINT("sys_extattrctl ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3,SARG4,ARG5);
+   PRE_REG_READ5(ssize_t, "extattrctl",
+                 const char *, path, int, cmd, const char *, filename, int, attrnamespace, const char *, attrname);
+   PRE_MEM_RASCIIZ("extattrctl(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattrctl(filename)", ARG3);
+   PRE_MEM_RASCIIZ("extattrctl(attrname)", ARG5);
 }
 
-// SYS_extattr_set_file	356
+// SYS_extattr_set_file 356
 // ssize_t extattr_set_file(const char *path, int attrnamespace,
 //                          const char *attrname, const void *data, size_t nbytes);
 PRE(sys_extattr_set_file)
 {
-    PRINT("sys_extattr_set_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
-    PRE_REG_READ5(ssize_t, "extattr_set_file",
-                  const char *, path, int, attrnamespace, const char *, attrname, const void *, data, size_t, nbytes);
-    PRE_MEM_RASCIIZ("extattr_set_file(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattr_set_file(attrname)", ARG3);
-    PRE_MEM_READ("extattr_set_file(data)", ARG4, ARG5);
+   PRINT("sys_extattr_set_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+   PRE_REG_READ5(ssize_t, "extattr_set_file",
+                 const char *, path, int, attrnamespace, const char *, attrname, const void *, data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_set_file(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattr_set_file(attrname)", ARG3);
+   PRE_MEM_READ("extattr_set_file(data)", ARG4, ARG5);
 }
 
-// SYS_extattr_get_file	357
+// SYS_extattr_get_file 357
 // ssize_t extattr_get_file(const char *path, int attrnamespace,
 //                          const char *attrname, void *data, size_t nbytes);
 PRE(sys_extattr_get_file)
 {
-    PRINT("sys_extattr_get_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
-    PRE_REG_READ5(ssize_t, "extattr_get_file",
-                  const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
-    PRE_MEM_RASCIIZ("extattr_get_file(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattr_get_file(attrname)", ARG3);
-    if (ARG4) {
-        PRE_MEM_WRITE("extattr_get_file(data)", ARG4, ARG5);
-    }
+   PRINT("sys_extattr_get_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+   PRE_REG_READ5(ssize_t, "extattr_get_file",
+                 const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_get_file(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattr_get_file(attrname)", ARG3);
+   if (ARG4) {
+      PRE_MEM_WRITE("extattr_get_file(data)", ARG4, ARG5);
+   }
 }
 
 POST(sys_extattr_get_file)
 {
-    if (ARG4) {
-        POST_MEM_WRITE(ARG4, ARG5);
-    }
+   if (ARG4) {
+      POST_MEM_WRITE(ARG4, ARG5);
+   }
 }
 
-// SYS_extattr_delete_file	358
+// SYS_extattr_delete_file 358
 // int extattr_delete_file(const char *path, int attrnamespace,
 //                         const char *attrname);
 PRE(sys_extattr_delete_file)
 {
-    PRINT("sys_extattr_delete_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3);
-    PRE_REG_READ3(ssize_t, "extattr_delete_file",
-                  const char *, path, int, attrnamespace, const char *, attrname);
-    PRE_MEM_RASCIIZ("extattr_delete_file(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattr_delete_file(attrname)", ARG3);
+   PRINT("sys_extattr_delete_file ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3);
+   PRE_REG_READ3(ssize_t, "extattr_delete_file",
+                 const char *, path, int, attrnamespace, const char *, attrname);
+   PRE_MEM_RASCIIZ("extattr_delete_file(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattr_delete_file(attrname)", ARG3);
 }
 
-// SYS_aio_waitcomplete	359
+// SYS_aio_waitcomplete 359
 // ssize_t aio_waitcomplete(struct aiocb **iocbp, struct timespec *timeout);
 PRE(sys_aio_waitcomplete)
 {
@@ -3269,7 +3268,7 @@ POST(sys_aio_waitcomplete)
    POST_MEM_WRITE(ARG1, sizeof(struct aiocb *));
 }
 
-// SYS_getresuid	360
+// SYS_getresuid  360
 // int getresuid(uid_t *ruid, uid_t *euid, uid_t *suid);
 PRE(sys_getresuid)
 {
@@ -3291,7 +3290,7 @@ POST(sys_getresuid)
    }
 }
 
-// SYS_getresgid	361
+// SYS_getresgid  361
 // int getresgid(gid_t *rgid, gid_t *egid, gid_t *sgid);
 PRE(sys_getresgid)
 {
@@ -3313,7 +3312,7 @@ POST(sys_getresgid)
    }
 }
 
-// SYS_kqueue	362
+// SYS_kqueue  362
 // int kqueue(void);
 PRE(sys_kqueue)
 {
@@ -3333,7 +3332,7 @@ POST(sys_kqueue)
    }
 }
 
-// SYS_freebsd11_kevent	363
+// SYS_freebsd11_kevent 363
 // int kevent(int kq, const struct kevent *changelist, int nchanges,
 //            struct kevent *eventlist, int nevents,
 //            const struct timespec *timeout);
@@ -3391,7 +3390,7 @@ POST(sys_kevent)
 }
 #endif
 
-// SYS_extattr_set_fd	371
+// SYS_extattr_set_fd   371
 // ssize_t extattr_set_fd(int fd, int attrnamespace, const char *attrname,
 //                        const void *data, size_t nbytes);
 PRE(sys_extattr_set_fd)
@@ -3402,7 +3401,7 @@ PRE(sys_extattr_set_fd)
    PRE_MEM_READ("extattr_set_fd(data)", ARG4, ARG5);
 }
 
-// SYS_extattr_get_fd	372
+// SYS_extattr_get_fd   372
 // ssize_t extattr_get_fd(int fd, int attrnamespace, const char *attrname,
 //                        void *data, size_t nbytes);
 PRE(sys_extattr_get_fd)
@@ -3418,7 +3417,7 @@ POST(sys_extattr_get_fd)
    POST_MEM_WRITE(ARG4, ARG5);
 }
 
-// SYS_extattr_delete_fd	373
+// SYS_extattr_delete_fd   373
 // int extattr_delete_fd(int fd, int attrnamespace, const char *attrname);
 PRE(sys_extattr_delete_fd)
 {
@@ -3427,7 +3426,7 @@ PRE(sys_extattr_delete_fd)
    PRE_MEM_RASCIIZ( "extattr_delete_fd(attrname)", ARG3 );
 }
 
-// SYS___setugid	374
+// SYS___setugid  374
 // no manpage?
 // syscalls.master: int __setugid(int flag);
 PRE(sys___setugid)
@@ -3436,7 +3435,7 @@ PRE(sys___setugid)
    PRE_REG_READ1(int, "__setugid", int, flag);
 }
 
-// SYS_eaccess	376
+// SYS_eaccess 376
 // int eaccess(const char *path, int mode);
 PRE(sys_eaccess)
 {
@@ -3445,10 +3444,10 @@ PRE(sys_eaccess)
    PRE_MEM_RASCIIZ( "eaccess(path)", ARG1 );
 }
 
-// SYS_afs3_syscall	377
+// SYS_afs3_syscall  377
 // @todo
 
-// SYS_nmount	378
+// SYS_nmount  378
 // int nmount(struct iovec *iov, u_int niov, int flags);
 PRE(sys_nmount)
 {
@@ -3457,25 +3456,25 @@ PRE(sys_nmount)
    PRE_MEM_READ( "nmount(pathname)", ARG1, ARG2*sizeof(struct vki_iovec) );
 }
 
-// SYS___mac_get_proc	384
+// SYS___mac_get_proc   384
 // @todo
 
-// SYS___mac_set_proc	385
+// SYS___mac_set_proc   385
 // @todo
 
-// SYS___mac_get_fd	386
+// SYS___mac_get_fd  386
 // @todo
 
-// SYS___mac_get_file	387
+// SYS___mac_get_file   387
 // @todo
 
-// SYS___mac_set_fd	388
+// SYS___mac_set_fd  388
 // @todo
 
-// SYS___mac_set_file	389
+// SYS___mac_set_file   389
 // @todo
 
-// SYS_kenv	390
+// SYS_kenv 390
 // int kenv(int action, const char *name, char *value, int len);
 PRE(sys_kenv)
 {
@@ -3487,7 +3486,7 @@ PRE(sys_kenv)
    case VKI_KENV_SET:
    case VKI_KENV_UNSET:
       PRE_MEM_RASCIIZ("kenv(name)", ARG2);
-      /* FALLTHROUGH */
+   /* FALLTHROUGH */
    case VKI_KENV_DUMP:
       break;
    default:
@@ -3510,7 +3509,7 @@ POST(sys_kenv)
    }
 }
 
-// SYS_lchflags	391
+// SYS_lchflags   391
 // int lchflags(const char *path, unsigned long flags);
 PRE(sys_lchflags)
 {
@@ -3520,13 +3519,13 @@ PRE(sys_lchflags)
    PRE_MEM_RASCIIZ( "lchflags(path)", ARG1 );
 }
 
-// SYS_uuidgen	392
+// SYS_uuidgen 392
 // int uuidgen(struct uuid *store, int count);
 PRE(sys_uuidgen)
 {
    PRINT("sys_uuidgen ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,ARG2);
    PRE_REG_READ2(int, "uuidgen",
-         struct vki_uuid *, store, int, count);
+                 struct vki_uuid *, store, int, count);
    PRE_MEM_WRITE( "uuidgen(store)", ARG1, ARG2 * sizeof(struct vki_uuid));
 }
 
@@ -3536,15 +3535,15 @@ POST(sys_uuidgen)
       POST_MEM_WRITE( ARG1, ARG2 * sizeof(struct vki_uuid) );
 }
 
-// SYS_sendfile	393
+// SYS_sendfile   393
 // x86/amd64
 
-// SYS_mac_syscall	394
+// SYS_mac_syscall   394
 // @todo
 
 #if (FREEBSD_VERS >= FREEBSD_12)
 
-// SYS_freebsd11_getfsstat	395
+// SYS_freebsd11_getfsstat 395
 // int getfsstat(struct freebsd11_statfs *buf, long bufsize, int mode);
 
 PRE(sys_freebsd11_getfsstat)
@@ -3562,7 +3561,7 @@ POST(sys_freebsd11_getfsstat)
    }
 }
 
-// SYS_freebsd11_statfs	396
+// SYS_freebsd11_statfs 396
 // int statfs(const char *path, struct statfs *buf);
 PRE(sys_freebsd11_statfs)
 {
@@ -3577,7 +3576,7 @@ POST(sys_freebsd11_statfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
 }
 
-// SYS_freebsd11_fstatfs	397
+// SYS_freebsd11_fstatfs   397
 // int fstatfs(int fd, struct statfs *buf);
 PRE(sys_freebsd11_fstatfs)
 {
@@ -3592,7 +3591,7 @@ POST(sys_freebsd11_fstatfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_freebsd11_statfs) );
 }
 
-// SYS_freebsd11_fhstatfs	398
+// SYS_freebsd11_fhstatfs  398
 // int fhstatfs(const fhandle_t *fhp, struct statfs *buf);
 PRE(sys_freebsd11_fhstatfs)
 {
@@ -3669,99 +3668,99 @@ POST(sys_fhstatfs)
 
 #endif
 
-// SYS_ksem_close	400
+// SYS_ksem_close 400
 // @todo
 
-// SYS_ksem_post	401
+// SYS_ksem_post  401
 // @todo
 
-// SYS_ksem_wait	402
+// SYS_ksem_wait  402
 // @todo
 
-// SYS_ksem_trywait	403
+// SYS_ksem_trywait  403
 // @todo
 
-// SYS_ksem_init	404
+// SYS_ksem_init  404
 // @todo
 
-// SYS_ksem_open	405
+// SYS_ksem_open  405
 // @todo
 
-// SYS_ksem_unlink	406
+// SYS_ksem_unlink   406
 // @todo
 
-// SYS_ksem_getvalue	407
+// SYS_ksem_getvalue 407
 // @todo
 
-// SYS_ksem_destroy	408
+// SYS_ksem_destroy  408
 // @todo
 
-// SYS___mac_get_pid	409
+// SYS___mac_get_pid 409
 // @todo
 
-// SYS___mac_get_link	410
+// SYS___mac_get_link   410
 // @todo
 
-// SYS___mac_set_link	411
+// SYS___mac_set_link   411
 // @todo
 
-// SYS_extattr_set_link	412
+// SYS_extattr_set_link 412
 // ssize_t extattr_set_link(const char *path, int attrnamespace,
 //                          const char *attrname, const void *data, size_t nbytes);
 PRE(sys_extattr_set_link)
 {
-    PRINT("sys_extattr_set_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
-    PRE_REG_READ5(ssize_t, "extattr_set_link",
-                  const char *, path, int, attrnamespace, const char *, attrname, const void *, data, size_t, nbytes);
-    PRE_MEM_RASCIIZ("extattr_set_link(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattr_set_link(attrname)", ARG3);
-    PRE_MEM_READ("extattr_set_link(data)", ARG4, ARG5);
+   PRINT("sys_extattr_set_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+   PRE_REG_READ5(ssize_t, "extattr_set_link",
+                 const char *, path, int, attrnamespace, const char *, attrname, const void *, data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_set_link(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattr_set_link(attrname)", ARG3);
+   PRE_MEM_READ("extattr_set_link(data)", ARG4, ARG5);
 }
 
-// SYS_extattr_get_link	413
+// SYS_extattr_get_link 413
 // ssize_t extattr_get_link(const char *path, int attrnamespace,
 //                          const char *attrname, void *data, size_t nbytes);
 PRE(sys_extattr_get_link)
 {
-    PRINT("sys_extattr_get_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
-    PRE_REG_READ5(ssize_t, "extattr_get_link",
-                  const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
-    PRE_MEM_RASCIIZ("extattr_get_link(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattr_get_link(attrname)", ARG3);
-    if (ARG4) {
-        PRE_MEM_WRITE("extattr_get_link(data)", ARG4, ARG5);
-    }
+   PRINT("sys_extattr_get_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "u )", ARG1,SARG2,ARG3,ARG4,ARG5);
+   PRE_REG_READ5(ssize_t, "extattr_get_link",
+                 const char *, path, int, attrnamespace, const char *, attrname, void *, data, size_t, nbytes);
+   PRE_MEM_RASCIIZ("extattr_get_link(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattr_get_link(attrname)", ARG3);
+   if (ARG4) {
+      PRE_MEM_WRITE("extattr_get_link(data)", ARG4, ARG5);
+   }
 }
 
 POST(sys_extattr_get_link)
 {
-    if (ARG4) {
-        POST_MEM_WRITE(ARG4, ARG5);
-    }
+   if (ARG4) {
+      POST_MEM_WRITE(ARG4, ARG5);
+   }
 }
 
-// SYS_extattr_delete_link	414
+// SYS_extattr_delete_link 414
 // int extattr_delete_link(const char *path, int attrnamespace,
 //                         const char *attrname);
 PRE(sys_extattr_delete_link)
 {
-    PRINT("sys_extattr_delete_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3);
-    PRE_REG_READ3(ssize_t, "extattr_delete_link",
-                  const char *, path, int, attrnamespace, const char *, attrname);
-    PRE_MEM_RASCIIZ("extattr_delete_link(path)", ARG1);
-    PRE_MEM_RASCIIZ("extattr_delete_link(attrname)", ARG3);
+   PRINT("sys_extattr_delete_link ( %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", ARG1,SARG2,ARG3);
+   PRE_REG_READ3(ssize_t, "extattr_delete_link",
+                 const char *, path, int, attrnamespace, const char *, attrname);
+   PRE_MEM_RASCIIZ("extattr_delete_link(path)", ARG1);
+   PRE_MEM_RASCIIZ("extattr_delete_link(attrname)", ARG3);
 }
 
-// SYS___mac_execve	415
+// SYS___mac_execve  415
 // @todo
 
-// SYS_sigaction	416
+// SYS_sigaction  416
 //int sigaction(int sig, const struct sigaction * restrict act,
 //              struct sigaction * restrict oact);
 PRE(sys_sigaction)
 {
-    vki_sigaction_toK_t   new, *newp;
-    vki_sigaction_fromK_t old, *oldp;
+   vki_sigaction_toK_t   new, *newp;
+   vki_sigaction_fromK_t old, *oldp;
 
    PRINT("sys_sigaction ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          SARG1,ARG2,ARG3);
@@ -3784,8 +3783,8 @@ PRE(sys_sigaction)
    }
 
    if (ARG2 != 0
-       && ! ML_(safe_to_deref)((void *)(Addr)ARG2,
-                               sizeof(struct vki_sigaction))) {
+         && ! ML_(safe_to_deref)((void *)(Addr)ARG2,
+                                 sizeof(struct vki_sigaction))) {
       VG_(umsg)("Warning: bad act handler address %p in sigaction()\n",
                 (void *)(Addr)ARG2);
       SET_STATUS_Failure ( VKI_EFAULT );
@@ -3816,7 +3815,7 @@ PRE(sys_sigaction)
          oldold->sa_flags = oldp->sa_flags;
          oldold->sa_mask = oldp->sa_mask;
       }
-  }
+   }
 }
 
 POST(sys_sigaction)
@@ -3826,12 +3825,12 @@ POST(sys_sigaction)
       POST_MEM_WRITE( ARG3, sizeof(struct vki_sigaction));
 }
 
-// SYS_sigreturn	417
+// SYS_sigreturn  417
 // x86/amd64
 
-// SYS_getcontext	421
-// SYS_setcontext	422
-// SYS_swapcontext	423
+// SYS_getcontext 421
+// SYS_setcontext 422
+// SYS_swapcontext   423
 // PRE in x86/amd64
 
 POST(sys_getcontext)
@@ -3845,7 +3844,7 @@ POST(sys_swapcontext)
       POST_MEM_WRITE( ARG1, sizeof(struct vki_ucontext) );
 }
 
-// SYS_swapoff	424
+// SYS_swapoff 424
 // int swapoff(const char *special);
 PRE(sys_swapoff)
 {
@@ -3854,7 +3853,7 @@ PRE(sys_swapoff)
    PRE_MEM_RASCIIZ( "swapoff(special)", ARG1 );
 }
 
-// SYS___acl_get_link	425
+// SYS___acl_get_link   425
 // int __acl_get_link(const char *path, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_get_link)
 {
@@ -3873,7 +3872,7 @@ POST(sys___acl_get_link)
    }
 }
 
-// SYS___acl_set_link	426
+// SYS___acl_set_link   426
 // int __acl_set_link(const char *path, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_set_link)
 {
@@ -3883,7 +3882,7 @@ PRE(sys___acl_set_link)
    PRE_MEM_RASCIIZ( "__acl_set_link(path)", ARG1 );
    PRE_MEM_READ( "__acl_set_link(aclp)", ARG3, sizeof(struct vki_acl) );
 }
-// SYS___acl_delete_link	427
+// SYS___acl_delete_link   427
 // int __acl_delete_link(const char *path, acl_type_t type);
 PRE(sys___acl_delete_link)
 {
@@ -3893,7 +3892,7 @@ PRE(sys___acl_delete_link)
                  const char *, path, int, acltype);
 }
 
-// SYS___acl_aclcheck_link	428
+// SYS___acl_aclcheck_link 428
 // int __acl_aclcheck_link(const char *path, acl_type_t type, struct acl *aclp);
 PRE(sys___acl_aclcheck_link)
 {
@@ -3904,7 +3903,7 @@ PRE(sys___acl_aclcheck_link)
    PRE_MEM_READ( "__acl_aclcheck_link(aclp)", ARG3, sizeof(struct vki_acl) );
 }
 
-// SYS_sigwait	429
+// SYS_sigwait 429
 // int sigwait(const sigset_t * restrict set, int * restrict sig);
 PRE(sys_sigwait)
 {
@@ -3925,7 +3924,7 @@ POST(sys_sigwait)
       POST_MEM_WRITE( ARG2, sizeof(int));
 }
 
-// SYS_thr_create	430
+// SYS_thr_create 430
 // no manpage?
 // syscalls.master: int thr_create(_In_ ucontext_t *ctx, _Out_ long *id, int flags );
 PRE(sys_thr_create)
@@ -3939,7 +3938,7 @@ PRE(sys_thr_create)
    SET_STATUS_Failure(VKI_ENOSYS);
 }
 
-// SYS_thr_exit	431
+// SYS_thr_exit   431
 // void thr_exit(long *state);
 PRE(sys_thr_exit)
 {
@@ -3958,7 +3957,7 @@ PRE(sys_thr_exit)
    SET_STATUS_Success(0);
 }
 
-// SYS_thr_self	432
+// SYS_thr_self   432
 // int thr_self(long *id);
 PRE(sys_thr_self)
 {
@@ -3972,7 +3971,7 @@ POST(sys_thr_self)
    POST_MEM_WRITE( ARG1, sizeof(long));
 }
 
-// SYS_thr_kill	433
+// SYS_thr_kill   433
 // int thr_kill(long id, int sig);
 PRE(sys_thr_kill)
 {
@@ -4029,7 +4028,7 @@ PRE(sys__umtx_lock)
 POST(sys__umtx_lock)
 {
    if (SUCCESS)
-       POST_MEM_WRITE(ARG1, sizeof(struct vki_umtx));
+      POST_MEM_WRITE(ARG1, sizeof(struct vki_umtx));
 }
 
 // SYS__umtx_unlock 434
@@ -4048,15 +4047,15 @@ POST(sys__umtx_unlock)
 }
 #endif
 
-// SYS_jail_attach	436
+// SYS_jail_attach   436
 // int jail_attach(int jid);
 PRE(sys_jail_attach)
 {
-    PRINT("sys_jail_attach ( %" FMT_REGWORD "d )", SARG1);
-    PRE_REG_READ1(int, "jail_attach", int, jid);
+   PRINT("sys_jail_attach ( %" FMT_REGWORD "d )", SARG1);
+   PRE_REG_READ1(int, "jail_attach", int, jid);
 }
 
-// SYS_extattr_list_fd	437
+// SYS_extattr_list_fd  437
 // ssize_t extattr_list_fd(int fd, int attrnamespace, void *data, size_t nbytes);
 PRE(sys_extattr_list_fd)
 {
@@ -4070,7 +4069,7 @@ POST(sys_extattr_list_fd)
    POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_extattr_list_file	438
+// SYS_extattr_list_file   438
 // ssize_t extattr_list_file(const char *path, int attrnamespace, void *data,
 //                           size_t nbytes);
 PRE(sys_extattr_list_file)
@@ -4086,7 +4085,7 @@ POST(sys_extattr_list_file)
    POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_extattr_list_link	439
+// SYS_extattr_list_link   439
 // ssize_t extattr_get_link(const char *path, int attrnamespace,
 //                          const char *attrname, void *data, size_t nbytes);
 PRE(sys_extattr_list_link)
@@ -4102,10 +4101,10 @@ POST(sys_extattr_list_link)
    POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_ksem_timedwait	441
+// SYS_ksem_timedwait   441
 // @todo
 
-// SYS_thr_suspend	442
+// SYS_thr_suspend   442
 // int thr_suspend(struct timespec *timeout);
 PRE(sys_thr_suspend)
 {
@@ -4119,22 +4118,22 @@ PRE(sys_thr_suspend)
    SET_STATUS_Failure(VKI_ENOSYS);
 }
 
-// SYS_thr_wake	443
+// SYS_thr_wake   443
 // int thr_wake(long id);
 PRE(sys_thr_wake)
 {
    PRINT("sys_thr_wake ( %" FMT_REGWORD "d )", SARG1);
    PRE_REG_READ1(long, "thr_wake", long, id);
-/*
-   if (VG_(is_valid_tid)(ARG1)) {
-      VG_(threads)[ARG1].status = VgTs_Runnable;
-   } else {
-      SET_STATUS_Failure( VKI_ESRCH );
-   }
-*/
+   /*
+      if (VG_(is_valid_tid)(ARG1)) {
+         VG_(threads)[ARG1].status = VgTs_Runnable;
+      } else {
+         SET_STATUS_Failure( VKI_ESRCH );
+      }
+   */
 }
 
-// SYS_kldunloadf	444
+// SYS_kldunloadf 444
 // int kldunloadf(int fileid, int flags);
 PRE(sys_kldunloadf)
 {
@@ -4142,42 +4141,42 @@ PRE(sys_kldunloadf)
    PRE_REG_READ2(int, "kldunloadf", int, fileid, int, flags);
 }
 
-// SYS_audit	445
+// SYS_audit   445
 // int audit(const char *record, u_int length);
 // @todo
 
-// SYS_auditon	446
+// SYS_auditon 446
 // int auditon(int cmd, void *data, u_int length);
 // @todo
 
-// SYS_getauid	447
+// SYS_getauid 447
 // int getauid(au_id_t *auid);
 // @todo
 
-// SYS_setauid	448
+// SYS_setauid 448
 // int setauid(au_id_t *auid);
 // @todo
 
-// SYS_getaudit	449
+// SYS_getaudit   449
 //  int getaudit(auditinfo_t *auditinfo);
 // @todo
 
-// SYS_setaudit	450
+// SYS_setaudit   450
 // int setaudit(auditinfo_t *auditinfo);
 // @todo
 
-// SYS_getaudit_addr	451
+// SYS_getaudit_addr 451
 // int getaudit_addr(auditinfo_addr_t *auditinfo_addr, u_int length);
 // @todo
 
-// SYS_setaudit_addr	452
+// SYS_setaudit_addr 452
 // int setaudit_addr(auditinfo_addr_t *auditinfo_addr, u_int length);
 // @todo
 
-// SYS_auditctl	453
+// SYS_auditctl   453
 // @todo
 
-// SYS__umtx_op	454
+// SYS__umtx_op   454
 // int _umtx_op(void *obj, int op, u_long val, void *uaddr, void *uaddr2);
 PRE(sys__umtx_op)
 {
@@ -4208,10 +4207,10 @@ PRE(sys__umtx_op)
                     long *, obj, int, op, unsigned long, val,
                     size_t, timeout_size, struct vki_timespec *, timeout);
       if (ARG1) {
-          PRE_MEM_READ( "_umtx_op_wait(val)", ARG1, sizeof(long) );
-          if (*(long*)ARG1 == (long)ARG3) {
-             *flags |= SfMayBlock;
-          }
+         PRE_MEM_READ( "_umtx_op_wait(val)", ARG1, sizeof(long) );
+         if (*(long*)ARG1 == (long)ARG3) {
+            *flags |= SfMayBlock;
+         }
       }
 
       if (ARG5) {
@@ -4409,10 +4408,10 @@ PRE(sys__umtx_op)
                     void *, obj, int, op, unsigned long, val, void*, uaddr);
       break;
    case VKI_UMTX_OP_ROBUST_LISTS:
-       // val (ARG2) ought to be the same as sizeof(struct vki_umtx_robust_lists_params)
-       // then the structure contains a pointer to mutex structures
+      // val (ARG2) ought to be the same as sizeof(struct vki_umtx_robust_lists_params)
+      // then the structure contains a pointer to mutex structures
       if (ARG1 != sizeof(struct vki_umtx_robust_lists_params))
-          SET_STATUS_Failure( VKI_ENOSYS );
+         SET_STATUS_Failure( VKI_ENOSYS );
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, ROBUST_LISTS, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_robust_lists",
                     struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
@@ -4482,10 +4481,10 @@ POST(sys__umtx_op)
       break;
    case VKI_UMTX_OP_SEM2_WAIT:
    case VKI_UMTX_OP_SEM2_WAKE:
-       if (SUCCESS) {
-          POST_MEM_WRITE( ARG1, sizeof(struct vki_usem2) );
-       }
-       break;
+      if (SUCCESS) {
+         POST_MEM_WRITE( ARG1, sizeof(struct vki_usem2) );
+      }
+      break;
    case VKI_UMTX_OP_SHM:
    case VKI_UMTX_OP_ROBUST_LISTS:
    default:
@@ -4493,10 +4492,10 @@ POST(sys__umtx_op)
    }
 }
 
-// SYS_thr_new	455
+// SYS_thr_new 455
 // x86/amd64
 
-// SYS_sigqueue	456
+// SYS_sigqueue   456
 // int sigqueue(pid_t pid, int signo, const union sigval value);
 PRE(sys_sigqueue)
 {
@@ -4505,7 +4504,7 @@ PRE(sys_sigqueue)
    PRE_REG_READ3(int, "sigqueue", vki_pid_t, pid, int, signo, const union vki_sigval, value);
 }
 
-// SYS_kmq_open	457
+// SYS_kmq_open   457
 // mqd_t mq_open(const char *name, int oflag, ...);
 // int kmq_open(_In_z_ const char *path, int flags, mode_t mode, _In_opt_ const struct mq_attr *attr);
 PRE(sys_kmq_open)
@@ -4547,7 +4546,7 @@ POST(sys_kmq_open)
    }
 }
 
-// SYS_kmq_setattr	458
+// SYS_kmq_setattr   458
 // int mq_setattr(mqd_t mqdes, const struct mq_attr *restrict mqstat,
 //                struct mq_attr *restrict omqstat);
 PRE(sys_kmq_setattr)
@@ -4562,14 +4561,14 @@ PRE(sys_kmq_setattr)
       if (ML_(safe_to_deref)((struct vki_mq_attr *)ARG2, sizeof(struct vki_mq_attr))) {
          const struct vki_mq_attr *attr = (struct vki_mq_attr *)ARG2;
          PRE_MEM_READ( "mq_setattr(mqstat->mq_flags)",
-                        (Addr)&attr->mq_flags, sizeof(attr->mq_flags) );
+                       (Addr)&attr->mq_flags, sizeof(attr->mq_flags) );
       }
       PRE_MEM_WRITE( "mq_setattr(omqstat)", ARG3,
                      sizeof(struct vki_mq_attr) );
    }
 }
 
-// SYS_kmq_timedreceive	459
+// SYS_kmq_timedreceive 459
 // ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
 //                         unsigned *msg_prio, const struct timespec *abs_timeout);
 PRE(sys_kmq_timedreceive)
@@ -4590,7 +4589,7 @@ PRE(sys_kmq_timedreceive)
                         ARG4, sizeof(unsigned int) );
       if (ARG5 != 0)
          PRE_MEM_READ( "mq_timedreceive(abs_timeout)",
-                        ARG5, sizeof(struct vki_timespec) );
+                       ARG5, sizeof(struct vki_timespec) );
    }
 }
 
@@ -4601,7 +4600,7 @@ POST(sys_kmq_timedreceive)
       POST_MEM_WRITE( ARG4, sizeof(unsigned int) );
 }
 
-// SYS_kmq_timedsend	460
+// SYS_kmq_timedsend 460
 // int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
 //                  unsigned msg_prio, const struct timespec *abs_timeout);
 PRE(sys_kmq_timedsend)
@@ -4618,11 +4617,11 @@ PRE(sys_kmq_timedsend)
       PRE_MEM_READ( "mq_timedsend(msg_ptr)", ARG2, ARG3 );
       if (ARG5 != 0)
          PRE_MEM_READ( "mq_timedsend(abs_timeout)", ARG5,
-                        sizeof(struct vki_timespec) );
+                       sizeof(struct vki_timespec) );
    }
 }
 
-// SYS_kmq_notify	461
+// SYS_kmq_notify 461
 // int mq_notify(mqd_t mqdes, const struct sigevent *notification);
 PRE(sys_kmq_notify)
 {
@@ -4636,7 +4635,7 @@ PRE(sys_kmq_notify)
                     ARG2, sizeof(struct vki_sigevent) );
 }
 
-// SYS_kmq_unlink	462
+// SYS_kmq_unlink 462
 // int kmq_unlink(const char *path);
 PRE(sys_kmq_unlink)
 {
@@ -4645,7 +4644,7 @@ PRE(sys_kmq_unlink)
    PRE_MEM_RASCIIZ( "mq_unlink(name)", ARG1 );
 }
 
-// SYS_abort2	463
+// SYS_abort2  463
 // void abort2(const char *why, int nargs, void **args);
 PRE(sys_abort2)
 {
@@ -4657,7 +4656,7 @@ PRE(sys_abort2)
    PRE_MEM_READ("abort2(args", ARG3, ARG2*sizeof(void*));
 }
 
-// SYS_thr_set_name	464
+// SYS_thr_set_name  464
 // int thr_set_name(long id, const char *name);
 PRE(sys_thr_set_name)
 {
@@ -4666,7 +4665,7 @@ PRE(sys_thr_set_name)
    PRE_MEM_RASCIIZ( "thr_set_name(name)", ARG2);
 }
 
-// SYS_aio_fsync	465
+// SYS_aio_fsync  465
 // int aio_fsync(int op, struct aiocb *iocb);
 PRE(sys_aio_fsync)
 {
@@ -4675,19 +4674,19 @@ PRE(sys_aio_fsync)
    PRE_MEM_READ( "aio_fsync(iocb)", ARG2, sizeof(struct vki_aiocb) );
 }
 
-// SYS_rtprio_thread	466
+// SYS_rtprio_thread 466
 // int rtprio_thread(int function, lwpid_t lwpid, struct rtprio *rtp);
 PRE(sys_rtprio_thread)
 {
    PRINT( "sys_rtprio_thread ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2, ARG3 );
    PRE_REG_READ3(int, "rtprio_thread",
-      int, function, __vki_lwpid_t, lwpid, struct vki_rtprio *, rtp);
+                 int, function, __vki_lwpid_t, lwpid, struct vki_rtprio *, rtp);
    if (ARG1 == VKI_RTP_SET) {
       PRE_MEM_READ( "rtprio_thread(rtp#set)", ARG3, sizeof(struct vki_rtprio));
    } else if (ARG1 == VKI_RTP_LOOKUP) {
       PRE_MEM_WRITE( "rtprio_thread(rtp#lookup)", ARG3, sizeof(struct vki_rtprio));
    } else {
-    /* PHK ?? */
+      /* PHK ?? */
    }
 }
 
@@ -4697,46 +4696,46 @@ POST(sys_rtprio_thread)
       POST_MEM_WRITE( ARG3, sizeof(struct vki_rtprio));
 }
 
-// SYS_sctp_peeloff	471
+// SYS_sctp_peeloff  471
 // int sctp_peeloff(int s, sctp_assoc_t id);
 // @todo
 
-// SYS_sctp_generic_sendmsg	472
+// SYS_sctp_generic_sendmsg   472
 // int sctp_generic_sendmsg(int s, void *msg, int msglen, struct sockaddr *to,
 //                          socklen_t len, struct sctp_sndrcvinfo *sinfo, int flags);
 // @tdo
 
 
-// SYS_sctp_generic_sendmsg_iov	473
+// SYS_sctp_generic_sendmsg_iov  473
 // int sctp_generic_sendmsg_iov(int s, struct iovec *iov, int iovlen,
 //                              struct sockaddr *to, struct sctp_sndrcvinfo *sinfo, int flags);
 // @todo
 
-// SYS_sctp_generic_recvmsg	474
+// SYS_sctp_generic_recvmsg   474
 // int sctp_generic_recvmsg(int s, struct iovec *iov, int iovlen,
 //                          struct sockaddr *from, socklen_t *fromlen,
 //                          struct sctp_sndrcvinfo *sinfo, int *msgflags);
 // @todo
 
-// SYS_pread	475
+// SYS_pread   475
 // x86/amd64
 
-// SYS_pwrite	476
+// SYS_pwrite  476
 // x86/amd64
 
-// SYS_mmap	477
+// SYS_mmap 477
 // x86/amd64
 
-// SYS_lseek	478
+// SYS_lseek   478
 // x86/amd64
 
-//SYS_truncate	479
+//SYS_truncate 479
 // x86/amd64
 
-// SYS_ftruncate	480
+// SYS_ftruncate  480
 // x86/amd64
 
-// SYS_thr_kill2	481
+// SYS_thr_kill2  481
 // int thr_kill2(pid_t pid, long id, int sig);
 PRE(sys_thr_kill2)
 {
@@ -4780,12 +4779,12 @@ POST(sys_thr_kill2)
                    ARG3, ARG1, ARG2);
 }
 
-// SYS_shm_open	482
+// SYS_shm_open   482
 // int shm_open(const char *path, int flags, mode_t mode);
 PRE(sys_shm_open)
 {
    PRE_REG_READ3(int, "shm_open",
-                const char *, path, int, flags, vki_mode_t, mode);
+                 const char *, path, int, flags, vki_mode_t, mode);
    if (ARG1 == VKI_SHM_ANON) {
       PRINT("sys_shm_open(%#" FMT_REGWORD "x(SHM_ANON), %" FMT_REGWORD "u, %hu)", ARG1, ARG2, (vki_mode_t)ARG3);
    } else {
@@ -4807,7 +4806,7 @@ POST(sys_shm_open)
    }
 }
 
-// SYS_shm_unlink	483
+// SYS_shm_unlink 483
 // int shm_unlink(const char *path);
 PRE(sys_shm_unlink)
 {
@@ -4820,13 +4819,13 @@ PRE(sys_shm_unlink)
    *flags |= SfMayBlock;
 }
 
-// SYS_cpuset	484
+// SYS_cpuset  484
 // int cpuset(cpusetid_t *setid);
 PRE(sys_cpuset)
 {
-    PRINT("sys_cpuset ( %#" FMT_REGWORD "x )", ARG1);
-    PRE_REG_READ1(int, "cpuset", vki_cpusetid_t *, setid);
-    PRE_MEM_WRITE("cpuset(setid)", ARG1, sizeof(vki_cpusetid_t));
+   PRINT("sys_cpuset ( %#" FMT_REGWORD "x )", ARG1);
+   PRE_REG_READ1(int, "cpuset", vki_cpusetid_t *, setid);
+   PRE_MEM_WRITE("cpuset(setid)", ARG1, sizeof(vki_cpusetid_t));
 }
 
 POST(sys_cpuset)
@@ -4834,47 +4833,47 @@ POST(sys_cpuset)
    POST_MEM_WRITE(ARG1, sizeof(vki_cpusetid_t));
 }
 
-// SYS_cpuset_setid	485
+// SYS_cpuset_setid  485
 // amd64 / x86
 
-// SYS_cpuset_getid	486
+// SYS_cpuset_getid  486
 // amd64 / x86
 
-// SYS_cpuset_getaffinity	487
+// SYS_cpuset_getaffinity  487
 // int cpuset_getaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
 //                        size_t setsize, cpuset_t *mask);
 PRE(sys_cpuset_getaffinity)
 {
-    PRINT("sys_cpuset_getaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
-        ARG3, ARG4, ARG5);
-    PRE_REG_READ5(int, "cpuset_getaffinity",
-        int, level, int, which, long, id,
-        size_t, setsize, void *, mask);
-    PRE_MEM_WRITE("cpuset_getaffinity", ARG5, ARG4);
+   PRINT("sys_cpuset_getaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
+         ARG3, ARG4, ARG5);
+   PRE_REG_READ5(int, "cpuset_getaffinity",
+                 int, level, int, which, long, id,
+                 size_t, setsize, void *, mask);
+   PRE_MEM_WRITE("cpuset_getaffinity", ARG5, ARG4);
 }
 
 POST(sys_cpuset_getaffinity)
 {
-    vg_assert(SUCCESS);
-    if (RES == 0)
-        POST_MEM_WRITE( ARG5, ARG4 );
+   vg_assert(SUCCESS);
+   if (RES == 0)
+      POST_MEM_WRITE( ARG5, ARG4 );
 }
 
-// SYS_cpuset_setaffinity	488
+// SYS_cpuset_setaffinity  488
 // int cpuset_setaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
 //                        size_t setsize, const cpuset_t *mask);
 PRE(sys_cpuset_setaffinity)
 {
 
-    PRINT("sys_cpuset_setaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
-        ARG3, ARG4, ARG5);
-    PRE_REG_READ5(int, "cpuset_setaffinity",
-        int, level, int, which, long, id,
-        size_t, setsize, void *, mask);
-    PRE_MEM_READ("cpuset_setaffinity", ARG5, ARG4);
+   PRINT("sys_cpuset_setaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
+         ARG3, ARG4, ARG5);
+   PRE_REG_READ5(int, "cpuset_setaffinity",
+                 int, level, int, which, long, id,
+                 size_t, setsize, void *, mask);
+   PRE_MEM_READ("cpuset_setaffinity", ARG5, ARG4);
 }
 
-// SYS_faccessat	489
+// SYS_faccessat  489
 // int faccessat(int fd, const char *path, int mode, int flag);
 PRE(sys_faccessat)
 {
@@ -4884,7 +4883,7 @@ PRE(sys_faccessat)
    PRE_MEM_RASCIIZ( "faccessat(path)", ARG2 );
 }
 
-// SYS_fchmodat	490
+// SYS_fchmodat   490
 // int fchmodat(int fd, const char *path, mode_t mode, int flag);
 PRE(sys_fchmodat)
 {
@@ -4894,7 +4893,7 @@ PRE(sys_fchmodat)
    PRE_MEM_RASCIIZ( "fchmodat(path)", ARG2 );
 }
 
-// SYS_fchownat	491
+// SYS_fchownat   491
 // int fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag);
 PRE(sys_fchownat)
 {
@@ -4906,7 +4905,7 @@ PRE(sys_fchownat)
    PRE_MEM_RASCIIZ( "fchownat(path)", ARG2 );
 }
 
-// SYS_fexecve	492
+// SYS_fexecve 492
 // int fexecve(int fd, char *const argv[], char *const envp[]);
 PRE(sys_fexecve)
 {
@@ -4919,7 +4918,7 @@ PRE(sys_fexecve)
    PRE_MEM_RASCIIZ( "fexecve(envp)", ARG3 );
 }
 
-// SYS_freebsd11_fstatat	493
+// SYS_freebsd11_fstatat   493
 // int fstatat(int fd, const char *path, struct stat *sb, int flag);
 #if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_fstatat)
@@ -4951,7 +4950,7 @@ POST(sys_fstatat)
 }
 #endif
 
-// SYS_futimesat	494
+// SYS_futimesat  494
 // int futimesat(int fd, const char *path, const struct timeval times[2]);
 PRE(sys_futimesat)
 {
@@ -4964,7 +4963,7 @@ PRE(sys_futimesat)
       PRE_MEM_READ( "futimesat(times)", ARG3, 2 * sizeof(struct vki_timeval) );
 }
 
-// SYS_linkat	495
+// SYS_linkat  495
 // int linkat(int fd1, const char *name1, int fd2, const char *name2, int flag);
 PRE(sys_linkat)
 {
@@ -4978,7 +4977,7 @@ PRE(sys_linkat)
    PRE_MEM_RASCIIZ( "linkat(name2)", ARG4);
 }
 
-// SYS_mkdirat	496
+// SYS_mkdirat 496
 // int mkdirat(int fd, const char *path, mode_t mode);
 PRE(sys_mkdirat)
 {
@@ -4989,7 +4988,7 @@ PRE(sys_mkdirat)
    PRE_MEM_RASCIIZ( "mkdirat(path)", ARG2 );
 }
 
-// SYS_mkfifoat	497
+// SYS_mkfifoat   497
 // int mkfifoat(int fd, const char *path, mode_t mode);
 PRE(sys_mkfifoat)
 {
@@ -5000,7 +4999,7 @@ PRE(sys_mkfifoat)
    PRE_MEM_RASCIIZ( "mkfifoat(path)", ARG2 );
 }
 
-// SYS_freebsd11_mknodat	498
+// SYS_freebsd11_mknodat   498
 // int mknodat(int fd, const char *path, mode_t mode, dev_t dev);
 #if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_mknodat)
@@ -5020,7 +5019,7 @@ PRE(sys_mknodat)
 }
 #endif
 
-// SYS_openat	499
+// SYS_openat  499
 // int openat(int fd, const char *path, int flags, ...);
 PRE(sys_openat)
 {
@@ -5058,7 +5057,7 @@ POST(sys_openat)
    }
 }
 
-// SYS_readlinkat	500
+// SYS_readlinkat 500
 // ssize_t readlinkat(int fd, const char *restrict path, char *restrict buf,
 //                    size_t bufsize);
 PRE(sys_readlinkat)
@@ -5078,11 +5077,11 @@ PRE(sys_readlinkat)
     */
    VG_(sprintf)(name, "/proc/%d/file", VG_(getpid)());
    if (ML_(safe_to_deref)((void*)ARG2, 1)
-       && (VG_(strcmp)((HChar *)ARG2, name) == 0
-           || VG_(strcmp)((HChar *)ARG2, "/proc/curproc/file") == 0)) {
+         && (VG_(strcmp)((HChar *)ARG2, name) == 0
+             || VG_(strcmp)((HChar *)ARG2, "/proc/curproc/file") == 0)) {
       VG_(sprintf)(name, "/proc/self/fd/%d", VG_(cl_exec_fd));
       SET_STATUS_from_SysRes( VG_(do_syscall4)(saved, ARG1, (UWord)name,
-                                                      ARG3, ARG4));
+                              ARG3, ARG4));
    } else {
       /* Normal case */
       SET_STATUS_from_SysRes( VG_(do_syscall4)(saved, ARG1, ARG2, ARG3, ARG4));
@@ -5094,7 +5093,7 @@ POST(sys_readlinkat)
    POST_MEM_WRITE( ARG3, RES );
 }
 
-// SYS_renameat	501
+// SYS_renameat   501
 // int renameat(int fromfd, const char *from, int tofd, const char *to);
 PRE(sys_renameat)
 {
@@ -5106,7 +5105,7 @@ PRE(sys_renameat)
    PRE_MEM_RASCIIZ( "renameat(newpath)", ARG4 );
 }
 
-// SYS_symlinkat	502
+// SYS_symlinkat  502
 // int symlinkat(const char *name1, int fd, const char *name2);
 PRE(sys_symlinkat)
 {
@@ -5118,7 +5117,7 @@ PRE(sys_symlinkat)
    PRE_MEM_RASCIIZ( "symlinkat(name2)", ARG3 );
 }
 
-// SYS_unlinkat	503
+// SYS_unlinkat   503
 // int unlinkat(int fd, const char *path, int flag);
 PRE(sys_unlinkat)
 {
@@ -5128,7 +5127,7 @@ PRE(sys_unlinkat)
    PRE_MEM_RASCIIZ( "unlinkat(path)", ARG2 );
 }
 
-// SYS_posix_openpt	504
+// SYS_posix_openpt  504
 // int posix_openpt(int oflag);
 PRE(sys_posix_openpt)
 {
@@ -5137,59 +5136,59 @@ PRE(sys_posix_openpt)
 
 }
 
-// SYS_gssd_syscall	505
+// SYS_gssd_syscall  505
 // @todo
 // see https://www.freebsd.org/cgi/man.cgi?format=html&query=gssapi(3)
 // syscalls.master says ; 505 is initialised by the kgssapi code, if present.
 
-// SYS_jail_get	506
+// SYS_jail_get   506
 // int jail_get(struct iovec *iov, u_int niov, int flags);
 PRE(sys_jail_get)
 {
-    PRINT("sys_jail_get ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
-    PRE_REG_READ3(int, "jail_get", struct vki_iovec *, iov, unsigned int,
-        niov, int, flags);
-    PRE_MEM_READ("jail_get(iov)", ARG1, ARG2 * sizeof(struct vki_iovec));
+   PRINT("sys_jail_get ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
+   PRE_REG_READ3(int, "jail_get", struct vki_iovec *, iov, unsigned int,
+                 niov, int, flags);
+   PRE_MEM_READ("jail_get(iov)", ARG1, ARG2 * sizeof(struct vki_iovec));
 }
 
-// SYS_jail_set	507
+// SYS_jail_set   507
 // int jail_set(struct iovec *iov, u_int niov, int flags);
 PRE(sys_jail_set)
 {
-    PRINT("sys_jail_set ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
-    PRE_REG_READ3(int, "jail_set", struct vki_iovec *, iov, unsigned int,
-        niov, int, flags);
-    PRE_MEM_READ("jail_set(iovs)", ARG1, ARG2 * sizeof(struct vki_iovec));
+   PRINT("sys_jail_set ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
+   PRE_REG_READ3(int, "jail_set", struct vki_iovec *, iov, unsigned int,
+                 niov, int, flags);
+   PRE_MEM_READ("jail_set(iovs)", ARG1, ARG2 * sizeof(struct vki_iovec));
 }
 
-// SYS_jail_remove	508
+// SYS_jail_remove   508
 // int jail_remove(int jid);
 PRE(sys_jail_remove)
 {
-    PRINT("sys_jail_remove ( %" FMT_REGWORD "d )", SARG1);
-    PRE_REG_READ1(int, "jail_remove", int, jid);
+   PRINT("sys_jail_remove ( %" FMT_REGWORD "d )", SARG1);
+   PRE_REG_READ1(int, "jail_remove", int, jid);
 }
 
-// SYS_closefrom	509
+// SYS_closefrom  509
 // void closefrom(int lowfd);
 PRE(sys_closefrom)
 {
-    PRINT("sys_closefrom ( %" FMT_REGWORD "dx  )", SARG1);
-    PRE_REG_READ1(int, "closefrom", int, lowfd);
+   PRINT("sys_closefrom ( %" FMT_REGWORD "dx  )", SARG1);
+   PRE_REG_READ1(int, "closefrom", int, lowfd);
 
-    /*
-     * Can't pass this on to the kernel otherwise it will close
-     * all of the host files like the log
-     */
+   /*
+    * Can't pass this on to the kernel otherwise it will close
+    * all of the host files like the log
+    */
 
-    for (int i = ARG1; i < VG_(fd_soft_limit); ++i) {
-       VG_(close)(i);
-    }
+   for (int i = ARG1; i < VG_(fd_soft_limit); ++i) {
+      VG_(close)(i);
+   }
 
-    SET_STATUS_Success(0);
+   SET_STATUS_Success(0);
 }
 
-// SYS___semctl	510
+// SYS___semctl   510
 // int semctl(int semid, int semnum, int cmd, ...);
 // int __semctl(int semid, int semnum, int cmd, _Inout_ union semun *arg);
 PRE(sys___semctl)
@@ -5228,7 +5227,7 @@ POST(sys___semctl)
    ML_(generic_POST_sys_semctl)(tid, RES,ARG1,ARG2,ARG3,ARG4);
 }
 
-// SYS_msgctl	511
+// SYS_msgctl  511
 // int msgctl(int msqid, int cmd, struct msqid_ds *buf);
 PRE(sys_msgctl)
 {
@@ -5258,7 +5257,7 @@ POST(sys_msgctl)
 }
 
 
-// SYS_shmctl	512
+// SYS_shmctl  512
 // int shmctl(int shmid, int cmd, struct shmid_ds *buf);
 PRE(sys_shmctl)
 {
@@ -5284,7 +5283,7 @@ POST(sys_shmctl)
    }
 }
 
-// SYS_lpathconf	513
+// SYS_lpathconf  513
 // long lpathconf(const char *path, int name);
 PRE(sys_lpathconf)
 {
@@ -5293,7 +5292,7 @@ PRE(sys_lpathconf)
    PRE_MEM_RASCIIZ("lpathconf(path)", ARG1);
 }
 
-// SYS___cap_rights_get	515
+// SYS___cap_rights_get 515
 // note extra 1st argument for the internal function which is not present
 // in the public interface
 // int __cap_rights_get(int version, int fd, cap_rights_t *rights);
@@ -5309,7 +5308,7 @@ POST(sys_cap_rights_get)
    POST_MEM_WRITE(ARG2, sizeof(vki_cap_rights_t));
 }
 
-// SYS_cap_enter	516
+// SYS_cap_enter  516
 // int cap_enter(void);
 PRE(sys_cap_enter)
 {
@@ -5326,7 +5325,7 @@ PRE(sys_cap_enter)
    }
 }
 
-// SYS_cap_getmode	517
+// SYS_cap_getmode   517
 // int cap_getmode(u_int *modep);
 PRE(sys_cap_getmode)
 {
@@ -5342,13 +5341,13 @@ POST(sys_cap_getmode)
 
 static vki_sigset_t pdfork_saved_mask;
 
-// SYS_pdfork	518
+// SYS_pdfork  518
 // pid_t pdfork(int *fdp, int flags);
 PRE(sys_pdfork)
 {
-    Bool is_child;
-    Int child_pid;
-    vki_sigset_t mask;
+   Bool is_child;
+   Int child_pid;
+   vki_sigset_t mask;
 
    PRINT("sys_pdfork ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )", ARG1, ARG2);
    PRE_REG_READ2(pid_t, "pdfork", int*, fdp, int, flags);
@@ -5389,12 +5388,12 @@ PRE(sys_pdfork)
 
 POST(sys_pdfork)
 {
-    if (ARG1) {
-        POST_MEM_WRITE( ARG1, sizeof(int) );
-    }
+   if (ARG1) {
+      POST_MEM_WRITE( ARG1, sizeof(int) );
+   }
 }
 
-// pdkill	519
+// pdkill   519
 //int pdkill(int fd, int signum)
 PRE(sys_pdkill)
 {
@@ -5413,7 +5412,7 @@ PRE(sys_pdkill)
 
    if (VG_(clo_trace_signals))
       VG_(message)(Vg_DebugMsg, "pdkill: sent signal %ld to fd %ld\n",
-           SARG2, SARG1);
+                   SARG2, SARG1);
 
    /* This kill might have given us a pending signal.  Ask for a check once
       the syscall is done. */
@@ -5421,7 +5420,7 @@ PRE(sys_pdkill)
 
 }
 
-// SYS_pdgetpid	520
+// SYS_pdgetpid   520
 // int pdgetpid(int fd, pid_t *pidp);
 PRE(sys_pdgetpid)
 {
@@ -5436,7 +5435,7 @@ POST(sys_pdgetpid)
    POST_MEM_WRITE( ARG2, sizeof(vki_pid_t) );
 }
 
-// SYS_pselect	522
+// SYS_pselect 522
 
 // int pselect(int nfds, fd_set * restrict readfds, fd_set * restrict writefds,
 //             fd_set * restrict exceptfds,
@@ -5455,13 +5454,13 @@ PRE(sys_pselect)
    // XXX: this possibly understates how much memory is read.
    if (ARG2 != 0)
       PRE_MEM_READ( "pselect(readfds)",
-             ARG2, ARG1/8 /* __FD_SETSIZE/8 */ );
+                    ARG2, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG3 != 0)
       PRE_MEM_READ( "pselect(writefds)",
-             ARG3, ARG1/8 /* __FD_SETSIZE/8 */ );
+                    ARG3, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG4 != 0)
       PRE_MEM_READ( "pselect(exceptfds)",
-             ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
+                    ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
    if (ARG5 != 0)
       PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
 
@@ -5476,7 +5475,7 @@ POST(sys_pselect)
    ML_(free_safe_mask) ( (Addr)ARG6 );
 }
 
-// SYS_getloginclass	523
+// SYS_getloginclass 523
 // int getloginclass(char *name, size_t len);
 PRE(sys_getloginclass)
 {
@@ -5491,7 +5490,7 @@ POST(sys_getloginclass)
    POST_MEM_WRITE(ARG1, ARG2);
 }
 
-// SYS_setloginclass	524
+// SYS_setloginclass 524
 // int setloginclass(const char *name);
 PRE(sys_setloginclass)
 {
@@ -5500,7 +5499,7 @@ PRE(sys_setloginclass)
    PRE_MEM_RASCIIZ("rctl_setloginclass(name)", ARG1);
 }
 
-// SYS_rctl_get_racct	525
+// SYS_rctl_get_racct   525
 // int rctl_get_racct(const char *inbufp, size_t inbuflen, char *outbufp,
 //                    size_t outbuflen);
 PRE(sys_rctl_get_racct)
@@ -5517,7 +5516,7 @@ POST(sys_rctl_get_racct)
    POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_rctl_get_rules	526
+// SYS_rctl_get_rules   526
 // int rctl_get_rules(const char *inbufp, size_t inbuflen, char *outbufp,
 //                    size_t outbuflen);
 PRE(sys_rctl_get_rules)
@@ -5534,7 +5533,7 @@ POST(sys_rctl_get_rules)
    POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_rctl_get_limits	527
+// SYS_rctl_get_limits  527
 // int rctl_get_limits(const char *inbufp, size_t inbuflen, char *outbufp,
 //                     size_t outbuflen);
 PRE(sys_rctl_get_limits)
@@ -5551,7 +5550,7 @@ POST(sys_rctl_get_limits)
    POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_rctl_add_rule	528
+// SYS_rctl_add_rule 528
 // int rctl_add_rule(const char *inbufp, size_t inbuflen, char *outbufp,
 //                   size_t outbuflen);
 PRE(sys_rctl_add_rule)
@@ -5569,7 +5568,7 @@ POST(sys_rctl_add_rule)
    //POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_rctl_remove_rule	529
+// SYS_rctl_remove_rule 529
 // int rctl_remove_rule(const char *inbufp, size_t inbuflen, char *outbufp,
 //          size_t outbuflen);
 PRE(sys_rctl_remove_rule)
@@ -5587,16 +5586,16 @@ POST(sys_rctl_remove_rule)
    //POST_MEM_WRITE(ARG3, ARG4);
 }
 
-// SYS_posix_fallocate	530
+// SYS_posix_fallocate  530
 // x86/amd64
 
-// SYS_posix_fadvise	531
+// SYS_posix_fadvise 531
 // x86/amd64
 
-// SYS_wait6	532
+// SYS_wait6   532
 // amd64 / x86
 
-// SYS_cap_rights_limit	533
+// SYS_cap_rights_limit 533
 //int cap_rights_limit(int fd, const cap_rights_t *rights);
 PRE(sys_cap_rights_limit)
 {
@@ -5606,7 +5605,7 @@ PRE(sys_cap_rights_limit)
    PRE_MEM_READ( "cap_rights_limit(rights)", ARG2, sizeof(struct vki_cap_rights) );
 }
 
-// SYS_cap_ioctls_limit	534
+// SYS_cap_ioctls_limit 534
 // int cap_ioctls_limit(int fd, const unsigned long *cmds, size_t ncmds);
 PRE(sys_cap_ioctls_limit)
 {
@@ -5615,12 +5614,12 @@ PRE(sys_cap_ioctls_limit)
                  int, fd, unsigned long*, rights, vki_size_t, ncmds);
    // "can be up to 256" taking that to not be inclusive
    if (ARG3 < 256 ) {
-       PRE_MEM_READ( "cap_ioctls_limit(cmds))", ARG2, ARG3*sizeof(unsigned long) );
+      PRE_MEM_READ( "cap_ioctls_limit(cmds))", ARG2, ARG3*sizeof(unsigned long) );
    }
    // else fail?
 }
 
-// SYS_cap_ioctls_get	535
+// SYS_cap_ioctls_get   535
 // int cap_ioctls_get(int fd, unsigned long *cmds, size_t maxcmds);
 PRE(sys_cap_ioctls_get)
 {
@@ -5639,7 +5638,7 @@ POST(sys_cap_ioctls_get)
 }
 
 
-// SYS_cap_fcntls_limit	536
+// SYS_cap_fcntls_limit 536
 //int cap_fcntls_limit(int fd, uint32_t fcntlrights);
 PRE(sys_cap_fcntls_limit)
 {
@@ -5648,7 +5647,7 @@ PRE(sys_cap_fcntls_limit)
                  int, fd, vki_uint32_t, fcntlrights);
 }
 
-// SYS_cap_fcntls_get	537
+// SYS_cap_fcntls_get   537
 // int cap_fcntls_get(int fd, uint32_t *fcntlrightsp);
 PRE(sys_cap_fcntls_get)
 {
@@ -5662,7 +5661,7 @@ POST(sys_cap_fcntls_get)
    POST_MEM_WRITE(ARG2, sizeof(uint32_t));
 }
 
-// SYS_bindat	538
+// SYS_bindat  538
 // int bindat(int fd, int s, const struct sockaddr *addr, socklen_t addrlen);
 PRE(sys_bindat)
 {
@@ -5672,7 +5671,7 @@ PRE(sys_bindat)
    PRE_MEM_READ("bindat(name)", ARG3, ARG4);
 }
 
-// SYS_connectat	539
+// SYS_connectat  539
 // int connectat(int fd, int s, const struct sockaddr *name, socklen_t namelen);
 PRE(sys_connectat)
 {
@@ -5682,7 +5681,7 @@ PRE(sys_connectat)
    PRE_MEM_READ("connectat(name)", ARG3, ARG4);
 }
 
-// SYS_chflagsat	540
+// SYS_chflagsat  540
 // int chflagsat(int fd, const char *path, unsigned long flags, int atflag);
 PRE(sys_chflagsat)
 {
@@ -5692,7 +5691,7 @@ PRE(sys_chflagsat)
    PRE_MEM_RASCIIZ("chflagsat(path)", ARG2);
 }
 
-// SYS_accept4	541
+// SYS_accept4 541
 // int accept4(int s, struct sockaddr * restrict addr,
 //             socklen_t * restrict addrlen, int flags);
 PRE(sys_accept4)
@@ -5709,11 +5708,11 @@ POST(sys_accept4)
    SysRes r;
    vg_assert(SUCCESS);
    r = ML_(generic_POST_sys_accept)(tid, VG_(mk_SysRes_Success)(RES),
-                                         ARG1,ARG2,ARG3);
+                                    ARG1,ARG2,ARG3);
    SET_STATUS_from_SysRes(r);
 }
 
-// SYS_pipe2	542
+// SYS_pipe2   542
 // int pipe2(int fildes[2], int flags);
 PRE(sys_pipe2)
 {
@@ -5735,7 +5734,7 @@ POST(sys_pipe2)
    fildes = (int *)ARG1;
 
    if (!ML_(fd_allowed)(fildes[0], "pipe2", tid, True) ||
-       !ML_(fd_allowed)(fildes[1], "pipe2", tid, True)) {
+         !ML_(fd_allowed)(fildes[1], "pipe2", tid, True)) {
       VG_(close)(fildes[0]);
       VG_(close)(fildes[1]);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -5745,7 +5744,7 @@ POST(sys_pipe2)
    }
 }
 
-// SYS_aio_mlock	543
+// SYS_aio_mlock  543
 // int aio_mlock(struct aiocb *iocb);
 PRE(sys_aio_mlock)
 {
@@ -5756,10 +5755,10 @@ PRE(sys_aio_mlock)
    // anything extra
 }
 
-// SYS_procctl	544
+// SYS_procctl 544
 // amd64 / x86
 
-// SYS_ppoll	545
+// SYS_ppoll   545
 // int ppoll(struct pollfd fds[], nfds_t nfds,
 //           const struct timespec * restrict timeout,
 //           const sigset_t * restrict newsigmask);
@@ -5788,7 +5787,7 @@ PRE(sys_ppoll)
 
    if (ARG3) {
       PRE_MEM_READ( "ppoll(timeout)", ARG3,
-                       sizeof(struct vki_timespec) );
+                    sizeof(struct vki_timespec) );
    }
    if (ARG4) {
       PRE_MEM_READ( "ppoll(newsigmask)", ARG4, sizeof(vki_sigset_t));
@@ -5807,7 +5806,7 @@ POST(sys_ppoll)
    ML_(free_safe_mask) ( (Addr)ARG4 );
 }
 
-// SYS_futimens	546
+// SYS_futimens   546
 // int futimens(int fd, const struct timespec times[2]);
 PRE(sys_futimens)
 {
@@ -5816,7 +5815,7 @@ PRE(sys_futimens)
    PRE_MEM_READ("futimens(times)", ARG2, 2*sizeof(struct vki_timespec));
 }
 
-// SYS_utimensat	547
+// SYS_utimensat  547
 // int utimensat(int fd, const char *path, const struct timespec times[2],
 //               int flag);
 PRE(sys_utimensat)
@@ -5829,7 +5828,7 @@ PRE(sys_utimensat)
    PRE_MEM_READ("utimensat(times)", ARG3, 2*sizeof(struct vki_timespec));
 }
 
-// SYS_fdatasync	550
+// SYS_fdatasync  550
 // int fdatasync(int fd);
 PRE(sys_fdatasync)
 {
@@ -5838,7 +5837,7 @@ PRE(sys_fdatasync)
 }
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-// SYS_fstat	551
+// SYS_fstat   551
 // int fstat(int fd, struct stat *sb);
 PRE(sys_fstat)
 {
@@ -5852,7 +5851,7 @@ POST(sys_fstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
-// SYS_fstatat	552
+// SYS_fstatat 552
 // int fstatat(int fd, const char *path, struct stat *sb, int flag);
 PRE(sys_fstatat)
 {
@@ -5867,7 +5866,7 @@ POST(sys_fstatat)
 {
    POST_MEM_WRITE( ARG3, sizeof(struct vki_stat) );
 }
-// SYS_fhstat	553
+// SYS_fhstat  553
 // int fhstat(const fhandle_t *fhp, struct stat *sb);
 PRE(sys_fhstat)
 {
@@ -5882,7 +5881,7 @@ POST(sys_fhstat)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_stat) );
 }
 
-// SYS_getdirentries	554
+// SYS_getdirentries 554
 // ssize_t getdirentries(int fd, char *buf, size_t nbytes, off_t *basep);
 PRE(sys_getdirentries)
 {
@@ -5907,7 +5906,7 @@ POST(sys_getdirentries)
    }
 }
 
-// SYS_statfs	555
+// SYS_statfs  555
 // int statfs(const char *path, struct statfs *buf);
 PRE(sys_statfs)
 {
@@ -5922,7 +5921,7 @@ POST(sys_statfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
-// SYS_fstatfs	556
+// SYS_fstatfs 556
 // int fstatfs(int fd, struct statfs *buf);
 PRE(sys_fstatfs)
 {
@@ -5937,7 +5936,7 @@ POST(sys_fstatfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
-// SYS_getfsstat	557
+// SYS_getfsstat  557
 // int getfsstat(struct statfs *buf, long bufsize, int mode);
 PRE(sys_getfsstat)
 {
@@ -5954,7 +5953,7 @@ POST(sys_getfsstat)
    }
 }
 
-// SYS_fhstatfs	558
+// SYS_fhstatfs   558
 // int fhstatfs(const fhandle_t *fhp, struct statfs *buf);
 PRE(sys_fhstatfs)
 {
@@ -5970,17 +5969,17 @@ POST(sys_fhstatfs)
    POST_MEM_WRITE( ARG2, sizeof(struct vki_statfs) );
 }
 
-// SYS_mknodat	559
+// SYS_mknodat 559
 // int mknodat(int fd, const char *path, mode_t mode, dev_t dev);
 PRE(sys_mknodat)
 {
-  PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+   PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
    PRE_REG_READ4(long, "mknodat",
                  int, fd, const char *, path, vki_mode_t, mode, vki_dev_t, dev);
    PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
 }
 
-// SYS_kevent	560
+// SYS_kevent  560
 // int kevent(int kq, const struct kevent *changelist, int nchanges,
 //            struct kevent *eventlist, int nevents,
 //            const struct timespec *timeout);
@@ -6010,17 +6009,17 @@ POST(sys_kevent)
    }
 }
 
-// SYS_cpuset_getdomain	561
+// SYS_cpuset_getdomain 561
 // x86 / amd64
 
-// SYS_cpuset_setdomain	562
+// SYS_cpuset_setdomain 562
 // x86 / amd64
 
-// SYS_getrandom	563
+// SYS_getrandom  563
 // ssize_t  getrandom(void *buf, size_t buflen, unsigned int flags);
 PRE(sys_getrandom)
 {
-   PRINT("sys_getrandom ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )" , ARG1, ARG2, ARG3);
+   PRINT("sys_getrandom ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(ssize_t, "getrandom",
                  void *, buf, vki_size_t, buflen, unsigned int, flags);
    PRE_MEM_WRITE( "getrandom(buf)", ARG1, ARG2 );
@@ -6034,7 +6033,7 @@ POST(sys_getrandom)
    POST_MEM_WRITE( ARG1, ARG2 );
 }
 
-// SYS_getfhat	564
+// SYS_getfhat 564
 // int getfhat(int fd, const char *path, fhandle_t *fhp, int flag);
 PRE(sys_getfhat)
 {
@@ -6049,7 +6048,7 @@ POST(sys_getfhat)
    POST_MEM_WRITE(ARG3, sizeof(vki_fhandle_t));
 }
 
-// SYS_fhlink	565
+// SYS_fhlink  565
 // int fhlink(fhandle_t *fhp, const char *to);
 PRE(sys_fhlink)
 {
@@ -6059,7 +6058,7 @@ PRE(sys_fhlink)
    PRE_MEM_RASCIIZ("fhlink(buf)", ARG2);
 }
 
-// SYS_fhlinkat	566
+// SYS_fhlinkat   566
 // int fhlinkat(fhandle_t *fhp, int tofd, const char *to);
 PRE(sys_fhlinkat)
 {
@@ -6069,7 +6068,7 @@ PRE(sys_fhlinkat)
    PRE_MEM_RASCIIZ("fhreadlink(to)", ARG3);
 }
 
-// SYS_fhreadlink	567
+// SYS_fhreadlink 567
 // int fhreadlink(fhandle_t *fhp, char *buf, size_t bufsize);
 PRE(sys_fhreadlink)
 {
@@ -6133,7 +6132,7 @@ PRE(sys___sysctlbyname)
          }
       } else {
          // case 1 above
-          PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+         PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       }
    }
 }
@@ -6144,8 +6143,7 @@ POST(sys___sysctlbyname)
       if (ARG3 != (UWord)NULL) {
          //POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
          POST_MEM_WRITE((Addr)ARG3, *(vki_size_t *)ARG4);
-      }
-      else
+      } else
          POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
    }
 }
@@ -6399,15 +6397,15 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // obs lfs_segclean                                     186
    // obs lfs_segwait                                      187
 
- #if (FREEBSD_VERS >= FREEBSD_12)
+#if (FREEBSD_VERS >= FREEBSD_12)
    BSDXY(__NR_freebsd11_stat,   sys_freebsd11_stat),    // 188
    BSDXY(__NR_freebsd11_fstat,  sys_freebsd11_fstat),   // 189
    BSDXY(__NR_freebsd11_lstat,  sys_freebsd11_lstat),   // 190
- #else
+#else
    BSDXY(__NR_stat,             sys_stat),              // 188
    BSDXY(__NR_fstat,            sys_fstat),             // 189
    BSDXY(__NR_lstat,            sys_lstat),             // 190
- #endif
+#endif
    BSDX_(__NR_pathconf,         sys_pathconf),          // 191
    BSDX_(__NR_fpathconf,        sys_fpathconf),         // 192
    GENXY(__NR_getrlimit,        sys_getrlimit),         // 194

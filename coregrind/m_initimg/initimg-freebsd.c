@@ -63,9 +63,9 @@
 
 /* Load the client whose name is VG_(argv_the_exename). */
 
-static void load_client ( /*OUT*/ExeInfo* info, 
+static void load_client ( /*OUT*/ExeInfo* info,
                           /*OUT*/Addr*    client_ip,
-			  /*OUT*/Addr*    client_toc)
+                          /*OUT*/Addr*    client_toc)
 {
    const HChar* exe_name;
    Int    ret;
@@ -148,10 +148,10 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
       paths.  We might not need the space for vgpreload_<tool>.so, but it
       doesn't hurt to over-allocate briefly.  The 16s are just cautious
       slop. */
-   Int preload_core_path_len = vglib_len + sizeof(preload_core) 
-                                         + sizeof(VG_PLATFORM) + 16;
-   Int preload_tool_path_len = vglib_len + VG_(strlen)(toolname) 
-                                         + sizeof(VG_PLATFORM) + 16;
+   Int preload_core_path_len = vglib_len + sizeof(preload_core)
+                               + sizeof(VG_PLATFORM) + 16;
+   Int preload_tool_path_len = vglib_len + VG_(strlen)(toolname)
+                               + sizeof(VG_PLATFORM) + 16;
    Int preload_string_len    = preload_core_path_len + preload_tool_path_len;
    HChar* preload_string     = VG_(malloc)("initimg-freebsd.sce.1",
                                            preload_string_len);
@@ -161,10 +161,10 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    VG_(snprintf)(preload_tool_path, preload_tool_path_len,
                  "%s/vgpreload_%s-%s.so", VG_(libdir), toolname, VG_PLATFORM);
    if (VG_(access)(preload_tool_path, True/*r*/, False/*w*/, False/*x*/) == 0) {
-      VG_(snprintf)(preload_string, preload_string_len, "%s/%s-%s.so:%s", 
+      VG_(snprintf)(preload_string, preload_string_len, "%s/%s-%s.so:%s",
                     VG_(libdir), preload_core, VG_PLATFORM, preload_tool_path);
    } else {
-      VG_(snprintf)(preload_string, preload_string_len, "%s/%s-%s.so", 
+      VG_(snprintf)(preload_string, preload_string_len, "%s/%s-%s.so",
                     VG_(libdir), preload_core, VG_PLATFORM);
    }
    VG_(free)(preload_tool_path);
@@ -191,7 +191,7 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    }
    *cpp = NULL;
    *(cpp + 1) = NULL;
-   
+
    vg_assert(envc == (cpp - ret));
 
    /* Walk over the new environment, mashing as we go */
@@ -227,27 +227,27 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
     * chroot.  Cover both cases. */
    if (VG_(is32on64)()) {
       for (cpp = ret; cpp && *cpp; cpp++) {
-        if (VG_(memcmp)(*cpp, ld_32_preload, ld_32_preload_len) == 0) {
-           Int len = VG_(strlen)(*cpp) + preload_string_len;
-           HChar *cp = VG_(malloc)("initimg-freebsd.sce.4a", len);
-           vg_assert(cp);
+         if (VG_(memcmp)(*cpp, ld_32_preload, ld_32_preload_len) == 0) {
+            Int len = VG_(strlen)(*cpp) + preload_string_len;
+            HChar *cp = VG_(malloc)("initimg-freebsd.sce.4a", len);
+            vg_assert(cp);
 
-           VG_(snprintf)(cp, len, "%s%s:%s",
-                         ld_32_preload, preload_string, (*cpp)+ld_32_preload_len);
+            VG_(snprintf)(cp, len, "%s%s:%s",
+                          ld_32_preload, preload_string, (*cpp)+ld_32_preload_len);
 
-           *cpp = cp;
+            *cpp = cp;
 
-           ld_32_preload_done = True;
-        }
+            ld_32_preload_done = True;
+         }
       }
       if (!ld_32_preload_done) {
-        Int len = ld_32_preload_len + preload_string_len;
-        HChar *cp = VG_(malloc) ("initimg-freebsd.sce.5a", len);
-        vg_assert(cp);
+         Int len = ld_32_preload_len + preload_string_len;
+         HChar *cp = VG_(malloc) ("initimg-freebsd.sce.5a", len);
+         vg_assert(cp);
 
-        VG_(snprintf)(cp, len, "%s%s", ld_32_preload, preload_string);
+         VG_(snprintf)(cp, len, "%s%s", ld_32_preload, preload_string);
 
-        ret[envc++] = cp;
+         ret[envc++] = cp;
       }
    }
 #endif
@@ -299,7 +299,7 @@ static HChar *copy_str(HChar **tab, const HChar *str)
 
 
 /* ----------------------------------------------------------------
- 
+
    This sets up the client's initial stack, containing the args,
    environment and aux vector.
 
@@ -307,25 +307,25 @@ static HChar *copy_str(HChar **tab, const HChar *str)
 
    higher address +-----------------+ <- clstack_end
                   |                 |
-		  : string table    :
-		  |                 |
-		  +-----------------+
-		  | AT_NULL         |
-		  -                 -
-		  | auxv            |
-		  +-----------------+
-		  | NULL            |
-		  -                 -
-		  | envp            |
-		  +-----------------+
-		  | NULL            |
-		  -                 -
-		  | argv            |
-		  +-----------------+
-		  | argc            |
+        : string table    :
+        |                 |
+        +-----------------+
+        | AT_NULL         |
+        -                 -
+        | auxv            |
+        +-----------------+
+        | NULL            |
+        -                 -
+        | envp            |
+        +-----------------+
+        | NULL            |
+        -                 -
+        | argv            |
+        +-----------------+
+        | argc            |
    lower address  +-----------------+ <- sp
                   | undefined       |
-		  :                 :
+        :                 :
 
    Allocate and create the initial client stack.  It is allocated down
    from clstack_end, which was previously determined by the address
@@ -340,8 +340,7 @@ static HChar *copy_str(HChar **tab, const HChar *str)
 
    ---------------------------------------------------------------- */
 
-struct auxv
-{
+struct auxv {
    Word a_type;
    union {
       void *a_ptr;
@@ -365,9 +364,9 @@ struct auxv *find_auxv(UWord* sp)
    return (struct auxv *)sp;
 }
 
-static 
+static
 Addr setup_client_stack( void*  init_sp,
-                         HChar** orig_envp, 
+                         HChar** orig_envp,
                          const ExeInfo* info,
                          UInt** client_auxv,
                          Addr   clstack_end,
@@ -375,18 +374,18 @@ Addr setup_client_stack( void*  init_sp,
 {
    SysRes res;
    HChar **cpp;
-   HChar *strtab;		/* string table */
+   HChar *strtab;    /* string table */
    HChar *stringbase;
    Addr *ptr;
    struct auxv *auxv;
    const struct auxv *orig_auxv;
    const struct auxv *cauxv;
-   unsigned stringsize;		/* total size of strings in bytes */
-   unsigned auxsize;		/* total size of auxv in bytes */
-   Int argc;			/* total argc */
-   Int envc;			/* total number of env vars */
-   unsigned stacksize;		/* total client stack size */
-   Addr client_SP;	        /* client stack base (initial SP) */
+   unsigned stringsize;    /* total size of strings in bytes */
+   unsigned auxsize;    /* total size of auxv in bytes */
+   Int argc;         /* total argc */
+   Int envc;         /* total number of env vars */
+   unsigned stacksize;     /* total client stack size */
+   Addr client_SP;           /* client stack base (initial SP) */
    Addr clstack_start;
    Int i;
    Bool have_exename;
@@ -403,7 +402,7 @@ Addr setup_client_stack( void*  init_sp,
    stringsize   = 0;
    have_exename = VG_(args_the_exename) != NULL;
 
-   /* paste on the extra args if the loader needs them (ie, the #! 
+   /* paste on the extra args if the loader needs them (ie, the #!
       interpreter and its argument) */
    argc = 0;
    if (info->interp_name != NULL) {
@@ -421,8 +420,8 @@ Addr setup_client_stack( void*  init_sp,
 
    for (i = 0; i < VG_(sizeXA)( VG_(args_for_client) ); i++) {
       argc++;
-      stringsize += VG_(strlen)( * (HChar**) 
-                                   VG_(indexXA)( VG_(args_for_client), i ))
+      stringsize += VG_(strlen)( * (HChar**)
+                                 VG_(indexXA)( VG_(args_for_client), i ))
                     + 1;
    }
 
@@ -434,7 +433,7 @@ Addr setup_client_stack( void*  init_sp,
    }
 
    /* now, how big is the auxv? */
-   auxsize = sizeof(*auxv);	/* there's always at least one entry: AT_NULL */
+   auxsize = sizeof(*auxv);   /* there's always at least one entry: AT_NULL */
    for (cauxv = orig_auxv; cauxv->a_type != AT_NULL; cauxv++) {
       auxsize += sizeof(*cauxv);
    }
@@ -457,7 +456,7 @@ Addr setup_client_stack( void*  init_sp,
    client_SP = VG_ROUNDDN(client_SP, 16); /* make stack 16 byte aligned */
 
    /* base of the string table (aligned) */
-   stringbase = strtab = (HChar *)clstack_end 
+   stringbase = strtab = (HChar *)clstack_end
                          - VG_ROUNDUP(stringsize, sizeof(int));
 
    clstack_start = VG_PGROUNDDN(client_SP);
@@ -474,78 +473,79 @@ Addr setup_client_stack( void*  init_sp,
 
    /* ==================== allocate space ==================== */
 
-   { SizeT anon_size   = clstack_end - clstack_start + 1;
-     SizeT resvn_size  = clstack_max_size - anon_size;
-     Addr  anon_start  = clstack_start;
-     Addr  resvn_start = anon_start - resvn_size;
-     SizeT inner_HACK  = 0;
-     Bool  ok;
+   {
+      SizeT anon_size   = clstack_end - clstack_start + 1;
+      SizeT resvn_size  = clstack_max_size - anon_size;
+      Addr  anon_start  = clstack_start;
+      Addr  resvn_start = anon_start - resvn_size;
+      SizeT inner_HACK  = 0;
+      Bool  ok;
 
-     /* So far we've only accounted for space requirements down to the
-        stack pointer.  If this target's ABI requires a redzone below
-        the stack pointer, we need to allocate an extra page, to
-        handle the worst case in which the stack pointer is almost at
-        the bottom of a page, and so there is insufficient room left
-        over to put the redzone in.  In this case the simple thing to
-        do is allocate an extra page, by shrinking the reservation by
-        one page and growing the anonymous area by a corresponding
-        page. */
-     vg_assert(VG_STACK_REDZONE_SZB >= 0);
-     vg_assert(VG_STACK_REDZONE_SZB < VKI_PAGE_SIZE);
-     if (VG_STACK_REDZONE_SZB > 0) {
-        vg_assert(resvn_size > VKI_PAGE_SIZE);
-        resvn_size -= VKI_PAGE_SIZE;
-        anon_start -= VKI_PAGE_SIZE;
-        anon_size += VKI_PAGE_SIZE;
-     }
+      /* So far we've only accounted for space requirements down to the
+         stack pointer.  If this target's ABI requires a redzone below
+         the stack pointer, we need to allocate an extra page, to
+         handle the worst case in which the stack pointer is almost at
+         the bottom of a page, and so there is insufficient room left
+         over to put the redzone in.  In this case the simple thing to
+         do is allocate an extra page, by shrinking the reservation by
+         one page and growing the anonymous area by a corresponding
+         page. */
+      vg_assert(VG_STACK_REDZONE_SZB >= 0);
+      vg_assert(VG_STACK_REDZONE_SZB < VKI_PAGE_SIZE);
+      if (VG_STACK_REDZONE_SZB > 0) {
+         vg_assert(resvn_size > VKI_PAGE_SIZE);
+         resvn_size -= VKI_PAGE_SIZE;
+         anon_start -= VKI_PAGE_SIZE;
+         anon_size += VKI_PAGE_SIZE;
+      }
 
-     vg_assert(VG_IS_PAGE_ALIGNED(anon_size));
-     vg_assert(VG_IS_PAGE_ALIGNED(resvn_size));
-     vg_assert(VG_IS_PAGE_ALIGNED(anon_start));
-     vg_assert(VG_IS_PAGE_ALIGNED(resvn_start));
-     vg_assert(resvn_start == clstack_end + 1 - clstack_max_size);
+      vg_assert(VG_IS_PAGE_ALIGNED(anon_size));
+      vg_assert(VG_IS_PAGE_ALIGNED(resvn_size));
+      vg_assert(VG_IS_PAGE_ALIGNED(anon_start));
+      vg_assert(VG_IS_PAGE_ALIGNED(resvn_start));
+      vg_assert(resvn_start == clstack_end + 1 - clstack_max_size);
 
 #    ifdef ENABLE_INNER
-     inner_HACK = 1024*1024; // create 1M non-fault-extending stack
+      inner_HACK = 1024*1024; // create 1M non-fault-extending stack
 #    endif
 
-     if (0)
-        VG_(printf)("%#lx 0x%lx  %#lx 0x%lx\n",
-                    resvn_start, resvn_size, anon_start, anon_size);
+      if (0)
+         VG_(printf)("%#lx 0x%lx  %#lx 0x%lx\n",
+                     resvn_start, resvn_size, anon_start, anon_size);
 
-     /* Create a shrinkable reservation followed by an anonymous
-        segment.  Together these constitute a growdown stack. */
-     res = VG_(mk_SysRes_Error)(0);
-     ok = VG_(am_create_reservation)(
-             resvn_start,
-             resvn_size -inner_HACK,
-             SmUpper, 
-             anon_size +inner_HACK
-          );
-     if (ok) {
-        /* allocate a stack - mmap enough space for the stack */
-        res = VG_(am_mmap_anon_fixed_client)(
-                 anon_start -inner_HACK,
-                 anon_size +inner_HACK,
-	         VKI_PROT_READ|VKI_PROT_WRITE|VKI_PROT_EXEC
-	      );
-     }
-     if ((!ok) || sr_isError(res)) {
-        /* Allocation of the stack failed.  We have to stop. */
-        VG_(printf)("valgrind: "
-                    "I failed to allocate space for the application's stack.\n");
-        VG_(printf)("valgrind: "
-                    "This may be the result of a very large --main-stacksize=\n");
-        VG_(printf)("valgrind: setting.  Cannot continue.  Sorry.\n\n");
-        VG_(exit)(1);
-     }
+      /* Create a shrinkable reservation followed by an anonymous
+         segment.  Together these constitute a growdown stack. */
+      res = VG_(mk_SysRes_Error)(0);
+      ok = VG_(am_create_reservation)(
+              resvn_start,
+              resvn_size -inner_HACK,
+              SmUpper,
+              anon_size +inner_HACK
+           );
+      if (ok) {
+         /* allocate a stack - mmap enough space for the stack */
+         res = VG_(am_mmap_anon_fixed_client)(
+                  anon_start -inner_HACK,
+                  anon_size +inner_HACK,
+                  VKI_PROT_READ|VKI_PROT_WRITE|VKI_PROT_EXEC
+               );
+      }
+      if ((!ok) || sr_isError(res)) {
+         /* Allocation of the stack failed.  We have to stop. */
+         VG_(printf)("valgrind: "
+                     "I failed to allocate space for the application's stack.\n");
+         VG_(printf)("valgrind: "
+                     "This may be the result of a very large --main-stacksize=\n");
+         VG_(printf)("valgrind: setting.  Cannot continue.  Sorry.\n\n");
+         VG_(exit)(1);
+      }
 
-     vg_assert(ok);
-     vg_assert(!sr_isError(res)); 
+      vg_assert(ok);
+      vg_assert(!sr_isError(res));
 
-     /* Record stack extent -- needed for stack-change code. */
-     VG_(clstk_start_base) = anon_start -inner_HACK;
-     VG_(clstk_end)  = VG_(clstk_start_base) + anon_size +inner_HACK -1;
+      /* Record stack extent -- needed for stack-change code. */
+      VG_(clstk_start_base) = anon_start -inner_HACK;
+      VG_(clstk_end)  = VG_(clstk_start_base) + anon_size +inner_HACK -1;
 
    }
 
@@ -567,9 +567,9 @@ Addr setup_client_stack( void*  init_sp,
 
    for (i = 0; i < VG_(sizeXA)( VG_(args_for_client) ); i++) {
       *ptr++ = (Addr)copy_str(
-                       &strtab, 
-                       * (HChar**) VG_(indexXA)( VG_(args_for_client), i )
-                     );
+                  &strtab,
+                  * (HChar**) VG_(indexXA)( VG_(args_for_client), i )
+               );
    }
    *ptr++ = 0;
 
@@ -624,95 +624,91 @@ Addr setup_client_stack( void*  init_sp,
       /* ...and fix up / examine the copy */
       switch(auxv->a_type) {
 
-         case AT_IGNORE:
-         case AT_PHENT:
-         case AT_PAGESZ:
-         case AT_FLAGS:
-         case AT_NOTELF:
-         case AT_UID:
-         case AT_EUID:
-         case AT_GID:
-         case AT_EGID:
-         case AT_STACKPROT:
-         case AT_NCPUS:
-         case AT_OSRELDATE:
+      case AT_IGNORE:
+      case AT_PHENT:
+      case AT_PAGESZ:
+      case AT_FLAGS:
+      case AT_NOTELF:
+      case AT_UID:
+      case AT_EUID:
+      case AT_GID:
+      case AT_EGID:
+      case AT_STACKPROT:
+      case AT_NCPUS:
+      case AT_OSRELDATE:
 #if (FREEBSD_VERS >= FREEBSD_11)
-         // FreeBSD 11+ also have HWCAP and HWCAP2
-         case AT_EHDRFLAGS:
+      // FreeBSD 11+ also have HWCAP and HWCAP2
+      case AT_EHDRFLAGS:
 #endif
-            /* All these are pointerless, so we don't need to do
-               anything about them. */
-            break;
-        // case AT_CANARYLEN:
-        // case AT_EXECPATH:
-        // case AT_CANARY:
+         /* All these are pointerless, so we don't need to do
+            anything about them. */
+         break;
+         // case AT_CANARYLEN:
+         // case AT_EXECPATH:
+         // case AT_CANARY:
 #if defined(VGP_x86_freebsd)
-         case AT_PAGESIZESLEN:
-             if (!VG_(is32on64)())
-             {
-                 VG_(debugLog)(2, "initimg",
-                                  "stomping auxv entry %llu\n",
-                                  (ULong)auxv->a_type);
-                 auxv->a_type = AT_IGNORE;
-             }
-             break;
-         case AT_PAGESIZES:
-             if (VG_(is32on64)())
-             {
-                 pagesizes = VG_(malloc)("initimg-freebsd.cpauxv.1", 2*sizeof(int));
-                 pagesizes[0] = ((int*)auxv->u.a_ptr)[0];
-                 pagesizes[1] = ((int*)auxv->u.a_ptr)[1];
-             }
-             else
-             {
-                 VG_(debugLog)(2, "initimg",
-                                  "stomping auxv entry %llu\n",
-                                  (ULong)auxv->a_type);
-                 auxv->a_type = AT_IGNORE;
-             }
-          break;
+      case AT_PAGESIZESLEN:
+         if (!VG_(is32on64)()) {
+            VG_(debugLog)(2, "initimg",
+                          "stomping auxv entry %llu\n",
+                          (ULong)auxv->a_type);
+            auxv->a_type = AT_IGNORE;
+         }
+         break;
+      case AT_PAGESIZES:
+         if (VG_(is32on64)()) {
+            pagesizes = VG_(malloc)("initimg-freebsd.cpauxv.1", 2*sizeof(int));
+            pagesizes[0] = ((int*)auxv->u.a_ptr)[0];
+            pagesizes[1] = ((int*)auxv->u.a_ptr)[1];
+         } else {
+            VG_(debugLog)(2, "initimg",
+                          "stomping auxv entry %llu\n",
+                          (ULong)auxv->a_type);
+            auxv->a_type = AT_IGNORE;
+         }
+         break;
 #endif
-        // case AT_TIMEKEEP:
-            break;
+         // case AT_TIMEKEEP:
+         break;
 
 #if (FREEBSD_VERS >= FREEBSD_13)
-         case AT_BSDFLAGS:
-         case AT_ARGC:
-         // case AT_ARGV:
-         case AT_ENVC:
+      case AT_BSDFLAGS:
+      case AT_ARGC:
+      // case AT_ARGV:
+      case AT_ENVC:
          // case AT_ENVV:
          // case AT_PS_STRINGS:
 #endif
 
-         case AT_PHDR:
-            if (info->phdr == 0)
-               auxv->a_type = AT_IGNORE;
-            else
-               auxv->u.a_val = info->phdr;
-            break;
-
-         case AT_PHNUM:
-            if (info->phdr == 0)
-               auxv->a_type = AT_IGNORE;
-            else
-               auxv->u.a_val = info->phnum;
-            break;
-
-         case AT_BASE:
-            auxv->u.a_val = info->interp_offset;
-            break;
-
-         case AT_ENTRY:
-            auxv->u.a_val = info->entry;
-            break;
-
-         default:
-            /* stomp out anything we don't know about */
-            VG_(debugLog)(2, "initimg",
-                             "stomping auxv entry %llu\n",
-                             (ULong)auxv->a_type);
+      case AT_PHDR:
+         if (info->phdr == 0)
             auxv->a_type = AT_IGNORE;
-            break;
+         else
+            auxv->u.a_val = info->phdr;
+         break;
+
+      case AT_PHNUM:
+         if (info->phdr == 0)
+            auxv->a_type = AT_IGNORE;
+         else
+            auxv->u.a_val = info->phnum;
+         break;
+
+      case AT_BASE:
+         auxv->u.a_val = info->interp_offset;
+         break;
+
+      case AT_ENTRY:
+         auxv->u.a_val = info->entry;
+         break;
+
+      default:
+         /* stomp out anything we don't know about */
+         VG_(debugLog)(2, "initimg",
+                       "stomping auxv entry %llu\n",
+                       (ULong)auxv->a_type);
+         auxv->a_type = AT_IGNORE;
+         break;
       }
    }
    *auxv = *orig_auxv;
@@ -751,10 +747,10 @@ static void setup_client_dataseg ( SizeT max_size )
 
    /* Try to create the data seg and associated reservation where
       VG_(brk_base) says. */
-   ok = VG_(am_create_reservation)( 
-           resvn_start, 
-           resvn_size, 
-           SmLower, 
+   ok = VG_(am_create_reservation)(
+           resvn_start,
+           resvn_size,
+           SmLower,
            anon_size
         );
 
@@ -762,13 +758,13 @@ static void setup_client_dataseg ( SizeT max_size )
       /* Hmm, that didn't work.  Well, let aspacem suggest an address
          it likes better, and try again with that. */
       anon_start = VG_(am_get_advisory_client_simple)
-                      ( 0/*floating*/, anon_size+resvn_size, &ok );
+                   ( 0/*floating*/, anon_size+resvn_size, &ok );
       if (ok) {
          resvn_start = anon_start + anon_size;
-         ok = VG_(am_create_reservation)( 
-                 resvn_start, 
-                 resvn_size, 
-                 SmLower, 
+         ok = VG_(am_create_reservation)(
+                 resvn_start,
+                 resvn_size,
+                 SmLower,
                  anon_size
               );
          if (ok)
@@ -784,9 +780,9 @@ static void setup_client_dataseg ( SizeT max_size )
       segment is RWX natively, at least according to /proc/self/maps.
       Also, having a non-executable data seg would kill any program which
       tried to create code in the data seg and then run it. */
-   sres = VG_(am_mmap_anon_fixed_client)( 
-             anon_start, 
-             anon_size, 
+   sres = VG_(am_mmap_anon_fixed_client)(
+             anon_start,
+             anon_size,
              VKI_PROT_READ|VKI_PROT_WRITE|VKI_PROT_EXEC
           );
    vg_assert(!sr_isError(sres));
@@ -800,7 +796,7 @@ static void setup_client_dataseg ( SizeT max_size )
 
 /* Create the client's initial memory image. */
 IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
-                                          const VexArchInfo* vex_archinfo )
+      const VexArchInfo* vex_archinfo )
 {
    ExeInfo info;
    HChar** env = NULL;
@@ -862,36 +858,36 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
       if (szB < m1) szB = m1;
       szB = VG_PGROUNDUP(szB);
       VG_(debugLog)(1, "initimg",
-                       "Setup client stack: size will be %lu\n", szB);
+                    "Setup client stack: size will be %lu\n", szB);
 
       iifii.clstack_max_size = szB;
 
       iifii.initial_client_SP
-         = setup_client_stack( init_sp, env, 
-                               &info, &iifii.client_auxv, 
+         = setup_client_stack( init_sp, env,
+                               &info, &iifii.client_auxv,
                                iicii.clstack_end, iifii.clstack_max_size );
 
       VG_(free)(env);
 
       VG_(debugLog)(2, "initimg",
-                       "Client info: "
-                       "initial_IP=%p initial_TOC=%p brk_base=%p\n",
-                       (void*)(iifii.initial_client_IP), 
-                       (void*)(iifii.initial_client_TOC),
-                       (void*)VG_(brk_base) );
+                    "Client info: "
+                    "initial_IP=%p initial_TOC=%p brk_base=%p\n",
+                    (void*)(iifii.initial_client_IP),
+                    (void*)(iifii.initial_client_TOC),
+                    (void*)VG_(brk_base) );
       VG_(debugLog)(2, "initimg",
-                       "Client info: "
-                       "initial_SP=%p max_stack_size=%lu\n",
-                       (void*)(iifii.initial_client_SP),
-                       (SizeT)iifii.clstack_max_size );
+                    "Client info: "
+                    "initial_SP=%p max_stack_size=%lu\n",
+                    (void*)(iifii.initial_client_SP),
+                    (SizeT)iifii.clstack_max_size );
    }
 
    //--------------------------------------------------------------
    // Setup client data (brk) segment.  Initially a 1-page segment
-   // which abuts a shrinkable reservation. 
+   // which abuts a shrinkable reservation.
    //     p: load_client()     [for 'info' and hence VG_(brk_base)]
    //--------------------------------------------------------------
-   { 
+   {
       SizeT m1 = 1024 * 1024;
       SizeT m8 = 8 * m1;
       SizeT dseg_max_size = (SizeT)VG_(client_rlimit_data).rlim_cur;
@@ -903,8 +899,10 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
       setup_client_dataseg( dseg_max_size );
    }
 
-   VG_(free)(info.interp_name); info.interp_name = NULL;
-   VG_(free)(info.interp_args); info.interp_args = NULL;
+   VG_(free)(info.interp_name);
+   info.interp_name = NULL;
+   VG_(free)(info.interp_args);
+   info.interp_args = NULL;
    return iifii;
 }
 
