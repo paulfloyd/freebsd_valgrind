@@ -3,7 +3,7 @@
    This file is part of Valgrind, a dynamic binary instrumentation
    framework.
 
-   Copyright (C) 2000-2005 Julian Seward 
+   Copyright (C) 2000-2005 Julian Seward
       jseward@acm.org
 
    This program is free software; you can redistribute it and/or
@@ -27,9 +27,9 @@
 
 #include "config.h"
 
-#define VG_FREEBSD_SYSCALL_STD	0
-#define VG_FREEBSD_SYSCALL0	1
-#define VG_FREEBSD_SYSCALL198	2
+#define VG_FREEBSD_SYSCALL_STD 0
+#define VG_FREEBSD_SYSCALL0    1
+#define VG_FREEBSD_SYSCALL198  2
 
 // From sys/syscall.h
 
@@ -269,7 +269,7 @@
 #define __NR_ktimer_delete       236
 #define __NR_ktimer_settime      237
 #define __NR_ktimer_gettime      238
-#define __NR_ktimer_getoverrun	239
+#define __NR_ktimer_getoverrun   239
 #define __NR_nanosleep           240
 #define __NR_ffclock_getcounter  241
 #define __NR_ffclock_setestimate 242
@@ -388,7 +388,7 @@
 #define __NR_kqueue              362
 
 #if (FREEBSD_VERS >= FREEBSD_12)
-#define __NR_freebsd11_kevent		363
+#define __NR_freebsd11_kevent    363
 #else
 #define __NR_kevent              363
 #endif

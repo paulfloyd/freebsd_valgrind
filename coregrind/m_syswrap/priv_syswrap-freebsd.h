@@ -37,7 +37,7 @@
 extern Word ML_(start_thread_NORETURN) ( void* arg );
 extern Addr ML_(allocstack)            ( ThreadId tid );
 extern void ML_(call_on_new_stack_0_1) ( Addr stack, Addr retaddr,
-			                 void (*f)(Word), Word arg1 );
+                                         void (*f)(Word), Word arg1 );
 extern SysRes ML_(do_fork) ( ThreadId tid );
 extern SysRes ML_(do_vfork) ( ThreadId tid );
 extern SysRes ML_(do_rfork) ( ThreadId tid, Int flags );
