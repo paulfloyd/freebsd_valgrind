@@ -121,7 +121,6 @@ EXTRA_DIST = \
 	fcntl_setown.vgtest fcntl_setown.stdout.exp fcntl_setown.stderr.exp \
 	fdleak_cmsg.stderr.exp fdleak_cmsg.vgtest \
 	fdleak_cmsg.stderr.exp-freebsd \
-	fdleak_cmsg.stderr.exp-freebsd-pts \
 	fdleak_creat.stderr.exp fdleak_creat.vgtest \
 	fdleak_creat.stderr.exp-freebsd \
 	fdleak_dup.stderr.exp fdleak_dup.vgtest \
