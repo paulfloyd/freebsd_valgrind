@@ -44,6 +44,12 @@ and
 syscalls.master is particularly useful for seeing quickly whether parameters are inputs
 or outputs.
 
+The syscall wrappers can vary from trivial to difficult. Fortunately, many are
+either trivial (no arguments) or easy (Valgrind just needs to know what memory is
+being read or written). Some syscalls, such as those involving process creation
+and termination, signals and memory mapping require deeper interaction with
+Valgrind.
+
 When you add syscalls you will need to modify several files
    a) include/vki/vki-scnums-freebsd.h
       This file contains one #define for each syscall. The _NR_ prefix (Linux style) us
@@ -55,10 +61,50 @@ When you add syscalls you will need to modify several files
       This is where the bulk of the code resides. Toward the end of the file
       the BSDX_/BSDXY macros are used to generate entries in the table of
       syscalls. BSDX_ is used for wrappers that only have a 'before', BSDXY
-      if both wrappers are required.
+      if both wrappers are required. In general, syscalls that have no arguments
+      or only input arguments just need a BSDX_ macro (before only). Syscalls
+      with output arguments need a BSDXY macro (before and after).
    d) If the syscall uses 64bit arguments (long long) then instead of putting
       the wrapper definitions in syswrap-freebsd.c there will be one defintion
-      for each platform amd64 and x86 in syswrap-x86-freebsd.c and syswrap-amd64-freebsd.c
+      for each platform amd64 and x86 in syswrap-x86-freebsd.c and syswrap-amd64-freebsd.c.
+      Each long long needs to be split into two ARGs in the x86 version.
+      
+The PRE (before) wrapper
+------------------------
+
+Each PRE wrapper always contains the following two macro calls
+
+PRINT. This outputs the syscall name and argment values when Valgrind is executed with
+--trace-syscalls=yes
+
+PRE_READ_REGX. This macro lets Valgrind know about the number and types of the
+syscall arguments which allows Valgrind to check that they are initialized.
+X is the number of arguments. It is best that the argument names match
+the man page, but the must match the types and number of arguments in syscalls.master.
+Occasionally there are differences between the two.
+
+If the syscall takes pointers to memory there will be one of the following for
+each pointer argument.
+
+PRE_MEM_RASCIIZ for NULL terminated ascii strings.
+
+PRE_MEM_READ for pointers to structures or arrays that are read.
+
+PRE_MEM_WRITE for pointers to structures or arrays that are written.
+
+As a rule, the definitions of structures are copied into vki-freebsd.h
+with the vki- prefix. [vki - Valgrind kernel interface; this was done
+historically to protect against discepancies betweeen user include
+structure definitions and kernel definitions on Linux].
+
+The POST (after) wrapper
+------------------------
+
+These are much easier.
+
+The just contain a POST_MEM_WRITE macro for each output argument.
+ 
+ 
    
 Feedback
 ~~~~~~~~
