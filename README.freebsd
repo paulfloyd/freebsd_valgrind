@@ -117,3 +117,46 @@ Feedback
 
 If you have find any problems, please use the issues forms at
 https://github.com/paulfloyd/freebsd_valgrind/issues
+
+Credits
+~~~~~~~
+
+Valgrind was originally ported to FreeBSD by Doug Rabson
+in 2004.
+
+Paul Floyd (that's me), started looking at this project in late 2018,
+took a long pause and then continued in earnest in January 2020.
+
+A big thanks to Nick Briggs for helping with the x86 version.
+
+Kyle Evans and Ed Maste for contributing patches and helping with the
+integration with FreeBSD ports.
+
+Prior to 2018 many others have also contributed.
+
+Dimitry Andric
+Simon Barner
+Roman Bogorodskiy
+Rebecca Cran
+Bryan Drewery
+Brian Fundakowski Feldman
+Denis Generalov
+Mikolaj Golub
+Eugene Kilachkoff
+Xin LI
+Phil Longstaff
+Pav Lucistnik
+Conrad Meyer
+Julien Nadeau
+Frerich Raabe
+Doug Rabson
+Craig Rodrigues
+Tom Russo
+Stephen Sanders
+Stanislav Sedov
+Andrei V. Shetuhin
+Niklas Sorensson
+Ryan Stone
+Jerry Toung
+Yuri
+
