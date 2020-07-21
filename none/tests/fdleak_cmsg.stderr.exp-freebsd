@@ -1,6 +1,6 @@
 
 
-FILE DESCRIPTORS: 8 open at exit.
+FILE DESCRIPTORS: 7 open at exit.
 Open AF_UNIX socket ...: /tmp/sock
    ...
 
@@ -12,9 +12,6 @@ Open file descriptor ...: /tmp/data2
 
 Open file descriptor ...: /tmp/data1
    ...
-
-Open file descriptor ...: ...
-   <inherited from parent>
 
 Open file descriptor ...: ...
    <inherited from parent>
@@ -27,18 +24,15 @@ Open file descriptor ...: /dev/null
 
 
 
-FILE DESCRIPTORS: 7 open at exit.
-Open file descriptor ...: /tmp/data2
+FILE DESCRIPTORS: 6 open at exit.
+Open file descriptor ...: ...
    ...
 
-Open file descriptor ...: /tmp/data1
+Open file descriptor ...: ...
    ...
 
 Open AF_UNIX socket ...: <unknown>
    ...
-
-Open file descriptor ...: ...
-   <inherited from parent>
 
 Open file descriptor ...: ...
    <inherited from parent>
