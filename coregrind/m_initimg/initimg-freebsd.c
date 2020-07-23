@@ -46,7 +46,6 @@
 #include "pub_core_options.h"
 #include "pub_core_syscall.h"
 #include "pub_core_tooliface.h"       /* VG_TRACK */
-#include "pub_core_libcsetjmp.h"      // to keep _threadstate.h happy
 #include "pub_core_threadstate.h"     /* ThreadArchState */
 #include "priv_initimg_pathscan.h"
 #include "pub_core_initimg.h"         /* self */
@@ -332,11 +331,6 @@ static HChar *copy_str(HChar **tab, const HChar *str)
    space manager.  The returned value is the SP value for the client.
 
    The client's auxv is created by copying and modifying our own one.
-   As a side effect of scanning our own auxv, some important bits of
-   info are collected:
-
-      VG_(cache_line_size_ppc32) // ppc32 only -- cache line size
-      VG_(have_altivec_ppc32)    // ppc32 only -- is Altivec supported?
 
    ---------------------------------------------------------------- */
 
