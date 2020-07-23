@@ -6,48 +6,48 @@ Signal        Stop	Print	Pass to program	Description
 SIGFPE        Yes	Yes	Yes		Arithmetic exception
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Continuing.
 Program received signal SIGSEGV, Segmentation fault.
-test1 () at faultstatus.c:116
-116		*BADADDR = 'x';
+test1 () at faultstatus.c:117
+117		*BADADDR = 'x';
 Signal        Stop	Print	Pass to program	Description
 SIGSEGV       No	Yes	Yes		Segmentation fault
 Continuing.
