@@ -4174,9 +4174,6 @@ PRE(sys_read)
    PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %"
          FMT_REGWORD "u )", ARG1, ARG2, ARG3);
 
-   // @todo PJF 'count' is the third arg name on Linux (at least in the man page)
-   // but on macOS and Solaris it is 'nbyte' and on FreeBSD it is 'nbytes'
-
    PRE_REG_READ3(ssize_t, "read",
                  int, fd, char *, buf, vki_size_t, count);
 
