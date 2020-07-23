@@ -1255,6 +1255,10 @@ struct vki_utsname {
 #define VKI_IPC_STAT 2     /* get ipc_perm options */
 #define VKI_IPC_INFO 3     /* see ipcs */
 
+//----------------------------------------------------------------------
+// From sys/ipc.h
+//----------------------------------------------------------------------
+
 struct vki_ipc_perm_old {
    unsigned short cuid;
    unsigned short cgid;
@@ -1279,18 +1283,23 @@ struct vki_ipc_perm {
 // From sys/sem.h
 //----------------------------------------------------------------------
 
-#if 0
-#define VKI_SEMOP                1
-#define VKI_SEMGET               2
-#define VKI_SEMCTL               3
-#define VKI_SEMTIMEDOP           4
-#endif
-
 #define VKI_GETALL  6       /* get all semval's */
 #define VKI_SETVAL  8       /* set semval */
 #define VKI_SETALL  9       /* set all semval's */
 #define VKI_SEM_STAT 10
 #define VKI_SEM_INFO 11
+
+struct vki_semid_ds_old {
+   struct vki_ipc_perm_old sem_perm;
+   struct sem      *__sem_base;
+   unsigned short  sem_nsems;
+   vki_time_t      sem_otime;
+   long            sem_pad1;
+   vki_time_t      sem_ctime;
+   long            sem_pad2;
+   long            sem_pad3[4];
+};
+
 
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct vki_semid_ds {

@@ -2062,28 +2062,6 @@ PRE(sys_futimes)
 // SYS_poll 209
 // generic
 
-// @todo PJF should be in vki-freebsd.h
-struct ipc_perm7 {
-   unsigned short    cuid;
-   unsigned short    cgid;
-   unsigned short    uid;
-   unsigned short    gid;
-   unsigned short    mode;
-   unsigned short    seq;
-   vki_key_t    key;
-};
-
-struct semid_ds7 {
-   struct ipc_perm7 sem_perm;
-   struct sem    *sem_base;
-   unsigned short    sem_nsems;
-   vki_time_t    sem_otime;
-   long        sem_pad1;
-   vki_time_t    sem_ctime;
-   long        sem_pad2;
-   long        sem_pad3[4];
-};
-
 // SYS_freebsd7___semctl   220
 // int semctl(int semid, int semnum, int cmd, ...);
 PRE(sys_freebsd7___semctl)
@@ -2100,7 +2078,7 @@ PRE(sys_freebsd7___semctl)
    case VKI_IPC_SET:
       PRINT("sys_semctl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3,ARG4);
       PRE_REG_READ4(int, "semctl",
-                    int, semid, int, semnum, int, cmd, struct semid_ds7 *, arg);
+                    int, semid, int, semnum, int, cmd, struct vki_semid_ds_old *, arg);
       break;
    case VKI_GETALL:
    case VKI_SETALL:
