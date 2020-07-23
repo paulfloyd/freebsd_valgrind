@@ -2623,7 +2623,7 @@ CFLAGS=$safe_CFLAGS
 AC_MSG_CHECKING([if gcc accepts -no-pie])
 
 safe_CFLAGS=$CFLAGS
-CFLAGS="-no-pie"
+CFLAGS="-no-pie -Werror"
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]], [[
   return 0;
