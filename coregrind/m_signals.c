@@ -819,7 +819,6 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
       case VKI_SIGILL:
       case VKI_SIGTRAP:
 #if defined(VGO_freebsd)
-      // @todo PJF why?
       case VKI_SIGSYS:
 #endif
 	 /* For these, we always want to catch them and report, even
@@ -888,11 +887,8 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
       /* SA_ONSTACK: client setting is irrelevant here */
       /* We don't set a signal stack, so ignore */
 
-      // @todo PJF why this?
       /* always ask for SA_SIGINFO */
-#if defined(VGO_freebsd)
       if (skss_handler != VKI_SIG_IGN && skss_handler != VKI_SIG_DFL)
-#endif
          skss_flags |= VKI_SA_SIGINFO;
 
       /* use our own restorer */
