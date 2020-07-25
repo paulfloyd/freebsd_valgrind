@@ -250,7 +250,7 @@ int main(void)
       ss.ss_size   = 0;
       VALGRIND_MAKE_MEM_NOACCESS(& ss, sizeof(struct our_sigaltstack));
       GO(SYS_sigaltstack, "2s 2m");
-      SY(SYS_sigaltstack, x0+&ss, x0+&ss); SUCC;
+      SY(SYS_sigaltstack, x0+&ss, x0+&ss); SUCC; /* FAIL when run standalone */
    }
 
    /* SYS_ioctl                   54 */
@@ -555,7 +555,7 @@ int main(void)
    
    /* SYS_setsid                  147 */
    GO(SYS_setsid, "0s 0m");
-   SY(SYS_setsid); SUCC;
+   SY(SYS_setsid); SUCC; /* FAIL when run standalone */
 
    /* SYS_quotactl                148 */
    GO(SYS_quotactl, "(Q_QUOTAOFF) 2s 0m");
@@ -1545,10 +1545,10 @@ int main(void)
    GO(SYS_abort2, "other");
 
    /* SYS_thr_set_name            464 */
-   /* @todo PJF VG doesn't like this. Causes a SIGSEGV. */
+   /* @todo PJF VG doesn't like this. Causes a SIGSEGV. Runs OK standalone */
    /*
    GO(SYS_thr_set_name, "2s 1m");
-   SY(SYS_thr_set_name, x0+1, x0+2); FAIL;
+   SY(SYS_thr_set_name, x0+999999, x0+2); FAIL;
    */
 
    /* aio_fsync                   465 */
