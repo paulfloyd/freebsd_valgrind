@@ -75,7 +75,7 @@ This one has been analyzed and a fix identified.
 [Bug 220943](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=220943) - devel/valgrind Segmentation fault  
 I haven't seen this, possibly fixed already in the repo I picked up.
 
-[Bug 209886](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=209886) - devel/valgrind: spurious invalid free() when using aligned_alloc()  
+[Bug 209886](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=209886) - CLOSED - devel/valgrind: spurious invalid free() when using aligned_alloc()  
 I created a patch for this in upstream Valgrind and it seems to work on FreeBSD.
 
 [Bug 212697](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=212697) - devel/valgrind: Please add syscalls 530 (posix_fallocate) and 531 (posix_fadvise)  
