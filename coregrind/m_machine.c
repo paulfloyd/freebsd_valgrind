@@ -982,7 +982,7 @@ Bool VG_(machine_get_hwcaps)( void )
 #elif defined(VGA_amd64)
    { Bool have_sse3, have_ssse3, have_cx8, have_cx16;
      Bool have_lzcnt, have_avx, have_bmi, have_avx2;
-     Bool have_rdtscp, have_rdrand, have_f16c;
+     Bool have_rdtscp, have_rdrand, have_f16c, have_rdseed;
      UInt eax, ebx, ecx, edx, max_basic, max_extended;
      ULong xgetbv_0 = 0;
      HChar vstr[13];
@@ -990,7 +990,7 @@ Bool VG_(machine_get_hwcaps)( void )
 
      have_sse3 = have_ssse3 = have_cx8 = have_cx16
                = have_lzcnt = have_avx = have_bmi = have_avx2
-               = have_rdtscp = have_rdrand = have_f16c = False;
+               = have_rdtscp = have_rdrand = have_f16c = have_rdseed = False;
 
      eax = ebx = ecx = edx = max_basic = max_extended = 0;
 
@@ -1094,6 +1094,7 @@ Bool VG_(machine_get_hwcaps)( void )
         VG_(cpuid)(7, 0, &eax, &ebx, &ecx, &edx);
         have_bmi  = (ebx & (1<<3)) != 0; /* True => have BMI1 */
         have_avx2 = (ebx & (1<<5)) != 0; /* True => have AVX2 */
+        have_rdseed = (ebx & (1<<18)) != 0; /* True => have RDSEED insns */
      }
 
      /* Sanity check for RDRAND and F16C.  These don't actually *need* AVX, but
@@ -1102,6 +1103,7 @@ Bool VG_(machine_get_hwcaps)( void )
      if (!have_avx) {
         have_f16c   = False;
         have_rdrand = False;
+        have_rdseed = False;
      }
 
      va          = VexArchAMD64;
@@ -1115,7 +1117,8 @@ Bool VG_(machine_get_hwcaps)( void )
                  | (have_avx2   ? VEX_HWCAPS_AMD64_AVX2   : 0)
                  | (have_rdtscp ? VEX_HWCAPS_AMD64_RDTSCP : 0)
                  | (have_f16c   ? VEX_HWCAPS_AMD64_F16C   : 0)
-                 | (have_rdrand ? VEX_HWCAPS_AMD64_RDRAND : 0);
+                 | (have_rdrand ? VEX_HWCAPS_AMD64_RDRAND : 0)
+                 | (have_rdseed ? VEX_HWCAPS_AMD64_RDSEED : 0);
 
      VG_(machine_get_cache_info)(&vai);
 
