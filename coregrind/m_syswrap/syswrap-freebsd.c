@@ -3317,16 +3317,17 @@ POST(sys_kqueue)
 #if (FREEBSD_VERS >= FREEBSD_12)
 PRE(sys_freebsd11_kevent)
 {
-   *flags |= SfMayBlock;
    PRINT("sys_freebsd11_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
-   PRE_REG_READ6(long, "kevent",
-                 int, fd, struct vki_kevent_freebsd11 *, newev, int, num_newev,
-                 struct vki_kevent_freebsd11 *, ret_ev, int, num_retev,
+   PRE_REG_READ6(int, "kevent",
+                 int, fd, const struct vki_kevent_freebsd11 *, changelist, int, nchanges,
+                 struct vki_kevent_freebsd11 *, eventlist, int, nevents,
                  struct timespec *, timeout);
    if (ARG2 != 0 && ARG3 != 0)
       PRE_MEM_READ( "kevent(changeevent)", ARG2, sizeof(struct vki_kevent_freebsd11)*ARG3 );
    if (ARG4 != 0 && ARG5 != 0)
       PRE_MEM_WRITE( "kevent(events)", ARG4, sizeof(struct vki_kevent_freebsd11)*ARG5);
+   if (ARG5 != 0)
+      *flags |= SfMayBlock;
    if (ARG6 != 0)
       PRE_MEM_READ( "kevent(timeout)",
                     ARG6, sizeof(struct vki_timespec));
@@ -5963,7 +5964,6 @@ PRE(sys_mknodat)
 //            const struct timespec *timeout);
 PRE(sys_kevent)
 {
-   *flags |= SfMayBlock;
    PRINT("sys_kevent ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )\n", ARG1,ARG2,ARG3,ARG4,ARG5,ARG6);
    PRE_REG_READ6(int, "kevent",
                  int, kq, struct vki_kevent *, changelist, int, nchanges,
@@ -5973,6 +5973,8 @@ PRE(sys_kevent)
       PRE_MEM_READ( "kevent(changelist)", ARG2, sizeof(struct vki_kevent)*ARG3 );
    if (ARG4 != 0 && ARG5 != 0)
       PRE_MEM_WRITE( "kevent(eventlist)", ARG4, sizeof(struct vki_kevent)*ARG5);
+   if (ARG5 != 0)
+      *flags |= SfMayBlock;
    if (ARG6 != 0)
       PRE_MEM_READ( "kevent(timeout)",
                     ARG6, sizeof(struct vki_timespec));
