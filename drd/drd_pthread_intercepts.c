@@ -173,6 +173,18 @@ static int never_true;
    ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl;           \
    ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl            \
    { return implf argl; }
+#elif defined(VGO_freebsd)
+
+#define PTH_FUNC(ret_ty, zf, implf, argl_decl, argl)                    \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl;     \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl      \
+   { return implf argl; }
+
+#define LIBC_FUNC(ret_ty, zf, implf, argl_decl, argl)                   \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl;           \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl            \
+   { return implf argl; }
+
 #else
 /*
  * On Linux, intercept both the libc and the libpthread functions. At
@@ -186,13 +198,6 @@ static int never_true;
    { return implf argl; }                                               \
    ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl;     \
    ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl      \
-   { return implf argl; }
-#endif
-
-#if defined(VGO_freebsd)
-#define LIBC_FUNC(ret_ty, zf, implf, argl_decl, argl)                   \
-   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl;           \
-   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBC_SONAME,zf) argl_decl            \
    { return implf argl; }
 #endif
 
