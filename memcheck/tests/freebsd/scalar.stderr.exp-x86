@@ -2785,16 +2785,16 @@ Syscall param getresgid(sgid) points to unaddressable byte(s)
 Syscall param kevent(fd) contains uninitialised byte(s)
    ...
 
-Syscall param kevent(newev) contains uninitialised byte(s)
+Syscall param kevent(changelist) contains uninitialised byte(s)
    ...
 
-Syscall param kevent(num_newev) contains uninitialised byte(s)
+Syscall param kevent(nchanges) contains uninitialised byte(s)
    ...
 
-Syscall param kevent(ret_ev) contains uninitialised byte(s)
+Syscall param kevent(eventlist) contains uninitialised byte(s)
    ...
 
-Syscall param kevent(num_retev) contains uninitialised byte(s)
+Syscall param kevent(nevents) contains uninitialised byte(s)
    ...
 
 Syscall param kevent(timeout) contains uninitialised byte(s)
