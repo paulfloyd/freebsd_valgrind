@@ -27454,7 +27454,7 @@ Long dis_ESC_0F__VEX (
 #if defined(VGO_freebsd)
             gen_SIGBUS_if_not_32_aligned( addr );
 #else
-            gen_SEGV_if_not_16_aligned( addr );
+            gen_SEGV_if_not_32_aligned( addr );
 #endif
             storeLE( mkexpr(addr), getYMMReg(rG) );
             DIP("vmovntdq %s,%s\n", dis_buf, nameYMMReg(rG));
@@ -29097,7 +29097,7 @@ Long dis_ESC_0F38__VEX (
 #if defined(VGO_freebsd)
          gen_SIGBUS_if_not_32_aligned(addr);
 #else
-         gen_SEGV_if_not_32_aligned( addr );
+         gen_SEGV_if_not_32_aligned(addr);
 #endif
          assign(tD, loadLE(Ity_V256, mkexpr(addr)));
          DIP("vmovntdqa %s,%s\n", dis_buf, nameYMMReg(rD));
