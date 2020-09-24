@@ -273,7 +273,6 @@
 
 // Valid on all platforms(?)
 #define  VG_Z_LIBSTDCXX_SONAME  libstdcZpZpZa           // libstdc++*
-#define  VG_Z_LIBSUPCXX_SONAME  libsupcZpZpZa           // libsupc++*
 #define  VG_Z_LIBCXX_SONAME     libcZpZpZa              // libc++*
 
 /* --- Soname of the pthreads library. --- */
@@ -321,18 +320,6 @@
 #define  VG_U_LD_LINUX_ARMHF_SO_3   "ld-linux-armhf.so.3"
 
 #define  VG_U_LD_LINUX_MIPSN8_S0_1  "ld-linux-mipsn8.so.1"
-
-#endif
-
-/* --- Sonames for FreeBSD ELF linkers, plus unencoded versions. --- */
-
-#if defined(VGO_freebsd)
-
-#define  VG_Z_LD_ELF_SO_1           ldZhelfZdsoZd1           // ld-elf.so.1
-#define  VG_U_LD_ELF_SO_1           "ld-elf.so.1"
-
-#define  VG_Z_LD_ELF32_SO_1         ldZhelf32ZdsoZd1         // ld-elf32.so.1
-#define  VG_U_LD_ELF32_SO_1         "ld-elf32.so.1"
 
 #endif
 
