@@ -2794,11 +2794,11 @@ Syscall param kevent(nevents) contains uninitialised byte(s)
 Syscall param kevent(timeout) contains uninitialised byte(s)
    ...
 
-Syscall param kevent(changeevent) points to unaddressable byte(s)
+Syscall param kevent(changelist) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param kevent(events) points to unaddressable byte(s)
+Syscall param kevent(eventlist) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
