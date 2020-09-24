@@ -1,10 +1,12 @@
 // Replacement for malloc.h which factors out platform differences.
 
 #include <stdlib.h>
+#include "config.h"
 #if defined(VGO_darwin)
 #  include <malloc/malloc.h>
 #elif defined(VGO_freebsd)
 #  include <stdlib.h>
+#  include <malloc_np.h>
 #else
 #  include <malloc.h>
 #endif
