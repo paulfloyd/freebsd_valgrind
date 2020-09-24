@@ -731,7 +731,6 @@ static void init(void);
  FREE(VG_Z_LIBC_SONAME,        __builtin_vec_delete, __builtin_vec_delete );
  // operator delete[](void*), GNU mangling
  FREE(VG_Z_LIBSTDCXX_SONAME,  _ZdaPv,               __builtin_vec_delete );
- FREE(VG_Z_LIBSUPCXX_SONAME,  _ZdaPv,               __builtin_vec_delete );
  FREE(VG_Z_LIBC_SONAME,       _ZdaPv,               __builtin_vec_delete );
  FREE(SO_SYN_MALLOC,          _ZdaPv,               __builtin_vec_delete );
 
@@ -793,7 +792,6 @@ static void init(void);
 #if defined(VGO_linux)
  // operator delete[](void*, std::nothrow_t const&), GNU mangling
  FREE(VG_Z_LIBSTDCXX_SONAME,  _ZdaPvRKSt9nothrow_t, __builtin_vec_delete );
- FREE(VG_Z_LIBSUPCXX_SONAME,  _ZdaPvRKSt9nothrow_t, __builtin_vec_delete );
  FREE(VG_Z_LIBC_SONAME,       _ZdaPvRKSt9nothrow_t, __builtin_vec_delete );
  FREE(SO_SYN_MALLOC,          _ZdaPvRKSt9nothrow_t, __builtin_vec_delete );
 
