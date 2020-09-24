@@ -3893,7 +3893,7 @@ PRE(sys_link)
    PRE_MEM_RASCIIZ( "link(newpath)", ARG2);
 }
 
-#if  !defined(VGP_nanomips_linux) && !defined(VGO_freebsd)
+#if !defined(VGP_nanomips_linux) && !defined(VGO_freebsd)
 PRE(sys_newlstat)
 {
    PRINT("sys_newlstat ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,
@@ -4173,7 +4173,6 @@ PRE(sys_read)
    *flags |= SfMayBlock;
    PRINT("sys_read ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %"
          FMT_REGWORD "u )", ARG1, ARG2, ARG3);
-
    PRE_REG_READ3(ssize_t, "read",
                  int, fd, char *, buf, vki_size_t, count);
 

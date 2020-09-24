@@ -91,7 +91,7 @@ static void fill_ehdr(ESZ(Ehdr) *ehdr, Int num_phdrs)
    ehdr->e_ident[EI_DATA]    = VG_ELF_DATA2XXX;
    ehdr->e_ident[EI_VERSION] = EV_CURRENT;
 #if defined(VGO_freebsd)
-   ehdr->e_ident[EI_OSABI] = ELFOSABI_FREEBSD;
+   ehdr->e_ident[EI_OSABI]   = ELFOSABI_FREEBSD;
 #endif
 
    ehdr->e_type = ET_CORE;
