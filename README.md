@@ -72,7 +72,7 @@ Several patches in this item.
 [Bug 232235](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=232235) - devel/valgrind doesn't find trivial leak on head anymore, works on stable/11  
 This one has been analyzed and a fix identified.
 
-[Bug 220943](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=220943) - devel/valgrind Segmentation fault  
+[Bug 220943](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=220943) - CLOSED - devel/valgrind Segmentation fault  
 I haven't seen this, possibly fixed already in the repo I picked up.
 
 [Bug 209886](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=209886) - CLOSED - devel/valgrind: spurious invalid free() when using aligned_alloc()  
