@@ -24,11 +24,13 @@
  */
 
 #include <stdio.h>
+#ifdef HAS_ISA_3_1
 #include <stdint.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <altivec.h>
 #include <malloc.h>
 
 #include <string.h>
@@ -43,13 +45,434 @@
 unsigned long current_cr;
 unsigned long current_fpscr;
 
-#ifdef HAS_ISA_3_1
-
-#include <altivec.h>
-#include "isa_3_1_helpers.h"
-
 struct test_list_t current_test;
 
+#include "isa_3_1_helpers.h"
+
+static void test_brh (void) {
+  __asm__ __volatile__ ("brh %0, %1" : "=r" (ra) : "r" (rs) );
+}
+static void test_brw (void) {
+  __asm__ __volatile__ ("brw %0, %1" : "=r" (ra) : "r" (rs) );
+}
+static void test_brd (void) {
+  __asm__ __volatile__ ("brd %0, %1" : "=r" (ra) : "r" (rs) );
+}
+static void test_plxvp_off0 (void) {
+  __asm__ __volatile__ ("plxvp 20, 0(%0), 0" :: "r" (ra) );
+}
+static void test_plxvp_off8 (void) {
+  __asm__ __volatile__ ("plxvp 20, 8(%0), 0" :: "r" (ra) );
+}
+static void test_plxvp_off16 (void) {
+  __asm__ __volatile__ ("plxvp 20, 16(%0), 0" :: "r" (ra) );
+}
+static void test_plxvp_off24 (void) {
+  __asm__ __volatile__ ("plxvp 20, 24(%0), 0" :: "r" (ra) );
+}
+static void test_plxvp_off32 (void) {
+  __asm__ __volatile__ ("plxvp 20, 32(%0), 0" :: "r" (ra) );
+}
+static void test_setbc_0_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_0_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_0_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_0_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_3_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_3_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_3_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_3_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_7_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_7_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_7_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_7_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_8_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_8_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_8_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_8_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_31_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_31_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_31_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbc_31_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_0_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_0_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_0_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_0_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_3_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_3_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_3_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_3_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_7_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_7_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_7_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_7_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_8_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_8_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_8_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_8_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_31_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_31_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_31_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setbcr_31_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_0_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_0_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_0_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_0_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbc 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_3_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_3_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_3_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_3_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbc 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_7_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_7_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_7_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_7_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbc 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_8_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_8_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_8_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_8_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbc 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_31_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_31_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_31_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbc_31_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbc 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_0_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_0_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_0_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_0_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbcr 26, 0");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_3_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_3_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_3_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_3_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbcr 26, 3");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_7_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_7_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_7_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_7_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbcr 26, 7");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_8_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_8_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_8_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_8_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbcr 26, 8");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_31_cr0s (void) {
+  SET_CR(0x00000000);
+  __asm__ __volatile__ ("setnbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_31_cr1s (void) {
+  SET_CR(0xffffffff);
+  __asm__ __volatile__ ("setnbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_31_creb (void) {
+  SET_CR(0xaaaaaaaa);
+  __asm__ __volatile__ ("setnbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
+static void test_setnbcr_31_crob (void) {
+  SET_CR(0x55555555);
+  __asm__ __volatile__ ("setnbcr 26, 31");
+  GET_CR(current_cr); SET_CR_ZERO;
+}
 static void test_plbz_off0 (void) {
   __asm__ __volatile__ ("plbz %0, 0(%1), 0" : "=r" (rt) : "r" (ra) );
 }
@@ -235,6 +658,9 @@ static void test_pstq_off64 (void) {
 }
 
 static test_list_t testgroup_generic[] = {
+  { &test_brd, "brd", "RA,RS"}, /* bcs */
+  { &test_brh, "brh", "RA,RS"}, /* bcs */
+  { &test_brw, "brw", "RA,RS"}, /* bcs */
   { &test_paddi_0, "paddi 0", "RT,RA,SI,R"}, /* bcwp */
   { &test_paddi_12, "paddi 12", "RT,RA,SI,R"}, /* bcwp */
   { &test_paddi_48, "paddi 48", "RT,RA,SI,R"}, /* bcwp */
@@ -275,6 +701,11 @@ static test_list_t testgroup_generic[] = {
   { &test_plwz_off16, "plwz off16", "RT,D(RA),R"}, /* bcwp */
   { &test_plwz_off32, "plwz off32", "RT,D(RA),R"}, /* bcwp */
   { &test_plwz_off64, "plwz off64", "RT,D(RA),R"}, /* bcwp */
+  { &test_plxvp_off0, "plxvp off0", "XTp,D(RA),R"}, /* bcwp */
+  { &test_plxvp_off8, "plxvp off8", "XTp,D(RA),R"}, /* bcwp */
+  { &test_plxvp_off16, "plxvp off16", "XTp,D(RA),R"}, /* bcwp */
+  { &test_plxvp_off24, "plxvp off24", "XTp,D(RA),R"}, /* bcwp */
+  { &test_plxvp_off32, "plxvp off32", "XTp,D(RA),R"}, /* bcwp */
   { &test_pstb_off0, "pstb off0", "RS,D(RA),R"}, /* bcwp */
   { &test_pstb_off8, "pstb off8", "RS,D(RA),R"}, /* bcwp */
   { &test_pstb_off16, "pstb off16", "RS,D(RA),R"}, /* bcwp */
@@ -296,6 +727,86 @@ static test_list_t testgroup_generic[] = {
   { &test_pstw_off8, "pstw off8", "RS,D(RA),R"}, /* bcwp */
   { &test_pstw_off16, "pstw off16", "RS,D(RA),R"}, /* bcwp */
   { &test_pstw_off32, "pstw off32", "RS,D(RA),R"}, /* bcwp */
+  { &test_setbcr_0_cr0s, "setbcr 0_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_0_cr1s, "setbcr 0_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_0_creb, "setbcr 0_creb", "RT,BI"}, /* bcwp */
+  { &test_setbcr_0_crob, "setbcr 0_crob", "RT,BI"}, /* bcwp */
+  { &test_setbcr_3_cr0s, "setbcr 3_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_3_cr1s, "setbcr 3_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_3_creb, "setbcr 3_creb", "RT,BI"}, /* bcwp */
+  { &test_setbcr_3_crob, "setbcr 3_crob", "RT,BI"}, /* bcwp */
+  { &test_setbcr_7_cr0s, "setbcr 7_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_7_cr1s, "setbcr 7_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_7_creb, "setbcr 7_creb", "RT,BI"}, /* bcwp */
+  { &test_setbcr_7_crob, "setbcr 7_crob", "RT,BI"}, /* bcwp */
+  { &test_setbcr_8_cr0s, "setbcr 8_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_8_cr1s, "setbcr 8_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_8_creb, "setbcr 8_creb", "RT,BI"}, /* bcwp */
+  { &test_setbcr_8_crob, "setbcr 8_crob", "RT,BI"}, /* bcwp */
+  { &test_setbcr_31_cr0s, "setbcr 31_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_31_cr1s, "setbcr 31_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbcr_31_creb, "setbcr 31_creb", "RT,BI"}, /* bcwp */
+  { &test_setbcr_31_crob, "setbcr 31_crob", "RT,BI"}, /* bcwp */
+  { &test_setbc_0_cr0s, "setbc 0_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbc_0_cr1s, "setbc 0_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbc_0_creb, "setbc 0_creb", "RT,BI"}, /* bcwp */
+  { &test_setbc_0_crob, "setbc 0_crob", "RT,BI"}, /* bcwp */
+  { &test_setbc_3_cr0s, "setbc 3_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbc_3_cr1s, "setbc 3_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbc_3_creb, "setbc 3_creb", "RT,BI"}, /* bcwp */
+  { &test_setbc_3_crob, "setbc 3_crob", "RT,BI"}, /* bcwp */
+  { &test_setbc_7_cr0s, "setbc 7_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbc_7_cr1s, "setbc 7_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbc_7_creb, "setbc 7_creb", "RT,BI"}, /* bcwp */
+  { &test_setbc_7_crob, "setbc 7_crob", "RT,BI"}, /* bcwp */
+  { &test_setbc_8_cr0s, "setbc 8_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbc_8_cr1s, "setbc 8_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbc_8_creb, "setbc 8_creb", "RT,BI"}, /* bcwp */
+  { &test_setbc_8_crob, "setbc 8_crob", "RT,BI"}, /* bcwp */
+  { &test_setbc_31_cr0s, "setbc 31_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setbc_31_cr1s, "setbc 31_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setbc_31_creb, "setbc 31_creb", "RT,BI"}, /* bcwp */
+  { &test_setbc_31_crob, "setbc 31_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_0_cr0s, "setnbcr 0_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_0_cr1s, "setnbcr 0_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_0_creb, "setnbcr 0_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_0_crob, "setnbcr 0_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_3_cr0s, "setnbcr 3_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_3_cr1s, "setnbcr 3_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_3_creb, "setnbcr 3_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_3_crob, "setnbcr 3_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_7_cr0s, "setnbcr 7_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_7_cr1s, "setnbcr 7_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_7_creb, "setnbcr 7_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_7_crob, "setnbcr 7_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_8_cr0s, "setnbcr 8_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_8_cr1s, "setnbcr 8_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_8_creb, "setnbcr 8_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_8_crob, "setnbcr 8_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_31_cr0s, "setnbcr 31_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_31_cr1s, "setnbcr 31_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_31_creb, "setnbcr 31_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbcr_31_crob, "setnbcr 31_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbc_0_cr0s, "setnbc 0_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_0_cr1s, "setnbc 0_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_0_creb, "setnbc 0_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbc_0_crob, "setnbc 0_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbc_3_cr0s, "setnbc 3_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_3_cr1s, "setnbc 3_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_3_creb, "setnbc 3_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbc_3_crob, "setnbc 3_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbc_7_cr0s, "setnbc 7_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_7_cr1s, "setnbc 7_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_7_creb, "setnbc 7_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbc_7_crob, "setnbc 7_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbc_8_cr0s, "setnbc 8_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_8_cr1s, "setnbc 8_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_8_creb, "setnbc 8_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbc_8_crob, "setnbc 8_crob", "RT,BI"}, /* bcwp */
+  { &test_setnbc_31_cr0s, "setnbc 31_cr0s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_31_cr1s, "setnbc 31_cr1s", "RT,BI"}, /* bcwp */
+  { &test_setnbc_31_creb, "setnbc 31_creb", "RT,BI"}, /* bcwp */
+  { &test_setnbc_31_crob, "setnbc 31_crob", "RT,BI"}, /* bcwp */
 	{ NULL, 	    NULL },
 };
 
@@ -322,10 +833,10 @@ static void testfunction_generic (const char* instruction_name,
    initialize_buffer (0);
    debug_dump_buffer ();
 
-   for (vrai = 0; vrai < a_iters ; vrai+=a_inc) {
-      for (vrbi = 0; vrbi < b_iters ; vrbi+=b_inc) {
-	 for (vrci = 0; vrci < c_iters ; vrci+=c_inc) {
-	    for (vrmi = 0; (vrmi < m_iters) ; vrmi+=m_inc) {
+   for (vrai = a_start; vrai < a_iters ; vrai+=a_inc) {
+      for (vrbi = b_start; vrbi < b_iters ; vrbi+=b_inc) {
+	 for (vrci = c_start; vrci < c_iters ; vrci+=c_inc) {
+	    for (vrmi = m_start; (vrmi < m_iters) ; vrmi+=m_inc) {
 		CHECK_OVERRIDES
 		debug_show_current_iteration ();
 		// Be sure to initialize the target registers first.
