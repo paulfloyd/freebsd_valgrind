@@ -979,6 +979,7 @@ static void init(void);
  REALLOC(VG_Z_LIBC_SONAME, realloc);
  REALLOC(SO_SYN_MALLOC,    realloc);
  REALLOCF(VG_Z_LIBC_SONAME, reallocf);
+ REALLOCF(SO_SYN_MALLOC, reallocf);
 
 #elif defined(VGO_darwin)
  REALLOC(VG_Z_LIBC_SONAME, realloc);
