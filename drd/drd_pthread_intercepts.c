@@ -186,6 +186,13 @@ static int never_true;
    { return implf argl; }
 
 #else
+#ifdef MUSL_LIBC
+/* musl provides a single library that includes pthreads functions. */
+#define PTH_FUNC(ret_ty, zf, implf, argl_decl, argl)                    \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl;     \
+   ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl      \
+   { return implf argl; }
+#else
 /*
  * On Linux, intercept both the libc and the libpthread functions. At
  * least glibc 2.32.9000 (Fedora 34) has an implementation of all pthread
@@ -199,6 +206,7 @@ static int never_true;
    ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl;     \
    ret_ty VG_WRAP_FUNCTION_ZZ(VG_Z_LIBPTHREAD_SONAME,zf) argl_decl      \
    { return implf argl; }
+#endif
 #endif
 
 /**
