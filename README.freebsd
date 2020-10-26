@@ -1,4 +1,4 @@
-Test Building Valgrind
+Building Valgrind
 ~~~~~~~~~~~~~~~~~
 
 Install ports for autoconf, automake, libtool and gmake.
