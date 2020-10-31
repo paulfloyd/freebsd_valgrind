@@ -365,7 +365,8 @@ case "${host_os}" in
         VGCONF_OS="freebsd"
         AC_DEFINE([FREEBSD_10], 1000, [FREEBSD_VERS value for FreeBSD 10.x])
         AC_DEFINE([FREEBSD_11], 1100, [FREEBSD_VERS value for FreeBSD 11.x])
-        AC_DEFINE([FREEBSD_12], 1200, [FREEBSD_VERS value for FreeBSD 12.x])
+        AC_DEFINE([FREEBSD_12], 1200, [FREEBSD_VERS value for FreeBSD 12.0 to 12.1])
+        AC_DEFINE([FREEBSD_12_2], 1220, [FREEBSD_VERS value for FreeBSD 12.2])
         AC_DEFINE([FREEBSD_13], 1300, [FREEBSD_VERS value for FreeBSD 13.x])
 
         AC_MSG_CHECKING([for the kernel version])
@@ -381,8 +382,16 @@ case "${host_os}" in
            AC_DEFINE([FREEBSD_VERS], FREEBSD_11, [FreeBSD version])
            ;;
         12.*)
-           AC_MSG_RESULT([FreeBSD 12.x (${kernel})])
-           AC_DEFINE([FREEBSD_VERS], FREEBSD_12, [FreeBSD version])
+           case "${kernel}" in
+           12.[[0-1]]-*)
+              AC_MSG_RESULT([FreeBSD 12.x (${kernel})])
+              AC_DEFINE([FREEBSD_VERS], FREEBSD_12, [FreeBSD version])
+              ;;
+           *)
+              AC_MSG_RESULT([FreeBSD 12.x (${kernel})])
+              AC_DEFINE([FREEBSD_VERS], FREEBSD_12_2, [FreeBSD version])
+              ;;
+           esac
            ;;
         13.*)
            AC_MSG_RESULT([FreeBSD 13.x (${kernel})])

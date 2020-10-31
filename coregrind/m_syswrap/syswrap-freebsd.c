@@ -6065,7 +6065,7 @@ POST(sys_fhreadlink)
 
 #endif
 
-#if (FREEBSD_VERS >= FREEBSD_13)
+#if (FREEBSD_VERS >= FREEBSD_12_2)
 
 // SYS___sysctlbyname
 // int sysctlbyname(const char *name, void *oldp, size_t *oldlenp,
@@ -6818,7 +6818,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_fhreadlink,       sys_fhreadlink),        // 567
 #endif // FREEBSD_VERS >= FREEBSD_12
 
-#if (FREEBSD_VERS >= FREEBSD_13)
+#if (FREEBSD_VERS >= FREEBSD_12_2)
    // unimpl __NR_funlinkat           568
    // unimpl __NR_copy_file_range     569
    BSDXY(__NR___sysctlbyname,   sys___sysctlbyname),    // 570
@@ -6827,8 +6827,10 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl __NR_sigfastblock        573
    // unimpl __NR___realpathat        574
    // unimpl __NR_close_range         575
-   // unimpl __NR_rpctls_syscall      576
+#endif
 
+#if (FREEBSD_VERS >= FREEBSD_13)
+   // unimpl __NR_rpctls_syscall      576
 #endif
 
 

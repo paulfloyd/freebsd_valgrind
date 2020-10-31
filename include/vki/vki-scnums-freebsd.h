@@ -625,7 +625,7 @@
 
 #endif // (FREEBSD_VERS >= FREEBSD_12)
 
-#if (FREEBSD_VERS >= FREEBSD_13)
+#if (FREEBSD_VERS >= FREEBSD_12_2)
 
 #define __NR_funlinkat           568
 #define __NR_copy_file_range     569
@@ -635,6 +635,11 @@
 #define __NR_sigfastblock        573
 #define __NR___realpathat        574
 #define __NR_close_range         575
+
+#endif
+
+#if (FREEBSD_VERS >= FREEBSD_13)
+
 #define __NR_rpctls_syscall      576
 
 #endif
