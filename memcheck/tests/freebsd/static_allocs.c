@@ -25,11 +25,13 @@ void *reallocf(void *ptr, size_t size) {
    return ptr;
 }
 
+volatile char* nullptr = NULL;
+
 
 int main (void)
 {
    char *p;
-   p = realloc(NULL, 10);
+   p = realloc((void*)nullptr, 10);
    p = calloc(10, 16);
    (void)reallocf(p, 0);
    return 0;

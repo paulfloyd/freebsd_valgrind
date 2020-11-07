@@ -1,2 +1,2 @@
 prog: static_allocs
-vgopts: -q --leak-check=full --soname-synonyms=somalloc=NONE
+vgopts: -q --leak-check=full
