@@ -152,6 +152,14 @@ extern ULong convert_to_national_helper( ULong src, ULong return_upper );
 extern ULong convert_from_zoned_helper( ULong src_hi, ULong src_low );
 extern ULong convert_from_national_helper( ULong src_hi, ULong src_low );
 extern ULong generate_C_FPCC_helper( ULong size, ULong src_hi, ULong src );
+extern ULong extract_bits_under_mask_helper( ULong src, ULong mask,
+                                             UInt flag );
+extern UInt count_bits_under_mask_helper( ULong src, ULong mask,
+                                          UInt flag );
+extern ULong deposit_bits_under_mask_helper( ULong src, ULong mask );
+extern ULong population_count64_helper( ULong src );
+extern ULong vector_evaluate64_helper( ULong srcA, ULong srcB, ULong srcC,
+                                       ULong IMM );
 
 
 /* --- DIRTY HELPERS --- */
