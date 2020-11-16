@@ -4642,6 +4642,14 @@ PRE(sys_thr_set_name)
    PRINT( "sys_thr_set_name ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2 );
    PRE_REG_READ2(int, "thr_set_name", long, id, const char *, name);
    PRE_MEM_RASCIIZ( "thr_set_name(name)", ARG2);
+
+   if (ML_(safe_to_deref)((void*)ARG2, 1)) {
+      const HChar* new_name = (const HChar*) (Addr)ARG2;
+      ThreadState* tst = VG_(get_ThreadState)(tid);
+      SizeT new_len = VG_(strnlen)(new_name, VKI_MAXCOMLEN+1);
+      tst->thread_name = VG_(realloc)("syswrap.thr_set_name", tst->thread_name, new_len + 1);
+      VG_(strlcpy)(tst->thread_name, new_name, new_len + 1);
+   }
 }
 
 // SYS_aio_fsync  465
