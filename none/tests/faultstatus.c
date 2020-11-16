@@ -36,7 +36,7 @@
  * BUS_ADRERR is used for bus time out while BUS_OBJERR is translated
  * from underlying codes FC_OBJERR (x86) or ASYNC_BERR (sparc).
  */
-#if defined(VGO_solaris) || (defined(VGO_freebsd) && (FREEBSD_VERS >= FREEBSD_13))
+#if defined(VGO_solaris) || (defined(VGO_freebsd) && (FREEBSD_VERS >= FREEBSD_12_2))
 #  define BUS_ERROR_SI_CODE  BUS_OBJERR
 #else
 #  define BUS_ERROR_SI_CODE  BUS_ADRERR
@@ -167,7 +167,7 @@ int main()
 #define T(n, sig, code, addr) { test##n, sig, code, addr }
 			T(1, SIGSEGV,	SEGV_MAPERR,	BADADDR),
 			T(2, SIGSEGV,	SEGV_ACCERR,	mapping),
-#if defined(VGO_freebsd) && (FREEBSD_VERS < FREEBSD_13)
+#if defined(VGO_freebsd) && (FREEBSD_VERS < FREEBSD_12_2)
 			T(3, SIGSEGV,	BUS_ERROR_SI_CODE, &mapping[FILESIZE+10]),
 #else
 			T(3, SIGBUS,	BUS_ERROR_SI_CODE, &mapping[FILESIZE+10]),
