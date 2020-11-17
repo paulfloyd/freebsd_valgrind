@@ -42,6 +42,7 @@
 #include "pub_core_xarray.h"
 #include "pub_core_clientstate.h"   // VG_(client__dl_sysinfo_int80)
 #include "pub_core_trampoline.h"
+#include "config.h"
 
 
 /*------------------------------------------------------------*/
