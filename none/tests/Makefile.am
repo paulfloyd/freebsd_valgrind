@@ -156,6 +156,7 @@ EXTRA_DIST = \
 	nocwd.stdout.exp nocwd.stderr.exp nocwd.vgtest \
 	nocwd.stderr.exp-freebsd \
 	nodir.stderr.exp nodir.vgtest \
+		nodir.stderr.exp-freebsd \
 	pending.stdout.exp pending.stderr.exp pending.vgtest \
 	ppoll_alarm.stdout.exp ppoll_alarm.stderr.exp ppoll_alarm.vgtest \
 	procfs-linux.stderr.exp-with-readlinkat \
