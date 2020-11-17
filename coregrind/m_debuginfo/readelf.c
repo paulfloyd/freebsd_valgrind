@@ -1977,6 +1977,11 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                      item.svma_limit = a_phdr.p_vaddr + a_phdr.p_memsz;
                      item.bias       = map->avma - map->foff
                                        + a_phdr.p_offset - a_phdr.p_vaddr;
+#if (FREEBSD_VERS >= FREEBSD_12_2)
+                     if ((long long int)item.bias < 0LL) {
+                        item.bias = 0;
+                     }
+#endif
                      if (map->rw
                          && (a_phdr.p_flags & (PF_R | PF_W))
                             == (PF_R | PF_W)) {
