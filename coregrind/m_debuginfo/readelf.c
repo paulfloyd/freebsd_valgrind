@@ -1977,9 +1977,6 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
                      item.svma_limit = a_phdr.p_vaddr + a_phdr.p_memsz;
                      item.bias       = map->avma - map->foff
                                        + a_phdr.p_offset - a_phdr.p_vaddr;
-
-                     TRACE_SYMTAB(
-                        "PT_LOAD[%ld]:   calc bias avma 0x%lx foff 0x%lx poff 0x%lx vadd 0x%lx res bias %lld\n", i, map->avma, map->foff, a_phdr.p_offset, a_phdr.p_vaddr, (long long int)item.bias);
 #if (FREEBSD_VERS >= FREEBSD_12_2)
                      if ((long long int)item.bias < 0LL) {
                         item.bias = 0;
@@ -2475,7 +2472,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
             di->gotplt_present = True;
             di->gotplt_avma = svma + inrw->bias;
             di->gotplt_size = size;
-            TRACE_SYMTAB("acquiring .got.plt avma = %#lx [svma %#lx bias %#lx size %#lx]\n", di->gotplt_avma, svma, inrw->bias, size);
+            TRACE_SYMTAB("acquiring .got.plt avma = %#lx\n", di->gotplt_avma);
          } else if (size != 0) {
             BAD(".got.plt");
          }
