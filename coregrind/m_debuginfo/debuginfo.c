@@ -4815,13 +4815,15 @@ VgSectKind VG_(DebugInfo_sect_kind)( /*OUT*/const HChar** objname, Addr a)
 
    for (di = debugInfo_list; di != NULL; di = di->next) {
 
-      if (0)
+      if (1/*0*/)
          VG_(printf)(
             "addr=%#lx di=%p %s got=%#lx,%lu plt=%#lx,%lu "
+            "got.plt=%#lx,%lu "
             "data=%#lx,%lu bss=%#lx,%lu\n",
             a, di, di->fsm.filename,
             di->got_avma,  di->got_size,
             di->plt_avma,  di->plt_size,
+            di->gotplt_avma,  di->gotplt_size,
             di->data_avma, di->data_size,
             di->bss_avma,  di->bss_size);
 
