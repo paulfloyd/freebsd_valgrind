@@ -1133,7 +1133,7 @@ void read_elf_symtab__ppc64be_linux(
  * NT_FREEBSD_FEATURE_CTL type). This seems to be related to Address Space Layout
  * Randomization. No hurry at the moment.
  *
- * See /usr/src/sys/kern/imgact_elf.c for details on hownthe kernel reads these
+ * See /usr/src/sys/kern/imgact_elf.c for details on how the kernel reads these
  * notes.
  */
 static
