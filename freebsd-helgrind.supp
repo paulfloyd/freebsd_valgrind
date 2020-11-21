@@ -155,3 +155,8 @@
    fun:memset
    obj:*/lib*/libthr.so.3
 }
+{
+   HELGRIND-LIBOMP
+   Helgrind:Race
+   obj:/usr/lib*/libomp.so
+}
