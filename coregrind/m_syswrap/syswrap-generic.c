@@ -1128,7 +1128,7 @@ void pre_mem_read_sockaddr ( ThreadId tid,
    VG_(sprintf) ( outmsg, description, "sa_family" );
    PRE_MEM_READ( outmsg, (Addr) &sa->sa_family, sizeof(vki_sa_family_t));
 #if defined(VGO_freebsd)
-   VG_(sprintf) ( outmsg, description, ".sa_len" );
+   VG_(sprintf) ( outmsg, description, "sa_len" );
    PRE_MEM_READ( outmsg, (Addr) &sa->sa_len, sizeof(char));
 #endif
 
