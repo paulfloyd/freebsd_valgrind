@@ -4827,38 +4827,10 @@ POST(sys_cpuset)
 // amd64 / x86
 
 // SYS_cpuset_getaffinity  487
-// int cpuset_getaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
-//                        size_t setsize, cpuset_t *mask);
-PRE(sys_cpuset_getaffinity)
-{
-   PRINT("sys_cpuset_getaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
-         ARG3, ARG4, ARG5);
-   PRE_REG_READ5(int, "cpuset_getaffinity",
-                 int, level, int, which, long, id,
-                 size_t, setsize, void *, mask);
-   PRE_MEM_WRITE("cpuset_getaffinity", ARG5, ARG4);
-}
-
-POST(sys_cpuset_getaffinity)
-{
-   vg_assert(SUCCESS);
-   if (RES == 0)
-      POST_MEM_WRITE( ARG5, ARG4 );
-}
+// amd64 / x86
 
 // SYS_cpuset_setaffinity  488
-// int cpuset_setaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
-//                        size_t setsize, const cpuset_t *mask);
-PRE(sys_cpuset_setaffinity)
-{
-
-   PRINT("sys_cpuset_setaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2,
-         ARG3, ARG4, ARG5);
-   PRE_REG_READ5(int, "cpuset_setaffinity",
-                 int, level, int, which, long, id,
-                 size_t, setsize, void *, mask);
-   PRE_MEM_READ("cpuset_setaffinity", ARG5, ARG4);
-}
+// amd64 / x86
 
 // SYS_faccessat  489
 // int faccessat(int fd, const char *path, int mode, int flag);

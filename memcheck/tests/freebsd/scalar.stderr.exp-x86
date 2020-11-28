@@ -3870,7 +3870,10 @@ Syscall param cpuset_getaffinity(level) contains uninitialised byte(s)
 Syscall param cpuset_getaffinity(which) contains uninitialised byte(s)
    ...
 
-Syscall param cpuset_getaffinity(id) contains uninitialised byte(s)
+Syscall param cpuset_getaffinity(id_low) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_getaffinity(id_high) contains uninitialised byte(s)
    ...
 
 Syscall param cpuset_getaffinity(setsize) contains uninitialised byte(s)
@@ -3878,10 +3881,6 @@ Syscall param cpuset_getaffinity(setsize) contains uninitialised byte(s)
 
 Syscall param cpuset_getaffinity(mask) contains uninitialised byte(s)
    ...
-
-Syscall param cpuset_getaffinity points to unaddressable byte(s)
-   ...
- Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
 488:  SYS_cpuset_setaffinity 5s 1m
@@ -3892,7 +3891,10 @@ Syscall param cpuset_setaffinity(level) contains uninitialised byte(s)
 Syscall param cpuset_setaffinity(which) contains uninitialised byte(s)
    ...
 
-Syscall param cpuset_setaffinity(id) contains uninitialised byte(s)
+Syscall param cpuset_setaffinity(id_low) contains uninitialised byte(s)
+   ...
+
+Syscall param cpuset_setaffinity(id_high) contains uninitialised byte(s)
    ...
 
 Syscall param cpuset_setaffinity(setsize) contains uninitialised byte(s)
@@ -3900,10 +3902,6 @@ Syscall param cpuset_setaffinity(setsize) contains uninitialised byte(s)
 
 Syscall param cpuset_setaffinity(mask) contains uninitialised byte(s)
    ...
-
-Syscall param cpuset_setaffinity points to unaddressable byte(s)
-   ...
- Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
 489:           SYS_faccessat 3s 1m

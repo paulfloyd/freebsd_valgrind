@@ -40,10 +40,11 @@ int main(void)
    
    // error section
    struct uuid* ps = malloc(2*sizeof(struct uuid));
-   uuidgen(ps, 3);
    free(ps);
+   uuidgen(ps, 2);
 
-   int badint;
+   int badint = 1;;
+   VALGRIND_MAKE_MEM_UNDEFINED(&badint, sizeof(int));
    uuidgen(&s, badint);
    
 #if (FREEBSD_VERS >= FREEBSD_12)

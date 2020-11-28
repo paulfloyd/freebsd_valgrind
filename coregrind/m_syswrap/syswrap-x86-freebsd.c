@@ -1226,7 +1226,43 @@ POST(sys_cpuset_getid)
    POST_MEM_WRITE(ARG5, sizeof(vki_cpusetid_t));
 }
 
+// SYS_cpuset_getaffinity  487
+// int cpuset_getaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
+//                        size_t setsize, cpuset_t *mask);
+PRE(sys_cpuset_getaffinity)
+{
+   PRINT("sys_cpuset_getaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %lld, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",
+         ARG1, ARG2, MERGE64(ARG3, ARG4), ARG5, ARG6);
+   PRE_REG_READ6(int, "cpuset_getaffinity",
+                 vki_cpulevel_t, level, vki_cpuwhich_t, which,
+                 vki_uint32_t, MERGE64_FIRST(id),
+                 vki_uint32_t, MERGE64_SECOND(id),
+                 size_t, setsize, void *, mask);
+   PRE_MEM_WRITE("cpuset_getaffinity", ARG6, ARG5);
+}
 
+POST(sys_cpuset_getaffinity)
+{
+   vg_assert(SUCCESS);
+   if (RES == 0)
+      POST_MEM_WRITE( ARG6, ARG5 );
+}
+
+// SYS_cpuset_setaffinity  488
+// int cpuset_setaffinity(cpulevel_t level, cpuwhich_t which, id_t id,
+//                        size_t setsize, const cpuset_t *mask);
+PRE(sys_cpuset_setaffinity)
+{
+
+   PRINT("sys_cpuset_setaffinity ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %llu, %" FMT_REGWORD "u, %#" FMT_REGWORD "x )",
+         ARG1, ARG2, MERGE64(ARG3, ARG4), ARG5, ARG6);
+   PRE_REG_READ6(int, "cpuset_setaffinity",
+                 vki_cpulevel_t, level, vki_cpuwhich_t, which,
+                 vki_uint32_t, MERGE64_FIRST(id),
+                 vki_uint32_t, MERGE64_SECOND(id),
+                 size_t, setsize, void *, mask);
+   PRE_MEM_READ("cpuset_setaffinity", ARG6, ARG5);
+}
 
 // SYS_posix_fallocate 530
 // int posix_fallocate(int fd, off_t offset, off_t len);

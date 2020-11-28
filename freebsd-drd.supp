@@ -63,12 +63,12 @@
    fun:pthread_detach
 }
 {
-   DRD-LIBGOMP1
+   DRD-LIBGOMP
    drd:ConflictingAccess
    obj:/usr/local/lib*/gcc9/libgomp.so.1.0.0
 }
 {
-   DRD-LIBGOMP2
+   DRD-LIBOMP
    drd:ConflictingAccess
    obj:/usr/lib*/libomp.so
 }
@@ -160,4 +160,11 @@
    obj:*/lib*/libc.so.7
    fun:snprintf
 }
-
+{
+   DRD-FREEBSD122-OMP
+   drd:MutexErr
+   fun:pthread_mutex_destroy_intercept
+   fun:pthread_mutex_destroy
+   fun:_ZNSt3__15mutexD1Ev
+   fun:__cxa_finalize
+}
