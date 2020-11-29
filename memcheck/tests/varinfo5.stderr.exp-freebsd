@@ -47,7 +47,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:154)
    by 0x........: main (tests/varinfo5.c:5)
  Address 0x........ is on thread 1's stack
- in frame #1, created by varinfo1_main (varinfo5so.c:48)
+ in frame #X, created by varinfo1_main (varinfo5so.c:48)
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -55,7 +55,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:155)
    by 0x........: main (tests/varinfo5.c:5)
  Location 0x........ is 0 bytes inside var[7],
- declared at varinfo5so.c:69, in frame #1 of thread 1
+ declared at varinfo5so.c:69, in frame #X of thread 1
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -63,7 +63,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:155)
    by 0x........: main (tests/varinfo5.c:5)
  Address 0x........ is on thread 1's stack
- in frame #1, created by foo2 (varinfo5so.c:66)
+ in frame #X, created by foo2 (varinfo5so.c:66)
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -71,7 +71,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:155)
    by 0x........: main (tests/varinfo5.c:5)
  Address 0x........ is on thread 1's stack
- in frame #1, created by foo2 (varinfo5so.c:66)
+ in frame #X, created by foo2 (varinfo5so.c:66)
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -136,7 +136,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:156)
    by 0x........: main (tests/varinfo5.c:5)
  Address 0x........ is on thread 1's stack
- in frame #1, created by foo3 (varinfo5so.c:101)
+ in frame #X, created by foo3 (varinfo5so.c:101)
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -145,7 +145,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:157)
    by 0x........: main (tests/varinfo5.c:5)
  Location 0x........ is 1 byte inside a[3].xyzzy[21].c1,
- declared at varinfo5so.c:135, in frame #1 of thread 1
+ declared at varinfo5so.c:135, in frame #X of thread 1
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -154,7 +154,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:157)
    by 0x........: main (tests/varinfo5.c:5)
  Location 0x........ is 0 bytes inside a[5].bong,
- declared at varinfo5so.c:135, in frame #1 of thread 1
+ declared at varinfo5so.c:135, in frame #X of thread 1
 
 Uninitialised byte(s) found during client check request
    at 0x........: croak (tests/varinfo5so.c:29)
@@ -163,7 +163,7 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (tests/varinfo5so.c:157)
    by 0x........: main (tests/varinfo5.c:5)
  Location 0x........ is 1 byte inside a[3].xyzzy[21].c2[2],
- declared at varinfo5so.c:135, in frame #1 of thread 1
+ declared at varinfo5so.c:135, in frame #X of thread 1
 
 answer is 0
 Uninitialised byte(s) found during client check request
@@ -175,5 +175,5 @@ Uninitialised byte(s) found during client check request
    by 0x........: varinfo5_main (./varinfo5so.c:158)
    by 0x........: main (tests/varinfo5.c:5)
  Address 0x........ is on thread 1's stack
- in frame #1, created by varinfo5_main (varinfo5so.c:153)
+ in frame #X, created by varinfo5_main (varinfo5so.c:153)
 
