@@ -78,30 +78,35 @@
 /*----------------------------------------------------------------*/
 
 #if defined(VGO_solaris)
-/* On Solaris, libpthread is just a filter library on top of libc.
- * Threading and synchronization functions in runtime linker are not
- * intercepted.
- */
-#define PTH_FUNC(ret_ty, f, args...) \
-   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)(args); \
-   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)(args)
-
 /* pthread_t is typedef'd to 'unsigned int' but in DO_CREQ_* macros
    sizeof(Word) is expected. */
 #define CREQ_PTHREAD_T Word
 #define SEM_ERROR ret
 #else
-#define PTH_FUNC(ret_ty, f, args...) \
-   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f)(args); \
-   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f)(args)
 #define CREQ_PTHREAD_T pthread_t
 #define SEM_ERROR errno
 #endif /* VGO_solaris */
 
-#if defined(VGO_freebsd)
-#define LIBC_FUNC(ret_ty, f, args...) \
+#define HG_EXPAND(tok) #tok
+#define HG_STR(tok) HG_EXPAND(tok)
+#define HG_WEAK_ALIAS(name, aliasname) \
+  extern __typeof (name) aliasname __attribute__ ((weak, alias(HG_STR(name))))
+
+#if defined(VG_WRAP_THREAD_FUNCTION_LIBPTHREAD_ONLY)
+#define PTH_FUNC(ret_ty, f, args...) \
+   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f)(args); \
+   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f)(args)
+#elif defined(VG_WRAP_THREAD_FUNCTION_LIBC_AND_LIBPTHREAD)
+#define PTH_FUNC(ret_ty, f, args...) \
+   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f)(args); \
+   HG_WEAK_ALIAS(I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f), I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)); \
+   ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBPTHREAD_SONAME,f)(args)
+#elif defined(VG_WRAP_THREAD_FUNCTION_LIBC_ONLY)
+#define PTH_FUNC(ret_ty, f, args...) \
    ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)(args); \
    ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)(args)
+#else
+#  error "Unknown platform/thread wrapping"
 #endif
 
 // Do a client request.  These are macros rather than a functions so
@@ -2779,12 +2784,7 @@ static int sem_init_WRK(sem_t* sem, int pshared, unsigned long value)
                  sem_t* sem, int pshared, unsigned long value) {
       return sem_init_WRK(sem, pshared, value);
    }
-#elif defined(VGO_freebsd)
-   LIBC_FUNC(int, semZuinit, // sem_init
-                 sem_t* sem, int pshared, unsigned long value) {
-      return sem_init_WRK(sem, pshared, value);
-   }
-#elif defined(VGO_darwin)
+#elif defined(VGO_darwin) || defined(VGO_freebsd)
    PTH_FUNC(int, semZuinit, // sem_init
                  sem_t* sem, int pshared, unsigned long value) {
       return sem_init_WRK(sem, pshared, value);
@@ -2867,12 +2867,7 @@ static int sem_destroy_WRK(sem_t* sem)
                  sem_t* sem) {
       return sem_destroy_WRK(sem);
    }
-#elif defined(VGO_freebsd)
-   LIBC_FUNC(int, semZudestroy,  // sem_destroy
-                 sem_t* sem) {
-      return sem_destroy_WRK(sem);
-   }
-#elif defined(VGO_darwin)
+#elif defined(VGO_darwin) || defined(VGO_freebsd)
    PTH_FUNC(int, semZudestroy,  // sem_destroy
                  sem_t* sem) {
       return sem_destroy_WRK(sem);
@@ -2935,11 +2930,7 @@ static int sem_wait_WRK(sem_t* sem)
    PTH_FUNC(int, semZuwaitZAZa, sem_t* sem) { /* sem_wait@* */
       return sem_wait_WRK(sem);
    }
-#elif defined(VGO_freebsd)
-   LIBC_FUNC(int, semZuwait, sem_t* sem) { /* sem_wait */
-      return sem_wait_WRK(sem);
-   }
-#elif defined(VGO_darwin)
+#elif defined(VGO_darwin) || defined(VGO_freebsd)
    PTH_FUNC(int, semZuwait, sem_t* sem) { /* sem_wait */
       return sem_wait_WRK(sem);
    }
@@ -3001,11 +2992,7 @@ static int sem_post_WRK(sem_t* sem)
    PTH_FUNC(int, semZupostZAZa, sem_t* sem) { /* sem_post@* */
       return sem_post_WRK(sem);
    }
-#elif defined(VGO_freebsd)
-   LIBC_FUNC(int, semZupost, sem_t* sem) { /* sem_post */
-      return sem_post_WRK(sem);
-   }
-#elif defined(VGO_darwin)
+#elif defined(VGO_darwin) || defined(VGO_freebsd)
    PTH_FUNC(int, semZupost, sem_t* sem) { /* sem_post */
       return sem_post_WRK(sem);
    }
@@ -3022,18 +3009,11 @@ static int sem_post_WRK(sem_t* sem)
 // glibc:   sem_open
 // darwin:  sem_open
 // Solaris: sem_open
-// FreeBSD: sem_open (libc)
+// FreeBSD: sem_open
 //
-#if defined(VGO_freebsd)
-LIBC_FUNC(sem_t*, semZuopen,
-                 const char* name, long oflag,
-                 long mode, unsigned long value)
-
-#else
 PTH_FUNC(sem_t*, semZuopen,
                  const char* name, long oflag,
                  long mode, unsigned long value)
-#endif
 {
    /* A copy of sem_init_WRK (more or less).  Is this correct? */
    OrigFn fn;
@@ -3069,12 +3049,8 @@ PTH_FUNC(sem_t*, semZuopen,
 // glibc:   sem_close
 // darwin:  sem_close
 // Solaris: sem_close
-// FreeBSD: sem_close (libc)
-# if defined(VGO_freebsd)
-LIBC_FUNC(int, sem_close, sem_t* sem)
-#else
+// FreeBSD: sem_close
 PTH_FUNC(int, sem_close, sem_t* sem)
-#endif
 {
    OrigFn fn;
    int    ret;
