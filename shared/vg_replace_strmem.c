@@ -1303,7 +1303,7 @@ static inline void my_exit ( int x )
       return dst_str; \
    }
 
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_freebsd)
  STPNCPY(VG_Z_LIBC_SONAME, stpncpy)
 #endif
 
@@ -2009,15 +2009,7 @@ static inline void my_exit ( int x )
       return i; \
    }
 
-#if defined(VGO_linux)
- WCSLEN(VG_Z_LIBC_SONAME,          wcslen)
-
-#elif defined(VGO_freebsd)
- WCSLEN(VG_Z_LIBC_SONAME,          wcslen)
-
-#elif defined(VGO_darwin)
-
-#elif defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_freebsd) || defined(VGO_solaris)
  WCSLEN(VG_Z_LIBC_SONAME,          wcslen)
 
 #endif
@@ -2039,7 +2031,7 @@ static inline void my_exit ( int x )
       return i;                          \
    }
 
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_freebsd)
  WCSNLEN(VG_Z_LIBC_SONAME, wcsnlen)
  WCSNLEN(VG_Z_LIBC_SONAME, __GI_wcsnlen)
 #endif
@@ -2071,7 +2063,7 @@ static inline void my_exit ( int x )
       return 0; \
    }
 
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_freebsd)
  WCSCMP(VG_Z_LIBC_SONAME,          wcscmp)
 #endif
 
@@ -2101,7 +2093,7 @@ static inline void my_exit ( int x )
          s1++; s2++; n++; \
       } \
    }
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_freebsd)
  WCSNCMP(VG_Z_LIBC_SONAME,          wcsncmp)
 #endif
 
@@ -2138,7 +2130,7 @@ static inline void my_exit ( int x )
       return dst_orig; \
    }
 
-#if defined(VGO_linux) || defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
  WCSCPY(VG_Z_LIBC_SONAME, wcscpy)
 #endif
 
@@ -2161,7 +2153,7 @@ static inline void my_exit ( int x )
       } \
    }
 
-#if defined(VGO_linux)
+#if defined(VGO_linux)  || defined(VGO_freebsd)
  WCSCHR(VG_Z_LIBC_SONAME,          wcschr)
 #endif
 /*---------------------- wcsrchr ----------------------*/
@@ -2183,7 +2175,7 @@ static inline void my_exit ( int x )
       } \
    }
 
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_freebsd)
  WCSRCHR(VG_Z_LIBC_SONAME, wcsrchr)
 #endif
 
@@ -2213,6 +2205,9 @@ static inline void my_exit ( int x )
  WMEMCHR(VG_Z_LIBC_SONAME, __GI_wmemchr)
 #endif
 
+#if defined(VGO_freebsd)
+ WMEMCHR(VG_Z_LIBC_SONAME, wmemchr)
+#endif
 /*------------------------------------------------------------*/
 /*--- Improve definedness checking of process environment  ---*/
 /*------------------------------------------------------------*/
