@@ -286,6 +286,12 @@ static IRExpr* triop ( IROp op, IRExpr* a1, IRExpr* a2, IRExpr* a3 )
    return IRExpr_Triop(op, a1, a2, a3);
 }
 
+static IRExpr* qop ( IROp op, IRExpr* a1, IRExpr* a2,
+                              IRExpr* a3, IRExpr* a4 )
+{
+   return IRExpr_Qop(op, a1, a2, a3, a4);
+}
+
 static IRExpr* loadLE ( IRType ty, IRExpr* addr )
 {
    return IRExpr_Load(Iend_LE, ty, addr);
@@ -529,6 +535,22 @@ static IROp mkADDF ( IRType ty ) {
       case Ity_F32: return Iop_AddF32;
       case Ity_F64: return Iop_AddF64;
       default: vpanic("mkADDF");
+   }
+}
+
+static IROp mkFMADDF ( IRType ty ) {
+   switch (ty) {
+      case Ity_F32: return Iop_MAddF32;
+      case Ity_F64: return Iop_MAddF64;
+      default: vpanic("mkFMADDF");
+   }
+}
+
+static IROp mkFMSUBF ( IRType ty ) {
+   switch (ty) {
+      case Ity_F32: return Iop_MSubF32;
+      case Ity_F64: return Iop_MSubF64;
+      default: vpanic("mkFMSUBF");
    }
 }
 
@@ -2672,6 +2694,65 @@ Bool dis_ARM64_data_processing_immediate(/*MB_OUT*/DisResult* dres,
       Bool   is64 = sf == 1;
       IRType ty   = is64 ? Ity_I64 : Ity_I32;
 
+      // Handle plain shifts explicitly.  These are functionally identical to
+      // the general case below, but iropt isn't clever enough to reduce those
+      // sequences to plain shifts.  So give it a hand.
+      if (is64 && immS == 63 && immR >= 1 && immR <= 63) {
+         if (opc == BITS2(0,0)) {
+            // 64-bit signed shift right
+            putIReg64orZR(dd, binop(Iop_Sar64, getIReg64orZR(nn), mkU8(immR)));
+            DIP("asr %s, %s, #%u\n",
+                nameIRegOrZR(is64, dd), nameIRegOrZR(is64, nn), immR);
+            return True;
+         }
+         if (opc == BITS2(1,0)) {
+            // 64-bit unsigned shift right
+            putIReg64orZR(dd, binop(Iop_Shr64, getIReg64orZR(nn), mkU8(immR)));
+            DIP("lsr %s, %s, #%u\n",
+                nameIRegOrZR(is64, dd), nameIRegOrZR(is64, nn), immR);
+            return True;
+         }
+      }
+
+      if (!is64 && immS == 31 && immR >= 1 && immR <= 31) {
+         if (opc == BITS2(0,0)) {
+            // 32-bit signed shift right
+            putIReg32orZR(dd, binop(Iop_Sar32, getIReg32orZR(nn), mkU8(immR)));
+            DIP("asr %s, %s, #%u\n",
+                nameIRegOrZR(is64, dd), nameIRegOrZR(is64, nn), immR);
+            return True;
+         }
+         if (opc == BITS2(1,0)) {
+            // 32-bit unsigned shift right
+            putIReg32orZR(dd, binop(Iop_Shr32, getIReg32orZR(nn), mkU8(immR)));
+            DIP("lsr %s, %s, #%u\n",
+                nameIRegOrZR(is64, dd), nameIRegOrZR(is64, nn), immR);
+            return True;
+         }
+      }
+
+      if (is64 && immS >= 0 && immS <= 62
+          && immR == immS + 1 && opc == BITS2(1,0)) {
+         // 64-bit shift left
+         UInt shift = 64 - immR;
+         vassert(shift >= 1 && shift <= 63);
+         putIReg64orZR(dd, binop(Iop_Shl64, getIReg64orZR(nn), mkU8(shift)));
+         DIP("lsl %s, %s, #%u\n",
+             nameIRegOrZR(is64, dd), nameIRegOrZR(is64, nn), shift);
+         return True;
+      }
+      if (!is64 && immS >= 0 && immS <= 30
+          && immR == immS + 1 && opc == BITS2(1,0)) {
+         // 32-bit shift left
+         UInt shift = 32 - immR;
+         vassert(shift >= 1 && shift <= 31);
+         putIReg32orZR(dd, binop(Iop_Shl32, getIReg32orZR(nn), mkU8(shift)));
+         DIP("lsl %s, %s, #%u\n",
+             nameIRegOrZR(is64, dd), nameIRegOrZR(is64, nn), shift);
+         return True;
+      }
+
+      // No luck.  We have to use the (slow) general case.
       IRTemp dst = newTemp(ty);
       IRTemp src = newTemp(ty);
       IRTemp bot = newTemp(ty);
@@ -14368,30 +14449,40 @@ Bool dis_AdvSIMD_fp_data_proc_3_source(/*MB_OUT*/DisResult* dres, UInt insn)
          where Fx=Dx when sz=1, Fx=Sx when sz=0
 
                   -----SPEC------    ----IMPL----
-         fmadd       a +    n * m    a + n * m
-         fmsub       a + (-n) * m    a - n * m
-         fnmadd   (-a) + (-n) * m    -(a + n * m)
-         fnmsub   (-a) +    n * m    -(a - n * m)
+         fmadd       a +    n * m    fmadd (a, n, m)
+         fmsub       a + (-n) * m    fmsub (a, n, m)
+         fnmadd   (-a) + (-n) * m    fmadd (-a, -n, m)
+         fnmsub   (-a) +    n * m    fmadd (-a, n, m)
+
+         Note Iop_MAdd/SubF32/64 take arguments in the order: rm, N, M, A
       */
       Bool    isD   = (ty & 1) == 1;
       UInt    ix    = (bitO1 << 1) | bitO0;
       IRType  ity   = isD ? Ity_F64 : Ity_F32;
-      IROp    opADD = mkADDF(ity);
-      IROp    opSUB = mkSUBF(ity);
-      IROp    opMUL = mkMULF(ity);
+      IROp    opFMADD = mkFMADDF(ity);
+      IROp    opFMSUB = mkFMSUBF(ity);
       IROp    opNEG = mkNEGF(ity);
       IRTemp  res   = newTemp(ity);
       IRExpr* eA    = getQRegLO(aa, ity);
       IRExpr* eN    = getQRegLO(nn, ity);
       IRExpr* eM    = getQRegLO(mm, ity);
       IRExpr* rm    = mkexpr(mk_get_IR_rounding_mode());
-      IRExpr* eNxM  = triop(opMUL, rm, eN, eM);
       switch (ix) {
-         case 0:  assign(res, triop(opADD, rm, eA, eNxM)); break;
-         case 1:  assign(res, triop(opSUB, rm, eA, eNxM)); break;
-         case 2:  assign(res, unop(opNEG, triop(opADD, rm, eA, eNxM))); break;
-         case 3:  assign(res, unop(opNEG, triop(opSUB, rm, eA, eNxM))); break;
-         default: vassert(0);
+         case 0: /* FMADD */
+            assign(res, qop(opFMADD, rm, eN, eM, eA));
+            break;
+         case 1: /* FMSUB */
+            assign(res, qop(opFMSUB, rm, eN, eM, eA));
+            break;
+         case 2: /* FNMADD */
+            assign(res, qop(opFMADD, rm, unop(opNEG, eN), eM,
+                            unop(opNEG,eA)));
+            break;
+         case 3: /* FNMSUB */
+            assign(res, qop(opFMADD, rm, eN, eM, unop(opNEG, eA)));
+            break;
+         default:
+            vassert(0);
       }
       putQReg128(dd, mkV128(0x0000));
       putQRegLO(dd, mkexpr(res));
