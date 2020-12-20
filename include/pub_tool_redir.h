@@ -401,7 +401,7 @@ Bool VG_(is_soname_ld_so) (const HChar *soname);
 // FreeBSD is b) pthread functions are lin libthr but semaphore
 // functions are lin libc
 
-#if defined(VGO_darwin)
+#if defined(VGO_darwin) || defined(VGO_freebsd)
 #define VG_WRAP_THREAD_FUNCTION_LIBPTHREAD_ONLY
 #elif defined(VGO_solaris) || (defined(VGO_linux) && defined(MUSL_LIBC))
 #define VG_WRAP_THREAD_FUNCTION_LIBC_ONLY
