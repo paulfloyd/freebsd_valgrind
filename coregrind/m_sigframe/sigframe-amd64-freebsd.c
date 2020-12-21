@@ -93,10 +93,6 @@ struct sigframe {
    /* Sig handler's return address */
    Addr retaddr;
 
-   Int  sigNo;
-   Addr psigInfo;      /* code or pointer to sigContext */
-   Addr puContext;     /* points to uContext */
-   Addr addr;          /* "secret" 4th argument */
    Addr phandler;      /* "action" or "handler" */
 
    /* pointed to by puContext */
@@ -255,12 +251,7 @@ static Addr build_sigframe(ThreadState *tst,
    VG_TRACK( pre_mem_write, Vg_CoreSignal, tst->tid, "signal handler frame",
              rsp, offsetof(struct sigframe, vg) );
 
-   frame->sigNo = sigNo;
    frame->retaddr = (Addr)&VG_(amd64_freebsd_SUBST_FOR_sigreturn);
-   if ((flags & VKI_SA_SIGINFO) == 0)
-      frame->psigInfo = (Addr)siginfo->si_code;
-   else
-      frame->psigInfo = (Addr)&frame->sigInfo;
 
    if (siguc) {
       trapno = siguc->uc_mcontext.trapno;

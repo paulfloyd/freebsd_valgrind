@@ -192,7 +192,7 @@ struct vki_mcontext {
    long     len;
    long     fpformat;
    long     ownedfp;
-   struct _vki_fpstate  fpstate;
+   struct _vki_fpstate  fpstate;// __attribute__((aligned(16)));
    vki_register_t fsbase;
    vki_register_t gsbase;
 

@@ -901,7 +901,7 @@ VG_(amd64_freebsd_SUBST_FOR_sigreturn):
            recognize signal handler frames. */
         movq    $__NR_fake_sigreturn, %rax
         movq	%rsp, %rdi
-        addq	$40,%rdi
+        addq	$8,%rdi
         syscall
         ud2
 

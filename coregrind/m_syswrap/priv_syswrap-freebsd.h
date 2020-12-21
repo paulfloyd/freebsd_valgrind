@@ -83,7 +83,7 @@ DECL_TEMPLATE(freebsd, sys_pipe) // 42
 DECL_TEMPLATE(freebsd, sys_getlogin) // 49
 DECL_TEMPLATE(freebsd, sys_setlogin) // 50
 // generic acct 51
-// generic sigaltstask 53
+// generic sigaltstack 53
 DECL_TEMPLATE(freebsd, sys_ioctl) // 54
 DECL_TEMPLATE(freebsd, sys_reboot) // 55
 DECL_TEMPLATE(freebsd, sys_revoke) // 56
