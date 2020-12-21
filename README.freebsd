@@ -24,7 +24,7 @@ $ ./configure --prefix=/where/ever
 $ gmake
 $ gmake install
 
-Known Limitations (July 2020)
+Known Limitations (December 2020)
 
 0. Be aware that if you use a wrapper script and run Valgrind on the wrapper
    script Valgrind may hit restrictions if the wrapper script runs any
@@ -41,8 +41,6 @@ Known Limitations (July 2020)
    a) In some cases signals are mishandled causing Valgrind to terminate and
       report a SIGSEGV.
    b) Applications that create and join many threads may crash.
-3. Finally there are limitations on all platforms
-   a) Multithreaded applications that use dlopen may crash when run under DRD.
    
 Notes for Developers
 ~~~~~~~~~~~~~~~~~~~~
@@ -55,12 +53,14 @@ for more general information for developers.
 When adding syscalls, you need to look at the manpage and also syscalls.master
 (online at
 https://github.com/freebsd/freebsd/blob/master/sys/kern/syscalls.master
+and for 32bit
+https://github.com/freebsd/freebsd/blob/master/sys/compat/freebsd32/syscalls.master
 
 and if you installed the src package there should also be
 
-/usr/src/sys/amd64/linux32/syscalls.master
+/usr/src/sys/kern/syscalls.master
 and
-/usr/src/sys/i386/linux/syscalls.master)
+/usr/src/sys/compat/freebsd32/syscalls.master)
 
 syscalls.master is particularly useful for seeing quickly whether parameters
 are inputs or outputs.
