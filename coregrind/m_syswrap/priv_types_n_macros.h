@@ -263,18 +263,18 @@ const SyscallTableEntry* ML_(get_freebsd_syscall_entry)( UInt sysno );
 
 #define DEFN_PRE_TEMPLATE(auxstr, name)                          \
    void vgSysWrap_##auxstr##_##name##_before                     \
-                                 ( __attribute__((unused)) ThreadId tid,                 \
-                                   __attribute__((unused)) SyscallArgLayout* layout,     \
-                                   /*MOD*/ __attribute__((unused)) SyscallArgs* arrghs,   \
-                                   /*OUT*/ __attribute__((unused)) SyscallStatus* status, \
-                                   /*OUT*/ __attribute__((unused)) UWord* flags           \
+                                 ( ThreadId tid,                 \
+                                   SyscallArgLayout* layout,     \
+                                   /*MOD*/ SyscallArgs* arrghs,   \
+                                   /*OUT*/ SyscallStatus* status, \
+                                   /*OUT*/ UWord* flags           \
                                  )
 
 #define DEFN_POST_TEMPLATE(auxstr, name)                         \
    void vgSysWrap_##auxstr##_##name##_after                      \
-                                 ( __attribute__((unused)) ThreadId tid,                 \
-                                   __attribute__((unused)) SyscallArgs* arrghs,          \
-                                   __attribute__((unused)) SyscallStatus* status         \
+                                 ( ThreadId tid,                 \
+                                   SyscallArgs* arrghs,          \
+                                   SyscallStatus* status         \
                                  )
 
 
