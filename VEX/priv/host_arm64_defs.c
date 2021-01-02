@@ -118,9 +118,13 @@ const RRegUniverse* getRRegUniverse_ARM64 ( void )
    // x8 is used as a ProfInc temporary
    // x9 is used as a spill/reload/chaining/call temporary
    // x30 as LR
-   // x31 because dealing with the SP-vs-ZR overloading is too
-   // confusing, and we don't need to do so, so let's just avoid
-   // the problem
+   //
+   // x31 is mentionable, but not allocatable, and is dangerous to use
+   // because of SP-vs-ZR overloading.  Here, we call it `XZR_XSP`.  Whether
+   // it denotes the zero register or the stack pointer depends both on what
+   // kind of instruction it appears in and even on the position within an
+   // instruction that it appears.  So be careful.  There's absolutely
+   // nothing to prevent shooting oneself in the foot.
    //
    // Currently, we have 15 allocatable integer registers:
    // 0 1 2 3 4 5 6 7 22 23 24 25 26 27 28
@@ -137,6 +141,7 @@ const RRegUniverse* getRRegUniverse_ARM64 ( void )
    ru->regs[ru->size++] = hregARM64_X8();
    ru->regs[ru->size++] = hregARM64_X9();
    ru->regs[ru->size++] = hregARM64_X21();
+   ru->regs[ru->size++] = hregARM64_XZR_XSP();
 
    rRegUniverse_ARM64_initted = True;
 
@@ -155,8 +160,8 @@ UInt ppHRegARM64 ( HReg reg )  {
    switch (hregClass(reg)) {
       case HRcInt64:
          r = hregEncoding(reg);
-         vassert(r >= 0 && r < 31);
-         return vex_printf("x%d", r);
+         vassert(r >= 0 && r <= 31);
+         return r ==31 ? vex_printf("xzr/xsp") : vex_printf("x%d", r);
       case HRcFlt64:
          r = hregEncoding(reg);
          vassert(r >= 0 && r < 32);
@@ -490,6 +495,17 @@ static const HChar* showARM64ShiftOp ( ARM64ShiftOp op ) {
       case ARM64sh_SHR: return "lsr";
       case ARM64sh_SAR: return "asr";
       default: vpanic("showARM64ShiftOp");
+   }
+}
+
+static const HChar* showARM64RRSOp ( ARM64RRSOp op ) {
+   switch (op) {
+      case ARM64rrs_ADD: return "add";
+      case ARM64rrs_SUB: return "sub";
+      case ARM64rrs_AND: return "and";
+      case ARM64rrs_OR:  return "orr";
+      case ARM64rrs_XOR: return "eor";
+      default: vpanic("showARM64RRSOp");
    }
 }
 
@@ -851,6 +867,20 @@ ARM64Instr* ARM64Instr_Logic ( HReg dst,
    i->ARM64in.Logic.argL  = argL;
    i->ARM64in.Logic.argR  = argR;
    i->ARM64in.Logic.op    = op;
+   return i;
+}
+ARM64Instr* ARM64Instr_RRS ( HReg dst, HReg argL, HReg argR,
+                             ARM64ShiftOp shiftOp, UChar amt,
+                             ARM64RRSOp mainOp ) {
+   ARM64Instr* i = LibVEX_Alloc_inline(sizeof(ARM64Instr));
+   i->tag                 = ARM64in_RRS;
+   i->ARM64in.RRS.dst     = dst;
+   i->ARM64in.RRS.argL    = argL;
+   i->ARM64in.RRS.argR    = argR;
+   i->ARM64in.RRS.shiftOp = shiftOp;
+   i->ARM64in.RRS.amt     = amt;
+   i->ARM64in.RRS.mainOp  = mainOp;
+   vassert(amt >= 1 && amt <= 63);
    return i;
 }
 ARM64Instr* ARM64Instr_Test ( HReg argL, ARM64RIL* argR ) {
@@ -1441,6 +1471,16 @@ void ppARM64Instr ( const ARM64Instr* i ) {
          vex_printf(", ");
          ppARM64RIL(i->ARM64in.Logic.argR);
          return;
+      case ARM64in_RRS:
+         vex_printf("%s    ", showARM64RRSOp(i->ARM64in.RRS.mainOp));
+         ppHRegARM64(i->ARM64in.RRS.dst);
+         vex_printf(", ");
+         ppHRegARM64(i->ARM64in.RRS.argL);
+         vex_printf(", ");
+         ppHRegARM64(i->ARM64in.RRS.argR);
+         vex_printf(", %s #%u", showARM64ShiftOp(i->ARM64in.RRS.shiftOp),
+                    i->ARM64in.RRS.amt);
+         return;
       case ARM64in_Test:
          vex_printf("tst    ");
          ppHRegARM64(i->ARM64in.Test.argL);
@@ -2013,6 +2053,11 @@ void getRegUsage_ARM64Instr ( HRegUsage* u, const ARM64Instr* i, Bool mode64 )
          addHRegUse(u, HRmRead, i->ARM64in.Logic.argL);
          addRegUsage_ARM64RIL(u, i->ARM64in.Logic.argR);
          return;
+      case ARM64in_RRS:
+         addHRegUse(u, HRmWrite, i->ARM64in.RRS.dst);
+         addHRegUse(u, HRmRead, i->ARM64in.RRS.argL);
+         addHRegUse(u, HRmRead, i->ARM64in.RRS.argR);
+         return;
       case ARM64in_Test:
          addHRegUse(u, HRmRead, i->ARM64in.Test.argL);
          addRegUsage_ARM64RIL(u, i->ARM64in.Test.argR);
@@ -2381,6 +2426,11 @@ void mapRegs_ARM64Instr ( HRegRemap* m, ARM64Instr* i, Bool mode64 )
          i->ARM64in.Logic.argL = lookupHRegRemap(m, i->ARM64in.Logic.argL);
          mapRegs_ARM64RIL(m, i->ARM64in.Logic.argR);
          return;
+      case ARM64in_RRS:
+         i->ARM64in.RRS.dst = lookupHRegRemap(m, i->ARM64in.RRS.dst);
+         i->ARM64in.RRS.argL = lookupHRegRemap(m, i->ARM64in.RRS.argL);
+         i->ARM64in.RRS.argR = lookupHRegRemap(m, i->ARM64in.RRS.argR);
+         return;
       case ARM64in_Test:
          i->ARM64in.Test.argL = lookupHRegRemap(m, i->ARM64in.Test.argL);
          mapRegs_ARM64RIL(m, i->ARM64in.Logic.argR);
@@ -2746,6 +2796,19 @@ static inline UInt iregEnc ( HReg r )
    return n;
 }
 
+static inline UInt iregEncOr31 ( HReg r )
+{
+   // This is the same as iregEnc() except that we're allowed to use the
+   // "special" encoding number 31, which means, depending on the context,
+   // either XZR/WZR or SP.
+   UInt n;
+   vassert(hregClass(r) == HRcInt64);
+   vassert(!hregIsVirtual(r));
+   n = hregEncoding(r);
+   vassert(n <= 31);
+   return n;
+}
+
 static inline UInt dregEnc ( HReg r )
 {
    UInt n;
@@ -2874,8 +2937,13 @@ static inline UInt qregEnc ( HReg r )
 #define X01110101  BITS8(0,1,1,1,0,1,0,1)
 #define X01110110  BITS8(0,1,1,1,0,1,1,0)
 #define X01110111  BITS8(0,1,1,1,0,1,1,1)
+#define X10001010  BITS8(1,0,0,0,1,0,1,0)
+#define X10001011  BITS8(1,0,0,0,1,0,1,1)
+#define X10101010  BITS8(1,0,1,0,1,0,1,0)
 #define X11000001  BITS8(1,1,0,0,0,0,0,1)
 #define X11000011  BITS8(1,1,0,0,0,0,1,1)
+#define X11001010  BITS8(1,1,0,0,1,0,1,0)
+#define X11001011  BITS8(1,1,0,0,1,0,1,1)
 #define X11010100  BITS8(1,1,0,1,0,1,0,0)
 #define X11010110  BITS8(1,1,0,1,0,1,1,0)
 #define X11011000  BITS8(1,1,0,1,1,0,0,0)
@@ -3046,7 +3114,6 @@ static inline UInt X_3_6_1_6_6_5_5 ( UInt f1, UInt f2, UInt f3,
    return w;
 }
 
-
 static inline UInt X_3_8_5_1_5_5_5 ( UInt f1, UInt f2, UInt f3, UInt f4,
                                      UInt f5, UInt f6, UInt f7 ) {
    vassert(3+8+5+1+5+5+5 == 32);
@@ -3063,6 +3130,27 @@ static inline UInt X_3_8_5_1_5_5_5 ( UInt f1, UInt f2, UInt f3, UInt f4,
    w = (w << 5) | f3;
    w = (w << 1) | f4;
    w = (w << 5) | f5;
+   w = (w << 5) | f6;
+   w = (w << 5) | f7;
+   return w;
+}
+
+static inline UInt X_8_2_1_5_6_5_5 ( UInt f1, UInt f2, UInt f3, UInt f4,
+                                     UInt f5, UInt f6, UInt f7 ) {
+   vassert(8+2+1+5+6+5+5 == 32);
+   vassert(f1 < (1<<8));
+   vassert(f2 < (1<<2));
+   vassert(f3 < (1<<1));
+   vassert(f4 < (1<<5));
+   vassert(f5 < (1<<6));
+   vassert(f6 < (1<<5));
+   vassert(f7 < (1<<5));
+   UInt w = 0;
+   w = (w << 8) | f1;
+   w = (w << 2) | f2;
+   w = (w << 1) | f3;
+   w = (w << 5) | f4;
+   w = (w << 6) | f5;
    w = (w << 5) | f6;
    w = (w << 5) | f7;
    return w;
@@ -3360,13 +3448,14 @@ static UInt* do_load_or_store32 ( UInt* p,
 }
 
 
-/* Generate a 64 bit load or store to/from xD, using the given amode
+/* Generate a 64 bit integer load or store to/from xD, using the given amode
    for the address. */
 static UInt* do_load_or_store64 ( UInt* p,
                                   Bool isLoad, UInt xD, ARM64AMode* am )
 {
-   /* In all these cases, Rn can't be 31 since that means SP. */
-   vassert(xD <= 30);
+   /* In all these cases, Rn can't be 31 since that means SP.  But Rd can be
+      31, meaning XZR/WZR. */
+   vassert(xD <= 31);
    if (am->tag == ARM64am_RI9) {
       /* STUR Xd, [Xn|SP + simm9]:  11 111000 000 simm9 00 n d
          LDUR Xd, [Xn|SP + simm9]:  11 111000 010 simm9 00 n d
@@ -3524,6 +3613,31 @@ Int emit_ARM64Instr ( /*MB_MOD*/Bool* is_profInc,
          }
          goto done;
       }
+      case ARM64in_RRS: {
+         UInt top8 = 0;
+         switch (i->ARM64in.RRS.mainOp) {
+            case ARM64rrs_ADD: top8 = X10001011; break;
+            case ARM64rrs_SUB: top8 = X11001011; break;
+            case ARM64rrs_AND: top8 = X10001010; break;
+            case ARM64rrs_XOR: top8 = X11001010; break;
+            case ARM64rrs_OR:  top8 = X10101010; break;
+            default: vassert(0); /*NOTREACHED*/
+         }
+         UInt sh = 0;
+         switch (i->ARM64in.RRS.shiftOp) {
+            case ARM64sh_SHL: sh = X00; break;
+            case ARM64sh_SHR: sh = X01; break;
+            case ARM64sh_SAR: sh = X10; break;
+            default: vassert(0); /*NOTREACHED*/
+         }
+         UInt amt = i->ARM64in.RRS.amt;
+         vassert(amt >= 1 && amt <= 63);
+         *p++ = X_8_2_1_5_6_5_5(top8, sh, 0,
+                                iregEnc(i->ARM64in.RRS.argR), amt,
+                                iregEnc(i->ARM64in.RRS.argL),
+                                iregEnc(i->ARM64in.RRS.dst));
+         goto done;
+      }
       case ARM64in_Test: {
          UInt      rD   = 31; /* XZR, we are going to dump the result */
          UInt      rN   = iregEnc(i->ARM64in.Test.argL);
@@ -3646,7 +3760,7 @@ Int emit_ARM64Instr ( /*MB_MOD*/Bool* is_profInc,
       }
       case ARM64in_LdSt64: {
          p = do_load_or_store64( p, i->ARM64in.LdSt64.isLoad,
-                                 iregEnc(i->ARM64in.LdSt64.rD),
+                                 iregEncOr31(i->ARM64in.LdSt64.rD),
                                  i->ARM64in.LdSt64.amode );
          goto done;
       }

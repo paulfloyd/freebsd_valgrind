@@ -70,6 +70,13 @@ ST_IN HReg hregARM64_D13 ( void ) { return mkHReg(False, HRcFlt64,  13, 25); }
 ST_IN HReg hregARM64_X8  ( void ) { return mkHReg(False, HRcInt64,  8,  26); }
 ST_IN HReg hregARM64_X9  ( void ) { return mkHReg(False, HRcInt64,  9,  27); }
 ST_IN HReg hregARM64_X21 ( void ) { return mkHReg(False, HRcInt64, 21,  28); }
+
+// This is the integer register with encoding 31.  Be *very* careful how you
+// use it, since its meaning is dependent on the instruction and indeed even
+// the position within an instruction, that it appears.  It denotes either the
+// zero register or the stack pointer.
+ST_IN HReg hregARM64_XZR_XSP ( void ) { return mkHReg(False,
+                                                      HRcInt64, 31, 29); }
 #undef ST_IN
 
 extern UInt ppHRegARM64 ( HReg );
@@ -246,6 +253,17 @@ typedef
       ARM64sh_SAR
    }
    ARM64ShiftOp;
+
+typedef
+   enum {
+      ARM64rrs_ADD=54,
+      ARM64rrs_SUB,
+      ARM64rrs_AND,
+      ARM64rrs_OR,
+      ARM64rrs_XOR,
+      ARM64rrs_INVALID
+   }
+   ARM64RRSOp;
 
 typedef
    enum {
@@ -468,6 +486,7 @@ typedef
       ARM64in_Arith=1220,
       ARM64in_Cmp,
       ARM64in_Logic,
+      ARM64in_RRS,
       ARM64in_Test,
       ARM64in_Shift,
       ARM64in_Unary,
@@ -560,6 +579,15 @@ typedef
             ARM64RIL*    argR;
             ARM64LogicOp op;
          } Logic;
+         /* 64 bit AND/OR/XOR/ADD/SUB, reg, reg-with-imm-shift */
+         struct {
+            HReg         dst;
+            HReg         argL;
+            HReg         argR;
+            ARM64ShiftOp shiftOp;
+            UChar        amt; /* 1 to 63 only */
+            ARM64RRSOp   mainOp;
+         } RRS;
          /* 64 bit TST reg, reg or bimm (AND and set flags) */
          struct {
             HReg      argL;
@@ -949,6 +977,8 @@ typedef
 extern ARM64Instr* ARM64Instr_Arith   ( HReg, HReg, ARM64RIA*, Bool isAdd );
 extern ARM64Instr* ARM64Instr_Cmp     ( HReg, ARM64RIA*, Bool is64 );
 extern ARM64Instr* ARM64Instr_Logic   ( HReg, HReg, ARM64RIL*, ARM64LogicOp );
+extern ARM64Instr* ARM64Instr_RRS     ( HReg, HReg, HReg, ARM64ShiftOp,
+                                        UChar amt, ARM64RRSOp mainOp );
 extern ARM64Instr* ARM64Instr_Test    ( HReg, ARM64RIL* );
 extern ARM64Instr* ARM64Instr_Shift   ( HReg, HReg, ARM64RI6*, ARM64ShiftOp );
 extern ARM64Instr* ARM64Instr_Unary   ( HReg, HReg, ARM64UnaryOp );
