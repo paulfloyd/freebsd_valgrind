@@ -1625,7 +1625,7 @@ static HReg iselCondCode_R_wrk ( ISelEnv* env, IRExpr* e )
    return res;
 
    ppIRExpr(e);
-   vpanic("iselCondCode_R(amd64)");
+   vpanic("iselCondCode_R(arm64)");
 }
 
 
@@ -3157,6 +3157,7 @@ static HReg iselV128Expr_wrk ( ISelEnv* env, IRExpr* e )
          case Iop_Sub32Fx4: vecbop = ARM64vecb_FSUB32x4; break;
          case Iop_Mul32Fx4: vecbop = ARM64vecb_FMUL32x4; break;
          case Iop_Div32Fx4: vecbop = ARM64vecb_FDIV32x4; break;
+         case Iop_Add16Fx8: vecbop = ARM64vecb_FADD16x8; break;
          default: break;
       }
       if (vecbop != ARM64vecb_INVALID) {
