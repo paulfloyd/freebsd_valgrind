@@ -6813,6 +6813,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // unimpl __NR_rpctls_syscall      576
 #endif
 
+#if (FREEBSD_VERS >= FREEBSD_14)
+   // unimpl __NR___specialfd         577
+   // unimpl __NR_aio_writev          578
+   // unimpl __NR_aio_readv           579
+#endif
 
    BSDX_(__NR_fake_sigreturn,   sys_fake_sigreturn),    // 1000, fake sigreturn
 

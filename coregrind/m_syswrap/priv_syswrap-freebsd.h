@@ -533,6 +533,13 @@ DECL_TEMPLATE(freebsd, sys___sysctlbyname) // 570
 
 // unimpl __NR_rpctls_syscall      576
 
+#endif
+
+#if (FREEBSD_VERS >= FREEBSD_14)
+
+// unimpl __NR___specialfd         577
+// unimpl __NR_aio_writev          578
+// unimpl __NR_aio_readv           579
 
 #endif
 
