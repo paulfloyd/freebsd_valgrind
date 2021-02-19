@@ -615,7 +615,14 @@ Addr setup_client_stack( void*  init_sp,
       /* copy the entry... */
       *auxv = *orig_auxv;
 
-      /* ...and fix up / examine the copy */
+      /*
+       *  ...and fix up / examine the copy
+       * in general there are thee possibilities for these items
+       * 1. copy it, a common case for scalars
+       * 2. synthesize, if the value that the host gets isn't what we want
+       * 3. ignore, usually the case for pointers to memory for the host
+       *    the ignored items are just left commented out
+       */
       switch(auxv->a_type) {
 
       case AT_IGNORE:
@@ -672,6 +679,10 @@ Addr setup_client_stack( void*  init_sp,
       case AT_ENVC:
          // case AT_ENVV:
          // case AT_PS_STRINGS:
+#endif
+
+#if (FREEBSD_VERS >= FREEBSD_14)
+         // case AT_FXRNG:
 #endif
 
       case AT_PHDR:
