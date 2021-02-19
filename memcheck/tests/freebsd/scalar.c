@@ -1093,7 +1093,7 @@ int main(void)
 
    /* SYS_sched_getscheduler      330*/
    GO(SYS_sched_getscheduler, "1s 0m");
-   SY(SYS_sched_getscheduler, x0+486); FAIL;
+   SY(SYS_sched_getscheduler, x0+486486); FAIL;
 
    /* SYS_sched_yield             331 */
    GO(SYS_sched_yield, "0s 0m");
