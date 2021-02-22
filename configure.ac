@@ -4502,6 +4502,7 @@ AC_CHECK_FUNCS([     \
         klogctl      \
         mallinfo     \
         memchr       \
+        memfd_create \
         memset       \
         mkdir        \
         mremap       \
@@ -4554,6 +4555,8 @@ AM_CONDITIONAL([HAVE_PREADV_PWRITEV],
                [test x$ac_cv_func_preadv = xyes && test x$ac_cv_func_pwritev = xyes])
 AM_CONDITIONAL([HAVE_PREADV2_PWRITEV2],
                [test x$ac_cv_func_preadv2 = xyes && test x$ac_cv_func_pwritev2 = xyes])
+AM_CONDITIONAL([HAVE_MEMFD_CREATE],
+               [test x$ac_cv_func_memfd_create = xyes])
 
 if test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
