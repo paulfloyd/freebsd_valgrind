@@ -275,9 +275,9 @@ static void DRD_(init)(void)
        * However libc.so contains stubs. In this ctor function,
        * calling DRD_(set_pthread_id)() results in a call to
        * pthread_self() resolving to the libc.so stub which
-       * returns a junk value for the tid. Subseqent calls
+       * returns a junk value for the tid. Subsequent calls
        * to pthread_create() then also cause calls to
-       * DRD_(set_pthread_id)(), but this time with pthread_delf()
+       * DRD_(set_pthread_id)(), but this time with pthread_self()
        * resolving to the good libthr.so version (since this is later
        * and libthr.so has been loaded). That causes an assert
        * since we expect the tid to either be INVALID_POSIX_THREADID
