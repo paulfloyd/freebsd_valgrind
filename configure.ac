@@ -5054,6 +5054,7 @@ AC_CONFIG_FILES([
    memcheck/tests/amd64/Makefile
    memcheck/tests/x86/Makefile
    memcheck/tests/linux/Makefile
+   memcheck/tests/linux/debuginfod-check.vgtest
    memcheck/tests/darwin/Makefile
    memcheck/tests/solaris/Makefile
    memcheck/tests/freebsd/Makefile
