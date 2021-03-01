@@ -2154,7 +2154,7 @@ void VG_(client_syscall) ( ThreadId tid, UInt trc )
    // PJF - somewhat unfortunate uglificaton of the code, but the current code handles two
    // types of syscall with different register use. Mixing them up is not good.
    // I've avoided modifying the existing function (I could have added
-   // a FreeBSD amd64-only flag to it for this purpiose).
+   // a FreeBSD amd64-only flag to it for this purpose).
    if (sci->orig_args.klass == VG_FREEBSD_SYSCALL0 || sci->orig_args.klass == VG_FREEBSD_SYSCALL198) {
        getSyscallArgLayout_0_198( &layout );
     } else {
