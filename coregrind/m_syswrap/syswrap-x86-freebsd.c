@@ -911,6 +911,7 @@ PRE(sys_setcontext)
 
    restore_mcontext(tst, &uc->uc_mcontext);
    tst->sig_mask = uc->uc_sigmask;
+   tst->tmp_sig_mask = uc->uc_sigmask;
 
    /* Tell the driver not to update the guest state with the "result",
       and set a bogus result to keep it happy. */
@@ -960,6 +961,7 @@ PRE(sys_swapcontext)
     */
    restore_mcontext(tst, &ucp->uc_mcontext);
    tst->sig_mask = ucp->uc_sigmask;
+   tst->tmp_sig_mask = ucp->uc_sigmask;
 
    /* Tell the driver not to update the guest state with the "result",
       and set a bogus result to keep it happy. */

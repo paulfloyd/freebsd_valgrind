@@ -9,14 +9,18 @@ EXTRA_DIST = \
 	auxv.stderr.exp-freebsd13 \
 	osrel.vgtest \
 	osrel.stderr.exp \
-	osrel.stdout.exp
+	osrel.stdout.exp \
+	swapcontext.vgtest \
+	swapcontext.stderr.exp \
+	swapcontext.stdout.exp
 
 check_PROGRAMS = \
-	auxv osrel
+	auxv osrel swapcontext
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 
 auxv_CFLAGS = ${AM_CFLAGS}
 osrel_CFLAGS = ${AM_CFLAGS}
+swapcontext_CFLAGS = ${AM_CFLAGS}
 

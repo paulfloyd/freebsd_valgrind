@@ -2021,6 +2021,7 @@
 /none/tests/freebsd/Makefile.in
 /none/tests/freebsd/auxv
 /none/tests/freebsd/osrel
+/none/tests/freebsd/swapcontext
 
 # /none/tests/x86/
 /none/tests/x86/*.dSYM
