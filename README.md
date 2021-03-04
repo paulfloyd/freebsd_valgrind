@@ -51,7 +51,7 @@ If you have both GCC and clang installed, the configure script will use GCC. If 
 
 ## Status
 
-The code should build and execute on FreeBSD 12.1 amd64 generating both amd64 and x86 executables. 12.1 i386, 11.3 amd64 and 11.3 i386 should all also work.
+The code should build and execute on all versions from FreeBSD 11 onwards, amd64 and i386.
 
 The regression suite produces the following results [2020-05-04]
 
