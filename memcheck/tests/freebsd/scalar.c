@@ -2025,6 +2025,20 @@ int main(void)
 
 #endif
    
+#if (FREEBSD_VERS >= FREEBSD_12_2)
+   
+      /* SYS___sysctlbyname       570 */
+   GO(SYS___sysctlbyname, "(getoldlen) 3s 2m");
+   SY(SYS___sysctlbyname, x0, x0+1, NULL, x0+1, NULL, x0); FAIL;
+   
+   GO(SYS___sysctlbyname, "(getold) 4s 2m");
+   SY(SYS___sysctlbyname, x0, x0+1, x0+1, x0+1, NULL, x0); FAIL;
+   
+   GO(SYS___sysctlbyname, "(putnew) 4s 2m");
+   SY(SYS___sysctlbyname, x0, x0+1, NULL, NULL, x0+1, x0+2); FAIL;
+   
+#endif
+   
    /* SYS_exit                    1 */
    GO(SYS_exit, "1s 0m");
    SY(SYS_exit, x0); FAIL;

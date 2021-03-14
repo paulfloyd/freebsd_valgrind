@@ -6065,11 +6065,11 @@ PRE(sys___sysctlbyname)
                  void *, oldp, vki_size_t *, oldlenp,
                  void *, newp, vki_size_t, newlen);
    // read number of ints specified in ARG2 from mem pointed to by ARG1
-   PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
+   PRE_MEM_READ("__sysctlbyname(name)", (Addr)ARG1, ARG2 * sizeof(int));
 
    // if 'newp' is not NULL can read namelen bytes from that addess
    if (ARG5 != (UWord)NULL)
-      PRE_MEM_READ("sysctl(newp)", (Addr)ARG5, ARG6);
+      PRE_MEM_READ("__sysctlbyname(newp)", (Addr)ARG5, ARG6);
 
    // there are two scenarios for oldlenp/oldp
    // 1. oldval is NULL and oldlenp is non-NULL
@@ -6082,9 +6082,9 @@ PRE(sys___sysctlbyname)
    if (ARG4 != (UWord)NULL) {
       if (ARG3 != (UWord)NULL) {
          // case 2 above
-         PRE_MEM_READ("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+         PRE_MEM_READ("__sysctlbyname(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
          if (ML_(safe_to_deref)((void*)(Addr)ARG4, sizeof(vki_size_t))) {
-            PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
+            PRE_MEM_WRITE("__sysctlbyname(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
          } else {
             VG_(dmsg)("Warning: Bad oldlenp address %p in sysctl\n",
                       (void *)(Addr)ARG4);
@@ -6092,7 +6092,7 @@ PRE(sys___sysctlbyname)
          }
       } else {
          // case 1 above
-         PRE_MEM_WRITE("sysctl(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
+         PRE_MEM_WRITE("__sysctlbyname(oldlenp)", (Addr)ARG4, sizeof(vki_size_t));
       }
    }
 }
