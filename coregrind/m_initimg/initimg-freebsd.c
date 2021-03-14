@@ -843,7 +843,7 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
    //   p: fix_environment() [for 'env']
    //--------------------------------------------------------------
    {
-      /* When allocating space for the client stack on Linux, take
+      /* When allocating space for the client stack, take
          notice of the --main-stacksize value.  This makes it possible
          to run programs with very large (primary) stack requirements
          simply by specifying --main-stacksize. */
@@ -926,7 +926,7 @@ void VG_(ii_finalise_image)( IIFinaliseImageInfo iifii )
 {
    ThreadArchState* arch = &VG_(threads)[1].arch;
 
-   /* On Linux we get client_{ip/sp/toc}, and start the client with
+   /* We get client_{ip/sp/toc}, and start the client with
       all other registers zeroed. */
 
 #  if defined(VGP_x86_freebsd)
