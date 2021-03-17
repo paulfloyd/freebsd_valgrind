@@ -1,7 +1,10 @@
 Release 3.17.0 (18 Mar 2021)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-3.17.0 is a primarily a bug-fix release.
+3.17.0 fixes a number of bugs and adds some functional changes: support for
+GCC 11, Clang 11, DWARF5 debuginfo, the 'debuginfod' debuginfo server, and
+some new instructions for Arm64, S390 and POWER.  There are also some tool
+updates.
 
 This release supports X86/Linux, AMD64/Linux, ARM32/Linux, ARM64/Linux,
 PPC32/Linux, PPC64BE/Linux, PPC64LE/Linux, S390X/Linux, MIPS32/Linux,
@@ -187,7 +190,8 @@ where XXXXXX is the bug number as listed below.
 n-i-bz  helgrind: If hg_cli__realloc fails, return NULL.
 n-i-bz  arm64 front end: avoid Memcheck false positives relating to CPUID
 
-(3.17.0.RC1:  13 Mar 2021, git a049da18b3c045fc8929bd56d404a01046e4c26c)
+(3.17.0.RC1: 13 Mar 2021)
+(3.17.0.RC2: 17 Mar 2021)
 
 
 
