@@ -109,7 +109,6 @@ EXTRA_DIST = \
 	COPYING.DOCS \
 	README_DEVELOPERS \
 	README_DEVELOPERS_processes \
-	README_FREEBSD \
 	README_PACKAGERS \
 	README_MISSING_SYSCALL_OR_IOCTL \
 	README.s390 \
@@ -118,6 +117,7 @@ EXTRA_DIST = \
 	README.mips \
 	README.aarch64 \
 	README.solaris \
+	README.freebsd \
 	NEWS.old \
 	valgrind.pc.in \
 	valgrind.spec.in \
