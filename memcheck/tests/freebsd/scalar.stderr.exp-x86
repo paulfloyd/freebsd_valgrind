@@ -5291,6 +5291,79 @@ Syscall param fhreadlink(buf) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+570:      SYS___sysctlbyname (getoldlen) 3s 2m
+---------------------------------------------------------
+Syscall param __sysctlbyname(name) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(oldlenp) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(newlen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param __sysctlbyname(oldlenp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+570:      SYS___sysctlbyname (getold) 4s 2m
+---------------------------------------------------------
+Syscall param __sysctlbyname(name) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(oldp) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(oldlenp) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(newlen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param __sysctlbyname(oldlenp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Warning: Bad oldlenp address 0x........ in sysctl
+---------------------------------------------------------
+570:      SYS___sysctlbyname (putnew) 4s 2m
+---------------------------------------------------------
+Syscall param __sysctlbyname(name) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(namelen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(newp) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(newlen) contains uninitialised byte(s)
+   ...
+
+Syscall param __sysctlbyname(name) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param __sysctlbyname(newp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
   1:                SYS_exit 1s 0m
 ---------------------------------------------------------
 Syscall param exit(status) contains uninitialised byte(s)
