@@ -620,6 +620,7 @@
 /helgrind/tests/*.stderr.out
 /helgrind/tests/*.stdout.diff*
 /helgrind/tests/*.stdout.out
+/helgrind/tests/filter_*
 /helgrind/tests/.deps
 /helgrind/tests/annotate_hbefore
 /helgrind/tests/annotate_rwlock
@@ -787,6 +788,7 @@
 /memcheck/tests/*.stderr.out
 /memcheck/tests/*.stdout.diff*
 /memcheck/tests/*.stdout.out
+/memcheck/tests/filter_*
 /memcheck/tests/.deps
 /memcheck/tests/accounting
 /memcheck/tests/addressable
@@ -1213,6 +1215,7 @@
 /memcheck/tests/x86/*.stderr.out
 /memcheck/tests/x86/*.stdout.diff
 /memcheck/tests/x86/*.stdout.out
+/memcheck/tests/x86/filter_*
 /memcheck/tests/x86/.deps
 /memcheck/tests/x86/Makefile
 /memcheck/tests/x86/Makefile.in

@@ -5162,6 +5162,14 @@ AC_CONFIG_FILES([tests/filter_stderr_basic],
                 [chmod +x tests/filter_stderr_basic])
 AC_CONFIG_FILES([tests/filter_discards],
                 [chmod +x tests/filter_discards])
+AC_CONFIG_FILES([memcheck/tests/filter_stderr],
+                [chmod +x memcheck/tests/filter_stderr])
+AC_CONFIG_FILES([memcheck/tests/filter_dw4],
+                [chmod +x memcheck/tests/filter_dw4])
+AC_CONFIG_FILES([memcheck/tests/filter_overlaperror],
+                [chmod +x memcheck/tests/filter_overlaperror])
+AC_CONFIG_FILES([memcheck/tests/x86/filter_pushfpopf],
+                [chmod +x memcheck/tests/x86/filter_pushfpopf])
 AC_CONFIG_FILES([gdbserver_tests/filter_gdb],
                 [chmod +x gdbserver_tests/filter_gdb])
 AC_CONFIG_FILES([gdbserver_tests/filter_memcheck_monitor],
@@ -5182,6 +5190,8 @@ AC_CONFIG_FILES([drd/tests/filter_thread_no],
                 [chmod +x drd/tests/filter_thread_no])
 AC_CONFIG_FILES([drd/tests/filter_xml_and_thread_no],
                 [chmod +x drd/tests/filter_xml_and_thread_no])
+AC_CONFIG_FILES([helgrind/tests/filter_stderr],
+                [chmod +x helgrind/tests/filter_stderr])
 AC_OUTPUT
 
 cat<<EOF
