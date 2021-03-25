@@ -2,13 +2,7 @@
 
 # filter the output of gdb.
 
-uname_s=`uname -s`
-
-case $uname_s in
-   FreeBSD) sed=gsed ;;
-   *) sed=sed ;;
-esac
-
+SED=@SED@
 
 PATTERNFILE=$(mktemp filter_gdb.tmp.XXXXXXXXXX)
 cat > $PATTERNFILE <<EOF
@@ -239,16 +233,16 @@ $dir/../tests/filter_addresses                                      |
 $dir/filter_memcheck_monitor "$@"                                   |
 
 # memcheck filter might leave some "..." lines, we are not interested
-$sed -e '/^\ \ \ \ \.\.\.$/d'                                        |
+$SED -e '/^\ \ \ \ \.\.\.$/d'                                        |
 
 # Anonymise or remove, using the big list of PATTERN prepared above
-$sed -f $PATTERNFILE |
+$SED -f $PATTERNFILE |
 
 # remove all the lines telling where the SIGFPE was trapped.
-$sed -e '/after trap SIGFPE/,/after continue SIGFPE/d'                                              |
+$SED -e '/after trap SIGFPE/,/after continue SIGFPE/d'                                              |
 
 # join together two lines that gdb 7.1 splits in two (???)
 # (in a separate sed, as the below influences the behaviour of the other expressions)
-$sed    -e :a -e '$!N;s/\n    at sleepers.c:39/ at sleepers.c:39/;ta' -e 'P;D' 
+$SED    -e :a -e '$!N;s/\n    at sleepers.c:39/ at sleepers.c:39/;ta' -e 'P;D' 
 
 rm $PATTERNFILE

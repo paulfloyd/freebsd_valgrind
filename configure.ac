@@ -5160,6 +5160,28 @@ AC_CONFIG_FILES([coregrind/link_tool_exe_solaris],
                 [chmod +x coregrind/link_tool_exe_solaris])
 AC_CONFIG_FILES([tests/filter_stderr_basic],
                 [chmod +x tests/filter_stderr_basic])
+AC_CONFIG_FILES([tests/filter_discards],
+                [chmod +x tests/filter_discards])
+AC_CONFIG_FILES([gdbserver_tests/filter_gdb],
+                [chmod +x gdbserver_tests/filter_gdb])
+AC_CONFIG_FILES([gdbserver_tests/filter_memcheck_monitor],
+                [chmod +x gdbserver_tests/filter_memcheck_monitor])
+AC_CONFIG_FILES([gdbserver_tests/filter_stderr],
+                [chmod +x gdbserver_tests/filter_stderr])
+AC_CONFIG_FILES([gdbserver_tests/filter_vgdb],
+                [chmod +x gdbserver_tests/filter_vgdb])
+AC_CONFIG_FILES([drd/tests/filter_stderr],
+                [chmod +x drd/tests/filter_stderr])
+AC_CONFIG_FILES([drd/tests/filter_error_count],
+                [chmod +x drd/tests/filter_error_count])
+AC_CONFIG_FILES([drd/tests/filter_error_summary],
+                [chmod +x drd/tests/filter_error_summary])
+AC_CONFIG_FILES([drd/tests/filter_stderr_and_thread_no_and_offset],
+                [chmod +x drd/tests/filter_stderr_and_thread_no_and_offset])
+AC_CONFIG_FILES([drd/tests/filter_thread_no],
+                [chmod +x drd/tests/filter_thread_no])
+AC_CONFIG_FILES([drd/tests/filter_xml_and_thread_no],
+                [chmod +x drd/tests/filter_xml_and_thread_no])
 AC_OUTPUT
 
 cat<<EOF

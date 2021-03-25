@@ -29,7 +29,7 @@ dist_noinst_SCRIPTS = \
 	filter_discards \
 	filter_libc \
 	filter_numbers \
-	filter_stderr_basic.in \
+	filter_stderr_basic \
 	filter_sink \
 	filter_xml_frames \
 	platform_test \

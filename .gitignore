@@ -348,6 +348,7 @@
 /drd/tests/*.stderr.out
 /drd/tests/*.stdout.diff*
 /drd/tests/*.stdout.out
+/drd/tests/filter_*
 /drd/tests/.deps
 /drd/tests/annotate_barrier
 /drd/tests/annotate_hb_err
@@ -555,6 +556,7 @@
 /gdbserver_tests/*.dSYM
 /gdbserver_tests/*.diff*
 /gdbserver_tests/*.out
+/gdbserver_tests/filter_*
 /gdbserver_tests/.deps
 /gdbserver_tests/clean_after_fork
 /gdbserver_tests/detailed
@@ -2161,6 +2163,7 @@
 
 # /tests/
 /tests/*.dSYM
+/tests/filter_*
 /tests/.deps
 /tests/Makefile
 /tests/Makefile.in
