@@ -1983,6 +1983,32 @@ PRE(sys___sysctl)
       }
    }
 
+   /*
+    * Special handling cases
+    *
+    * 1. kern.userstack
+    *    This sysctl returns the address of the bottom of the user stack
+    *    (that is the highest user stack address, since the stack grows
+    *    downwards). Without any special handling this would return the
+    *    address of the host userstack. We have created a stack for the
+    *    guest (in aspacemgr) and that is the one that we want the guest
+    *    to see. Aspacemgr is setup in m_main.c with the adresses and sizes
+    *    saved to file static variables in that file, so we call
+    *    VG_(get_usrstack)() to retrieve them from there.
+    */
+   if (SARG2 >= 2 && ML_(safe_to_deref)(name, 2*sizeof(int))) {
+      if (name[0] == 1 && name[1] == 33) {
+         // kern.userstack
+         Word tmp = VG_(get_usrstack)();
+         size_t* out = (size_t*)ARG3;
+         size_t* outlen = (size_t*)ARG4;
+         *out = tmp;
+         *outlen = sizeof(size_t);
+         SET_STATUS_Success(0);
+      }
+   }
+
+
    PRE_REG_READ6(int, "__sysctl", int *, name, vki_u_int32_t, namelen, void *, oldp,
                  vki_size_t *, oldlenp, void *, newp, vki_size_t, newlen);
 
