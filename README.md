@@ -1,6 +1,6 @@
 # Valgrind For FreeBSD
 
-This repository contains a fork of the ongoing develoment of Valgrind on FreeBSD.
+This repository contains a fork of the ongoing development of Valgrind on FreeBSD.
 
 It is maintained by [Paul Floyd](https://github.com/paulfloyd).
 
@@ -9,7 +9,7 @@ It is maintained by [Paul Floyd](https://github.com/paulfloyd).
 The two primary objectives are
 
 1. Get the code into a good enough state for it to be integrated into the main Valgrind repo on sourceware (git://sourceware.org/git/valgrind.git)
-2. Replace the current FreeBSD ports version of Valgrind. This is currently at version 3.10 with a few backported patches.
+2. Replace the current FreeBSD ports version of Valgrind. This is currently at version 3.10 with a few back-ported patches.
 
 I'm not too sure what constitutes **good enough**.
 
