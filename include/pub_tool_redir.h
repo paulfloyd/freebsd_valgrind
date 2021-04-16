@@ -273,7 +273,6 @@
 
 // Valid on all platforms(?)
 #define  VG_Z_LIBSTDCXX_SONAME  libstdcZpZpZa           // libstdc++*
-#define  VG_Z_LIBCXX_SONAME     libcZpZpZa              // libc++*
 
 /* --- Soname of the clang C++ library. --- */
 
