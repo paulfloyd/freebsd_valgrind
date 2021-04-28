@@ -232,12 +232,11 @@ EXTRA_DIST = \
 	noisy_child.vgtest noisy_child.stderr.exp noisy_child.stdout.exp \
 	null_socket.stderr.exp null_socket.vgtest \
 	origin1-yes.vgtest origin1-yes.stdout.exp origin1-yes.stderr.exp \
-		origin1-yes.stderr.exp-freebsd \
 	origin2-not-quite.vgtest origin2-not-quite.stdout.exp \
 	origin2-not-quite.stderr.exp \
 		origin2-not-quite.stderr.exp-freebsd \
 	origin3-no.vgtest origin3-no.stdout.exp \
-	origin3-no.stderr.exp origin3-no.stderr.exp-freebsd \
+	origin3-no.stderr.exp \
 	origin4-many.vgtest origin4-many.stdout.exp \
 	origin4-many.stderr.exp \
 	origin5-bz2.vgtest origin5-bz2.stdout.exp \
@@ -332,7 +331,6 @@ EXTRA_DIST = \
 		varinfo1.stderr.exp-freebsd \
 	varinfo2.vgtest varinfo2.stdout.exp varinfo2.stderr.exp \
 		varinfo2.stderr.exp-ppc64 \
-		varinfo2.stderr.exp-freebsd \
 	varinfo3.vgtest varinfo3.stdout.exp varinfo3.stderr.exp \
 		varinfo3.stderr.exp-ppc64 \
 		varinfo3.stderr.exp-freebsd \
@@ -341,7 +339,6 @@ EXTRA_DIST = \
 		varinfo4.stderr.exp-freebsd \
 	varinfo5.vgtest varinfo5.stdout.exp varinfo5.stderr.exp \
 		varinfo5.stderr.exp-ppc64 \
-		varinfo5.stderr.exp-freebsd \
 	varinfo6.vgtest varinfo6.stdout.exp varinfo6.stderr.exp \
 		varinfo6.stderr.exp-ppc64 \
 	varinforestrict.vgtest varinforestrict.stderr.exp \
