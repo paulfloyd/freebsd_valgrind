@@ -2296,6 +2296,7 @@ Vg_FnNameKind VG_(get_fnname_kind) ( const HChar* name )
        VG_STREQN(18, "__libc_start_main.", name) || // gcc optimization
        VG_STREQ("generic_start_main", name) ||  // Yellow Dog doggedness
        VG_STREQN(19, "generic_start_main.", name) || // gcc optimization
+       VG_STREQ("_start", name) ||
 #      elif defined(VGO_freebsd)
        VG_STREQ("_start", name) || // FreeBSD libc
 #      elif defined(VGO_darwin)

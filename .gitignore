@@ -47,6 +47,7 @@
 # /auxprogs/
 /auxprogs/.deps
 /auxprogs/getoff-amd64-darwin
+/auxprogs/getoff-arm64-linux
 /auxprogs/getoff-x86-darwin
 /auxprogs/getoff-amd64-linux
 /auxprogs/getoff-x86-linux
@@ -1146,6 +1147,7 @@
 /memcheck/tests/s390x/vstrc
 /memcheck/tests/s390x/vfae
 /memcheck/tests/s390x/vistr
+/memcheck/tests/s390x/vstrs
 
 # /memcheck/tests/solaris/
 /memcheck/tests/solaris/*.stderr.diff
@@ -1973,6 +1975,8 @@
 /none/tests/s390x/vector_integer
 /none/tests/s390x/high-word
 /none/tests/s390x/vector_float
+/none/tests/s390x/misc3
+/none/tests/s390x/vec2
 
 # /none/tests/scripts/
 /none/tests/scripts/*.dSYM

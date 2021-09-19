@@ -15,6 +15,10 @@ support for X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * s390:
 
+  - Support the miscellaneous-instruction-extensions facility 3 and the
+    vector-enhancements facility 2.  This enables programs compiled with
+    "-march=arch13" or "-march=z15" to be executed under Valgrind.
+
 * ppc64:
 
   - ISA 3.1 support is now complete
@@ -45,6 +49,12 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 438871  unhandled instruction bytes: 0xF3 0x49 0xF 0x6F 0x9C 0x24 0x60 0x2 0x0 0x0
 435908  valgrind tries to fetch from deubginfod for files which already
         have debug information
+439590  glibc-2.34 breaks suppressions against obj:*/lib*/libc-2.*so*
+440670  unhandled ppc64le-linux syscall: 252 (statfs64) and 253 (fstatfs64)
+432387  s390x: z15 instructions support
+440906  Fix impossible constraint issue in P10 testcase.
+441512  Remove a unneeded / unnecessary prefix check.
+441534  Update the expected output for test_isa_3_1_VRT.
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
