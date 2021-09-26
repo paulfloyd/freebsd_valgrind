@@ -342,7 +342,12 @@
 /drd/tests/*.stderr.out
 /drd/tests/*.stdout.diff*
 /drd/tests/*.stdout.out
-/drd/tests/filter_*
+/drd/tests/filter_error_count
+/drd/tests/filter_error_summary
+/drd/tests/filter_stderr
+/drd/tests/filter_stderr_and_thread_no_and_offset
+/drd/tests/filter_thread_no
+/drd/tests/filter_xml_and_thread_no
 /drd/tests/.deps
 /drd/tests/annotate_barrier
 /drd/tests/annotate_hb_err
@@ -550,7 +555,11 @@
 /gdbserver_tests/*.dSYM
 /gdbserver_tests/*.diff*
 /gdbserver_tests/*.out
-/gdbserver_tests/filter_*
+/gdbserver_tests/filter_gdb
+/gdbserver_tests/filter_memcheck_monitor
+/gdbserver_tests/filter_stderr
+/gdbserver_tests/filter_vgdb
+/gdbserver_tests/filter_vgdb.in.orig
 /gdbserver_tests/.deps
 /gdbserver_tests/clean_after_fork
 /gdbserver_tests/detailed
@@ -614,7 +623,7 @@
 /helgrind/tests/*.stderr.out
 /helgrind/tests/*.stdout.diff*
 /helgrind/tests/*.stdout.out
-/helgrind/tests/filter_*
+/helgrind/tests/filter_stderr
 /helgrind/tests/.deps
 /helgrind/tests/annotate_hbefore
 /helgrind/tests/annotate_rwlock
@@ -782,7 +791,8 @@
 /memcheck/tests/*.stderr.out
 /memcheck/tests/*.stdout.diff*
 /memcheck/tests/*.stdout.out
-/memcheck/tests/filter_*
+/memcheck/tests/filter_dw4
+/memcheck/tests/filter_overlaperror
 /memcheck/tests/.deps
 /memcheck/tests/accounting
 /memcheck/tests/addressable
@@ -1210,7 +1220,7 @@
 /memcheck/tests/x86/*.stderr.out
 /memcheck/tests/x86/*.stdout.diff
 /memcheck/tests/x86/*.stdout.out
-/memcheck/tests/x86/filter_*
+/memcheck/tests/x86/filter_pushfpopf
 /memcheck/tests/x86/.deps
 /memcheck/tests/x86/Makefile
 /memcheck/tests/x86/Makefile.in
@@ -2163,7 +2173,8 @@
 
 # /tests/
 /tests/*.dSYM
-/tests/filter_*
+/tests/filter_discards
+/tests/filter_stderr_basic
 /tests/.deps
 /tests/Makefile
 /tests/Makefile.in

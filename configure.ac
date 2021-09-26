@@ -4558,8 +4558,6 @@ AC_FUNC_MMAP
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([rt], [clock_gettime])
 
-safe_CFLAGS=$CFLAGS
-CFLAGS="${CFLAGS} -pthread"
 AC_CHECK_FUNCS([     \
         clock_gettime\
         copy_file_range \
@@ -4601,7 +4599,6 @@ AC_CHECK_FUNCS([     \
         syscall      \
         utimensat    \
         ])
-CFLAGS=$safe_CFLAGS
 
 # AC_CHECK_LIB adds any library found to the variable LIBS, and links these
 # libraries with any shared object and/or executable. This is NOT what we

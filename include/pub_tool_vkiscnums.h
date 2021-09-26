@@ -44,13 +44,6 @@ extern const HChar *VG_(sysnum_string) (Word sysnum);
 // Macro provided for backward compatibility purposes.
 #define VG_SYSNUM_STRING(sysnum) VG_(sysnum_string)(sysnum)
 
-
-#if defined(VGO_freebsd)
-   // See the FreeBSD-specific case in pub_tool_vkiscnums_asm.h for an
-   // explanation of why we include this here rather than there.
-#  include "vki/vki-scnums-freebsd.h"
-#endif
-
 #endif   // __PUB_TOOL_VKISCNUMS_H
 
 /*--------------------------------------------------------------------*/
