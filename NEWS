@@ -40,6 +40,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 423963  Error in child thread when CLONE_PIDFD is used
 429375  PPC ISA 3.1 support is missing, part 9
 431157  PPC_FEATURE2_SCV needs to be masked in AT_HWCAP2
+431306  Update demangler to support Rust v0 name mangling
 433801  PPC ISA 3.1 support is missing, part 10 (ISA 3.1 support complete)
 433863  s390x: memcheck/tests/s390x/{cds,cs,csg} failures
 434840  PPC64 darn instruction not supported
@@ -55,6 +56,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 440906  Fix impossible constraint issue in P10 testcase.
 441512  Remove a unneeded / unnecessary prefix check.
 441534  Update the expected output for test_isa_3_1_VRT.
+442061  very slow execution under Fedora 34 (readdwarf3)
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
