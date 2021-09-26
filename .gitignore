@@ -36,13 +36,6 @@
 /valt_load_address*.lds
 /vg_annotate
 /vg_cachegen
-/vg.cflags
-/vg.config
-/vg.creator
-/vg.creator.user
-/vg.cxxflags
-/vg.files
-/vg.includes
 
 # /auxprogs/
 /auxprogs/.deps
