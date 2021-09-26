@@ -237,7 +237,7 @@ EXTRA_DIST = \
 	origin2-not-quite.stderr.exp \
 		origin2-not-quite.stderr.exp-freebsd \
 	origin3-no.vgtest origin3-no.stdout.exp \
-		origin3-no.stdout.exp-freebsd \
+		origin3-no.stderr.exp-freebsd \
 	origin3-no.stderr.exp \
 	origin4-many.vgtest origin4-many.stdout.exp \
 	origin4-many.stderr.exp \
