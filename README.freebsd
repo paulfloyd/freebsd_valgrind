@@ -1,7 +1,7 @@
 Installing from ports or via pkg
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are using FreeBSD 11.3 or later, then you should be able to install
+If you are using FreeBSD 12.4 or later, then you should be able to install
 Valgrind using either
 
 pkg install devel/valgrind
