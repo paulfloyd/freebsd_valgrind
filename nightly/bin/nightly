@@ -50,8 +50,7 @@ else
   MAKE=make
 fi
 
-#valgrind_git_repo="git://sourceware.org/git/valgrind.git/"
-valgrind_git_repo="git://github.com/paulfloyd/freebsd_valgrind.git"
+valgrind_git_repo="git://sourceware.org/git/valgrind.git/"
 
 # Must have exactly two arguments
 if [ $# -ne 2 ] ; then
@@ -100,8 +99,7 @@ fi
 git clone --quiet $valgrind_git_repo valgrind-repo
 
 cd valgrind-repo
-#commits=$( git rev-list --after="24 hours ago" master )
-commits=$( git rev-list --after="24 hours ago" freebsd )
+commits=$( git rev-list --after="24 hours ago" master )
 if [ -z "$commits" ]; then
   cd ..
   echo "There are no new commits since yesterday -- skipping nightly build." > unchanged.log
