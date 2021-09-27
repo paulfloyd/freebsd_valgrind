@@ -41,7 +41,7 @@ Known Limitations (December 2020)
    a) In some cases signals are mishandled causing Valgrind to terminate and
       report a SIGSEGV.
    b) Applications that create and join many threads may crash.
-   
+
 Notes for Developers
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -91,7 +91,7 @@ When you add syscalls you will need to modify several files
       for each platform amd64 and x86 in syswrap-x86-freebsd.c and
       syswrap-amd64-freebsd.c.
       Each long long needs to be split into two ARGs in the x86 version.
-      
+
 The PRE (before) wrapper
 ------------------------
 
@@ -129,12 +129,15 @@ These are much easier.
 
 They just contain a POST_MEM_WRITE macro for each output argument.
 
- 
+
 Feedback
 ~~~~~~~~
 
-If you have find any problems, please use the issues forms at
-https://github.com/paulfloyd/freebsd_valgrind/issues
+If you find any problems please create a bugzilla report at
+https://bugs.kde.org using the Valgrind product.
+
+Alternatively you can use the FreeBSD bugilla
+https://bugs.freebsd.org
 
 Credits
 ~~~~~~~
