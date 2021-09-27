@@ -48,6 +48,10 @@ Elf_AuxStr aux_map[AT_COUNT] = {
         {"AT_PS_STRINGS", 32}, 
 //        {"AT_COUNT", 33},
 #endif
+#if (FREEBSD_VERS >= FREEBSD_14)
+        {"AT_FXRNG", 33}, 
+//        {"AT_COUNT", 34},
+#endif  
 };                                                                              
                                                                                 
 int main(int argc, char* argv[], char* envp[])                                      
