@@ -409,7 +409,7 @@ Bool VG_(is_soname_ld_so) (const HChar *soname);
 #define VG_WRAP_THREAD_FUNCTION_LIBPTHREAD_ONLY
 #elif defined(VGO_solaris) || (defined(VGO_linux) && defined(MUSL_LIBC))
 #define VG_WRAP_THREAD_FUNCTION_LIBC_ONLY
-#elif defined(VGO_linux) || defined(VGO_freebsd)
+#elif defined(VGO_linux)
 #define VG_WRAP_THREAD_FUNCTION_LIBC_AND_LIBPTHREAD
 #else
 #  error "Unknown platform"
