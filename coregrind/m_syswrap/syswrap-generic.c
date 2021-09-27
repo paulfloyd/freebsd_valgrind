@@ -1827,7 +1827,7 @@ UInt get_sem_count( Int semid )
    struct vki_semid_ds buf;
    arg.buf = &buf;
    res = VG_(do_syscall4)(__NR___semctl, semid, 0, VKI_IPC_STAT, *(UWord *)&arg);
-   
+
    if (sr_isError(res))
       return 0;
 

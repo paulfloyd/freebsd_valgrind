@@ -366,7 +366,7 @@ void do_syscall_for_client ( Int syscallno,
    else
       real_syscallno = syscallno;
    err = ML_(do_syscall_for_client_WRK)(
-            real_syscallno, &tst->arch.vex, 
+            real_syscallno, &tst->arch.vex,
             syscall_mask, &saved, sizeof(vki_sigset_t)
          );
 #  elif defined(VGO_darwin)
@@ -814,7 +814,7 @@ void getSyscallArgsFromGuestState ( /*OUT*/SyscallArgs*       canonical,
       canonical->arg6  = stack[1];
       canonical->arg7  = stack[2];
       canonical->arg8  = stack[3];
-      
+ 
       PRINT("SYSCALL[%d,?](0) syscall(%s, ...); please stand by...\n",
             VG_(getpid)(), /*tid,*/
             VG_SYSNUM_STRING(canonical->sysno));
@@ -976,7 +976,7 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
    stack[6] = canonical->arg6;
    stack[7] = canonical->arg7;
    stack[8] = canonical->arg8;
-   
+
 #elif defined(VGP_amd64_freebsd)
    VexGuestAMD64State* gst = (VexGuestAMD64State*)gst_vanilla;
    UWord *stack = (UWord *)gst->guest_RSP;
@@ -1469,7 +1469,7 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
    // GrP fixme sets defined for entire eflags, not just bit c
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
       offsetof(VexGuestX86State, guest_CC_DEP1), sizeof(UInt) );
-   
+ 
 #elif defined(VGP_amd64_freebsd)
    VexGuestAMD64State* gst = (VexGuestAMD64State*)gst_vanilla;
    vg_assert(canonical->what == SsComplete);
@@ -1730,7 +1730,7 @@ void getSyscallArgLayout ( /*OUT*/SyscallArgLayout* layout )
    layout->s_arg6   = sizeof(UWord) * 6;
    layout->s_arg7   = sizeof(UWord) * 7;
    layout->s_arg8   = sizeof(UWord) * 8;
-   
+ 
 #elif defined(VGP_amd64_freebsd)
    layout->o_sysno  = OFFSET_amd64_RAX;
    layout->o_arg1   = OFFSET_amd64_RDI;
@@ -2746,15 +2746,15 @@ void ML_(fixup_guest_state_to_restart_syscall) ( ThreadArchState* arch )
    /* Make sure our caller is actually sane, and we're really backing
       back over a syscall.
 
-      int $0x80 == CD 80 
+      int $0x80 == CD 80
    */
    {
       UChar *p = (UChar *)arch->vex.guest_EIP;
-      
+ 
       if (p[0] != 0xcd || p[1] != 0x80)
          VG_(message)(Vg_DebugMsg,
                       "?! restarting over syscall at %#x %02x %02x\n",
-                      arch->vex.guest_EIP, p[0], p[1]); 
+                      arch->vex.guest_EIP, p[0], p[1]);
 
       vg_assert(p[0] == 0xcd && p[1] == 0x80);
    }
@@ -2770,11 +2770,11 @@ void ML_(fixup_guest_state_to_restart_syscall) ( ThreadArchState* arch )
    */
    {
       UChar *p = (UChar *)arch->vex.guest_RIP;
-      
+ 
       if (p[0] != 0x0F || p[1] != 0x05)
          VG_(message)(Vg_DebugMsg,
                       "?! restarting over syscall at %#llx %02x %02x\n",
-                      arch->vex.guest_RIP, p[0], p[1]); 
+                      arch->vex.guest_RIP, p[0], p[1]);
 
       vg_assert(p[0] == 0x0F && p[1] == 0x05);
    }

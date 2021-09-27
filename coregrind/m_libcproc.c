@@ -723,11 +723,11 @@ Int VG_(gettid)(void)
    SysRes res;
    long tid;
 
-   res = VG_(do_syscall1)(__NR_thr_self, (UWord)&tid);   
+   res = VG_(do_syscall1)(__NR_thr_self, (UWord)&tid);
    if (sr_isError(res))
       tid = sr_Res(VG_(do_syscall0)(__NR_getpid));
    return tid;
-   
+
 #  elif defined(VGO_darwin)
    // Darwin's gettid syscall is something else.
    // Use Mach thread ports for lwpid instead.

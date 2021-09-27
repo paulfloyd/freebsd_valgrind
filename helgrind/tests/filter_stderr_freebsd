@@ -19,16 +19,15 @@ my @regex = (
              "   by 0x........: pthread_create@* \(hg_intercepts.c:...\)"
             ]
             );
-            
+
 foreach my $item (@regex) {
    my $just_saw_first_line;
 
    while (<>) {
-   
-   
-      if ($just_saw_first_line and not /^$item->[1]/) { 
+
+      if ($just_saw_first_line and not /^$item->[1]/) {
          say $item->[2];
-      }   
+      }
 
       $just_saw_first_line = /^$item->[0]/;
       print

@@ -238,7 +238,7 @@ asm(
    and it Just Works.  Error is when carry is set.
 */
 extern ULong do_syscall_WRK (
-          UWord syscall_no, 
+          UWord syscall_no,
           UWord a1, UWord a2, UWord a3,
           UWord a4, UWord a5, UWord a6,
           UWord a7, UWord a8, UInt *flags
@@ -349,7 +349,7 @@ static void non_simd_mprotect (long tid, void* addr, long len)
                                     (UWord) addr, len, PROT_NONE,
                                     0, 0, 0, 0, 0, &flags);
 #elif defined(VGP_amd64_freebsd)
-   
+
    UInt flags = 0U;
    UWord rv2 = 0U;
    mprotect_result = do_syscall_WRK(__NR_mprotect,

@@ -13,7 +13,7 @@ void *realloc(void *ptr, size_t size) {
 
 void *calloc(size_t number, size_t size) {
    bufi += number*size;
-   
+
    return buf + bufi - (number*size);
 }
 

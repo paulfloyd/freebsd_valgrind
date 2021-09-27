@@ -2,15 +2,15 @@
 // https://gist.github.com/sebcat/a61b2ed859cee16c560e
 
 // FreeBSD has pdfork which uses file descriptors instead of PIDs for
-// managing processes. This allows for race-less process supervision and 
-// for using the traditional multiplexing calls (e.g., select). There's no 
+// managing processes. This allows for race-less process supervision and
+// for using the traditional multiplexing calls (e.g., select). There's no
 // need wait()ing for SIGCHLD, &c.
 //
 // This example forks a child that sleeps for a certain time while the
 // parent is waiting for the child to exit, or for a timeout to be reached,
 // whichever comes first. The time values (in seconds) are provided from argv
 //
-// % ./pdfork 
+// % ./pdfork
 // usage: pdfork <child-sleep> <parent-wait>
 // % ./pdfork 2 10
 // child: exit
@@ -94,10 +94,8 @@ int main(int argc, char *argv[]) {
        free(pbadpid);
        pdgetpid(anotherfd, pbadpid);
        pdfork(&anotherfd, badflag);
-       
     }
-    
 
     return EXIT_SUCCESS;
 }
-      
+ 

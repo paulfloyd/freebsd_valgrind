@@ -1,9 +1,8 @@
-/* 
+/*
  * Tests miscellaneous syscalls
- * 
+ *
  * uuidgen
  * genrandom
- * 
  */
 
 #include <sys/types.h>
@@ -21,13 +20,13 @@ int main(void)
    {
       perror("uuidgen failed:");
    }
-   
+
    struct uuid v[10];
    if (-1 == uuidgen(v, 10))
    {
       perror("uuidgen failed:");
    }
-   
+ 
 #if (FREEBSD_VERS >= FREEBSD_12)
 
    char buf[100];
@@ -35,9 +34,9 @@ int main(void)
    {
       perror("getrandom failed:");
    }
-   
+ 
 #endif   
-   
+ 
    // error section
    struct uuid* ps = malloc(2*sizeof(struct uuid));
    free(ps);
@@ -46,7 +45,7 @@ int main(void)
    int badint = 1;;
    VALGRIND_MAKE_MEM_UNDEFINED(&badint, sizeof(int));
    uuidgen(&s, badint);
-   
+ 
 #if (FREEBSD_VERS >= FREEBSD_12)
 
    badint = 100;
@@ -55,9 +54,10 @@ int main(void)
 
    char* buf2 = malloc(100);
    free(buf2);
-   
+ 
    getrandom(buf2, 100, 0);
-   
+ 
 #endif   
-      
+ 
 }
+

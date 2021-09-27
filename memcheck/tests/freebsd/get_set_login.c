@@ -6,7 +6,7 @@ int main()
 {
     // can't go wrong?
     (void)getlogin();
-    
+
     // setlogin needs root privs
     char* bogus = strdup("nobody");
     setlogin(bogus);

@@ -1,10 +1,9 @@
-/* 
+/*
  * Tests for various access functions
- * 
+ *
  * access
  * eaccess
  * accessat
- * 
  */
 
 
@@ -20,12 +19,12 @@ int main()
    {
       perror("access failed:");
    }
-   
+ 
    if (-1 == eaccess("access.c", F_OK))
    {
       perror("eaccess failed:");
    }
-   
+ 
    if (-1 == faccessat(AT_FDCWD, "access.c", R_OK, AT_EACCESS))
    {
       perror("accessat failed:");
@@ -38,6 +37,7 @@ int main()
    access(badstring, badint);
    eaccess(badstring, badint);
    faccessat(badint, badstring, badint, badint);
-   
+
    exit(badint);
 }
+

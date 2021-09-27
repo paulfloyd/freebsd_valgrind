@@ -22,29 +22,29 @@ int main()
     int tmpfd = mkstemp(tmpfile);
     memset(buff, 0, sizeof(buff));
     sprintf(buff, "some data");
-    
+ 
     // valid calls even though "test1" does not exist
     n = extattr_get_file("test1", EXTATTR_NAMESPACE_USER, "bar", NULL, 0);
     (void)extattr_get_file("test1", EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
     (void)extattr_get_link("test1", EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
     (void)extattr_list_file("test1", EXTATTR_NAMESPACE_USER, buff, sizeof(buff));
     (void)extattr_list_link("test1", EXTATTR_NAMESPACE_USER, buff, sizeof(buff));
-    
+ 
     n = extattr_get_fd(tmpfd, EXTATTR_NAMESPACE_USER, "bar", NULL, 0);
     (void)extattr_get_fd(tmpfd, EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
     (void)extattr_list_fd(tmpfd, EXTATTR_NAMESPACE_USER, buff, sizeof(buff));
-    
+ 
     n = extattr_set_file("test1", EXTATTR_NAMESPACE_USER, "bar", NULL, 0);
     (void)extattr_set_file("test1", EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
     (void)extattr_set_link("test1", EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
-    
+ 
     n = extattr_set_fd(tmpfd, EXTATTR_NAMESPACE_USER, "bar", NULL, 0);
     (void)extattr_set_fd(tmpfd, EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
-    
+ 
     (void)extattr_delete_file("test1", EXTATTR_NAMESPACE_USER, "foo");
     (void)extattr_delete_link("test1", EXTATTR_NAMESPACE_USER, "foo");
     (void)extattr_delete_fd(tmpfd, EXTATTR_NAMESPACE_USER, "foo");
-    
+ 
     // now some invalid calls
     int uninit;
     (void)extattr_get_file("test1", uninit, "bar", buff, sizeof(buff));
@@ -56,7 +56,7 @@ int main()
     (void)extattr_delete_file("test1", uninit, "foo");
     (void)extattr_delete_link("test1", uninit, "foo");
     (void)extattr_delete_fd(tmpfd, uninit, "foo");
-    
+ 
     char* badbuff = malloc(64);
     free(badbuff);
     (void)extattr_get_file("test1", EXTATTR_NAMESPACE_USER, "bar", badbuff, 64);
@@ -67,7 +67,7 @@ int main()
     (void)extattr_list_file("test1", EXTATTR_NAMESPACE_USER, badbuff, 64);
     (void)extattr_list_link("test1", EXTATTR_NAMESPACE_USER, badbuff, 64);
     (void)extattr_list_fd(tmpfd, EXTATTR_NAMESPACE_USER, badbuff, 64);
-    
+ 
     char* badstring = strdup("test2");
     free(badstring);
     (void)extattr_get_file(badstring, EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
@@ -77,7 +77,7 @@ int main()
     (void)extattr_list_file(badstring, EXTATTR_NAMESPACE_USER, buff, sizeof(buff));
     (void)extattr_delete_file(badstring, EXTATTR_NAMESPACE_USER, "foo");
     (void)extattr_delete_link(badstring, EXTATTR_NAMESPACE_USER, "foo");
-    
+ 
     int badfd = tmpfd;
     VALGRIND_MAKE_MEM_UNDEFINED(&badfd, sizeof(int));
     (void)extattr_get_fd(badfd, EXTATTR_NAMESPACE_USER, "bar", buff, sizeof(buff));
@@ -95,5 +95,5 @@ int main()
 
     close (tmpfd);
     unlink(tmpfile);
-
 }
+

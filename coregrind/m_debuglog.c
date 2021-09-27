@@ -500,7 +500,7 @@ static UInt local_sys_write_stderr (const HChar* buf, Int n )
       : /*rd*/    "r" (block)
       : /*trash*/ "rax", "rdi", "rsi", "rdx", "memory", "cc", "rcx", "r8", "r9", "r11"
    );
-   if (block[0] < 0) 
+   if (block[0] < 0)
       block[0] = -1;
    return (UInt)block[0];
 }

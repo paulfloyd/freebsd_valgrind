@@ -23,7 +23,7 @@
    fun:_pthread_exit_mask
    fun:pthread_exit
    obj:*/lib*/libthr.so.3
-}  
+}
 {
    HELGRIND-PTHREAD-EXIT2
    Helgrind:Race
@@ -31,7 +31,7 @@
    fun:_pthread_exit_mask
    fun:pthread_exit
    obj:*/lib*/libthr.so.3
-} 
+}
 {
    HELGRIND-PTHREAD-EXIT4
    Helgrind:Race

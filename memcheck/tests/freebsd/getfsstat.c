@@ -18,15 +18,16 @@ int main(void)
             printf("mount from name %s\n", mbuf[i].f_mntfromname);
         }
     }
-    
+ 
     // now some bad uses
     struct statfs* badbuf = malloc(sizeof(struct statfs));
     free(badbuf);
     getfsstat(badbuf, 1, MNT_NOWAIT);
-    
+ 
     struct statfs betterbuf;
     int i;
     int badflags;
     getfsstat(NULL, i, MNT_NOWAIT);
     getfsstat(&betterbuf, sizeof(struct statfs), badflags);
 }
+

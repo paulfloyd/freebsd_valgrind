@@ -110,7 +110,7 @@ typedef unsigned int  UInt;
       }   \
       _rlval = sum;   \
    } while (0)
-   
+
 #if defined(__clang__)
 #define ATTRIBUTE_OPTNONE __attribute__((optnone))
 #else

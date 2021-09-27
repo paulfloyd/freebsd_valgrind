@@ -7,7 +7,7 @@
   This file is part of Valgrind, a dynamic binary instrumentation
   framework.
 
-  Copyright (C) 2000-2008 Julian Seward 
+  Copyright (C) 2000-2008 Julian Seward
      jseward@acm.org
 
   This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 /*
 	Perform a syscall for the client.  This will run a syscall
 	with the client's specific per-thread signal mask.
-	
+
 	The structure of this function is such that, if the syscall is
 	interrupted by a signal, we can determine exactly what
 	execution state we were in with respect to the execution of
@@ -50,7 +50,7 @@
 	The syscall number is taken from the argument, even though it
 	should also be in guest_state->guest_RAX.  The syscall result
 	is written back to guest_state->guest_RAX on completion.
-	
+
 	Returns 0 if the syscall was successfully called (even if the
 	syscall itself failed), or a -ve error code if one of the
 	sigprocmasks failed (there's no way to determine which one
@@ -59,7 +59,7 @@
 	VG_(fixup_guest_state_after_syscall_interrupted) does the
 	thread state fixup in the case where we were interrupted by a
 	signal.
-	
+
 	Prototype:
 
 	Int ML_(do_syscall_for_client_WRK(
@@ -70,7 +70,7 @@
 				  Int sigsetSzB)		// r8
 */
 
-/* from vki_arch.h */	
+/* from vki_arch.h */
 #define VKI_SIG_SETMASK	3
 
 .globl ML_(do_syscall_for_client_WRK)
@@ -123,10 +123,10 @@ ML_(do_syscall_for_client_WRK):
         movq    -8(%rbp), %rax
 
 	/* If rip==2, then the syscall was either just about
-	   to start, or was interrupted and the kernel was 
+	   to start, or was interrupted and the kernel was
 	   restarting it. */
 2:	syscall
-3:	/* In the range [3, 4), the syscall result is in %rax, 
+3:	/* In the range [3, 4), the syscall result is in %rax,
 	   but hasn't been committed to RAX. */
 
 	/* stack contents: 3 words for syscall above, plus our prologue */
@@ -144,7 +144,7 @@ ML_(do_syscall_for_client_WRK):
 	addq    $24, %rsp       /* remove syscall parameters */
 	call    LibVEX_GuestAMD64_put_rflag_c
 
-4:	/* Re-block signals.  If eip is in [4,5), then the syscall 
+4:	/* Re-block signals.  If eip is in [4,5), then the syscall
 	   is complete and we needn't worry about it. */
 
 	movq	$__NR_sigprocmask, %rax	// syscall #
@@ -182,7 +182,7 @@ ML_(do_syscall_for_client_WRK):
 /* export the ranges so that
    VG_(fixup_guest_state_after_syscall_interrupted) can do the
    right thing */
-	
+
 .globl ML_(blksys_setup)
 .globl ML_(blksys_restart)
 .globl ML_(blksys_complete)

@@ -398,7 +398,6 @@ Int VG_(tkill)( Int lwpid, Int signo )
 #     endif
    return sr_isError(res) ? -1 : 0;
 
-   
 #  elif defined(VGO_freebsd)
    SysRes res;
    res = VG_(do_syscall2)(__NR_thr_kill, lwpid, signo);
@@ -430,7 +429,7 @@ Int VG_(tkill)( Int lwpid, Int signo )
 /* ---------- sigtimedwait_zero: Linux ----------- */
 
 #if defined(VGO_linux)
-Int VG_(sigtimedwait_zero)( const vki_sigset_t *set, 
+Int VG_(sigtimedwait_zero)( const vki_sigset_t *set,
                             vki_siginfo_t *info )
 {
    static const struct vki_timespec zero = { 0, 0 };

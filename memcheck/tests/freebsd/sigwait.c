@@ -22,7 +22,7 @@ int main(void)
   // At program startup, SIGUSR1 is neither blocked nor pending, so raising it
   // will call the signal handler
   raise(SIGUSR1);
-  
+
   // Now let's block SIGUSR1
   sigset_t* psigset = malloc(sizeof(sigset_t));
   sigemptyset(psigset);
@@ -45,24 +45,24 @@ int main(void)
   printf("About to unblock SIGUSR1\n");
   sigprocmask(SIG_UNBLOCK, psigset, NULL);
   printf("Unblocked SIGUSR1\n");
-  
+
   assert(sig_count == 2);
-  
+
   // now a couple of bad params
   // reblock
   sigprocmask(SIG_BLOCK, psigset, NULL);
   raise(SIGUSR1);
 
-  
   int* psig = malloc(sizeof(int));
   free(psig);
   result = sigwait(psigset, psig);
-  
+
   free(psigset);
-  
+
   raise(SIGUSR1);
 
   result = sigwait(psigset, &sig);
 
   return 0;
 }
+

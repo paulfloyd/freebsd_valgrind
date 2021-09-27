@@ -18,12 +18,12 @@ int main(void)
    if (-1 == fstatfs(fd, &fs)) {
       perror("statfs failed:");
    }
-   
+
    struct statfs* pfs;
-   
+
    pfs = malloc(sizeof(struct statfs));
    free(pfs);
-   
+
    // invalid write
    statfs("/bin/sh", pfs);
    pfs = malloc(sizeof(struct statfs));
@@ -32,14 +32,15 @@ int main(void)
 
    pfs = malloc(sizeof(struct statfs) - 3);
    statfs("/bin/sh", pfs);
-   
+
    char* badstring = strdup("/bin/sh");
    free(badstring);
-   
+
    statfs(badstring, &fs);
-   
+
    int badfd;
    fstatfs(badfd, &fs);
-   
+
    free(pfs);
 }
+

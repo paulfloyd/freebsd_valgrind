@@ -1,14 +1,14 @@
 
 /*--------------------------------------------------------------------*/
 /*--- The core dispatch loop, for jumping to a code address.       ---*/
-/*---                                         dispatch-x86-freebsd.S ---*/
+/*---                                       dispatch-x86-freebsd.S ---*/
 /*--------------------------------------------------------------------*/
 
 /*
   This file is part of Valgrind, a dynamic binary instrumentation
   framework.
 
-  Copyright (C) 2000-2012 Julian Seward 
+  Copyright (C) 2000-2012 Julian Seward
      jseward@acm.org
 
   This program is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@
 
 /* signature:
 void VG_(disp_run_translations)( UWord* two_words,
-                                 void*  guest_state, 
+                                 void*  guest_state,
                                  Addr   host_addr );
 */
 .text
@@ -72,22 +72,22 @@ VG_(disp_run_translations):
 	pushl	%esi
 	pushl	%edi
 	pushl	%ebp
-	
+
 	/* 28+4(%esp) holds two_words */
 	/* 28+8(%esp) holds guest_state */
 	/* 28+12(%esp) holds host_addr */
 
         /* Get the host CPU in the state expected by generated code. */
 
-	/* set host FPU control word to the default mode expected 
+	/* set host FPU control word to the default mode expected
            by VEX-generated code.  See comments in libvex.h for
            more info. */
 	finit
 	pushl	$0x027F
 	fldcw	(%esp)
 	addl	$4, %esp
-	
-	/* set host SSE control word to the default mode expected 
+
+	/* set host SSE control word to the default mode expected
 	   by VEX-generated code. */
 	cmpl	$0, VG_(machine_x86_have_mxcsr)
 	jz	L1
@@ -158,8 +158,8 @@ remove_frame:
 	popl	%ecx
 	popl	%ebx
 	popl	%eax
-	ret	
-        
+	ret
+ 
 /*----------------------------------------------------*/
 /*--- Continuation points                          ---*/
 /*----------------------------------------------------*/
@@ -200,7 +200,7 @@ VG_(disp_cp_xindir):
 
         /* stats only */
         addl    $1, VG_(stats__n_xIndirs_32)
-        
+
         /* try a fast lookup in the translation cache */
         movl    %eax, %ebx                      /* next guest addr */
         andl    $VG_TT_FAST_MASK, %ebx          /* entry# */
@@ -232,9 +232,9 @@ VG_(disp_cp_xassisted):
 /* ------ Event check failed ------ */
 .global VG_(disp_cp_evcheck_fail)
 VG_(disp_cp_evcheck_fail):
-       	movl	$VG_TRC_INNER_COUNTERZERO, %eax
+        movl	$VG_TRC_INNER_COUNTERZERO, %eax
         movl    $0, %edx
-	jmp	postamble
+        jmp	postamble
 
 
 .size VG_(disp_run_translations), .-VG_(disp_run_translations)

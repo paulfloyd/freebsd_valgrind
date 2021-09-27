@@ -46,7 +46,7 @@
    drd:ConflictingAccess
    obj:*/lib*/libthr.so.3
    obj:*/lib*/libthr.so.3
-   obj:*/lib*/libthr.so.3   
+   obj:*/lib*/libthr.so.3
    obj:/libexec/ld-elf*.so.1
 }
 {

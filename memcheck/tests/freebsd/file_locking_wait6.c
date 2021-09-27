@@ -1,5 +1,5 @@
 /**
- * Version of same in parent directory using wait6 
+ * Version of same in parent directory using wait6
  */
 
 
@@ -74,7 +74,7 @@ out:
   return fd;
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   int fd1;
   int fd2;

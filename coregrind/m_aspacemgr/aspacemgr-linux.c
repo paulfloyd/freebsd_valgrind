@@ -3902,15 +3902,15 @@ Bool VG_(get_changed_segments)(
 /*------BEGIN-procmaps-parser-for-Freebsd------------------------*/
 #elif defined(VGO_freebsd)
 
- /* Size of a smallish table used to read /proc/self/map entries. */
- #define M_PROCMAP_BUF 10485760	/* 10M */
- 
- /* static ... to keep it out of the stack frame. */
- static char procmap_buf[M_PROCMAP_BUF];
- 
+/* Size of a smallish table used to read /proc/self/map entries. */
+#define M_PROCMAP_BUF 10485760	/* 10M */
+
+/* static ... to keep it out of the stack frame. */
+static char procmap_buf[M_PROCMAP_BUF];
+
 static void parse_procselfmaps (
       void (*record_mapping)( Addr addr, SizeT len, UInt prot,
-                              ULong dev, ULong ino, Off64T offset, 
+                              ULong dev, ULong ino, Off64T offset,
                               const HChar* filename ),
       void (*record_gap)( Addr addr, SizeT len )
    )
@@ -3924,15 +3924,15 @@ static void parse_procselfmaps (
     vki_size_t len;
     Int    oid[4];
     SysRes sres;
- 
+
     foffset = ino = 0; /* keep gcc-4.1.0 happy */
- 
+
     oid[0] = VKI_CTL_KERN;
     oid[1] = VKI_KERN_PROC;
     oid[2] = VKI_KERN_PROC_VMMAP;
     oid[3] = sr_Res(VG_(do_syscall0)(__NR_getpid));
     len = sizeof(procmap_buf);
- 
+
     sres = VG_(do_syscall6)(__NR___sysctl, (UWord)oid, 4, (UWord)procmap_buf,
        (UWord)&len, 0, 0);
     if (sr_isError(sres)) {

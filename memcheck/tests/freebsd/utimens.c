@@ -1,9 +1,8 @@
-/* 
+/*
  * Tests for the utimens functions
- * 
+ *
  * futimens
  * utimensat
- * 
  */
 
 #include <sys/stat.h>
@@ -27,12 +26,12 @@ int main(void)
    times[0].tv_nsec = 271828;
    times[1].tv_sec = 42;
    times[1].tv_nsec = 314159;
-   
+
    if (-1 == futimens(tmpfd1, times))
    {
       perror("futimens failed:");
    }
-   
+
    DIR* tmpdir = opendir("/tmp");
    if (tmpdir) {
       int tmpdirfd = dirfd(tmpdir);
@@ -40,10 +39,10 @@ int main(void)
       {
          perror("utimensat failed:");
       }
-      
+
       close(tmpdirfd);
    }
-   
+
    // some errors
    struct timespec badtimes[2];
    int badfd;
@@ -55,3 +54,4 @@ int main(void)
    unlink(tmpfile1);
    unlink(tmpfile2);
 }
+

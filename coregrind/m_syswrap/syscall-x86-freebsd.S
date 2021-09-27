@@ -7,7 +7,7 @@
   This file is part of Valgrind, a dynamic binary instrumentation
   framework.
 
-  Copyright (C) 2000-2007 Julian Seward 
+  Copyright (C) 2000-2007 Julian Seward
      jseward@acm.org
 
   This program is free software; you can redistribute it and/or
@@ -32,13 +32,13 @@
 
 #include "pub_core_vkiscnums_asm.h"
 #include "libvex_guest_offsets.h"
-		
-	
+
+
 /*----------------------------------------------------------------*/
 /*
 	Perform a syscall for the client.  This will run a syscall
 	with the client's specific per-thread signal mask.
-	
+
 	The structure of this function is such that, if the syscall is
 	interrupted by a signal, we can determine exactly what
 	execution state we were in with respect to the execution of
@@ -50,7 +50,7 @@
 	The syscall number is taken from the argument, even though it
 	should also be in regs->m_eax.  The syscall result is written
 	back to regs->m_eax on completion.
-	
+
 	Returns 0 if the syscall was successfully called (even if the
 	syscall itself failed), or a -ve error code if one of the
 	sigprocmasks failed (there's no way to determine which one
@@ -59,7 +59,7 @@
 	VG_(fixup_guest_state_after_syscall_interrupted) does the
 	thread state fixup in the case where we were interrupted by a
 	signal.
-	
+
 	Prototype:
 
 	Int ML_(do_syscall_for_client_WRK)(
@@ -72,7 +72,7 @@
         Note that sigsetSzB is totally ignored (and irrelevant).
 */
 
-/* from vki-darwin.h, checked at startup by m_vki.c */	
+/* from vki-darwin.h, checked at startup by m_vki.c */
 #define VKI_SIG_SETMASK	3
 
 .globl ML_(do_syscall_for_client_WRK)
@@ -81,7 +81,7 @@ ML_(do_syscall_for_client_WRK):
 	push	%ebp
 	mov	%esp, %ebp
 	subl	$8, %esp	/* 16-byte align stack */
-	
+
 1:	/* Even though we can't take a signal until the
            sigprocmask completes, start the range early.
 	   If eip is in the range [1,2), the syscall hasn't been started yet */
@@ -96,11 +96,11 @@ ML_(do_syscall_for_client_WRK):
         jc      7f  /* sigprocmask failed */
         addl    $16,%esp
 
-	/* Copy syscall parameters to the stack - assume no more than 8 
+	/* Copy syscall parameters to the stack - assume no more than 8
 	 * plus the return address */
 	/* do_syscall8 */
 	/* stack is currently aligned assuming 8 parameters */
-	movl	12(%ebp), %edx			
+	movl	12(%ebp), %edx
 	movl	OFFSET_x86_ESP(%edx), %edx	/* edx = simulated ESP */
 	movl	28+4(%edx), %eax
 	pushl	%eax
@@ -125,7 +125,7 @@ ML_(do_syscall_for_client_WRK):
 	/* Put syscall number in eax */
 	movl	8(%ebp), %eax
 
-	/* If eip==2, then the syscall was either just about to start, 
+	/* If eip==2, then the syscall was either just about to start,
 	   or was interrupted and the kernel was restarting it. */
 2:	int	$0x80		/* UNIX (GrP fixme should be sysenter?) */
 

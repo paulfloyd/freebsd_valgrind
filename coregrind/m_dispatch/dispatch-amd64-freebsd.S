@@ -8,7 +8,7 @@
   This file is part of Valgrind, a dynamic binary instrumentation
   framework.
 
-  Copyright (C) 2000-2017 Julian Seward 
+  Copyright (C) 2000-2017 Julian Seward
      jseward@acm.org
 
   This program is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@
 
 /* signature:
 void VG_(disp_run_translations)( UWord* two_words,
-                                 void*  guest_state, 
+                                 void*  guest_state,
                                  Addr   host_addr );
 */
 .text
@@ -83,15 +83,15 @@ VG_(disp_run_translations):
 
         /* Get the host CPU in the state expected by generated code. */
 
-	/* set host FPU control word to the default mode expected 
+	/* set host FPU control word to the default mode expected
            by VEX-generated code.  See comments in libvex.h for
            more info. */
 	finit
 	pushq	$0x027F
 	fldcw	(%rsp)
 	addq	$8, %rsp
-	
-	/* set host SSE control word to the default mode expected 
+
+	/* set host SSE control word to the default mode expected
 	   by VEX-generated code. */
 	pushq	$0x1F80
 	ldmxcsr	(%rsp)
@@ -109,7 +109,7 @@ VG_(disp_run_translations):
            will jump (or call) to one of the continuation points
            VG_(cp_...) below. */
         jmpq    *%rdx
-       	/*NOTREACHED*/	
+        /*NOTREACHED*/
 
 /*----------------------------------------------------*/
 /*--- Postamble and exit.                          ---*/
@@ -121,7 +121,7 @@ postamble:
            holds a TRC value, and %rdx optionally may
            hold another word (for CHAIN_ME exits, the
            address of the place to patch.) */
-        
+
 	/* We're leaving.  Check that nobody messed with %mxcsr
            or %fpucw.  We can't mess with %rax or %rdx here as they
            hold the tentative return values, but any others are OK. */
@@ -165,8 +165,8 @@ remove_frame:
 	popq	%rcx
 	popq	%rbx
 	popq	%rax
-	ret	
-        
+	ret
+ 
 /*----------------------------------------------------*/
 /*--- Continuation points                          ---*/
 /*----------------------------------------------------*/
@@ -302,9 +302,9 @@ VG_(disp_cp_xassisted):
 /* ------ Event check failed ------ */
 .global VG_(disp_cp_evcheck_fail)
 VG_(disp_cp_evcheck_fail):
-       	movq	$VG_TRC_INNER_COUNTERZERO, %rax
+        movq	$VG_TRC_INNER_COUNTERZERO, %rax
         movq    $0, %rdx
-	jmp	postamble
+        jmp	postamble
 
 
 .size VG_(disp_run_translations), .-VG_(disp_run_translations)
