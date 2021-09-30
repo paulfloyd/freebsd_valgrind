@@ -739,10 +739,13 @@ case "$ARCH_MAX-$VGCONF_OS" in
            VGCONF_PLATFORM_PRI_CAPS="AMD64_FREEBSD"
            VGCONF_PLATFORM_SEC_CAPS="X86_FREEBSD"
         fi
+	# These work with either base clang or ports installed gcc
+	# Hand rolled compilers probably need INSTALL_DIR/lib (at least for gcc)
         if test x$is_clang = xclang ; then
            FLAG_32ON64="-B/usr/lib32"
         else
-           FLAG_32ON64="-B/usr/local/lib32/gcc9 -Wl,-rpath,/usr/local/lib32/gcc9/"
+           GCC_MAJOR_VERSION=`${CC} -dumpversion | $SED 's/\..*//' 2>/dev/null`
+           FLAG_32ON64="-B/usr/local/lib32/gcc${GCC_MAJOR_VERSION} -Wl,-rpath,/usr/local/lib32/gcc${GCC_MAJOR_VERSION}/"
         fi
         valt_load_address_pri_norml="0x38000000"
         valt_load_address_pri_inner="0x28000000"
