@@ -24,7 +24,7 @@ int main()
       perror("stat failed:");
    }
 
-   assert(sb.st_size == 1206);
+   assert(sb.st_size == 1161);
 
    int fd = openat(AT_FDCWD, "stat.c", O_RDONLY);
    if (-1 == fd)
