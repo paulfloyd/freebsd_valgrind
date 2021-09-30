@@ -284,7 +284,6 @@ if ! VGCONF_OS_IS_DARWIN_OR_FREEBSD
    check_PROGRAMS += rlimit64_nofile
 endif
 
-
 if ! VGCONF_OS_IS_DARWIN
    check_PROGRAMS += ppoll_alarm
 endif
@@ -348,10 +347,11 @@ pth_stackalign_LDADD	= -lpthread
 pth_2sig_LDADD		= -lpthread
 pth_term_signal_LDADD	= -lpthread
 if VGCONF_OS_IS_FREEBSD
- res_search_LDADD       = -lpthread
+   res_search_LDADD      = -lpthread
+   resolv_LDADD             = -lpthread
 else
- res_search_LDADD       = -lresolv -lpthread
- resolv_LDADD           = -lresolv -lpthread
+   res_search_LDADD      = -lresolv -lpthread
+   resolv_LDADD             = -lresolv -lpthread
 endif
 resolv_CFLAGS		= $(AM_CFLAGS)
 if VGCONF_OS_IS_SOLARIS
