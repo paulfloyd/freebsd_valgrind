@@ -65,7 +65,7 @@
 {
    DRD-LIBGOMP
    drd:ConflictingAccess
-   obj:/usr/local/lib*/gcc9/libgomp.so.1.0.0
+   obj:/usr/local/lib*/gcc*/libgomp.so.1.0.0
 }
 {
    DRD-LIBOMP

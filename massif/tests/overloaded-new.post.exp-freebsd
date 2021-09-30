@@ -43,7 +43,7 @@ Number of snapshots: 12
   5         84,744           84,744           84,704            40            0
   6         84,744           84,744           84,704            40            0
 99.95% (84,704B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
-->85.79% (72,704B) 0x........: ??? (in /usr/local/lib/gcc9/libstdc++.so.6.0.28)
+->85.79% (72,704B) 0x........: ??? (in /usr/local/lib/gcc10/libstdc++.so.6.0.28)
 | ->85.79% (72,704B) 0x........: ??? (in /libexec/ld-elf.so.1)
 |   ->85.79% (72,704B) 0x........: ??? (in /libexec/ld-elf.so.1)
 |     ->85.79% (72,704B) 0x........: ??? (in /libexec/ld-elf.so.1)
