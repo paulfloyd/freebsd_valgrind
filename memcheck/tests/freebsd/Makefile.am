@@ -5,15 +5,18 @@ dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout filter_sigwait \
 	filter_scalar
 
 EXTRA_DIST = \
+	scalar.h \
 	statfs.vgtest \
 	statfs.stderr.exp \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
 	getfsstat.vgtest \
 	getfsstat.stderr.exp \
+	getfsstat.supp \
 		getfsstat.stderr.exp-x86 \
 	supponlyobj.vgtest \
 	supponlyobj.stderr.exp \
+	supponlyobj.supp \
 	extattr.vgtest \
 	extattr.stderr.exp \
 	sigwait.vgtest \
