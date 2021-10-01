@@ -1685,14 +1685,17 @@ AM_CONDITIONAL([HAS_VSX], [test x$ac_compiler_supports_vsx_flag = xyes \
                              -a x$HWCAP_HAS_VSX = xyes ])
 
 # DFP (Decimal Float)
+# The initial DFP support was added in Power 6.  The dcffix instruction
+# support was added in Power 7.
 AC_MSG_CHECKING([that assembler knows DFP])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
   #ifdef __s390__
   __asm__ __volatile__("adtr 1, 2, 3")
   #else
-  __asm__ __volatile__("dadd 1, 2, 3");
-  __asm__ __volatile__("dcffix 1, 2");
+__asm__ __volatile__(".machine power7;\n" \
+  "dadd 1, 2, 3;\n" \
+  "dcffix 1, 2");
   #endif
 ]])], [
 ac_asm_have_dfp=yes
@@ -1704,13 +1707,16 @@ AC_MSG_RESULT([no])
 AC_MSG_CHECKING([that compiler knows -mhard-dfp switch])
 safe_CFLAGS=$CFLAGS
 CFLAGS="-mhard-dfp -Werror"
+
+# The dcffix instruction is Power 7
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
   #ifdef __s390__
   __asm__ __volatile__("adtr 1, 2, 3")
   #else
-  __asm__ __volatile__("dadd 1, 2, 3");
-  __asm__ __volatile__("dcffix 1, 2");
+  __asm__ __volatile__(".machine power7;\n" \
+  "dadd 1, 2, 3;\n" \
+  "dcffix 1, 2");
   #endif
 ]])], [
 ac_compiler_have_dfp=yes
@@ -1780,21 +1786,28 @@ AC_MSG_CHECKING([that assembler knows ISA 3.00 ])
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
-  __asm__ __volatile__("cnttzw 1,2 ");
+__asm__ __volatile__ (".machine power9;\n" \
+	"cnttzw   1,3; \n" );
 ]])], [
+# guest_ppc_helpers.c needs the HAS_ISA_3_OO to enable copy, paste,
+# cpabort support
+safe_CFLAGS=$CFLAGS
+CFLAGS="-DHAS_ISA_3_00"
 ac_asm_have_isa_3_00=yes
 AC_MSG_RESULT([yes])
 ], [
 ac_asm_have_isa_3_00=no
 AC_MSG_RESULT([no])
 ])
+CFLAGS=$safe_CFLAGS
 
 # xscvhpdp checking
 AC_MSG_CHECKING([that assembler knows xscvhpdp ])
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
-  __asm__ __volatile__("xscvhpdp 1,2 ");
+__asm__ __volatile__ (".machine power9;\n" \
+	"xscvhpdp 1,2;\n" );
 ]])], [
 ac_asm_have_xscvhpdp=yes
 AC_MSG_RESULT([yes])
@@ -1808,7 +1821,7 @@ AC_MSG_CHECKING([that assembler knows darn instruction ])
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
-  __asm__ __volatile__("darn 1,0 ");
+  __asm__ __volatile__(".machine power9; darn 1,0 ");
 ]])], [
 ac_asm_have_darn_inst=yes
 AC_MSG_RESULT([yes])
@@ -1819,10 +1832,10 @@ AC_MSG_RESULT([no])
 
 # isa 3.01 checking
 AC_MSG_CHECKING([that assembler knows ISA 3.1 ])
-
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
-  __asm__ __volatile__("brh 1,2 ");
+__asm__ __volatile__ (".machine power10;\n" \
+	"brh 1,2;\n ");
 ]])], [
 ac_asm_have_isa_3_1=yes
 AC_MSG_RESULT([yes])
