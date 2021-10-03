@@ -552,7 +552,7 @@ PRE(sys_unmount)
 // generic
 
 // SYS_getuid  24
-// gerneric
+// generic
 
 // SYS_geteuid 25
 // generic
@@ -2015,7 +2015,7 @@ PRE(sys___sysctl)
    // read number of ints specified in ARG2 from mem pointed to by ARG1
    PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
 
-   // if 'newp' is not NULL can read namelen bytes from that addess
+   // if 'newp' is not NULL can read namelen bytes from that address
    if (ARG5 != (UWord)NULL)
       PRE_MEM_READ("sysctl(newp)", (Addr)ARG5, ARG6);
 
