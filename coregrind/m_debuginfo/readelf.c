@@ -2015,13 +2015,13 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rx)
          TRACE_SYMTAB("rx_map:  avma %#lx   size %lu  foff %lld\n",
-                      map->avma, map->size, map->foff);
+                      map->avma, map->size, (Long)map->foff);
    }
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rw)
          TRACE_SYMTAB("rw_map:  avma %#lx   size %lu  foff %lld\n",
-                      map->avma, map->size, map->foff);
+                      map->avma, map->size, (Long)map->foff);
    }
 
    if (phdr_mnent == 0
@@ -2247,7 +2247,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rx)
          TRACE_SYMTAB("rx: at %#lx are mapped foffsets %lld .. %llu\n",
-                      map->avma, map->foff, map->foff + map->size - 1 );
+                      map->avma, (Long)map->foff, (Long)(map->foff + map->size - 1) );
    }
    TRACE_SYMTAB("rx: contains these svma regions:\n");
    for (i = 0; i < VG_(sizeXA)(svma_ranges); i++) {
@@ -2260,7 +2260,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rw)
          TRACE_SYMTAB("rw: at %#lx are mapped foffsets %lld .. %llu\n",
-                      map->avma, map->foff, map->foff + map->size - 1 );
+                      map->avma, (Long)map->foff, (Long)(map->foff + map->size - 1) );
    }
    TRACE_SYMTAB("rw: contains these svma regions:\n");
    for (i = 0; i < VG_(sizeXA)(svma_ranges); i++) {
@@ -2305,7 +2305,8 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
       TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6lld .. %6llu  "
                    "  svma %p  name \"%s\"\n", 
                    i, inrx ? "rx" : "  ", inrw ? "rw" : "  ", alyn,
-                   foff, (size == 0) ? foff : foff+size-1, (void *) svma, name);
+                   (Long) foff, (size == 0) ? (Long)foff : (Long)(foff+size-1),
+                   (void *) svma, name);
 
       /* Check for sane-sized segments.  SHT_NOBITS sections have zero
          size in the file and their offsets are just conceptual. */

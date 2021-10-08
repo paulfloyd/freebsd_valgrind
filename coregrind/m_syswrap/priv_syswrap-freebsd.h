@@ -9,6 +9,8 @@
 
    Copyright (C) 2000-2008 Nicholas Nethercote
       njn@valgrind.org
+   Copyright (C) 2018-2021 Paul Floyd
+      pjfloyd@wanadoo.fr
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
