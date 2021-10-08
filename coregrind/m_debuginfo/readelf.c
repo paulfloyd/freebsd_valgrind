@@ -2246,7 +2246,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rx)
-         TRACE_SYMTAB("rx: at %#lx are mapped foffsets %lld .. %llu\n",
+         TRACE_SYMTAB("rx: at %#lx are mapped foffsets %lld .. %lld\n",
                       map->avma, (Long)map->foff, (Long)(map->foff + map->size - 1) );
    }
    TRACE_SYMTAB("rx: contains these svma regions:\n");
@@ -2259,7 +2259,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
    for (i = 0; i < VG_(sizeXA)(di->fsm.maps); i++) {
       const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, i);
       if (map->rw)
-         TRACE_SYMTAB("rw: at %#lx are mapped foffsets %lld .. %llu\n",
+         TRACE_SYMTAB("rw: at %#lx are mapped foffsets %lld .. %lld\n",
                       map->avma, (Long)map->foff, (Long)(map->foff + map->size - 1) );
    }
    TRACE_SYMTAB("rw: contains these svma regions:\n");
@@ -2302,7 +2302,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
          }
       }
 
-      TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6lld .. %6llu  "
+      TRACE_SYMTAB(" [sec %2ld]  %s %s  al%4u  foff %6lld .. %6lld  "
                    "  svma %p  name \"%s\"\n", 
                    i, inrx ? "rx" : "  ", inrw ? "rw" : "  ", alyn,
                    (Long) foff, (size == 0) ? (Long)foff : (Long)(foff+size-1),
