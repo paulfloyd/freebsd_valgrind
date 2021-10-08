@@ -2528,7 +2528,7 @@ void async_signalhandler ( Int sigNo,
    info->si_code = sanitize_si_code(info->si_code);
 
    if (VG_(clo_trace_signals))
-      VG_(dmsg)("async signal handler: signal=%d, vgtid=%u, tid=%u, si_code=%d, "
+      VG_(dmsg)("async signal handler: signal=%d, vgtid=%d, tid=%u, si_code=%d, "
                 "exitreason %s\n",
                 sigNo, VG_(gettid)(), tid, info->si_code,
                 VG_(name_of_VgSchedReturnCode)(tst->exitreason));

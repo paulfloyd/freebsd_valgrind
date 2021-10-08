@@ -369,7 +369,12 @@ static void parse_procselfmaps (
 #  define ARM_LINUX_FAKE_COMMPAGE_END1  0xFFFF1000
 #endif
 
-
+#if !defined(VKI_MAP_STACK)
+/* this is only defined for FreeBSD
+ * for readability, define it to 0
+ * for other platforms */
+#define VKI_MAP_STACK 0
+#endif
 
 /*-----------------------------------------------------------------*/
 /*---                                                           ---*/
@@ -2248,21 +2253,13 @@ VG_(am_notify_client_mmap)( Addr a, SizeT len, UInt prot, UInt flags,
    needDiscard = any_Ts_in_range( a, len );
 
    init_nsegment( &seg );
-   seg.kind   = (flags & (VKI_MAP_ANONYMOUS
-#if defined(VGO_freebsd)
- | VKI_MAP_STACK
-#endif
-)) ? SkAnonC : SkFileC;
+   seg.kind   = (flags & (VKI_MAP_ANONYMOUS | VKI_MAP_STACK)) ? SkAnonC : SkFileC;
    seg.start  = a;
    seg.end    = a + len - 1;
    seg.hasR   = toBool(prot & VKI_PROT_READ);
    seg.hasW   = toBool(prot & VKI_PROT_WRITE);
    seg.hasX   = toBool(prot & VKI_PROT_EXEC);
-   if (!(flags & (VKI_MAP_ANONYMOUS
-#if defined(VGO_freebsd)
- | VKI_MAP_STACK
-#endif
-))) {
+   if (!(flags & (VKI_MAP_ANONYMOUS | VKI_MAP_STACK))) {
       // Nb: We ignore offset requests in anonymous mmaps (see bug #126722)
       seg.offset = offset;
       if (ML_(am_get_fd_d_i_m)(fd, &dev, &ino, &mode)) {
