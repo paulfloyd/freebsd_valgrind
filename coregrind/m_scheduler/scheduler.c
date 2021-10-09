@@ -545,6 +545,7 @@ static void block_signals(void)
    VG_(sigdelset)(&mask, VKI_SIGFPE);
    VG_(sigdelset)(&mask, VKI_SIGILL);
    VG_(sigdelset)(&mask, VKI_SIGTRAP);
+   VG_(sigdelset)(&mask, VKI_SIGSYS);
 
    /* Can't block these anyway */
    VG_(sigdelset)(&mask, VKI_SIGSTOP);

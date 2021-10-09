@@ -1120,7 +1120,11 @@ void main_process_cmd_line_options( void )
 
 /* Number of file descriptors that Valgrind tries to reserve for
    its own use - just a small constant. */
+#if defined(VGO_freebsd)
+#define N_RESERVED_FDS (20)
+#else
 #define N_RESERVED_FDS (12)
+#endif
 
 static void setup_file_descriptors(void)
 {
@@ -2495,6 +2499,7 @@ static void final_tidyup(ThreadId tid)
    VG_(set_default_handler)(VKI_SIGBUS);
    VG_(set_default_handler)(VKI_SIGILL);
    VG_(set_default_handler)(VKI_SIGFPE);
+   VG_(set_default_handler)(VKI_SIGSYS);
 
    // We were exiting, so assert that...
    vg_assert(VG_(is_exiting)(tid));
