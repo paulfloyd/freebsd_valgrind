@@ -88,4 +88,20 @@ AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 # C++ tests
 new_cpp_SOURCES		= new-cpp.cpp
 overloaded_new_SOURCES	= overloaded-new.cpp
+# pre C++11 compilers don't have exception specs
+# C++11 and later compilers may complain about not having
+# exception specs
+overloaded_new_CXXFLAGS	= $(AM_CXXFLAGS) -Wno-implicit-exception-spec-mismatch -Wno-missing-exception-spec
 
+# Suppress warnings for issues we are testing for
+alloc_fns_CFLAGS	= $(AM_CFLAGS) -Wno-unused-result
+big_alloc_CFLAGS	= $(AM_CFLAGS) -Wno-unused-result
+culling1_CFLAGS		= $(AM_CFLAGS) -Wno-unused-result
+culling2_CFLAGS		= $(AM_CFLAGS) -Wno-unused-result
+deep_CFLAGS		= $(AM_CFLAGS) -Wno-unused-result
+ignoring_CFLAGS		= $(AM_CFLAGS) -Wno-unused-result
+insig_CFLAGS		= $(AM_CFLAGS) -Wno-unused-result
+long_names_CFLAGS	= $(AM_CFLAGS) -Wno-unused-result
+one_CFLAGS		= $(AM_CFLAGS) -Wno-unused-result
+thresholds_CFLAGS	= $(AM_CFLAGS) -Wno-unused-result
+realloc_CFLAGS		= $(AM_CFLAGS) -Wno-free-nonheap-object

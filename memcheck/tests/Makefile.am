@@ -505,10 +505,20 @@ leak_cpp_interior_SOURCES	= leak_cpp_interior.cpp
 
 demangle_SOURCES = demangle.cpp
 
+# Suppress various gcc warnings which are correct, but for things
+# we are actually testing for at runtime.
+accounting_CFLAGS	= $(AM_CFLAGS) -Wno-alloc-size-larger-than
+badfree_CFLAGS		= $(AM_CFLAGS) -Wno-free-nonheap-object
+bug155125_CFLAGS	= $(AM_CFLAGS) -Wno-unused-result -Wno-alloc-size-larger-than
+mallinfo_CFLAGS		= $(AM_CFLAGS) -Wno-deprecated-declarations
+malloc3_CFLAGS		= $(AM_CFLAGS) -Wno-alloc-size-larger-than
+sbfragment_CFLAGS	= $(AM_CFLAGS) -Wno-deprecated-declarations
+strchr_CFLAGS		= $(AM_CFLAGS) -Wno-uninitialized
+
 big_debuginfo_symbol_SOURCES = big_debuginfo_symbol.cpp
 big_debuginfo_symbol_CXXFLAGS = $(AM_CXXFLAGS) -std=c++0x
 
-bug340392_CFLAGS        = $(AM_CFLAGS) -O3
+bug340392_CFLAGS        = $(AM_CFLAGS) -O3 -Wno-maybe-uninitialized
 dw4_CFLAGS		= $(AM_CFLAGS) -gdwarf-4 -fdebug-types-section
 
 descr_belowsp_LDADD     = -lpthread
@@ -529,7 +539,7 @@ execve1_CFLAGS = $(AM_CFLAGS) @FLAG_W_NO_NONNULL@
 
 execve2_CFLAGS = $(AM_CFLAGS) @FLAG_W_NO_NONNULL@
 
-fprw_CFLAGS = $(AM_CFLAGS) @FLAG_W_NO_UNINITIALIZED@
+fprw_CFLAGS = $(AM_CFLAGS) @FLAG_W_NO_UNINITIALIZED@ -Wno-free-nonheap-object
 
 inits_CFLAGS = $(AM_CFLAGS) @FLAG_W_NO_UNINITIALIZED@
 
@@ -574,7 +584,8 @@ origin6_fp_CFLAGS	= $(AM_CFLAGS) -O
 
 # Don't allow GCC to inline memcpy() and strcpy(),
 # because then we can't intercept it
-overlap_CFLAGS		= $(AM_CFLAGS) -fno-builtin-memcpy -fno-builtin-strcpy
+overlap_CFLAGS		= $(AM_CFLAGS) -fno-builtin-memcpy -fno-builtin-strcpy \
+			  -Wno-fortify-source
 
 resvn_stack_CFLAGS      = $(AM_CFLAGS) @FLAG_W_NO_UNINITIALIZED@
 
@@ -590,7 +601,9 @@ sized_delete_SOURCES   = sized_delete.cpp
 sized_delete_CXXFLAGS  = $(AM_CXXFLAGS) @FLAG_FSIZED_DEALLOCATION@
 endif
 
-str_tester_CFLAGS	= $(AM_CFLAGS) -Wno-shadow \
+str_tester_CFLAGS	= $(AM_CFLAGS) -Wno-shadow -Wno-stringop-overflow \
+			  -Wno-stringop-truncation \
+			  -Wno-fortify-source -Wno-suspicious-bzero \
 			  @FLAG_W_NO_MEMSET_TRANSPOSED_ARGS@
 
 supp_CFLAGS             = $(AM_CFLAGS) @FLAG_W_NO_UNINITIALIZED@
@@ -640,7 +653,7 @@ else
  varinfo5so_so_LDFLAGS  = -fpic $(AM_FLAG_M3264_PRI) -shared \
 				-Wl,-soname -Wl,varinfo5so.so
 endif
-varinforestrict_CFLAGS	= $(AM_CFLAGS) -O0 -g
+varinforestrict_CFLAGS	= $(AM_CFLAGS) -O0 -g -Wno-maybe-uninitialized
 
 # Build shared object for wrap7
 wrap7_SOURCES           = wrap7.c
@@ -691,5 +704,6 @@ xml1_CFLAGS             = $(AM_CFLAGS) -D_GNU_SOURCE
 if HAVE_ALIGNED_CXX_ALLOC
 check_PROGRAMS += cxx17_aligned_new
 cxx17_aligned_new_SOURCES  = cxx17_aligned_new.cpp
-cxx17_aligned_new_CXXFLAGS = -std=c++17
+# need C++ 17, and we deliberately mismatch new and delete
+cxx17_aligned_new_CXXFLAGS = -std=c++17 -Wno-mismatched-new-delete
 endif
