@@ -46,6 +46,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         == 434283
 444481  gdb_server test failures on s390x
 444495  dhat/tests/copy fails on s390x
+444552  memcheck/tests/sem fails on s390x with glibc 2.34
 444571  PPC, fix the lxsibzx and lxsihzx so they only load their respective
         sized data.
 444836  PPC, pstq instruction for R=1 is not storing to the correct address.
@@ -55,6 +56,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 445354  arm64 backend: incorrect code emitted for doubleword CAS
 445415  arm64 front end: alignment checks missing for atomic instructions
 445668  Inline stack frame generation is broken for Rust binaries
+445916  Demangle Rust v0 symbols with .llvm suffix
 446139  DRD/Helgrind with std::shared_timed_mutex::try_lock_until and try_lock_shared_until false positives
 446138  DRD/Helgrind with std::timed_mutex::try_lock_until false positives
 446281  Add a DRD suppression for fwrite
@@ -68,6 +70,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 449838  sigsegv liburing the 'impossible' happened for io_uring_setup
 450025  Powerc: ACC file not implemented as a logical overlay of the VSR
         registers.
+450536  Powerpc: valgrind throws 'facility scv unavailable exception'
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
