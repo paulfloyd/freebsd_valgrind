@@ -17,8 +17,8 @@
 m4_define([v_major_ver], [3])
 m4_define([v_minor_ver], [19])
 m4_define([v_micro_ver], [0])
-m4_define([v_suffix_ver], [GIT])
-m4_define([v_rel_date], ["?? ??? 202?"])
+m4_define([v_suffix_ver], [RC1])
+m4_define([v_rel_date], ["02 Apr 2022"])
 m4_define([v_version],
 	  m4_if(v_suffix_ver, [],
 		[v_major_ver.v_minor_ver.v_micro_ver],
@@ -394,8 +394,10 @@ case "${host_os}" in
         freebsd_12=1200
         AC_DEFINE([FREEBSD_12_2], 1220, [FREEBSD_VERS value for FreeBSD 12.2])
         freebsd_12_2=1220
-        AC_DEFINE([FREEBSD_13], 1300, [FREEBSD_VERS value for FreeBSD 13.x])
-        freebsd_13=1300
+        AC_DEFINE([FREEBSD_13_0], 1300, [FREEBSD_VERS value for FreeBSD 13.0])
+        freebsd_13_0=1300
+        AC_DEFINE([FREEBSD_13_1], 1310, [FREEBSD_VERS value for FreeBSD 13.1+])
+        freebsd_13_1=1310
         AC_DEFINE([FREEBSD_14], 1400, [FREEBSD_VERS value for FreeBSD 14.x])
         freebsd_14=1400
 
@@ -428,9 +430,18 @@ case "${host_os}" in
            esac
            ;;
         13.*)
-           AC_MSG_RESULT([FreeBSD 13.x (${kernel})])
-           AC_DEFINE([FREEBSD_VERS], FREEBSD_13, [FreeBSD version])
-           freebsd_vers=$freebsd_13
+           case "${kernel}" in
+           13.0-*)
+              AC_MSG_RESULT([FreeBSD 13.0 (${kernel})])
+              AC_DEFINE([FREEBSD_VERS], FREEBSD_13_0, [FreeBSD version])
+              freebsd_vers=$freebsd_13_0
+              ;;
+           *)
+              AC_MSG_RESULT([FreeBSD 13.1+ (${kernel})])
+              AC_DEFINE([FREEBSD_VERS], FREEBSD_13_1, [FreeBSD version])
+              freebsd_vers=$freebsd_13_1
+              ;;
+           esac
            ;;
         14.*)
            AC_MSG_RESULT([FreeBSD 14.x (${kernel})])
@@ -4625,7 +4636,7 @@ fi # test "$VGCONF_OS" = "solaris"
 
 if test "$VGCONF_OS" = "freebsd" ; then
 
-AM_CONDITIONAL(FREEBSD_VERS_13_PLUS, test $freebsd_vers -ge $freebsd_13)
+AM_CONDITIONAL(FREEBSD_VERS_13_PLUS, test $freebsd_vers -ge $freebsd_13_0)
 
 else
 
@@ -4683,7 +4694,7 @@ CFLAGS="$save_CFLAGS"
 AC_TYPE_UID_T
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
+AC_CHECK_HEADERS_ONCE([sys/time.h])
 
 AC_CHECK_TYPE([struct statx], [
   AC_DEFINE([HAVE_STRUCT_STATX_IN_SYS_STAT_H], 1,
