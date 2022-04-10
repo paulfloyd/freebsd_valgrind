@@ -1,4 +1,4 @@
-Release 3.19.0 (08 Apr 2022)
+Release 3.19.0 (11 Apr 2022)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This release supports X86/Linux, AMD64/Linux, ARM32/Linux, ARM64/Linux,
@@ -71,7 +71,9 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 444925  fexecve syscall wrapper not properly implemented
 445032  valgrind/memcheck crash with SIGSEGV when SIGVTALRM timer used and
         libthr.so associated
+445211  Fix out of tree builds
 445300  [PATCH] Fix building tests with Musl
+445011  SIGCHLD is sent when valgrind uses debuginfod-find
 445354  arm64 backend: incorrect code emitted for doubleword CAS
 445415  arm64 front end: alignment checks missing for atomic instructions
 445504  Using C++ condition_variable results in bogus "mutex is locked simultaneously by two threads" warning
@@ -104,6 +106,7 @@ To see details of a given bug, visit
 where XXXXXX is the bug number as listed above.
 
 (3.19.0.RC1: 02 Apr 2022)
+(3.19.0.RC2: 08 Apr 2022)
 
 
 Release 3.18.0 (15 Oct 2021)
