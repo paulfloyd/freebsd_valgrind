@@ -15,10 +15,10 @@
 # Also set the (expected/last) release date here.
 # Do not forget to rerun ./autogen.sh
 m4_define([v_major_ver], [3])
-m4_define([v_minor_ver], [19])
+m4_define([v_minor_ver], [20])
 m4_define([v_micro_ver], [0])
-m4_define([v_suffix_ver], [RC2])
-m4_define([v_rel_date], ["08 Apr 2022"])
+m4_define([v_suffix_ver], [GIT])
+m4_define([v_rel_date], ["?? Oct 2022"])
 m4_define([v_version],
 	  m4_if(v_suffix_ver, [],
 		[v_major_ver.v_minor_ver.v_micro_ver],
@@ -1527,6 +1527,21 @@ AC_DEFINE([HAVE_PTHREAD_RWLOCK_T], 1,
 AC_MSG_RESULT([no])
 ])
 
+# Check for CLOCKID_T
+
+AC_MSG_CHECKING([for clockid_t])
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <time.h>
+]], [[
+  clockid_t c;
+]])], [
+AC_MSG_RESULT([yes])
+AC_DEFINE([HAVE_CLOCKID_T], 1,
+          [Define to 1 if you have the `clockid_t' type.])
+], [
+AC_MSG_RESULT([no])
+])
 
 # Check for PTHREAD_MUTEX_ADAPTIVE_NP
 
@@ -5342,6 +5357,7 @@ AC_CONFIG_FILES([
    none/tests/x86-darwin/Makefile
    none/tests/amd64-solaris/Makefile
    none/tests/x86-solaris/Makefile
+   none/tests/x86-freebsd/Makefile
    exp-bbv/Makefile
    exp-bbv/tests/Makefile
    exp-bbv/tests/x86/Makefile

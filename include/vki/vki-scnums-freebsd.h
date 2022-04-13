@@ -458,7 +458,11 @@
 #define __NR_getcontext          421
 #define __NR_setcontext          422
 #define __NR_swapcontext         423
+#if (FREEBSD_VERS >= FREEBSD_14)
+#define __NR_freebsd13_swapoff   424
+#else
 #define __NR_swapoff             424
+#endif
 #define __NR___acl_get_link      425
 #define __NR___acl_set_link      426
 #define __NR___acl_delete_link   427
@@ -646,6 +650,14 @@
 #define __NR___specialfd         577
 #define __NR_aio_writev          578
 #define __NR_aio_readv           579
+
+#endif
+
+#if (FREEBSD_VERS >= FREEBSD_14)
+
+#define __NR_fspacectl           580
+#define __NR_sched_getcpu        581
+#define __NR_swapoff             582
 
 #endif
 
