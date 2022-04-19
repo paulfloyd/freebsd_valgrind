@@ -1204,6 +1204,8 @@ AC_SUBST(DEFAULT_SUPP)
 AC_CHECK_HEADER([features.h])
 
 if test x$ac_cv_header_features_h = xyes; then
+  AC_DEFINE([HAVE_HEADER_FEATURES_H], 1,
+          [Define to 1 if you have the `features.h' header.])
   rm -f conftest.$ac_ext
   cat <<_ACEOF >conftest.$ac_ext
 #include <features.h>
@@ -2896,6 +2898,24 @@ AC_MSG_RESULT([yes])
 AC_SUBST([FLAG_PIE], [""])
 AC_MSG_RESULT([no])
 ])
+CFLAGS=$safe_CFLAGS
+
+AC_MSG_CHECKING([if gcc accepts -ansi])
+
+safe_CFLAGS=$CFLAGS
+CFLAGS="-ansi"
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+   return 0;
+]])], [
+ac_have_ansi=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_ansi=no
+AC_MSG_RESULT([no])
+])
+AM_CONDITIONAL([HAVE_ANSI], [test x$ac_have_ansi = xyes])
+
 CFLAGS=$safe_CFLAGS
 
 
