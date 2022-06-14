@@ -314,6 +314,25 @@ static Long get_SLEB128 ( Cursor* c ) {
       result |= -(1ULL << shift);
    return result;
 }
+static UInt get_UInt3 ( Cursor* c ) {
+   UChar c1, c2, c3;
+   vg_assert(is_sane_Cursor(c));
+   if (c->sli_next + 3 > c->sli.ioff + c->sli.szB) {
+      c->barf(c->barfstr);
+      /*NOTREACHED*/
+      vg_assert(0);
+   }
+   c1 = ML_(img_get_UChar)(c->sli.img, c->sli_next);
+   c2 = ML_(img_get_UChar)(c->sli.img, c->sli_next+1);
+   c3 = ML_(img_get_UChar)(c->sli.img, c->sli_next+2);
+   c->sli_next += 3;
+#if defined(VG_BIGENDIAN)
+   return c1 << 16 | c2 << 8 | c3;
+#else
+   return c1 | c2 << 8 | c3 << 16;
+#endif
+}
+
 
 /* Assume 'c' points to the start of a string.  Return a DiCursor of
    whatever it points at, and advance it past the terminating zero.
@@ -576,6 +595,55 @@ static UWord uncook_die( const CUConst *cc, UWord die, /*OUT*/Bool *type_flag,
    return die;
 }
 
+/* Return an entry from .debug_addr with the given index.
+   Call one of the variants below that do error-checking. */
+static ULong get_debug_addr_entry_common( ULong index, const CUConst* cc )
+{
+   vg_assert(cc->cu_has_addr_base);
+   /* We make the same word-size assumption as DW_FORM_addr. */
+   UWord addr_pos = cc->cu_addr_base + index * sizeof(UWord);
+   Cursor cur;
+   init_Cursor( &cur, cc->escn_debug_addr, addr_pos, cc->barf,
+                "get_debug_addr_entry_common: index points outside .debug_addr" );
+   return (ULong)(UWord)get_UWord(&cur);
+}
+
+static ULong get_debug_addr_entry_form( ULong index, const CUConst* cc,
+                                        DW_FORM form )
+{
+   if(!cc->cu_has_addr_base) {
+      VG_(printf)(
+         "get_debug_addr_entry_form: %u (%s) without DW_AT_addr_base\n",
+         form, ML_(pp_DW_FORM)(form));
+      cc->barf("get_debug_addr_entry_form: DW_AT_addr_base not set");
+   }
+   return get_debug_addr_entry_common( index, cc );
+}
+
+static ULong get_debug_addr_entry_lle( ULong index, const CUConst* cc,
+                                       DW_LLE entry )
+{
+   if(!cc->cu_has_addr_base) {
+      VG_(printf)(
+         "get_debug_addr_entry_lle: %u (%s) without DW_AT_addr_base\n",
+         entry, ML_(pp_DW_LLE)(entry));
+      cc->barf("get_debug_addr_entry_lle: DW_AT_addr_base not set");
+   }
+   return get_debug_addr_entry_common( index, cc );
+}
+
+static ULong get_debug_addr_entry_rle( ULong index, const CUConst* cc,
+                                       DW_RLE entry )
+{
+   if(!cc->cu_has_addr_base) {
+      VG_(printf)(
+         "get_debug_addr_entry_rle: %u (%s) without DW_AT_addr_base\n",
+         entry, ML_(pp_DW_RLE)(entry));
+      cc->barf("get_debug_addr_entry_rle: DW_AT_addr_base not set");
+   }
+   return get_debug_addr_entry_common( index, cc );
+}
+
 /*------------------------------------------------------------*/
 /*---                                                      ---*/
 /*--- Helper functions for Guarded Expressions             ---*/
@@ -784,8 +852,22 @@ static GExpr* make_general_GX ( const CUConst* cc,
             get_ULEB128( &loc );
             break;
          case DW_LLE_base_addressx:
+            base = get_debug_addr_entry_lle( get_ULEB128( &loc ), cc,
+                                             DW_LLE_base_addressx );
+            break;
          case DW_LLE_startx_endx:
+            w1 = get_debug_addr_entry_lle( get_ULEB128( &loc ), cc,
+                                           DW_LLE_startx_endx );
+            w2 = get_debug_addr_entry_lle( get_ULEB128( &loc ), cc,
+                                           DW_LLE_startx_endx );
+            len = get_ULEB128( &loc );
+            break;
          case DW_LLE_startx_length:
+            w1 = get_debug_addr_entry_lle( get_ULEB128( &loc ), cc,
+                                           DW_LLE_startx_length );
+            w2 = w1 + get_ULEB128( &loc );
+            len = get_ULEB128( &loc );
+            break;
          case DW_LLE_default_location:
          default:
             cc->barf( "Unhandled or unknown loclists entry" );
@@ -1007,8 +1089,20 @@ get_range_list ( const CUConst* cc,
             w2 = get_UWord ( &ranges );
             break;
          case DW_RLE_base_addressx:
+            base = get_debug_addr_entry_rle( get_ULEB128( &ranges ), cc,
+                                             DW_RLE_base_addressx );
+            break;
          case DW_RLE_startx_endx:
+            w1 = get_debug_addr_entry_rle( get_ULEB128( &ranges ), cc,
+                                           DW_RLE_startx_endx );
+            w2 = get_debug_addr_entry_rle( get_ULEB128( &ranges ), cc,
+                                           DW_RLE_startx_endx );
+            break;
          case DW_RLE_startx_length:
+            w1 = get_debug_addr_entry_rle( get_ULEB128( &ranges ), cc,
+                                           DW_RLE_startx_length );
+            w2 = w1 + get_ULEB128( &ranges );
+            break;
          default:
             cc->barf( "Unhandled or unknown range list entry" );
             done = True;
@@ -1312,23 +1406,7 @@ typedef
 static void get_Form_contents_addr( /*OUT*/FormContents* cts, DW_FORM form,
                                     ULong index, const CUConst* cc, Bool td3 )
 {
-   if(!cc->cu_has_addr_base) {
-      VG_(printf)(
-         "get_Form_contents_addr: %u (%s) without DW_AT_addr_base\n",
-         form, ML_(pp_DW_FORM)(form));
-      cc->barf("get_Form_contents_addr: DW_AT_addr_base not set");
-   }
-   /* We make the same word-size assumption as DW_FORM_addr. */
-   UWord addr_pos = cc->cu_addr_base + index * sizeof(UWord);
-   Cursor cur;
-   init_Cursor( &cur, cc->escn_debug_addr, addr_pos, cc->barf,
-                "get_Form_contents_addr: index points outside .debug_addr" );
-   if (TD3) {
-      HChar* tmp = ML_(cur_read_strdup)(get_DiCursor_from_Cursor(&cur), "di.getFC.1");
-      TRACE_D3("(indirect address, offset: 0x%lx): %s", addr_pos, tmp);
-      ML_(dinfo_free)(tmp);
-   }
-   cts->u.val = (ULong)(UWord)get_UWord(&cur);
+   cts->u.val = get_debug_addr_entry_form( index, cc, form );
    cts->szB   = sizeof(UWord);
    TRACE_D3("0x%lx", (UWord)cts->u.val);
 }
@@ -1787,6 +1865,12 @@ void get_Form_contents ( /*OUT*/FormContents* cts,
          get_Form_contents_addr(cts, form, index, cc, td3);
          break;
       }
+      case DW_FORM_addrx3: {
+         /* this is an offset into .debug_addr */
+         ULong index = (ULong)get_UInt3(c);
+         get_Form_contents_addr(cts, form, index, cc, td3);
+         break;
+      }
       case DW_FORM_addrx4: {
          /* this is an offset into .debug_addr */
          ULong index = (ULong)get_UInt(c);
@@ -1808,6 +1892,12 @@ void get_Form_contents ( /*OUT*/FormContents* cts,
       case DW_FORM_strx2: {
          /* this is an offset into .debug_str_offsets */
          ULong index = (ULong)get_UShort(c);
+         get_Form_contents_str_offsets(cts, form, index, cc, td3);
+         break;
+      }
+      case DW_FORM_strx3: {
+         /* this is an offset into .debug_str_offsets */
+         ULong index = (ULong)get_UInt3(c);
          get_Form_contents_str_offsets(cts, form, index, cc, td3);
          break;
       }
@@ -2826,7 +2916,8 @@ static void parse_var_DIE (
 
    if (dtag == DW_TAG_compile_unit
        || dtag == DW_TAG_type_unit
-       || dtag == DW_TAG_partial_unit) {
+       || dtag == DW_TAG_partial_unit
+       || dtag == DW_TAG_skeleton_unit) {
       Bool have_lo    = False;
       Bool have_hi1   = False;
       Bool hiIsRelative = False;
@@ -3467,7 +3558,8 @@ static Bool parse_inl_DIE (
    /* Get info about DW_TAG_compile_unit and DW_TAG_partial_unit which in theory
       could also contain inlined fn calls, if they cover an address range.  */
    Bool unit_has_addrs = False;
-   if (dtag == DW_TAG_compile_unit || dtag == DW_TAG_partial_unit) {
+   if (dtag == DW_TAG_compile_unit || dtag == DW_TAG_partial_unit
+       || dtag == DW_TAG_skeleton_unit) {
       Bool have_lo    = False;
       Addr ip_lo    = 0;
       const HChar *compdir = NULL;
@@ -3859,7 +3951,8 @@ static void parse_type_DIE ( /*MOD*/XArray* /* of TyEnt */ tyents,
 
    if (dtag == DW_TAG_compile_unit
        || dtag == DW_TAG_type_unit
-       || dtag == DW_TAG_partial_unit) {
+       || dtag == DW_TAG_partial_unit
+       || dtag == DW_TAG_skeleton_unit) {
       if (level == 0)
          setup_cu_bases(cc, c_die, abbv);
       /* See if we can find DW_AT_language, since it is important for
