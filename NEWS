@@ -10,6 +10,9 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * ==================== CORE CHANGES ===================
 
+* The option "--vgdb-stop-at=event1,event2,..." accepts the new value abexit.
+  This indicates to invoke gdbserver when your program exits abnormally
+  (i.e. with a non zero exit code).
 * Fix Rust v0 name demangling.
 * The Linux rseq syscall is now implemented as (silently) returning ENOSYS.
 * Add FreeBSD syscall wrappers for __specialfd and __realpathat.
@@ -35,6 +38,7 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+131186  writev reports error in (vector[...])
 434764  iconv_open causes ld.so v2.28+ to use optimised strncmp
 446754  Improve error codes from alloc functions under memcheck
 452274  memcheck crashes with Assertion 'sci->status.what == SsIdle' failed
@@ -45,6 +49,10 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 454040  s390x: False-positive memcheck:cond in memmem on arch13 systems 
 456171  [PATCH] FreeBSD: Don't record address errors when accessing the 'kern.ps_strings' sysctl struct
 n-i-bz  Implement vgdb invoker on FreeBSD
+458845  PowerPC: The L field for the dcbf and sync instruction should be
+        3 bits in ISA 3.1.
+459031  Documentation on --error-exitcode incomplete
+459477  XERROR messages lacks ending '\n' in vgdb
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
