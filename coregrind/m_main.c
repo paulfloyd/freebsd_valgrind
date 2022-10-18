@@ -3903,11 +3903,12 @@ UWord voucher_mach_msg_set ( UWord arg1 )
 
 #endif
 
-
+#if defined(VGO_freebsd)
 Word VG_(get_usrstack)(void)
 {
    return VG_PGROUNDDN(the_iicii.clstack_end) + VKI_PAGE_SIZE;
 }
+#endif
 
 
 
