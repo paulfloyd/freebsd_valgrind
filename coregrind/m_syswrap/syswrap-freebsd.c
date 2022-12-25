@@ -90,9 +90,10 @@ static VgSchedReturnCode thread_wrapper(Word /*ThreadId*/ tidW)
    /* make sure we get the CPU lock before doing anything significant */
    VG_(acquire_BigLock)(tid, "thread_wrapper(starting new thread)");
 
-   if (0)
+   if (0) {
       VG_(printf)("thread tid %u started: stack = %p\n",
                   tid, (void*)&tid);
+   }
 
    /* Make sure error reporting is enabled in the new thread. */
    tst->err_disablement_level = 0;
@@ -171,8 +172,9 @@ static void run_a_thread_NORETURN ( Word tidW )
    vg_assert(c >= 1); /* stay sane */
 
    /* Deregister thread's stack. */
-   if (tst->os_state.stk_id != NULL_STK_ID)
+   if (tst->os_state.stk_id != NULL_STK_ID) {
       VG_(deregister_stack)(tst->os_state.stk_id);
+   }
 
    // Tell the tool this thread is exiting
    VG_TRACK( pre_thread_ll_exit, tid );
@@ -235,7 +237,7 @@ static void run_a_thread_NORETURN ( Word tidW )
          between marking it Empty and exiting.  Hence the
          assembler. */
 #if defined(VGP_x86_freebsd)    /* FreeBSD has args on the stack */
-      asm volatile (
+      __asm__ volatile (
          "movl    %1, %0\n"    /* set tst->status = VgTs_Empty */
          "movl    %2, %%eax\n"    /* set %eax = __NR_thr_exit */
          "movl    %3, %%ebx\n"    /* set %ebx = tst->os_state.exitcode */
@@ -249,7 +251,7 @@ static void run_a_thread_NORETURN ( Word tidW )
          : "eax", "ebx"
       );
 #elif defined(VGP_amd64_freebsd)
-      asm volatile (
+      __asm__ volatile (
          "movl   %1, %0\n"    /* set tst->status = VgTs_Empty */
          "movq   %2, %%rax\n"    /* set %rax = __NR_thr_exit */
          "movq   %3, %%rdi\n"    /* set %rdi = tst->os_state.exitcode */
@@ -294,11 +296,13 @@ Addr ML_(allocstack)(ThreadId tid)
       case a stack hasn't been allocated) or they are both non-zero,
       in which case it has. */
 
-   if (tst->os_state.valgrind_stack_base == 0)
+   if (tst->os_state.valgrind_stack_base == 0) {
       vg_assert(tst->os_state.valgrind_stack_init_SP == 0);
+   }
 
-   if (tst->os_state.valgrind_stack_base != 0)
+   if (tst->os_state.valgrind_stack_base != 0) {
       vg_assert(tst->os_state.valgrind_stack_init_SP != 0);
+   }
 
    /* If no stack is present, allocate one. */
 
@@ -310,11 +314,12 @@ Addr ML_(allocstack)(ThreadId tid)
       }
    }
 
-   if (0)
+   if (0) {
       VG_(printf)( "stack for tid %u at %p; init_SP=%p\n",
                    tid,
                    (void*)tst->os_state.valgrind_stack_base,
                    (void*)tst->os_state.valgrind_stack_init_SP );
+   }
 
    return tst->os_state.valgrind_stack_init_SP;
 }
@@ -392,9 +397,10 @@ SysRes ML_(do_fork) ( ThreadId tid )
          /* parent */
          VG_(do_atfork_parent)(tid);
 
-         if (VG_(clo_trace_syscalls))
+         if (VG_(clo_trace_syscalls)) {
             VG_(printf)("   clone(fork): process %d created child %lu\n",
                         VG_(getpid)(), sr_Res(res));
+         }
 
          /* restore signal mask */
          VG_(sigprocmask)(VKI_SIG_SETMASK, &fork_saved_mask, NULL);
@@ -452,8 +458,9 @@ PRE(sys_exit)
 
    /* Mark all threads (including this one) to exit. */
    for (t = 1; t < VG_N_THREADS; t++) {
-      if ( /* not alive */ VG_(threads)[t].status == VgTs_Empty )
+      if ( /* not alive */ VG_(threads)[t].status == VgTs_Empty ) {
          continue;
+      }
 
       //VG_(threads)[t].exitreason = VgSrc_ExitThread;
       VG_(threads)[t].os_state.exitcode = ARG1;
@@ -571,11 +578,8 @@ PRE(sys_ptrace)
 
    switch (ARG1) {
    case VKI_PTRACE_TRACEME:
-      break;
    case VKI_PTRACE_READ_I:
    case VKI_PTRACE_READ_D:
-      break;
-
    case VKI_PTRACE_WRITE_I:
    case VKI_PTRACE_WRITE_D:
       break;
@@ -596,46 +600,38 @@ PRE(sys_ptrace)
       break;
 
    case VKI_PTRACE_CONTINUE:
-      break;
-
    case VKI_PTRACE_STEP:
-      break;
-
    case VKI_PTRACE_KILL:
-      break;
-
    case VKI_PTRACE_ATTACH:
-      break;
-
    case VKI_PTRACE_DETACH:
       break;
 
    case VKI_PTRACE_GETREGS:
-      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_user_regs_struct));
+      PRE_MEM_WRITE("ptrace", ARG3, sizeof(struct vki_user_regs_struct));
       break;
 
    case VKI_PTRACE_SETREGS:
-      PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_user_regs_struct));
+      PRE_MEM_READ("ptrace", ARG3, sizeof(struct vki_user_regs_struct));
       break;
 
    case VKI_PTRACE_GETFPREGS:
-      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_fpreg));
+      PRE_MEM_WRITE("ptrace", ARG3, sizeof(struct vki_fpreg));
       break;
 
    case VKI_PTRACE_SETFPREGS:
-      PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_fpreg));
+      PRE_MEM_READ("ptrace", ARG3, sizeof(struct vki_fpreg));
       break;
 
    case VKI_PTRACE_GETDBREGS:
-      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_dbreg));
+      PRE_MEM_WRITE("ptrace", ARG3, sizeof(struct vki_dbreg));
       break;
 
    case VKI_PTRACE_SETDBREGS:
-      PRE_MEM_READ( "ptrace", ARG3, sizeof(struct vki_dbreg));
+      PRE_MEM_READ("ptrace", ARG3, sizeof(struct vki_dbreg));
       break;
 
    case VKI_PTRACE_LWPINFO:
-      PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_ptrace_lwpinfo));
+      PRE_MEM_WRITE("ptrace", ARG3, sizeof(struct vki_ptrace_lwpinfo));
       break;
 
    case VKI_PTRACE_GETNUMLWPS:
@@ -646,29 +642,14 @@ PRE(sys_ptrace)
       break;
 
    case VKI_PTRACE_SETSTEP:
-      break;
-
    case VKI_PTRACE_CLEARSTEP:
-      break;
-
    case VKI_PTRACE_SUSPEND:
-      break;
-
    case VKI_PTRACE_RESUME:
-      break;
-
    case VKI_PTRACE_TO_SCE:
-      break;
-
    case VKI_PTRACE_TO_SCX:
-      break;
-
    case VKI_PTRACE_SYSCALL:
-      break;
-
    case VKI_PTRACE_VM_TIMESTAMP:
       break;
-
    case VKI_PTRACE_VM_ENTRY:
       PRE_MEM_WRITE( "ptrace", ARG3, sizeof(struct vki_ptrace_vm_entry));
       break;
@@ -681,11 +662,8 @@ POST(sys_ptrace)
 
    switch (ARG1) {
    case VKI_PTRACE_TRACEME:
-      break;
    case VKI_PTRACE_READ_I:
    case VKI_PTRACE_READ_D:
-      break;
-
    case VKI_PTRACE_WRITE_I:
    case VKI_PTRACE_WRITE_D:
       break;
@@ -695,8 +673,9 @@ POST(sys_ptrace)
       switch (io_desc->piod_op) {
       case VKI_PIOD_READ_D:
       case VKI_PIOD_READ_I:
-         if ((Word)RES != -1)
+         if ((Word)RES != -1) {
             POST_MEM_WRITE((UWord)io_desc->piod_addr, io_desc->piod_len);
+         }
          break;
       case VKI_PIOD_WRITE_D:
       case VKI_PIOD_WRITE_I:
@@ -705,84 +684,68 @@ POST(sys_ptrace)
       break;
 
    case VKI_PTRACE_CONTINUE:
-      break;
-
    case VKI_PTRACE_STEP:
-      break;
-
    case VKI_PTRACE_KILL:
-      break;
-
    case VKI_PTRACE_ATTACH:
-      break;
-
    case VKI_PTRACE_DETACH:
       break;
 
    case VKI_PTRACE_GETREGS:
-      if ((Word)RES != -1)
+      if ((Word)RES != -1) {
          POST_MEM_WRITE(ARG3, sizeof(struct vki_user_regs_struct));
+      }
       break;
 
    case VKI_PTRACE_SETREGS:
       break;
 
    case VKI_PTRACE_GETFPREGS:
-      if ((Word)RES != -1)
+      if ((Word)RES != -1) {
          POST_MEM_WRITE(ARG3, sizeof(struct vki_fpreg));
+      }
       break;
 
    case VKI_PTRACE_SETFPREGS:
       break;
 
    case VKI_PTRACE_GETDBREGS:
-      if ((Word)RES != -1)
+      if ((Word)RES != -1) {
          POST_MEM_WRITE(ARG3, sizeof(struct vki_dbreg));
+      }
       break;
 
    case VKI_PTRACE_SETDBREGS:
       break;
 
    case VKI_PTRACE_LWPINFO:
-      if ((Word)RES != -1)
+      if ((Word)RES != -1) {
          POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_lwpinfo));
+      }
       break;
 
    case VKI_PTRACE_GETNUMLWPS:
       break;
 
    case VKI_PTRACE_GETLWPLIST:
-      if ((Word)RES != -1)
+      if ((Word)RES != -1) {
          POST_MEM_WRITE(ARG3, sizeof(vki_lwpid_t) * RES);
+      }
       break;
 
    case VKI_PTRACE_SETSTEP:
-      break;
-
    case VKI_PTRACE_CLEARSTEP:
-      break;
-
    case VKI_PTRACE_SUSPEND:
-      break;
-
    case VKI_PTRACE_RESUME:
-      break;
-
    case VKI_PTRACE_TO_SCE:
-      break;
-
    case VKI_PTRACE_TO_SCX:
-      break;
-
    case VKI_PTRACE_SYSCALL:
-      break;
-
    case VKI_PTRACE_VM_TIMESTAMP:
       break;
 
    case VKI_PTRACE_VM_ENTRY:
-      if ((Word)RES != -1)
+      if ((Word)RES != -1) {
          POST_MEM_WRITE(ARG3, sizeof(struct vki_ptrace_vm_entry));
+      }
       break;
    }
 }
@@ -1020,8 +983,9 @@ PRE(sys_ioctl)
          /* Check if have not already moaned for this request. */
          UInt i;
          for (i = 0; i < sizeof(unknown_ioctl)/sizeof(unknown_ioctl[0]); i++) {
-            if (unknown_ioctl[i] == ARG2)
+            if (unknown_ioctl[i] == ARG2) {
                break;
+            }
             if (unknown_ioctl[i] == 0) {
                unknown_ioctl[i] = ARG2;
                moans--;
@@ -1035,10 +999,12 @@ PRE(sys_ioctl)
          }
       }
    } else {
-      if ((dir & _VKI_IOC_WRITE) && size > 0)
+      if ((dir & _VKI_IOC_WRITE) && size > 0) {
          PRE_MEM_READ( "ioctl(generic)", ARG3, size);
-      if ((dir & _VKI_IOC_READ) && size > 0)
+      }
+      if ((dir & _VKI_IOC_READ) && size > 0) {
          PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
+      }
    }
 
    // The block below is from Ryan Stone
@@ -1109,8 +1075,9 @@ POST(sys_ioctl)
    UInt size = _VKI_IOC_SIZE(ARG2);
    vg_assert(SUCCESS);
    if (size > 0 && (dir & _VKI_IOC_READ)
-         && RES == 0 && ARG3 != (Addr)NULL)
+         && RES == 0 && ARG3 != (Addr)NULL) {
       POST_MEM_WRITE(ARG3, size);
+   }
 
 #if 0
    /* Handle specific ioctls which pass structures which may have pointers to other
@@ -1351,16 +1318,18 @@ POST(sys_fcntl)
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
       } else {
-         if (VG_(clo_track_fds))
+         if (VG_(clo_track_fds)) {
             ML_(record_fd_open_named)(tid, RES);
+         }
       }
    } else if (ARG2 == VKI_F_DUPFD_CLOEXEC) {
       if (!ML_(fd_allowed)(RES, "fcntl(DUPFD_CLOEXEC)", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
       } else {
-         if (VG_(clo_track_fds))
+         if (VG_(clo_track_fds)) {
             ML_(record_fd_open_named)(tid, RES);
+         }
       }
    }
 }
@@ -1716,8 +1685,9 @@ PRE(sys_rtprio)
 
 POST(sys_rtprio)
 {
-   if (ARG1 == VKI_RTP_LOOKUP && RES == 0)
+   if (ARG1 == VKI_RTP_LOOKUP && RES == 0) {
       POST_MEM_WRITE( ARG3, sizeof(struct vki_rtprio));
+   }
 }
 
 // freebsd6_pread 173 FREEBSD_VERS <= 10
@@ -1889,8 +1859,9 @@ PRE(sys_freebsd11_getdirentries)
                  int, nbytes,
                  long *, basep);
    PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
-   if (ARG4)
+   if (ARG4) {
       PRE_MEM_WRITE( "getdirentries(basep)", ARG4, sizeof(long) );
+   }
 }
 
 POST(sys_freebsd11_getdirentries)
@@ -1898,8 +1869,9 @@ POST(sys_freebsd11_getdirentries)
    vg_assert(SUCCESS);
    if (RES > 0) {
       POST_MEM_WRITE( ARG2, RES );
-      if ( ARG4 != 0 )
+      if ( ARG4 != 0 ) {
          POST_MEM_WRITE( ARG4, sizeof (long));
+      }
    }
 }
 #else
@@ -2057,8 +2029,9 @@ PRE(sys___sysctl)
    PRE_MEM_READ("sysctl(name)", (Addr)ARG1, ARG2 * sizeof(int));
 
    // if 'newp' is not NULL can read namelen bytes from that address
-   if (ARG5 != (UWord)NULL)
+   if (ARG5 != (UWord)NULL) {
       PRE_MEM_READ("sysctl(newp)", (Addr)ARG5, ARG6);
+   }
 
    // there are two scenarios for oldlenp/oldp
    // 1. oldval is NULL and oldlenp is non-NULL
@@ -2092,8 +2065,9 @@ POST(sys___sysctl)
       if (ARG3 != (UWord)NULL) {
          //POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
          POST_MEM_WRITE((Addr)ARG3, *(vki_size_t *)ARG4);
-      } else
+      } else {
          POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
+      }
    }
 }
 
@@ -2119,8 +2093,9 @@ PRE(sys_futimes)
 {
    PRINT("sys_lutimes ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2);
    PRE_REG_READ2(long, "futimes", int, fd, struct timeval *, times);
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_READ( "futimes(times)", ARG2, sizeof(struct vki_timeval) );
+   }
 }
 
 // SYS_getpgid 207
@@ -2263,10 +2238,11 @@ PRE(sys_shmat)
    PRE_REG_READ3(void *, "shmat",
                  int, shmid, const void *, addr, int, flag);
    arg2tmp = ML_(generic_PRE_sys_shmat)(tid, ARG1,ARG2,ARG3);
-   if (arg2tmp == 0)
+   if (arg2tmp == 0) {
       SET_STATUS_Failure( VKI_EINVAL );
-   else
+   } else {
       ARG2 = arg2tmp;
+   }
 }
 
 POST(sys_shmat)
@@ -2306,8 +2282,9 @@ PRE(sys_shmdt)
 {
    PRINT("sys_shmdt ( %#" FMT_REGWORD "x )",ARG1);
    PRE_REG_READ1(int, "shmdt", const void *, addr);
-   if (!ML_(generic_PRE_sys_shmdt)(tid, ARG1))
+   if (!ML_(generic_PRE_sys_shmdt)(tid, ARG1)) {
       SET_STATUS_Failure( VKI_EINVAL );
+   }
 }
 
 POST(sys_shmdt)
@@ -2358,14 +2335,16 @@ PRE(sys_clock_getres)
    // defined above!
    PRE_REG_READ2(int, "clock_getres",
                  vki_clockid_t, clock_id, struct timespec *, tp);
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_WRITE( "clock_getres(tp)", ARG2, sizeof(struct vki_timespec) );
+   }
 }
 
 POST(sys_clock_getres)
 {
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       POST_MEM_WRITE( ARG2, sizeof(struct vki_timespec) );
+   }
 }
 
 // SYS_ktimer_create 235
@@ -2377,8 +2356,9 @@ PRE(sys_timer_create)
    PRE_REG_READ3(int, "timer_create",
                  vki_clockid_t, clockid, struct sigevent *, evp,
                  vki_timer_t *, timerid);
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_READ( "timer_create(evp)", ARG2, sizeof(struct vki_sigevent) );
+   }
    PRE_MEM_WRITE( "timer_create(timerid)", ARG3, sizeof(vki_timer_t) );
 }
 
@@ -2408,15 +2388,17 @@ PRE(sys_timer_settime)
                  struct itimerspec *, ovalue);
    PRE_MEM_READ( "timer_settime(value)", ARG3,
                  sizeof(struct vki_itimerspec) );
-   if (ARG4 != 0)
+   if (ARG4 != 0) {
       PRE_MEM_WRITE( "timer_settime(ovalue)", ARG4,
                      sizeof(struct vki_itimerspec) );
+   }
 }
 
 POST(sys_timer_settime)
 {
-   if (ARG4 != 0)
+   if (ARG4 != 0) {
       POST_MEM_WRITE( ARG4, sizeof(struct vki_itimerspec) );
+   }
 }
 
 // SYS_ktimer_gettime   238
@@ -2469,15 +2451,16 @@ PRE(sys_clock_nanosleep)
    PRE_REG_READ4(int, "clock_nanosleep", clockid_t, clock_id, int, flags,
                  const struct timespec *, rqtp, struct timespec *, rmtp);
    PRE_MEM_READ("clock_nanosleep(rqtp)", ARG1, sizeof(struct vki_timespec));
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_WRITE( "clock_nanosleep(rmtp)", ARG2, sizeof(struct vki_timespec) );
-
+   }
 }
 
 POST(sys_clock_nanosleep)
 {
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       POST_MEM_WRITE( ARG2, sizeof(struct vki_timespec) );
+   }
 }
 
 // SYS_clock_getcpuclockid2   247
@@ -2500,14 +2483,16 @@ PRE(sys_minherit)
    PRINT("sys_minherit( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1,ARG2,ARG3);
    PRE_REG_READ3(int, "minherit",
                  void *, addr, vki_size_t, len, int, inherit);
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_WRITE( "minherit(addr)", ARG1,ARG2 );
+   }
 }
 
 POST(sys_minherit)
 {
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       POST_MEM_WRITE( ARG1, ARG2 );
+   }
 }
 
 // SYS_rfork   251
@@ -2620,8 +2605,9 @@ PRE(sys_lutimes)
    PRINT("sys_lutimes ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,(char *)ARG1,ARG2);
    PRE_REG_READ2(int, "lutimes", char *, path, struct timeval *, times);
    PRE_MEM_RASCIIZ( "lutimes(path)", ARG1 );
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_READ( "lutimes(times)", ARG2, sizeof(struct vki_timeval) );
+   }
 }
 
 // SYS_freebsd11_nstat  278
@@ -2659,8 +2645,9 @@ POST(sys_fhopen)
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
    } else {
-      if (VG_(clo_track_fds))
+      if (VG_(clo_track_fds)) {
          ML_(record_fd_open_nameless)(tid, RES);
+      }
    }
 }
 
@@ -2930,9 +2917,10 @@ PRE(sys_sched_setscheduler)
    PRINT("sys_sched_setscheduler ( %" FMT_REGWORD "d, %" FMT_REGWORD "d, %#" FMT_REGWORD "x )", SARG1,SARG2,ARG3);
    PRE_REG_READ3(int, "sched_setscheduler",
                  vki_pid_t, pid, int, policy, struct sched_param *, param);
-   if (ARG3 != 0)
+   if (ARG3 != 0) {
       PRE_MEM_READ("sched_setscheduler(param)",
                    ARG3, sizeof(struct vki_sched_param));
+   }
 }
 
 // SYS_sched_getscheduler  330
@@ -3031,10 +3019,12 @@ PRE(sys_sigprocmask)
    PRINT("sys_sigprocmask ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(int, "sigprocmask",
                  int, how, vki_sigset_t *, set, vki_sigset_t *, oset);
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_READ( "sigprocmask(set)", ARG2, sizeof(vki_sigset_t));
-   if (ARG3 != 0)
+   }
+   if (ARG3 != 0) {
       PRE_MEM_WRITE( "sigprocmask(oset)", ARG3, sizeof(vki_sigset_t));
+   }
 
    if (ARG2 != 0  &&
          !ML_(safe_to_deref)((void *)(Addr)ARG2, sizeof(vki_sigset_t))) {
@@ -3052,15 +3042,17 @@ PRE(sys_sigprocmask)
                              (vki_sigset_t*)(Addr)ARG3));
    }
 
-   if (SUCCESS)
+   if (SUCCESS) {
       *flags |= SfPollAfter;
+   }
 }
 
 POST(sys_sigprocmask)
 {
    vg_assert(SUCCESS);
-   if (RES == 0 && ARG3 != 0)
+   if (RES == 0 && ARG3 != 0) {
       POST_MEM_WRITE( ARG3, sizeof(vki_sigset_t));
+   }
 }
 
 // SYS_sigsuspend 341
@@ -3107,19 +3099,23 @@ PRE(sys_sigtimedwait)
    PRE_REG_READ3(int, "sigtimedwait",
                  const vki_sigset_t *, set, vki_siginfo_t *, info,
                  const struct timespec *, timeout);
-   if (ARG1 != 0)
+   if (ARG1 != 0) {
       PRE_MEM_READ(  "sigtimedwait(set)",  ARG1, sizeof(vki_sigset_t));
-   if (ARG2 != 0)
+   }
+   if (ARG2 != 0) {
       PRE_MEM_WRITE( "sigtimedwait(info)", ARG2, sizeof(vki_siginfo_t) );
-   if (ARG3 != 0)
+   }
+   if (ARG3 != 0) {
       PRE_MEM_READ( "sigtimedwait(timeout)",
                     ARG3, sizeof(struct vki_timespec) );
+   }
 }
 
 POST(sys_sigtimedwait)
 {
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       POST_MEM_WRITE( ARG2, sizeof(vki_siginfo_t) );
+   }
 }
 
 // SYS_sigwaitinfo   346
@@ -3131,16 +3127,19 @@ PRE(sys_sigwaitinfo)
          ARG1,ARG2);
    PRE_REG_READ2(int, "sigwaitinfo",
                  const vki_sigset_t *, set, vki_siginfo_t *, info);
-   if (ARG1 != 0)
+   if (ARG1 != 0) {
       PRE_MEM_READ(  "sigwaitinfo(set)",  ARG1, sizeof(vki_sigset_t));
-   if (ARG2 != 0)
+   }
+   if (ARG2 != 0) {
       PRE_MEM_WRITE( "sigwaitinfo(info)", ARG2, sizeof(vki_siginfo_t) );
+   }
 }
 
 POST(sys_sigwaitinfo)
 {
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       POST_MEM_WRITE( ARG2, sizeof(vki_siginfo_t) );
+   }
 }
 
 // SYS___acl_get_file   347
@@ -3394,23 +3393,28 @@ PRE(sys_freebsd11_kevent)
                  int, fd, const struct vki_kevent_freebsd11 *, changelist, int, nchanges,
                  struct vki_kevent_freebsd11 *, eventlist, int, nevents,
                  struct timespec *, timeout);
-   if (ARG2 != 0 && ARG3 != 0)
+   if (ARG2 != 0 && ARG3 != 0) {
       PRE_MEM_READ( "kevent(changelist)", ARG2, sizeof(struct vki_kevent_freebsd11)*ARG3 );
-   if (ARG4 != 0 && ARG5 != 0)
+   }
+   if (ARG4 != 0 && ARG5 != 0) {
       PRE_MEM_WRITE( "kevent(eventlist)", ARG4, sizeof(struct vki_kevent_freebsd11)*ARG5);
-   if (ARG5 != 0)
+   }
+   if (ARG5 != 0) {
       *flags |= SfMayBlock;
-   if (ARG6 != 0)
+   }
+   if (ARG6 != 0) {
       PRE_MEM_READ( "kevent(timeout)",
                     ARG6, sizeof(struct vki_timespec));
+   }
 }
 
 POST(sys_freebsd11_kevent)
 {
    vg_assert(SUCCESS);
    if ((Word)RES != -1) {
-      if (ARG4 != 0)
+      if (ARG4 != 0) {
          POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent_freebsd11)*RES) ;
+      }
    }
 }
 #else
@@ -3553,8 +3557,9 @@ POST(sys_kenv)
          POST_MEM_WRITE(ARG3, ARG4);
          break;
       case VKI_KENV_DUMP:
-         if (ARG3 != (Addr)NULL)
+         if (ARG3 != (Addr)NULL) {
             POST_MEM_WRITE(ARG3, ARG4);
+         }
          break;
       }
    }
@@ -3582,8 +3587,9 @@ PRE(sys_uuidgen)
 
 POST(sys_uuidgen)
 {
-   if (SUCCESS)
+   if (SUCCESS) {
       POST_MEM_WRITE( ARG1, ARG2 * sizeof(struct vki_uuid) );
+   }
 }
 
 // SYS_sendfile   393
@@ -3810,8 +3816,10 @@ PRE(sys_extattr_delete_link)
 //              struct sigaction * restrict oact);
 PRE(sys_sigaction)
 {
-   vki_sigaction_toK_t   new, *newp;
-   vki_sigaction_fromK_t old, *oldp;
+   vki_sigaction_toK_t   new;
+   vki_sigaction_toK_t   *newp;
+   vki_sigaction_fromK_t old;
+   vki_sigaction_fromK_t *oldp;
 
    PRINT("sys_sigaction ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
          SARG1,ARG2,ARG3);
@@ -3872,8 +3880,9 @@ PRE(sys_sigaction)
 POST(sys_sigaction)
 {
    vg_assert(SUCCESS);
-   if (RES == 0 && ARG3 != 0)
+   if (RES == 0 && ARG3 != 0) {
       POST_MEM_WRITE( ARG3, sizeof(struct vki_sigaction));
+   }
 }
 
 // SYS_sigreturn  417
@@ -3891,8 +3900,9 @@ POST(sys_getcontext)
 
 POST(sys_swapcontext)
 {
-   if (SUCCESS)
+   if (SUCCESS) {
       POST_MEM_WRITE( ARG1, sizeof(struct vki_ucontext) );
+   }
 }
 
 #if (FREEBSD_VERS >= FREEBSD_13_1)
@@ -3974,16 +3984,19 @@ PRE(sys_sigwait)
          ARG1,ARG2);
    PRE_REG_READ2(int, "sigwait",
                  const vki_sigset_t *, set, int *, sig);
-   if (ARG1 != 0)
+   if (ARG1 != 0) {
       PRE_MEM_READ(  "sigwait(set)",  ARG1, sizeof(vki_sigset_t));
-   if (ARG2 != 0)
+   }
+   if (ARG2 != 0) {
       PRE_MEM_WRITE( "sigwait(sig)", ARG2, sizeof(int));
+   }
 }
 
 POST(sys_sigwait)
 {
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       POST_MEM_WRITE( ARG2, sizeof(int));
+   }
 }
 
 // SYS_thr_create 430
@@ -4047,9 +4060,10 @@ PRE(sys_thr_kill)
    /* Check to see if this kill gave us a pending signal */
    *flags |= SfPollAfter;
 
-   if (VG_(clo_trace_signals))
+   if (VG_(clo_trace_signals))  {
       VG_(message)(Vg_DebugMsg, "thr_kill: sending signal %lu to tid %lu\n",
                    ARG2, ARG1);
+   }
 
    /* If we're sending SIGKILL, check to see if the target is one of
       our threads and handle it specially. */
@@ -4072,9 +4086,10 @@ PRE(sys_thr_kill)
 
 POST(sys_thr_kill)
 {
-   if (VG_(clo_trace_signals))
+   if (VG_(clo_trace_signals)) {
       VG_(message)(Vg_DebugMsg, "thr_kill: sent signal %lu to tid %lu\n",
                    ARG2, ARG1);
+   }
 }
 
 #if (FREEBSD_VERS <= FREEBSD_10)
@@ -4089,8 +4104,9 @@ PRE(sys__umtx_lock)
 
 POST(sys__umtx_lock)
 {
-   if (SUCCESS)
+   if (SUCCESS) {
       POST_MEM_WRITE(ARG1, sizeof(struct vki_umtx));
+   }
 }
 
 // SYS__umtx_unlock 434
@@ -4104,8 +4120,9 @@ PRE(sys__umtx_unlock)
 
 POST(sys__umtx_unlock)
 {
-   if (SUCCESS)
+   if (SUCCESS) {
       POST_MEM_WRITE(ARG1, sizeof(struct vki_umtx));
+   }
 }
 #endif
 
@@ -4251,8 +4268,9 @@ PRE(sys__umtx_op)
                     struct umtx *, obj, int, op, unsigned long, id,
                     size_t, timeout_size, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_lock(mtx)", ARG1, sizeof(struct vki_umtx) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_lock(timespec)", ARG5, ARG4 );
+      }
       PRE_MEM_WRITE( "_umtx_op_lock(mtx)", ARG1, sizeof(struct vki_umtx) );
       *flags |= SfMayBlock;
       break;
@@ -4277,6 +4295,8 @@ PRE(sys__umtx_op)
 
       if (ARG5) {
          PRE_MEM_READ( "_umtx_op_wait(timeout)", ARG5, ARG4 );
+      } else {
+         *flags |= SfKernelRestart;
       }
 
       break;
@@ -4292,9 +4312,11 @@ PRE(sys__umtx_op)
                     struct umutex *, obj, int, op, unsigned long, noid,
                     size_t, timeout_size, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_mutex_trylock(mutex)", ARG1, sizeof(struct vki_umutex) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_mutex_trylock(timespec)", ARG5, ARG4 );
+      }
       PRE_MEM_WRITE( "_umtx_op_mutex_trylock(mutex)", ARG1, sizeof(struct vki_umutex) );
+      *flags |= SfMayBlock | SfKernelRestart;
       break;
    case VKI_UMTX_OP_MUTEX_LOCK:
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_LOCK, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
@@ -4302,10 +4324,11 @@ PRE(sys__umtx_op)
                     struct umutex *, obj, int, op, unsigned long, noid,
                     size_t, timeout_size, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_mutex_lock(mutex)", ARG1, sizeof(struct vki_umutex) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_mutex_lock(timespec)", ARG5, ARG4 );
+      }
       PRE_MEM_WRITE( "_umtx_op_mutex_lock(mutex)", ARG1, sizeof(struct vki_umutex) );
-      *flags |= SfMayBlock;
+      *flags |= SfMayBlock | SfKernelRestart;
       break;
    case VKI_UMTX_OP_MUTEX_UNLOCK:
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, MUTEX_UNLOCK)", ARG1);
@@ -4321,8 +4344,9 @@ PRE(sys__umtx_op)
                     unsigned int *, old_ceiling);
       PRE_MEM_READ( "_umtx_op_set_ceiling(mutex)", ARG1, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_set_ceiling(mutex)", ARG1, sizeof(struct vki_umutex) );
-      if (ARG4)
+      if (ARG4) {
          PRE_MEM_WRITE( "_umtx_op_set_ceiling(old_ceiling)", ARG4, sizeof(vki_uint32_t) );
+      }
       break;
    case VKI_UMTX_OP_CV_WAIT:
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, CV_WAIT, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
@@ -4333,8 +4357,9 @@ PRE(sys__umtx_op)
       PRE_MEM_WRITE( "_umtx_op_cv_wait(cond)", ARG1, sizeof(struct vki_ucond) );
       PRE_MEM_READ( "_umtx_op_cv_wait(mutex)", ARG4, sizeof(struct vki_umutex) );
       PRE_MEM_WRITE( "_umtx_op_cv_wait(mutex)", ARG4, sizeof(struct vki_umutex) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_cv_wait(timespec)", ARG5, sizeof(struct vki_timespec) );
+      }
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_CV_SIGNAL:
@@ -4357,8 +4382,9 @@ PRE(sys__umtx_op)
                     int *, obj, int, op, unsigned long, id,
                     size_t, timeout_wait, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_wait(uint)", ARG1, sizeof(int) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_wait(timespec)", ARG5, ARG4 );
+      }
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_RW_RDLOCK:
@@ -4392,8 +4418,9 @@ PRE(sys__umtx_op)
                     int *, obj, int, op, unsigned long, id,
                     size_t, timeout_size, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_wait_private(uint)", ARG1, sizeof(int) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_wait_private(umtx_time)", ARG5, ARG4 );
+      }
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_WAKE_PRIVATE:
@@ -4424,8 +4451,9 @@ PRE(sys__umtx_op)
                     size_t, timeout_size, struct vki_timespec *, timeout);
       PRE_MEM_READ( "_umtx_op_sem_wait(usem)", ARG1, sizeof(struct vki_usem) );
       PRE_MEM_WRITE( "_umtx_op_sem_wait(usem)", ARG1, sizeof(struct vki_usem) );
-      if (ARG5)
+      if (ARG5) {
          PRE_MEM_READ( "_umtx_op_sem_wait(umtx_time)", ARG5, ARG4 );
+      }
       *flags |= SfMayBlock;
       break;
    case VKI_UMTX_OP_SEM_WAKE:
@@ -4472,8 +4500,9 @@ PRE(sys__umtx_op)
    case VKI_UMTX_OP_ROBUST_LISTS:
       // val (ARG2) ought to be the same as sizeof(struct vki_umtx_robust_lists_params)
       // then the structure contains a pointer to mutex structures
-      if (ARG1 != sizeof(struct vki_umtx_robust_lists_params))
+      if (ARG1 != sizeof(struct vki_umtx_robust_lists_params)) {
          SET_STATUS_Failure( VKI_ENOSYS );
+      }
       PRINT( "sys__umtx_op ( %#" FMT_REGWORD "x, ROBUST_LISTS, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG3, ARG4, ARG5);
       PRE_REG_READ3(long, "_umtx_op_robust_lists",
                     struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
@@ -4490,12 +4519,10 @@ POST(sys__umtx_op)
 {
    switch(ARG2) {
    case VKI_UMTX_OP_LOCK:
-      if (SUCCESS)
-         POST_MEM_WRITE( ARG1, sizeof(struct vki_umtx) );
-      break;
    case VKI_UMTX_OP_UNLOCK:
-      if (SUCCESS)
+      if (SUCCESS) {
          POST_MEM_WRITE( ARG1, sizeof(struct vki_umtx) );
+      }
       break;
    case VKI_UMTX_OP_WAIT:
    case VKI_UMTX_OP_WAKE:
@@ -4508,14 +4535,16 @@ POST(sys__umtx_op)
    case VKI_UMTX_OP_MUTEX_UNLOCK:
    case VKI_UMTX_OP_MUTEX_WAIT:        /* Sets/clears contested bits */
    case VKI_UMTX_OP_MUTEX_WAKE:        /* Sets/clears contested bits */
-      if (SUCCESS)
+      if (SUCCESS) {
          POST_MEM_WRITE( ARG1, sizeof(struct vki_umutex) );
+      }
       break;
    case VKI_UMTX_OP_SET_CEILING:
       if (SUCCESS) {
          POST_MEM_WRITE( ARG1, sizeof(struct vki_umutex) );
-         if (ARG4)
+         if (ARG4) {
             POST_MEM_WRITE( ARG4, sizeof(vki_uint32_t) );
+         }
       }
       break;
    case VKI_UMTX_OP_CV_WAIT:
@@ -4525,10 +4554,6 @@ POST(sys__umtx_op)
       }
       break;
    case VKI_UMTX_OP_CV_SIGNAL:
-      if (SUCCESS) {
-         POST_MEM_WRITE( ARG1, sizeof(struct vki_ucond) );
-      }
-      break;
    case VKI_UMTX_OP_CV_BROADCAST:
       if (SUCCESS) {
          POST_MEM_WRITE( ARG1, sizeof(struct vki_ucond) );
@@ -4603,8 +4628,9 @@ POST(sys_kmq_open)
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
    } else {
-      if (VG_(clo_track_fds))
+      if (VG_(clo_track_fds)) {
          ML_(record_fd_open_with_given_name)(tid, RES, (const HChar*)ARG1);
+      }
    }
 }
 
@@ -4646,20 +4672,23 @@ PRE(sys_kmq_timedreceive)
       SET_STATUS_Failure( VKI_EBADF );
    } else {
       PRE_MEM_WRITE( "mq_timedreceive(msg_ptr)", ARG2, ARG3 );
-      if (ARG4 != 0)
+      if (ARG4 != 0) {
          PRE_MEM_WRITE( "mq_timedreceive(msg_prio)",
                         ARG4, sizeof(unsigned int) );
-      if (ARG5 != 0)
+      }
+      if (ARG5 != 0) {
          PRE_MEM_READ( "mq_timedreceive(abs_timeout)",
                        ARG5, sizeof(struct vki_timespec) );
+      }
    }
 }
 
 POST(sys_kmq_timedreceive)
 {
    POST_MEM_WRITE( ARG2, ARG3 );
-   if (ARG4 != 0)
+   if (ARG4 != 0) {
       POST_MEM_WRITE( ARG4, sizeof(unsigned int) );
+   }
 }
 
 // SYS_kmq_timedsend 460
@@ -4677,9 +4706,10 @@ PRE(sys_kmq_timedsend)
       SET_STATUS_Failure( VKI_EBADF );
    } else {
       PRE_MEM_READ( "mq_timedsend(msg_ptr)", ARG2, ARG3 );
-      if (ARG5 != 0)
+      if (ARG5 != 0) {
          PRE_MEM_READ( "mq_timedsend(abs_timeout)", ARG5,
                        sizeof(struct vki_timespec) );
+      }
    }
 }
 
@@ -4690,11 +4720,13 @@ PRE(sys_kmq_notify)
    PRINT("sys_kmq_notify( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1,ARG2 );
    PRE_REG_READ2(int, "mq_notify",
                  vki_mqd_t, mqdes, const struct sigevent *, notification);
-   if (!ML_(fd_allowed)(ARG1, "mq_notify", tid, False))
+   if (!ML_(fd_allowed)(ARG1, "mq_notify", tid, False)) {
       SET_STATUS_Failure( VKI_EBADF );
-   else if (ARG2 != 0)
+   }
+   else if (ARG2 != 0) {
       PRE_MEM_READ( "mq_notify(notification)",
                     ARG2, sizeof(struct vki_sigevent) );
+   }
 }
 
 // SYS_kmq_unlink 462
@@ -4762,8 +4794,9 @@ PRE(sys_rtprio_thread)
 
 POST(sys_rtprio_thread)
 {
-   if (ARG1 == VKI_RTP_LOOKUP && RES == 0)
+   if (ARG1 == VKI_RTP_LOOKUP && RES == 0) {
       POST_MEM_WRITE( ARG3, sizeof(struct vki_rtprio));
+   }
 }
 
 // SYS_sctp_peeloff  471
@@ -4789,8 +4822,9 @@ PRE(sys_sctp_generic_sendmsg)
 
    ML_(pre_mem_read_sockaddr) (tid, "sctp_generic_sendmsg(to)", (struct vki_sockaddr *)ARG4, ARG5);
 
-   if (ARG6 != (Addr)NULL)
+   if (ARG6 != (Addr)NULL) {
       PRE_MEM_READ( "sctp_generic_sendmsg(sinfo)", ARG6, sizeof(struct vki_sctp_sndrcvinfo));
+   }
 }
 
 // SYS_sctp_generic_sendmsg_iov  473
@@ -4822,16 +4856,19 @@ PRE(sys_sctp_generic_recvmsg)
       PRE_MEM_WRITE("sctp_generic_recvmsg(iov.iov_base)", (Addr)iovec->iov_base, iovec->iov_len);
    }
 
-   if (ARG4 != (Addr)NULL)
+   if (ARG4 != (Addr)NULL) {
       ML_(buf_and_len_pre_check) (tid, ARG4, ARG5,
 		                  "sctp_generic_recvmsg(from)",
                         "sctp_generic_recvmsg(fromlen_in)");
+   }
 
-   if (ARG6 != (Addr)NULL)
+   if (ARG6 != (Addr)NULL) {
       PRE_MEM_WRITE("sctp_generic_recvmsg(sinfo)", ARG6, sizeof(struct vki_sctp_sndrcvinfo));
+   }
 
-   if (ARG7 != (Addr)NULL)
+   if (ARG7 != (Addr)NULL) {
       PRE_MEM_WRITE("sctp_generic_recvmsg(msgflags)", ARG7, sizeof(int));
+   }
 }
 
 POST(sys_sctp_generic_recvmsg)
@@ -4842,15 +4879,18 @@ POST(sys_sctp_generic_recvmsg)
 
    POST_MEM_WRITE( ARG2, ARG3*sizeof(struct vki_iovec) );
 
-   if (ARG4 != (Addr)NULL)
+   if (ARG4 != (Addr)NULL) {
       ML_(buf_and_len_post_check) (tid, VG_(mk_SysRes_Success)(RES), ARG4, ARG5,
               "sctp_generic_recvmsg(fromlen_out)");
+   }
 
-   if (ARG6 != (Addr)NULL)
+   if (ARG6 != (Addr)NULL) {
       POST_MEM_WRITE(ARG6, sizeof(struct vki_sctp_sndrcvinfo));
+   }
 
-   if (ARG7 != (Addr)NULL)
+   if (ARG7 != (Addr)NULL) {
       POST_MEM_WRITE(ARG7, sizeof(int));
+   }
 }
 
 // SYS_pread   475
@@ -4885,9 +4925,10 @@ PRE(sys_thr_kill2)
    /* Check to see if this kill gave us a pending signal */
    *flags |= SfPollAfter;
 
-   if (VG_(clo_trace_signals))
+   if (VG_(clo_trace_signals)) {
       VG_(message)(Vg_DebugMsg, "thr_kill2: sending signal %lu to pid %lu/%lu\n",
                    ARG3, ARG1, ARG2);
+   }
 
    /* If we're sending SIGKILL, check to see if the target is one of
       our threads and handle it specially. */
@@ -4910,9 +4951,10 @@ PRE(sys_thr_kill2)
 
 POST(sys_thr_kill2)
 {
-   if (VG_(clo_trace_signals))
+   if (VG_(clo_trace_signals)) {
       VG_(message)(Vg_DebugMsg, "thr_kill2: sent signal %lu to pid %lu/%lu\n",
                    ARG3, ARG1, ARG2);
+   }
 }
 
 // SYS_shm_open   482
@@ -4937,8 +4979,9 @@ POST(sys_shm_open)
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
    } else {
-      if (VG_(clo_track_fds))
+      if (VG_(clo_track_fds)) {
          ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)ARG1);
+      }
    }
 }
 
@@ -5063,14 +5106,13 @@ PRE(sys_fexecve)
    if (sr_isError(res)) {
       SET_STATUS_Failure(VKI_ENOENT);
       return;
-   } else {
-      char buf[2];
-      VG_(read)((Int)sr_Res(res), buf, 2);
-      VG_(close)((Int)sr_Res(res));
-      if (buf[0] == '#' && buf[1] == '!')
-      {
-         isScript = True;
-      }
+   }
+
+   char buf[2];
+   VG_(read)((Int)sr_Res(res), buf, 2);
+   VG_(close)((Int)sr_Res(res));
+   if (buf[0] == '#' && buf[1] == '!') {
+      isScript = True;
    }
 
    if (isScript) {
@@ -5131,10 +5173,12 @@ PRE(sys_futimesat)
    PRINT("sys_futimesat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(int, "futimesat",
                  int, fd, const char *, path, struct timeval *, times);
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_RASCIIZ( "futimesat(path)", ARG2 );
-   if (ARG3 != 0)
+   }
+   if (ARG3 != 0) {
       PRE_MEM_READ( "futimesat(times)", ARG3, 2 * sizeof(struct vki_timeval) );
+   }
 }
 
 // SYS_linkat  495
@@ -5210,10 +5254,11 @@ PRE(sys_openat)
                     int, fd, const char *, path, int, flags);
    }
 
-   if (ARG1 != (unsigned)VKI_AT_FDCWD && !ML_(fd_allowed)(ARG1, "openat", tid, False))
+   if (ARG1 != (unsigned)VKI_AT_FDCWD && !ML_(fd_allowed)(ARG1, "openat", tid, False)) {
       SET_STATUS_Failure( VKI_EBADF );
-   else
+   } else {
       PRE_MEM_RASCIIZ( "openat(path)", ARG2 );
+   }
 
    /* Otherwise handle normally */
    *flags |= SfMayBlock;
@@ -5226,8 +5271,9 @@ POST(sys_openat)
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
    } else {
-      if (VG_(clo_track_fds))
+      if (VG_(clo_track_fds)) {
          ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)ARG2);
+      }
    }
 }
 
@@ -5535,11 +5581,13 @@ PRE(sys_pdfork)
 
    SET_STATUS_from_SysRes( VG_(do_syscall2)(__NR_pdfork, ARG1, ARG2) );
 
-   if (!SUCCESS) return;
+   if (!SUCCESS) {
+      return;
+   }
 
    // RES is 0 for child, non-0 (the child's PID) for parent.
    is_child = ( RES == 0 ? True : False );
-   child_pid = ( is_child ? -1 : RES );
+   child_pid = ( is_child ? -1 : (Int)RES );
 
    if (is_child) {
       VG_(do_atfork_child)(tid);
@@ -5604,9 +5652,10 @@ PRE(sys_pdkill)
 
    SET_STATUS_from_SysRes(VG_(do_syscall2)(SYSNO, ARG1, ARG2));
 
-   if (VG_(clo_trace_signals))
+   if (VG_(clo_trace_signals)) {
       VG_(message)(Vg_DebugMsg, "pdkill: sent signal %ld to fd %ld\n",
                    SARG2, SARG1);
+   }
 
    /* This kill might have given us a pending signal.  Ask for a check once
       the syscall is done. */
@@ -5646,17 +5695,21 @@ PRE(sys_pselect)
                  vki_fd_set *, exceptfds, struct vki_timespec *, timeout,
                  const sigset_t *, newsigmask);
    // XXX: this possibly understates how much memory is read.
-   if (ARG2 != 0)
+   if (ARG2 != 0) {
       PRE_MEM_READ( "pselect(readfds)",
                     ARG2, ARG1/8 /* __FD_SETSIZE/8 */ );
-   if (ARG3 != 0)
+   }
+   if (ARG3 != 0) {
       PRE_MEM_READ( "pselect(writefds)",
                     ARG3, ARG1/8 /* __FD_SETSIZE/8 */ );
-   if (ARG4 != 0)
+   }
+   if (ARG4 != 0) {
       PRE_MEM_READ( "pselect(exceptfds)",
                     ARG4, ARG1/8 /* __FD_SETSIZE/8 */ );
-   if (ARG5 != 0)
+   }
+   if (ARG5 != 0) {
       PRE_MEM_READ( "pselect(timeout)", ARG5, sizeof(struct vki_timeval) );
+   }
 
    if (ARG6 != 0) {
       PRE_MEM_READ( "pselect(sig)", ARG6, sizeof(vki_sigset_t) );
@@ -5921,8 +5974,9 @@ POST(sys_pipe2)
 {
    int *fildes;
 
-   if (RES != 0)
+   if (RES != 0) {
       return;
+   }
 
    POST_MEM_WRITE(ARG1, 2 * sizeof(int));
    fildes = (int *)ARG1;
@@ -5994,8 +6048,9 @@ POST(sys_ppoll)
    if (SUCCESS && ((Word)RES != -1)) {
       UInt i;
       struct vki_pollfd* ufds = (struct vki_pollfd *)(Addr)ARG1;
-      for (i = 0; i < ARG2; i++)
+      for (i = 0; i < ARG2; i++) {
          POST_MEM_WRITE( (Addr)(&ufds[i].revents), sizeof(ufds[i].revents) );
+      }
    }
    ML_(free_safe_mask) ( (Addr)ARG4 );
 }
@@ -6086,8 +6141,9 @@ PRE(sys_getdirentries)
                  size_t, nbytes,
                  off_t *, basep);
    PRE_MEM_WRITE( "getdirentries(buf)", ARG2, ARG3 );
-   if (ARG4)
+   if (ARG4) {
       PRE_MEM_WRITE("getdirentries(basep)", ARG4, sizeof (vki_off_t));
+   }
 }
 
 POST(sys_getdirentries)
@@ -6095,8 +6151,9 @@ POST(sys_getdirentries)
    vg_assert(SUCCESS);
    if (RES > 0) {
       POST_MEM_WRITE( ARG2, RES );
-      if ( ARG4 != 0 )
+      if ( ARG4 != 0 ) {
          POST_MEM_WRITE( ARG4, sizeof (vki_off_t));
+      }
    }
 }
 
@@ -6184,23 +6241,28 @@ PRE(sys_kevent)
                  int, kq, struct vki_kevent *, changelist, int, nchanges,
                  struct vki_kevent *, eventlist, int, nevents,
                  struct timespec *, timeout);
-   if (ARG2 != 0 && ARG3 != 0)
+   if (ARG2 != 0 && ARG3 != 0) {
       PRE_MEM_READ( "kevent(changelist)", ARG2, sizeof(struct vki_kevent)*ARG3 );
-   if (ARG4 != 0 && ARG5 != 0)
+   }
+   if (ARG4 != 0 && ARG5 != 0) {
       PRE_MEM_WRITE( "kevent(eventlist)", ARG4, sizeof(struct vki_kevent)*ARG5);
-   if (ARG5 != 0)
+   }
+   if (ARG5 != 0) {
       *flags |= SfMayBlock;
-   if (ARG6 != 0)
+   }
+   if (ARG6 != 0) {
       PRE_MEM_READ( "kevent(timeout)",
                     ARG6, sizeof(struct vki_timespec));
+   }
 }
 
 POST(sys_kevent)
 {
    vg_assert(SUCCESS);
    if ((Word)RES != -1) {
-      if (ARG4 != 0)
+      if (ARG4 != 0) {
          POST_MEM_WRITE( ARG4, sizeof(struct vki_kevent)*RES) ;
+      }
    }
 }
 
@@ -6298,31 +6360,33 @@ PRE(sys_funlinkat)
 //                         size_t len, unsigned int flags);
 PRE(sys_copy_file_range)
 {
-  PRINT("sys_copy_file_range (%" FMT_REGWORD"d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "d, %" FMT_REGWORD "d)",
-        SARG1, ARG2, SARG3, ARG4, (char*)ARG4, SARG5, SARG6);
+   PRINT("sys_copy_file_range (%" FMT_REGWORD"d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "d, %" FMT_REGWORD "d)",
+         SARG1, ARG2, SARG3, ARG4, (char*)ARG4, SARG5, SARG6);
 
-  PRE_REG_READ6(vki_ssize_t, "copy_file_range",
-                int, "infd",
-                vki_off_t *, "inoffp",
-                int, "outfd",
-                vki_off_t *, "outoffp",
-                vki_size_t, "len",
-                unsigned int, "flags");
+   PRE_REG_READ6(vki_ssize_t, "copy_file_range",
+                 int, "infd",
+                 vki_off_t *, "inoffp",
+                 int, "outfd",
+                 vki_off_t *, "outoffp",
+                 vki_size_t, "len",
+                 unsigned int, "flags");
 
-  /* File descriptors are "specially" tracked by valgrind.
-     valgrind itself uses some, so make sure someone didn't
-     put in one of our own...  */
-  if (!ML_(fd_allowed)(ARG1, "copy_file_range(infd)", tid, False) ||
-      !ML_(fd_allowed)(ARG3, "copy_file_range(infd)", tid, False)) {
-     SET_STATUS_Failure( VKI_EBADF );
-  } else {
-     /* Now see if the offsets are defined. PRE_MEM_READ will
-        double check it can dereference them. */
-     if (ARG2 != 0)
-        PRE_MEM_READ( "copy_file_range(inoffp)", ARG2, sizeof(vki_off_t));
-     if (ARG4 != 0)
-        PRE_MEM_READ( "copy_file_range(outoffp)", ARG4, sizeof(vki_off_t));
-  }
+   /* File descriptors are "specially" tracked by valgrind.
+      valgrind itself uses some, so make sure someone didn't
+      put in one of our own...  */
+   if (!ML_(fd_allowed)(ARG1, "copy_file_range(infd)", tid, False) ||
+       !ML_(fd_allowed)(ARG3, "copy_file_range(infd)", tid, False)) {
+      SET_STATUS_Failure( VKI_EBADF );
+   } else {
+      /* Now see if the offsets are defined. PRE_MEM_READ will
+         double check it can dereference them. */
+      if (ARG2 != 0) {
+         PRE_MEM_READ( "copy_file_range(inoffp)", ARG2, sizeof(vki_off_t));
+      }
+      if (ARG4 != 0) {
+         PRE_MEM_READ( "copy_file_range(outoffp)", ARG4, sizeof(vki_off_t));
+      }
+   }
 }
 
 
@@ -6363,8 +6427,9 @@ PRE(sys___sysctlbyname)
    PRE_MEM_READ("__sysctlbyname(name)", (Addr)ARG1, ARG2 * sizeof(int));
 
    // if 'newp' is not NULL can read namelen bytes from that addess
-   if (ARG5 != (UWord)NULL)
+   if (ARG5 != (UWord)NULL) {
       PRE_MEM_READ("__sysctlbyname(newp)", (Addr)ARG5, ARG6);
+   }
 
    // there are two scenarios for oldlenp/oldp
    // 1. oldval is NULL and oldlenp is non-NULL
@@ -6398,8 +6463,9 @@ POST(sys___sysctlbyname)
       if (ARG3 != (UWord)NULL) {
          //POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
          POST_MEM_WRITE((Addr)ARG3, *(vki_size_t *)ARG4);
-      } else
+      } else {
          POST_MEM_WRITE((Addr)ARG4, sizeof(vki_size_t));
+      }
    }
 }
 
@@ -6440,8 +6506,9 @@ POST(sys_shm_open2)
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
    } else {
-      if (VG_(clo_track_fds))
+      if (VG_(clo_track_fds)) {
          ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)ARG1);
+      }
    }
 }
 
@@ -7233,10 +7300,10 @@ const SyscallTableEntry* ML_(get_freebsd_syscall_entry) ( UInt sysno )
    /* Is it in the contiguous initial section of the table? */
    if (sysno < syscall_table_size) {
       const SyscallTableEntry* sys = &ML_(syscall_table)[sysno];
-      if (sys->before == NULL)
+      if (sys->before == NULL) {
          return NULL; /* no entry */
-      else
-         return sys;
+      }
+      return sys;
    }
 
    /* Can't find a wrapper */
