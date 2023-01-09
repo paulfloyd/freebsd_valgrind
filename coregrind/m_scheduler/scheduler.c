@@ -101,11 +101,6 @@
 
 /* ThreadId and ThreadState are defined elsewhere*/
 
-/* Defines the thread-scheduling timeslice, in terms of the number of
-   basic blocks we attempt to run each thread for.  Smaller values
-   give finer interleaving but much increased scheduling overheads. */
-#define SCHEDULING_QUANTUM   100000
-
 /* If False, a fault is Valgrind-internal (ie, a bug) */
 Bool VG_(in_generated_code) = False;
 
@@ -759,20 +754,20 @@ void VG_(scheduler_init_phase2) ( ThreadId tid_main,
 /* Use gcc's built-in setjmp/longjmp.  longjmp must not restore signal
    mask state, but does need to pass "val" through.  jumped must be a
    volatile UWord. */
-#define SCHEDSETJMP(tid, jumped, stmt)					\
-   do {									\
-      ThreadState * volatile _qq_tst = VG_(get_ThreadState)(tid);	\
-									\
-      (jumped) = VG_MINIMAL_SETJMP(_qq_tst->sched_jmpbuf);              \
-      if ((jumped) == ((UWord)0)) {                                     \
-	 vg_assert(!_qq_tst->sched_jmpbuf_valid);			\
-	 _qq_tst->sched_jmpbuf_valid = True;				\
-	 stmt;								\
-      }	else if (VG_(clo_trace_sched))					\
-	 VG_(printf)("SCHEDSETJMP(line %d) tid %u, jumped=%lu\n",       \
-                     __LINE__, tid, jumped);                            \
-      vg_assert(_qq_tst->sched_jmpbuf_valid);				\
-      _qq_tst->sched_jmpbuf_valid = False;				\
+#define SCHEDSETJMP(tid, jumped, stmt)                            \
+   do {                                                           \
+      ThreadState * volatile _qq_tst = VG_(get_ThreadState)(tid); \
+                                                                  \
+      (jumped) = VG_MINIMAL_SETJMP(_qq_tst->sched_jmpbuf);        \
+      if ((jumped) == ((UWord)0)) {                               \
+         vg_assert(!_qq_tst->sched_jmpbuf_valid);                 \
+         _qq_tst->sched_jmpbuf_valid = True;                      \
+         stmt;                                                    \
+      }	else if (VG_(clo_trace_sched))                           \
+         VG_(printf)("SCHEDSETJMP(line %d) tid %u, jumped=%lu\n", \
+                     __LINE__, tid, jumped);                      \
+      vg_assert(_qq_tst->sched_jmpbuf_valid);                     \
+      _qq_tst->sched_jmpbuf_valid = False;                        \
    } while(0)
 
 
@@ -1389,7 +1384,7 @@ VgSchedReturnCode VG_(scheduler) ( ThreadId tid )
    
    vg_assert(VG_(is_running_thread)(tid));
 
-   dispatch_ctr = SCHEDULING_QUANTUM;
+   dispatch_ctr = VG_(clo_scheduling_quantum);
 
    while (!VG_(is_exiting)(tid)) {
 
@@ -1440,7 +1435,7 @@ VgSchedReturnCode VG_(scheduler) ( ThreadId tid )
 	 n_scheduling_events_MAJOR++;
 
 	 /* Figure out how many bbs to ask vg_run_innerloop to do. */
-         dispatch_ctr = SCHEDULING_QUANTUM;
+         dispatch_ctr = VG_(clo_scheduling_quantum);
 
 	 /* paranoia ... */
 	 vg_assert(tst->tid == tid);
