@@ -76,6 +76,7 @@ than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
 170510  Don't warn about ioctl of size 0 without direction hint
+241072  List tools in --help output
 327548  false positive while destroying mutex
 351857  confusing error message about valid command line option
 392331  Spurious lock not held error from inside pthread_cond_timedwait
@@ -85,6 +86,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 444488  Use glibc.pthread.stack_cache_size tunable
 444568  drd/tests/pth_barrier_thr_cr fails on Fedora 38
 459476  vgdb: allow address reuse to avoid "address already in use" errorsuse" errors
+460356  s390: Sqrt32Fx4 -- cannot reduce tree
 462830  WARNING: unhandled amd64-freebsd syscall: 474
 463027  broken check for MPX instruction support in assembler
 
