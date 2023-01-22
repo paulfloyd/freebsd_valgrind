@@ -562,8 +562,9 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
 #else
       res = VG_(do_syscall2)(__NR_stat, (UWord)file_name, (UWord)&buf);
 #endif
-      if (!sr_isError(res))
+      if (!sr_isError(res)) {
          TRANSLATE_TO_vg_stat(vgbuf, &buf);
+      }
       return res;
    }
 #  else
@@ -646,6 +647,26 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
 #    error Unknown OS
 #  endif
 }
+
+#if defined(VGO_freebsd)
+/* extend this to other OSes as and when needed */
+SysRes VG_(lstat) ( const HChar* file_name, struct vg_stat* vgbuf )
+{
+   SysRes res;
+   VG_(memset)(vgbuf, 0, sizeof(*vgbuf));
+
+   struct vki_freebsd11_stat buf;
+#if (FREEBSD_VERS >= FREEBSD_12)
+   res = VG_(do_syscall2)(__NR_freebsd11_lstat, (UWord)file_name, (UWord)&buf);
+#else
+   res = VG_(do_syscall2)(__NR_lstat, (UWord)file_name, (UWord)&buf);
+#endif
+   if (!sr_isError(res)) {
+      TRANSLATE_TO_vg_stat(vgbuf, &buf);
+   }
+   return res;
+}
+#endif
 
 #undef TRANSLATE_TO_vg_stat
 #undef TRANSLATE_statx_TO_vg_stat
@@ -1738,6 +1759,56 @@ const HChar *VG_(dirname)(const HChar *path)
 
    return buf;
 }
+
+#if defined(VGO_freebsd)
+/*
+ * I did look at nicking this from FreeBSD, it's fairly easy to port
+ * but I was put off by the copyright and 3-clause licence
+ * Then I looked at nicking it from glibc but that is full of
+ * macros private functions and conditions for Windows.
+ * So I gave up as it is only for FreeBSD 11 and 12.
+ *
+ * It is somewhat hard-coded for sysctl_kern_proc_pathname
+ * and PRE(sys___sysctl) assuming resolved has
+ * VKI_PATH_MAX space.
+ */
+Bool VG_(realpath)(const HChar *path, HChar *resolved)
+{
+   vg_assert(path);
+   vg_assert(resolved);
+#if (FREEBSD_VERS >= FREEBSD_13_0)
+   return !sr_isError(VG_(do_syscall5)(__NR___realpathat, VKI_AT_FDCWD, (RegWord)path, (RegWord)resolved, VKI_PATH_MAX, 0));
+#else
+   // poor man's realpath
+   const HChar *resolved_name;
+   HChar tmp[VKI_PATH_MAX];
+
+   struct vg_stat statbuf;
+   SysRes res = VG_(lstat)(exe_name, &statbuf);
+
+   if (sr_isError(res)) {
+      return False;
+   } else if (VKI_S_ISLNK(statbuf.mode)) {
+      SizeT link_len = VG_(readlink)(exe_name, tmp, VKI_PATH_MAX);
+      tmp[link_len] = '\0';
+      resolved_name = tmp;
+   } else {
+      // not a link
+      resolved_name = exe_name;
+   }
+
+   if (resolved_name[0] != '/') {
+      // relative path
+      if (resolved_name[0] == '.' && resolved_name[1] == '/') {
+         resolved_name += 2;
+      }
+      VG_(snprintf)(out, *len, "%s/%s", VG_(get_startup_wd)(), resolved_name);
+   } else {
+      VG_(snprintf)(out, *len, "%s", resolved_name);
+   }
+#endif
+}
+#endif
 
 
 /*--------------------------------------------------------------------*/
