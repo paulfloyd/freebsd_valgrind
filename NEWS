@@ -78,10 +78,12 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 170510  Don't warn about ioctl of size 0 without direction hint
 241072  List tools in --help output
 327548  false positive while destroying mutex
+382034  Testcases build fixes for musl
 351857  confusing error message about valid command line option
 392331  Spurious lock not held error from inside pthread_cond_timedwait
 400793  pthread_rwlock_timedwrlock false positive
 433873  openat2 syscall unimplemented on Linux
+435441  valgrind fails to interpose malloc on musl 1.2.2 due to weak symbol name and no libc soname
 444110  priv/guest_ppc_toIR.c:36198:31: warning: duplicated 'if' condition.
 444488  Use glibc.pthread.stack_cache_size tunable
 444568  drd/tests/pth_barrier_thr_cr fails on Fedora 38
@@ -90,6 +92,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 462830  WARNING: unhandled amd64-freebsd syscall: 474
 463027  broken check for MPX instruction support in assembler
 464476  Firefox fails to start under Valgrind
+464859  Build failures with GCC-13 (drd tsan_unittest)
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
