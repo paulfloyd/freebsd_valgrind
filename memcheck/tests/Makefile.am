@@ -114,6 +114,8 @@ EXTRA_DIST = \
 	bug155125.stderr.exp bug155125.vgtest \
 	bug287260.stderr.exp bug287260.vgtest \
 	bug340392.stderr.exp bug340392.vgtest \
+	bug464969_d_demangle.stderr.exp bug464969_d_demangle.vgtest \
+		bug464969_d_demangle.stdout.exp \
 	calloc-overflow.stderr.exp calloc-overflow.vgtest\
 	cdebug_zlib.stderr.exp cdebug_zlib.vgtest \
 	cdebug_zlib_gnu.stderr.exp cdebug_zlib_gnu.vgtest \
@@ -381,6 +383,7 @@ check_PROGRAMS = \
 	bug155125 \
 	bug287260 \
 	bug340392 \
+	bug464969_d_demangle \
 	calloc-overflow \
 	client-msg \
 	clientperm \
@@ -462,6 +465,9 @@ if DWARF4
 check_PROGRAMS += dw4
 endif
 
+bug464969_d_demangle_SOURCES = bug464969_d_demangle.cpp
+bug464969_d_demangle_CXXFLAGS = $(AM_CXXFLAGS) @FLAG_W_NO_UNINITIALIZED@
+
 if GZ_ZLIB
 check_PROGRAMS += cdebug_zlib
 cdebug_zlib_SOURCES = cdebug.c
@@ -521,12 +527,12 @@ leak_cpp_interior_SOURCES	= leak_cpp_interior.cpp
 # Suppress various gcc warnings which are correct, but for things
 # we are actually testing for at runtime.
 accounting_CFLAGS	= $(AM_CFLAGS) -Wno-alloc-size-larger-than
-badfree_CFLAGS		= $(AM_CFLAGS) -Wno-free-nonheap-object
+badfree_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_FREE_NONHEAP_OBJECT@
 bug155125_CFLAGS	= $(AM_CFLAGS) -Wno-unused-result -Wno-alloc-size-larger-than
 mallinfo_CFLAGS		= $(AM_CFLAGS) -Wno-deprecated-declarations
 malloc3_CFLAGS		= $(AM_CFLAGS) -Wno-alloc-size-larger-than
 sbfragment_CFLAGS	= $(AM_CFLAGS) -Wno-deprecated-declarations
-strchr_CFLAGS		= $(AM_CFLAGS) -Wno-uninitialized
+strchr_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_UNINITIALIZED@
 
 big_debuginfo_symbol_SOURCES = big_debuginfo_symbol.cpp
 big_debuginfo_symbol_CXXFLAGS = $(AM_CXXFLAGS) -std=c++0x
