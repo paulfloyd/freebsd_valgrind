@@ -740,9 +740,14 @@ PRE(sys_rfork)
       *flags |= SfYieldAfter;
    }
 #else
-   VG_(message)(Vg_UserMsg, "rfork() not implemented");
-   VG_(unimplemented)("Valgrind does not support rfork() yet.");
-   SET_STATUS_Failure( VKI_ENOSYS );
+   VG_(message)(Vg_UserMsg, "rfork() not implemented\n");
+   if ((UInt)ARG1 == VKI_RFSPAWN) {
+      // posix_spawn uses RFSPAWN and it will fall back to vfork
+      // if it sees EINVAL
+      SET_STATUS_Failure(VKI_EINVAL);
+   } else {
+      SET_STATUS_Failure(VKI_ENOSYS);
+   }
 #endif
 }
 
@@ -1464,6 +1469,16 @@ POST(sys_procctl)
    default:
       break;
    }
+}
+
+// SYS_mknodat 559
+// int mknodat(int fd, const char *path, mode_t mode, dev_t dev);
+PRE(sys_mknodat)
+{
+   PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+   PRE_REG_READ5(long, "mknodat",
+                 int, fd, const char *, path, vki_mode_t, mode, vki_uint32_t, MERGE64_FIRST(dev), vki_uint32_t, MERGE64_SECOND(idev))
+   PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
 }
 
 #if (FREEBSD_VERS >= FREEBSD_12)

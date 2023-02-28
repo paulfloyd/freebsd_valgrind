@@ -2030,7 +2030,7 @@ Syscall param lutimes(times) points to unaddressable byte(s)
 Syscall param preadv(fd) contains uninitialised byte(s)
    ...
 
-Syscall param preadv(iovr) contains uninitialised byte(s)
+Syscall param preadv(iov) contains uninitialised byte(s)
    ...
 
 Syscall param preadv(iovcnt) contains uninitialised byte(s)
@@ -5249,7 +5249,10 @@ Syscall param mknodat(path) contains uninitialised byte(s)
 Syscall param mknodat(mode) contains uninitialised byte(s)
    ...
 
-Syscall param mknodat(dev) contains uninitialised byte(s)
+Syscall param mknodat(dev_low) contains uninitialised byte(s)
+   ...
+
+Syscall param mknodat(idev_high) contains uninitialised byte(s)
    ...
 
 Syscall param mknodat(pathname) points to unaddressable byte(s)

@@ -305,12 +305,17 @@ PRE(sys_clock_getcpuclockid2)
 PRE(sys_rfork)
 {
    PRINT("sys_rfork ( %#" FMT_REGWORD "x )", ARG1 );
-   PRE_REG_READ1(long, "rfork", int, flags);
+   PRE_REG_READ1(pid_t, "rfork", int, flags);
 
-   VG_(message)(Vg_UserMsg, "rfork() not implemented");
-   VG_(unimplemented)("Valgrind does not support rfork().");
+   VG_(message)(Vg_UserMsg, "warning: rfork() not implemented\n");
 
-   SET_STATUS_Failure(VKI_ENOSYS);
+   if ((UInt)ARG1 == VKI_RFSPAWN) {
+      // posix_spawn uses RFSPAWN and it will fall back to vfork
+      // if it sees EINVAL
+      SET_STATUS_Failure(VKI_EINVAL);
+   } else {
+      SET_STATUS_Failure(VKI_ENOSYS);
+   }
 }
 
 // SYS_preadv  289
@@ -1036,6 +1041,16 @@ POST(sys_procctl)
    default:
       break;
    }
+}
+
+// SYS_mknodat 559
+// int mknodat(int fd, const char *path, mode_t mode, dev_t dev);
+PRE(sys_mknodat)
+{
+   PRINT("sys_mknodat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%" FMT_REGWORD "x )", ARG1,ARG2,(char*)ARG2,ARG3,ARG4 );
+   PRE_REG_READ4(long, "mknodat",
+                 int, fd, const char *, path, vki_mode_t, mode, vki_dev_t, dev);
+   PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
 }
 
 #if (FREEBSD_VERS >= FREEBSD_12)
