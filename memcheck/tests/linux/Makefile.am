@@ -4,6 +4,7 @@ include $(top_srcdir)/Makefile.tool-tests.am
 dist_noinst_SCRIPTS = filter_stderr
 
 EXTRA_DIST = \
+	aligned_alloc.c aligned_alloc.vgtest aligned_alloc.stderr.exp \
 	brk.stderr.exp brk.vgtest \
 	capget.vgtest capget.stderr.exp capget.stderr.exp2 capget.stderr.exp3 \
 	debuginfod-check.stderr.exp debuginfod-check.vgtest.in \
@@ -37,6 +38,7 @@ EXTRA_DIST = \
 	memalign.vgtest memalign.stderr.exp
 
 check_PROGRAMS = \
+	aligned_alloc \
 	brk \
 	capget \
 	check_preadv2_pwritev2 \
