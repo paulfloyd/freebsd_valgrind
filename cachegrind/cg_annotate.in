@@ -233,12 +233,6 @@ class Events:
     # Like `sort_events`, but indices into `events`, rather than names.
     sort_indices: list[int]
 
-    # Threshold percentages, one per sort event. Dictates when we stop printing
-    # functions. Positions correspond to positions in `sort_events`. Only
-    # `thresholds[0]` is actually used for thresholding, for historical
-    # reasons.
-    threshold_percs: list[float]
-
     def __init__(self, text: str) -> None:
         self.events = text.split()
         self.num_events = len(self.events)
@@ -268,11 +262,6 @@ class Events:
             self.sort_events = self.events
 
         self.sort_indices = [event_indices[event] for event in self.sort_events]
-
-        # The primary sort event gets the --threshold value, and all other sort
-        # events get 100% (i.e. ignored).
-        self.threshold_percs = [100] * len(self.sort_events)
-        self.threshold_percs[0] = args.threshold
 
     def mk_cc(self, text: str) -> Cc:
         # This is slightly faster than a list comprehension.
@@ -447,17 +436,13 @@ def read_cgout_file() -> tuple[str, str, Events, DictFlfnCc, DictFlDictLineCc, C
         total_cc += flfn_cc
     if summary_cc != total_cc:
         msg = (
-            "`summary:` line doesn't match compute total\n"
+            "`summary:` line doesn't match computed total\n"
             f"- summary: {summary_cc}\n"
             f"- total:   {total_cc}"
         )
         parse_die(msg)
 
     return (desc, cmd, events, dict_flfn_cc, dict_fl_dict_line_cc, summary_cc)
-
-
-def safe_perc(m: int, n: int) -> float:
-    return 0 if n == 0 else m * 100 / n
 
 
 class CcPrinter:
@@ -467,9 +452,14 @@ class CcPrinter:
     # Note: every `CcPrinter` gets the same summary CC.
     summary_cc: Cc
 
-    # The width of each event column. For simplicity, its length matches
-    # `events.events`, even though not all events are necessarily shown.
-    widths: list[int]
+    # The width of each event count column. (This column is also used for event
+    # names.) For simplicity, its length matches `events.events`, even though
+    # not all events are necessarily shown.
+    count_widths: list[int]
+
+    # The width of each percentage column. Zero if --show-percs is disabled.
+    # Its length matches `count_widths`.
+    perc_widths: list[int]
 
     def __init__(self, events: Events, ccs: list[Cc], summary_cc: Cc) -> None:
         self.events = events
@@ -488,61 +478,62 @@ class CcPrinter:
                     min_cc.counts[i] = count
 
         # Find maximum width for each column.
-        self.widths = [0] * len(events.events)
+        self.count_widths = [0] * len(events.events)
+        self.perc_widths = [0] * len(events.events)
         for i, event in enumerate(events.events):
-            # Get widest of the min and max, accounting for commas that will be
-            # added, and a possible percentage.
-            width = max(len(str(min_cc.counts[i])), len(str(max_cc.counts[i])))
-            width += (width - 1) // 3
-            if args.show_percs:
-                width += 9  # e.g. " (12.34%)" is 9 chars.
+            # Get count and perc widths of the min and max CCs.
+            (min_count, min_perc) = self.count_and_perc(min_cc, i)
+            (max_count, max_perc) = self.count_and_perc(max_cc, i)
 
-            # Account for the event name, too.
-            self.widths[i] = max(width, len(event))
+            # The event name goes in the count column.
+            self.count_widths[i] = max(len(min_count), len(max_count), len(event))
+            self.perc_widths[i] = max(len(min_perc), len(max_perc))
 
     def print_events(self, suffix: str) -> None:
         for i in self.events.show_indices:
-            # +1 is for the single space between columns.
-            print(f"{self.events.events[i]:{self.widths[i] + 1}}", end="")
+            # The event name goes in the count column.
+            event = self.events.events[i]
+            nwidth = self.count_widths[i]
+            pwidth = self.perc_widths[i]
+            empty_perc = ""
+            print(f"{event:<{nwidth}}{empty_perc:>{pwidth}} ", end="")
 
         print(suffix)
 
-    def print_count(self, i: int, text: str) -> None:
-        print(f"{text:>{self.widths[i]}}", end=" ")
+    def print_count_and_perc(self, i: int, count: str, perc: str) -> None:
+        nwidth = self.count_widths[i]
+        pwidth = self.perc_widths[i]
+        print(f"{count:>{nwidth}}{perc:>{pwidth}} ", end="")
+
+    def count_and_perc(self, cc: Cc, i: int) -> tuple[str, str]:
+        count = f"{cc.counts[i]:,d}"  # commify
+        if args.show_percs:
+            if cc.counts[i] == 0:
+                # Don't show percentages for "0" entries, it's just clutter.
+                perc = ""
+            else:
+                summary_count = self.summary_cc.counts[i]
+                if summary_count == 0:
+                    perc = " (n/a)"
+                else:
+                    p = cc.counts[i] * 100 / summary_count
+                    perc = f" ({p:.1f}%)"
+        else:
+            perc = ""
+
+        return (count, perc)
 
     def print_cc(self, cc: Cc, suffix: str) -> None:
         for i in self.events.show_indices:
-            nstr = f"{cc.counts[i]:,d}"  # commify
-            if args.show_percs:
-                if cc.counts[i] != 0:
-                    # Try our best to keep the number fitting into 5 chars. This
-                    # requires dropping a digit after the decimal place if it's
-                    # sufficiently negative (e.g. "-10.0") or positive (e.g.
-                    # "100.0"). Thanks to diffs it's possible to have even more
-                    # extreme values, like "-100.0" or "1000.0"; those rare case
-                    # will end up with slightly wrong indenting, oh well.
-                    p = safe_perc(cc.counts[i], self.summary_cc.counts[i])
-                    normal = -9.995 < p < 99.995
-                    perc = f" ({p:5.{2 if normal else 1}f}%)"
-                else:
-                    # Don't show percentages for "0" entries, it's just clutter.
-                    perc = "         "
-            else:
-                perc = ""
-
-            self.print_count(i, nstr + perc)
+            (count, perc) = self.count_and_perc(cc, i)
+            self.print_count_and_perc(i, count, perc)
 
         print("", suffix)
 
     def print_missing_cc(self, suffix: str) -> None:
-        if args.show_percs:
-            # Don't show percentages for "." entries, it's just clutter.
-            text = ".         "
-        else:
-            text = "."
-
+        # Don't show percentages for "." entries, it's just clutter.
         for i in self.events.show_indices:
-            self.print_count(i, text)
+            self.print_count_and_perc(i, ".", "")
 
         print("", suffix)
 
@@ -559,7 +550,7 @@ def print_header(desc: str, cmd: str, events: Events) -> None:
     print("Events recorded: ", *events.events)
     print("Events shown:    ", *events.show_events)
     print("Event sort order:", *events.sort_events)
-    print("Thresholds:      ", *events.threshold_percs)
+    print("Threshold:       ", args.threshold)
 
     if len(args.include) == 0:
         print("Include dirs:     ")
@@ -596,9 +587,7 @@ def print_flfn_ccs(
     threshold_index = events.sort_indices[0]
 
     # Convert the threshold from a percentage to an event count.
-    threshold = (
-        events.threshold_percs[0] * abs(summary_cc.counts[threshold_index]) / 100
-    )
+    threshold = args.threshold * abs(summary_cc.counts[threshold_index]) / 100
 
     def meets_threshold(flfn_and_cc: tuple[Flfn, Cc]) -> bool:
         cc = flfn_and_cc[1]
@@ -633,6 +622,38 @@ def print_flfn_ccs(
     return set(flfn_and_cc[0][0] for flfn_and_cc in sorted_flfns_and_ccs)
 
 
+class AnnotatedCcs:
+    line_nums_known_cc: Cc
+    line_nums_unknown_cc: Cc
+    unreadable_cc: Cc
+    below_threshold_cc: Cc
+    files_unknown_cc: Cc
+
+    labels = [
+        "  annotated: files known & above threshold & readable, line numbers known",
+        "  annotated: files known & above threshold & readable, line numbers unknown",
+        "unannotated: files known & above threshold & unreadable ",
+        "unannotated: files known & below threshold",
+        "unannotated: files unknown",
+    ]
+
+    def __init__(self, events: Events) -> None:
+        self.line_nums_known_cc = events.mk_empty_cc()
+        self.line_nums_unknown_cc = events.mk_empty_cc()
+        self.unreadable_cc = events.mk_empty_cc()
+        self.below_threshold_cc = events.mk_empty_cc()
+        self.files_unknown_cc = events.mk_empty_cc()
+
+    def ccs(self) -> list[Cc]:
+        return [
+            self.line_nums_known_cc,
+            self.line_nums_unknown_cc,
+            self.unreadable_cc,
+            self.below_threshold_cc,
+            self.files_unknown_cc,
+        ]
+
+
 def mk_warning(msg: str) -> str:
     return f"""\
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -660,10 +681,10 @@ def warn_bogus_lines(src_filename: str) -> None:
 
 def print_annotated_src_file(
     events: Events,
-    dict_line_cc: DictLineCc,
+    dict_line_cc: DictLineCc | None,
     ann_type: str,
     src_file: TextIO,
-    annotated_cc: Cc,
+    annotated_ccs: AnnotatedCcs,
     summary_cc: Cc,
 ) -> None:
     print(FANCY)
@@ -685,9 +706,15 @@ def print_annotated_src_file(
     printer.print_events("")
     print()
 
-    # Remove the CC for line 0 if it's present. It gets special treatment
-    # later.
+    # The CC for line 0 is special, holding counts attributed to the source
+    # file but not to any particular line (due to incomplete debug info).
+    # Annotate the start of the file with this info, if present.
     line0_cc = dict_line_cc.pop(0, None)
+    if line0_cc:
+        suffix = "<unknown (line 0)>"
+        printer.print_cc(line0_cc, suffix)
+        annotated_ccs.line_nums_unknown_cc += line0_cc
+        print()
 
     # Find interesting line ranges: all lines with a CC, and all lines within
     # `args.context` lines of a line with a CC.
@@ -727,7 +754,7 @@ def print_annotated_src_file(
                     break
                 if line_nums and line_num == line_nums[0]:
                     printer.print_cc(dict_line_cc[line_num], src_line[:-1])
-                    annotated_cc += dict_line_cc[line_num]
+                    annotated_ccs.line_nums_known_cc += dict_line_cc[line_num]
                     del line_nums[0]
                 else:
                     printer.print_missing_cc(src_line[:-1])
@@ -742,36 +769,40 @@ def print_annotated_src_file(
     if line_nums:
         for line_num in line_nums:
             printer.print_cc(dict_line_cc[line_num], f"<bogus line {line_num}>")
+            annotated_ccs.line_nums_known_cc += dict_line_cc[line_num]
 
         print()
         warn_bogus_lines(src_file.name)
 
     print()
 
-    # Print summary of counts attributed to the source file but not to any
-    # particular line (due to incomplete debug info).
-    if line0_cc:
-        suffix = f"<counts for unidentified lines in {src_file.name}>"
-        printer.print_cc(line0_cc, suffix)
-        print()
 
-
+# This (partially) consumes `dict_fl_dict_line_cc`.
 def print_annotated_src_files(
     events: Events,
     threshold_src_filenames: set[str],
     dict_fl_dict_line_cc: DictFlDictLineCc,
     summary_cc: Cc,
-) -> tuple[list[str], Cc]:
-    unfound_auto_filenames: list[str] = []
-    annotated_cc = events.mk_empty_cc()
+) -> tuple[list[str], AnnotatedCcs]:
+    unreadable_auto_filenames: list[str] = []
+    annotated_ccs = AnnotatedCcs(events)
 
     def pair_with(label: str) -> Callable[[str], tuple[str, str]]:
         return lambda s: (s, label)
+
+    def add_dict_line_cc_to_cc(dict_line_cc: DictLineCc | None, accum_cc: Cc) -> None:
+        if dict_line_cc:
+            for line_cc in dict_line_cc.values():
+                accum_cc += line_cc
 
     # If auto-annotating, add interesting files (excluding "???").
     all_src_filenames = set(map(pair_with("User"), args.src_filenames))
     if args.auto:
         threshold_src_filenames.discard("???")
+
+        dict_line_cc = dict_fl_dict_line_cc.pop("???", None)
+        add_dict_line_cc_to_cc(dict_line_cc, annotated_ccs.files_unknown_cc)
+
         all_src_filenames.update(map(pair_with("Auto"), threshold_src_filenames))
 
     # Prepend "" to the include dirnames so things work in the case where the
@@ -789,12 +820,14 @@ def print_annotated_src_files(
 
             try:
                 with open(full_src_filename, "r", encoding="utf-8") as src_file:
+                    # The pop will fail if it's a user-specified filename that
+                    # isn't mentioned in the cgout file.
                     print_annotated_src_file(
                         events,
-                        dict_fl_dict_line_cc[src_filename],
+                        dict_fl_dict_line_cc.pop(src_filename, None),
                         ann_type,
                         src_file,
-                        annotated_cc,
+                        annotated_ccs,
                         summary_cc,
                     )
                 annotated = True
@@ -803,31 +836,56 @@ def print_annotated_src_files(
                 pass
 
         if not annotated:
-            unfound_auto_filenames.append(src_filename)
+            unreadable_auto_filenames.append(src_filename)
+            dict_line_cc = dict_fl_dict_line_cc.pop(src_filename, None)
+            add_dict_line_cc_to_cc(dict_line_cc, annotated_ccs.unreadable_cc)
 
-    return (unfound_auto_filenames, annotated_cc)
+    # Sum the CCs remaining in `dict_fl_dict_line_cc`, which are all in files
+    # below the threshold.
+    for dict_line_cc in dict_fl_dict_line_cc.values():
+        add_dict_line_cc_to_cc(dict_line_cc, annotated_ccs.below_threshold_cc)
+
+    return (unreadable_auto_filenames, annotated_ccs)
 
 
-def print_unfound_auto_filenames(unfound_auto_filenames: list[str]) -> None:
-    if unfound_auto_filenames:
+def print_unreadable_auto_filenames(unreadable_auto_filenames: list[str]) -> None:
+    if unreadable_auto_filenames:
         print(FANCY)
-        print("The following files chosen for auto-annotation could not be found:")
+        print("The following files chosen for auto-annotation could not be read:")
         print(FANCY)
-        for filename in sorted(unfound_auto_filenames):
+        for filename in sorted(unreadable_auto_filenames):
             print(" ", filename)
         print()
 
 
-def print_annotated_cc(events: Events, annotated_cc: Cc, summary_cc: Cc) -> None:
+def print_annotated_ccs(
+    events: Events,
+    annotated_ccs: AnnotatedCcs,
+    summary_cc: Cc,
+) -> None:
     # If we did any annotating, show how many events were covered by annotated
     # lines above.
     if args.auto or args.src_filenames:
-        printer = CcPrinter(events, [annotated_cc], summary_cc)
+        printer = CcPrinter(events, annotated_ccs.ccs(), summary_cc)
         print(FANCY)
         printer.print_events("")
         print(FANCY)
-        printer.print_cc(annotated_cc, "events annotated")
+
+        total_cc = events.mk_empty_cc()
+        for (cc, label) in zip(annotated_ccs.ccs(), AnnotatedCcs.labels):
+            printer.print_cc(cc, label)
+            total_cc += cc
+
         print()
+
+        # Internal sanity check.
+        if summary_cc != total_cc:
+            msg = (
+                "`summary:` line doesn't match computed annotated counts\n"
+                f"- summary:   {summary_cc}\n"
+                f"- annotated: {total_cc}"
+            )
+            die(msg)
 
 
 def main() -> None:
@@ -840,7 +898,7 @@ def main() -> None:
         summary_cc,
     ) = read_cgout_file()
 
-    # Each of these calls prints a section of the output.
+    # Each of the following calls prints a section of the output.
 
     print_header(desc, cmd, events)
 
@@ -848,13 +906,13 @@ def main() -> None:
 
     threshold_src_filenames = print_flfn_ccs(events, dict_flfn_cc, summary_cc)
 
-    (unfound_auto_filenames, annotated_cc) = print_annotated_src_files(
+    (unreadable_auto_filenames, annotated_ccs) = print_annotated_src_files(
         events, threshold_src_filenames, dict_fl_dict_line_cc, summary_cc
     )
 
-    print_unfound_auto_filenames(unfound_auto_filenames)
+    print_unreadable_auto_filenames(unreadable_auto_filenames)
 
-    print_annotated_cc(events, annotated_cc, summary_cc)
+    print_annotated_ccs(events, annotated_ccs, summary_cc)
 
 
 if __name__ == "__main__":
