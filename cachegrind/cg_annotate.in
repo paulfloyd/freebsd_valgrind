@@ -30,44 +30,9 @@
 This script reads Cachegrind output files and produces human-readable reports.
 """
 
-# Use `make ann` to "build" this script every time it is changed. This runs the
-# formatters, type-checkers, and linters on `cg_annotate.in` and then generates
-# `cg_annotate`.
-#
-# Python versions: Currently this script targets Python 3.9 and later versions.
-# Consequences of this:
-# - No use of `TypeAlias` for explicit type aliases, which requires 3.10.
-#
-# The following Python tools are used. All can be installed with `pip3 install
-# $NAME`, except `cProfile` which is built into Python.
-#
-# - Formatters:
-#   - `black`, for general formatting. This avoids the need for style checkers
-#     like `flake8`. Note that `black` allows a max line length of 88, which is
-#     a mild but common PEP-8 violation.
-#   - `isort`, for import sorting.
-#
-# - Type-checkers:
-#   - `mypy --strict`. This is the most commonly used Python type checker.
-#   - `pyright`. This is another good type checker. The `pyright: strict`
-#     comment above forces strict checking.
-#   - Sometimes one type-checker will complain about something the other does
-#     not. The goal is to keep both type checkers happy.
-#
-# - Linters:
-#   - `ruff`. Sometimes useful, and very fast to run.
-#   - `pylint`. Sometimes annoying, sometimes useful. The `pylintrc`
-#     modifies/disables the more annoying lints.
-#
-# - Profilers:
-#   - `cProfile` + `snakeviz`: Typically run with
-#     `python3 -m cProfile -o cg.prof cg_annotate $INPUT && snakeviz cg.prof`.
-#   - `scalene`. Typically run with `scalene ./cg_annotate $INPUT`.
-#
-# - Packager:
-#   - `cp` is used for distribution. This is possible because this program is a
-#     single file and only uses the Python Standard Library. This avoids the
-#     needs for any of the million different Python package management tools.
+# Use `make pyann` to "build" this script with `auxprogs/pybuild.rs` every time
+# it is changed. This runs the formatters, type-checkers, and linters on
+# `cg_annotate.in` and then generates `cg_annotate`.
 
 
 from __future__ import annotations
@@ -140,7 +105,7 @@ class Args(Namespace):
                 help=f"(deprecated) same as --no-{name}",
             )
 
-        p = ArgumentParser(description="Process Cachegrind output files.")
+        p = ArgumentParser(description="Process a Cachegrind output file.")
 
         p.add_argument("--version", action="version", version="%(prog)s-@VERSION@")
 
@@ -264,6 +229,7 @@ class Events:
         self.sort_indices = [event_indices[event] for event in self.sort_events]
 
     def mk_cc(self, text: str) -> Cc:
+        """Raises a `ValueError` exception on syntax error."""
         # This is slightly faster than a list comprehension.
         counts = list(map(int, text.split()))
 
@@ -316,11 +282,9 @@ class Cc:
 Flfn = NewType("Flfn", tuple[str, str])
 
 # Per-function CCs.
-# Note: not using `TypeAlias`. See "Python versions" comment above.
 DictFlfnCc = DefaultDict[Flfn, Cc]
 
 # Per-line CCs, organised by filename and line number.
-# Note: not using `TypeAlias`. See "Python versions" comment above.
 DictLineCc = DefaultDict[int, Cc]
 DictFlDictLineCc = DefaultDict[str, DictLineCc]
 
@@ -375,7 +339,7 @@ def read_cgout_file() -> tuple[str, str, Events, DictFlfnCc, DictFlDictLineCc, C
         curr_fl = ""
         curr_flfn = Flfn(("", ""))
 
-        # Three different places where we accumulate CC data.
+        # Different places where we accumulate CC data.
         dict_flfn_cc: DictFlfnCc = defaultdict(events.mk_empty_cc)
         dict_fl_dict_line_cc: DictFlDictLineCc = defaultdict(mk_empty_dict_line_cc)
         summary_cc = None
@@ -478,8 +442,8 @@ class CcPrinter:
                     min_cc.counts[i] = count
 
         # Find maximum width for each column.
-        self.count_widths = [0] * len(events.events)
-        self.perc_widths = [0] * len(events.events)
+        self.count_widths = [0] * events.num_events
+        self.perc_widths = [0] * events.num_events
         for i, event in enumerate(events.events):
             # Get count and perc widths of the min and max CCs.
             (min_count, min_perc) = self.count_and_perc(min_cc, i)
@@ -539,11 +503,15 @@ class CcPrinter:
 
 
 # Used in various places in the output.
-FANCY: str = "-" * 80
+def print_fancy(text: str) -> None:
+    fancy = "-" * 80
+    print(fancy)
+    print("--", text)
+    print(fancy)
 
 
-def print_header(desc: str, cmd: str, events: Events) -> None:
-    print(FANCY)
+def print_cachegrind_profile(desc: str, cmd: str, events: Events) -> None:
+    print_fancy("Cachegrind profile")
     print(desc, end="")
     print("Command:         ", cmd)
     print("Data file:       ", args.cgout_filename[0])
@@ -570,17 +538,16 @@ def print_header(desc: str, cmd: str, events: Events) -> None:
     print()
 
 
-def print_summary_cc(events: Events, summary_cc: Cc) -> None:
+def print_summary(events: Events, summary_cc: Cc) -> None:
     printer = CcPrinter(events, [summary_cc], summary_cc)
-
-    print(FANCY)
+    print_fancy("Summary")
     printer.print_events("")
-    print(FANCY)
+    print()
     printer.print_cc(summary_cc, "PROGRAM TOTALS")
     print()
 
 
-def print_flfn_ccs(
+def print_function_summary(
     events: Events, dict_flfn_cc: DictFlfnCc, summary_cc: Cc
 ) -> set[str]:
     # Only the first threshold percentage is actually used.
@@ -607,10 +574,9 @@ def print_flfn_ccs(
     sorted_ccs = list(map(lambda flfn_and_cc: flfn_and_cc[1], sorted_flfns_and_ccs))
 
     printer = CcPrinter(events, sorted_ccs, summary_cc)
-
-    print(FANCY)
+    print_fancy("Function summary")
     printer.print_events(" file:function")
-    print(FANCY)
+    print()
 
     # Print per-function counts.
     for flfn, flfn_cc in sorted_flfns_and_ccs:
@@ -666,7 +632,7 @@ def mk_warning(msg: str) -> str:
 
 def warn_src_file_is_newer(src_filename: str, cgout_filename: str) -> None:
     msg = f"""\
-@ Source file '{src_filename}' is more recent than input file '{cgout_filename}'.
+@ Source file '{src_filename}' is newer than data file '{cgout_filename}'.
 @ Annotations may not be correct.
 """
     print(mk_warning(msg))
@@ -681,28 +647,17 @@ def warn_bogus_lines(src_filename: str) -> None:
 
 def print_annotated_src_file(
     events: Events,
-    dict_line_cc: DictLineCc | None,
-    ann_type: str,
+    dict_line_cc: DictLineCc,
     src_file: TextIO,
     annotated_ccs: AnnotatedCcs,
     summary_cc: Cc,
 ) -> None:
-    print(FANCY)
-    print("-- ", ann_type, "-annotated source: ", src_file.name, sep="")
-    print(FANCY)
-
-    # Get file's CCs.
-    if not dict_line_cc:
-        print(f"  No information has been collected for {src_file.name}")
-        print()
-        return
-
     # If the source file is more recent than the cgout file, issue warning.
     if os.stat(src_file.name).st_mtime_ns > os.stat(args.cgout_filename[0]).st_mtime_ns:
         warn_src_file_is_newer(src_file.name, args.cgout_filename[0])
 
     printer = CcPrinter(events, list(dict_line_cc.values()), summary_cc)
-
+    # The starting fancy has already been printed by the caller.
     printer.print_events("")
     print()
 
@@ -765,16 +720,16 @@ def print_annotated_src_file(
             else:
                 break
 
-    # If there was info on lines past the end of the file, warn.
-    if line_nums:
-        for line_num in line_nums:
-            printer.print_cc(dict_line_cc[line_num], f"<bogus line {line_num}>")
-            annotated_ccs.line_nums_known_cc += dict_line_cc[line_num]
+        # If there was info on lines past the end of the file, warn.
+        if line_nums:
+            for line_num in line_nums:
+                printer.print_cc(dict_line_cc[line_num], f"<bogus line {line_num}>")
+                annotated_ccs.line_nums_known_cc += dict_line_cc[line_num]
+
+            print()
+            warn_bogus_lines(src_file.name)
 
         print()
-        warn_bogus_lines(src_file.name)
-
-    print()
 
 
 # This (partially) consumes `dict_fl_dict_line_cc`.
@@ -783,8 +738,7 @@ def print_annotated_src_files(
     threshold_src_filenames: set[str],
     dict_fl_dict_line_cc: DictFlDictLineCc,
     summary_cc: Cc,
-) -> tuple[list[str], AnnotatedCcs]:
-    unreadable_auto_filenames: list[str] = []
+) -> AnnotatedCcs:
     annotated_ccs = AnnotatedCcs(events)
 
     def pair_with(label: str) -> Callable[[str], tuple[str, str]]:
@@ -810,8 +764,11 @@ def print_annotated_src_files(
     include_dirnames = args.include.copy()
     include_dirnames.insert(0, "")
 
+    def print_ann_fancy(ann_type: str, src_filename: str) -> None:
+        print_fancy(f"{ann_type}-annotated source file: {src_filename}")
+
     for src_filename, ann_type in sorted(all_src_filenames):
-        annotated = False
+        readable = False
         for include_dirname in include_dirnames:
             if include_dirname == "":
                 full_src_filename = src_filename
@@ -820,45 +777,45 @@ def print_annotated_src_files(
 
             try:
                 with open(full_src_filename, "r", encoding="utf-8") as src_file:
-                    # The pop will fail if it's a user-specified filename that
-                    # isn't mentioned in the cgout file.
-                    print_annotated_src_file(
-                        events,
-                        dict_fl_dict_line_cc.pop(src_filename, None),
-                        ann_type,
-                        src_file,
-                        annotated_ccs,
-                        summary_cc,
-                    )
-                annotated = True
+                    dict_line_cc = dict_fl_dict_line_cc.pop(src_filename, None)
+                    if dict_line_cc is not None:
+                        print_ann_fancy(ann_type, src_file.name)  # includes full path
+                        print_annotated_src_file(
+                            events,
+                            dict_line_cc,
+                            src_file,
+                            annotated_ccs,
+                            summary_cc,
+                        )
+                    else:
+                        # This only happens for user-specified files that are
+                        # readable but not mentioned in the cgout file.
+                        print_ann_fancy(ann_type, src_filename)
+                        print("This file was not mentioned by the data file")
+                        print()
+
+                readable = True
                 break
             except OSError:
                 pass
 
-        if not annotated:
-            unreadable_auto_filenames.append(src_filename)
+        if not readable:
             dict_line_cc = dict_fl_dict_line_cc.pop(src_filename, None)
             add_dict_line_cc_to_cc(dict_line_cc, annotated_ccs.unreadable_cc)
+
+            print_ann_fancy(ann_type, src_filename)
+            print("This file was unreadable")
+            print()
 
     # Sum the CCs remaining in `dict_fl_dict_line_cc`, which are all in files
     # below the threshold.
     for dict_line_cc in dict_fl_dict_line_cc.values():
         add_dict_line_cc_to_cc(dict_line_cc, annotated_ccs.below_threshold_cc)
 
-    return (unreadable_auto_filenames, annotated_ccs)
+    return annotated_ccs
 
 
-def print_unreadable_auto_filenames(unreadable_auto_filenames: list[str]) -> None:
-    if unreadable_auto_filenames:
-        print(FANCY)
-        print("The following files chosen for auto-annotation could not be read:")
-        print(FANCY)
-        for filename in sorted(unreadable_auto_filenames):
-            print(" ", filename)
-        print()
-
-
-def print_annotated_ccs(
+def print_annotation_summary(
     events: Events,
     annotated_ccs: AnnotatedCcs,
     summary_cc: Cc,
@@ -867,9 +824,9 @@ def print_annotated_ccs(
     # lines above.
     if args.auto or args.src_filenames:
         printer = CcPrinter(events, annotated_ccs.ccs(), summary_cc)
-        print(FANCY)
+        print_fancy("Annotation summary")
         printer.print_events("")
-        print(FANCY)
+        print()
 
         total_cc = events.mk_empty_cc()
         for (cc, label) in zip(annotated_ccs.ccs(), AnnotatedCcs.labels):
@@ -900,19 +857,17 @@ def main() -> None:
 
     # Each of the following calls prints a section of the output.
 
-    print_header(desc, cmd, events)
+    print_cachegrind_profile(desc, cmd, events)
 
-    print_summary_cc(events, summary_cc)
+    print_summary(events, summary_cc)
 
-    threshold_src_filenames = print_flfn_ccs(events, dict_flfn_cc, summary_cc)
+    threshold_src_filenames = print_function_summary(events, dict_flfn_cc, summary_cc)
 
-    (unreadable_auto_filenames, annotated_ccs) = print_annotated_src_files(
+    annotated_ccs = print_annotated_src_files(
         events, threshold_src_filenames, dict_fl_dict_line_cc, summary_cc
     )
 
-    print_unreadable_auto_filenames(unreadable_auto_filenames)
-
-    print_annotated_ccs(events, annotated_ccs, summary_cc)
+    print_annotation_summary(events, annotated_ccs, summary_cc)
 
 
 if __name__ == "__main__":

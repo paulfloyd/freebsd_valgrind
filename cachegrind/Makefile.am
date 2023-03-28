@@ -10,31 +10,12 @@ EXTRA_DIST = \
 # Headers, etc
 #----------------------------------------------------------------------------
 
-bin_SCRIPTS = cg_annotate cg_diff
+bin_SCRIPTS = cg_annotate cg_diff cg_merge
 
 noinst_HEADERS = \
 	cg_arch.h \
 	cg_branchpred.c \
 	cg_sim.c
-
-#----------------------------------------------------------------------------
-# cg_merge (built for the primary target only)
-#----------------------------------------------------------------------------
-
-bin_PROGRAMS = cg_merge
-
-cg_merge_SOURCES = cg_merge.c
-cg_merge_CPPFLAGS  = $(AM_CPPFLAGS_PRI)
-cg_merge_CFLAGS    = $(AM_CFLAGS_PRI)
-cg_merge_CCASFLAGS = $(AM_CCASFLAGS_PRI)
-cg_merge_LDFLAGS   = $(AM_CFLAGS_PRI)
-# If there is no secondary platform, and the platforms include x86-darwin,
-# then the primary platform must be x86-darwin.  Hence:
-if ! VGCONF_HAVE_PLATFORM_SEC
-if VGCONF_PLATFORMS_INCLUDE_X86_DARWIN
-cg_merge_LDFLAGS   += -Wl,-read_only_relocs -Wl,suppress
-endif
-endif
 
 #----------------------------------------------------------------------------
 # cachegrind-<platform>
@@ -93,28 +74,16 @@ endif
 # Miscellaneous
 #----------------------------------------------------------------------------
 
-# Run the formatters, type checkers, and linters on `cg_annotate.in`, then
-# generate `cg_annotate`.
-#
-# Note: `pyright` refuses to check any file without a `.py` extension, hence
-# the copying to `/tmp/tmp.py`.
-ann:
-	@echo "== black =="
-	@black cg_annotate.in
-	@echo
-	@echo "== isort =="
-	@isort cg_annotate.in
-	@echo
-	@echo "== mypy =="
-	@mypy --strict cg_annotate.in
-	@echo
-	@echo "== pyright =="
-	@cp cg_annotate.in /tmp/tmp.py && pyright /tmp/tmp.py && rm /tmp/tmp.py
-	@echo
-	@echo "== ruff =="
-	@ruff cg_annotate.in
-	@echo
-	@echo "== pylint =="
-	@pylint cg_annotate.in
-	@echo "== config.status =="
-	$(MAKE) cg_annotate
+# "Build" `cg_annotate`. The `+` avoids warnings about the jobserver.
+pyann:
+	+../auxprogs/pybuild.sh cg_annotate.in cg_annotate
+
+# "Build" `cg_diff`. The `+` avoids warnings about the jobserver.
+pydiff:
+	+../auxprogs/pybuild.sh cg_diff.in cg_diff
+
+# "Build" `cg_merge`. The `+` avoids warnings about the jobserver.
+pymerge:
+	+../auxprogs/pybuild.sh cg_merge.in cg_merge
+
+.PHONY: pyann pydiff pymerge
