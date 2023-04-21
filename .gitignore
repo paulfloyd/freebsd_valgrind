@@ -3,6 +3,7 @@
 # /
 /.in_place
 /.vs
+/.clang-format
 /acinclude.m4
 /aclocal.m4
 /autom4te-*.cache
@@ -297,6 +298,7 @@
 /dhat/tests/empty
 /dhat/tests/sig
 /dhat/tests/single
+/dhat/tests/user_histo1
 
 # /docs/
 /docs/FAQ.txt
@@ -1003,6 +1005,7 @@
 /memcheck/tests/wcs
 /memcheck/tests/weirdioctl
 /memcheck/tests/with space
+/memcheck/tests/wmemcmp
 /memcheck/tests/wrap1
 /memcheck/tests/wrap2
 /memcheck/tests/wrap3

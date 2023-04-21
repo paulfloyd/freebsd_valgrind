@@ -1,15 +1,14 @@
 --------------------------------------------------------------------------------
 -- Metadata
 --------------------------------------------------------------------------------
+Invocation:       ../cg_annotate ann-merge1c.cgout
 Description 1a
 Description 1b
 Command:          Command 1
-Data file:        ann-merge1c.cgout
 Events recorded:  A
 Events shown:     A
 Event sort order: A
-Threshold:        0.1
-Include dirs:     
+Threshold:        0.1%
 Annotation:       on
 
 --------------------------------------------------------------------------------
@@ -24,12 +23,12 @@ A__________
 --------------------------------------------------------------------------------
   A_________________  file:function
 
-> 70 (81.4%,  81.4%)  ann-merge-x.rs:
+< 70 (81.4%,  81.4%)  ann-merge-x.rs:
   40 (46.5%)            x1
   20 (23.3%)            x3
   10 (11.6%)            x2
 
-> 16 (18.6%, 100.0%)  ann-merge-y.rs:y1
+< 16 (18.6%, 100.0%)  ann-merge-y.rs:y1
 
 --------------------------------------------------------------------------------
 -- Function:file summary
@@ -74,6 +73,7 @@ A__________
 
 86 (100.0%)    annotated: files known & above threshold & readable, line numbers known
  0             annotated: files known & above threshold & readable, line numbers unknown
+ 0           unannotated: files known & above threshold & two or more non-identical
  0           unannotated: files known & above threshold & unreadable 
  0           unannotated: files known & below threshold
  0           unannotated: files unknown

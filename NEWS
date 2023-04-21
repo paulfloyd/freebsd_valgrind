@@ -34,6 +34,17 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
     $3 = 40
     (gdb) monitor who_point_at 0x1130a0 40
 
+* The vgdb utility now supports extended-remote protocol when
+  invoked with --multi. In this mode the GDB run command is
+  supported. Which means you don't need to run gdb and valgrind
+  from different terminals. So for example to start you program
+  in gdb and run it under valgrind you can do:
+  $ gdb prog
+  (gdb) set remote exec-file prog
+  (gdb) set sysroot /
+  (gdb) target extended-remote | vgdb --multi
+  (gdb) start
+
 * The behaviour of realloc with a size of zero can now
   be changed for tools that intercept malloc. Those
   tools are memcheck, helgrind, drd, massif and dhat.
@@ -87,9 +98,31 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
     front end monitor commands. See CORE CHANGES.
 
 * Cachegrind:
-  - `cg_annotate` has been rewritten from Perl into Python. The new
-    version is twice as fast, has more flexible argument parsing, and
-    will make future improvements easier.
+  - `--cache-sim=no` is now the default. The cache simulation is old and
+    unlikely to match any real modern machine. This means only the `Ir`
+    event are gathered by default, but that is by far the most useful
+    event.
+  - `cg_annotate`, `cg_diff`, and `cg_merge` have been rewritten in
+    Python. As a result, they all have more flexible command line
+    argument handling, e.g. supporting `--show-percs` and
+    `--no-show-percs` forms as well as the existing `--show-percs=yes`
+    and `--show-percs=no`.
+  - `cg_annotate` has some functional changes.
+    - It's much faster, e.g. 3-4x on common cases.
+    - It now supports diffing (with `--diff`, `--mod-filename`, and
+      `--mod-funcname`) and merging (by passing multiple data files).
+    - It now provides more information at the file and function level.
+      There are now "File:function" and "Function:file" sections. These
+      are very useful for programs that use inlining a lot.
+    - Support for user-annotated files and the `-I`/`--include` option
+      has been removed, because it was of little use and blocked other
+      improvements.
+    - The `--auto` option is renamed `--annotate`, though the old
+      `--auto=yes`/`--auto=no` forms are still supported.
+  - `cg_diff` and `cg_merge` are now deprecated, because `cg_annotate`
+    now does a better job of diffing and merging.
+  - The Cachegrind output file format has changed very slightly, but in
+    ways nobody is likely to notice.
 
 * Callgrind:
   - Valgrind now contains python code that defines GDB callgrind
@@ -113,11 +146,18 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 327548  false positive while destroying mutex
 382034  Testcases build fixes for musl
 351857  confusing error message about valid command line option
+374596  inconsistent RDTSCP support on x86_64
 392331  Spurious lock not held error from inside pthread_cond_timedwait
+397083  Likely false positive "uninitialised value(s)" for __wmemchr_avx2 and __wmemcmp_avx2_movbe
 400793  pthread_rwlock_timedwrlock false positive
+419054  Unhandled syscall getcpu on arm32
 433873  openat2 syscall unimplemented on Linux
+434057  Add stdio mode to valgrind's gdbserver
 435441  valgrind fails to interpose malloc on musl 1.2.2 due to weak symbol name and no libc soname
+436413  Warn about realloc of size zero
+439685  compiler warning in callgrind/main.c
 444110  priv/guest_ppc_toIR.c:36198:31: warning: duplicated 'if' condition.
+444487  hginfo test detects an extra lock inside data symbol "_rtld_local"
 444488  Use glibc.pthread.stack_cache_size tunable
 444568  drd/tests/pth_barrier_thr_cr fails on Fedora 38
 445743  "The impossible happened: mutex is locked simultaneously by two threads"
@@ -127,20 +167,29 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 460356  s390: Sqrt32Fx4 -- cannot reduce tree
 462830  WARNING: unhandled amd64-freebsd syscall: 474
 463027  broken check for MPX instruction support in assembler
+464103  Enhancement: add a client request to DHAT to mark memory to be histogrammed
 464476  Firefox fails to start under Valgrind
+464609  Valgrind memcheck should support Linux pidfd_open
 464680  Show issues caused by memory policies like selinux deny_execmem
 464859  Build failures with GCC-13 (drd tsan_unittest)
 464969  D language demangling
 465435  m_libcfile.c:66 (vgPlain_safe_fd): Assertion 'newfd >= VG_(fd_hard_limit)' failed.
 466104  aligned_alloc problems, part 1
+467036  Add time cost statistics for Regtest
 467482  Build failure on aarch64 Alpine
+467714  fdleak_* and rlimit tests fail when parent process has more than
+        64 descriptors opened
+467839  Gdbserver: Improve compatibility of library directory name
+468401  [PATCH] Add a style file for clang-format
+468556  Build failure for vgdb
+468606  build: remove "Valgrind relies on GCC" check/output
 n-i-bz  FreeBSD rfork syscall fail with EINVAL or ENOSYS rather than VG_(unimplemented)
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
 where XXXXXX is the bug number as listed above.
 
-(3.21.0.RC1: ?? Apr 2023)
+(3.21.0.RC1: 14 Apr 2023)
 
 Release 3.20.0 (24 Oct 2022)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
