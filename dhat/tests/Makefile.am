@@ -1,7 +1,7 @@
 
 include $(top_srcdir)/Makefile.tool-tests.am
 
-dist_noinst_SCRIPTS = filter_stderr filter_copy
+dist_noinst_SCRIPTS = filter_stderr filter_copy filter_user_histo
 
 EXTRA_DIST = \
 	acc.stderr.exp acc.vgtest \
@@ -12,7 +12,8 @@ EXTRA_DIST = \
 	empty.stderr.exp empty.vgtest \
 	sig.stderr.exp sig.vgtest \
 	single.stderr.exp single.vgtest \
-	user_histo1.stderr.exp user_histo1.vgtest
+	user_histo1.stderr.exp user_histo1.vgtest \
+	user_histo1.stdout.exp
 
 check_PROGRAMS = \
 	acc \
@@ -36,3 +37,4 @@ big_CFLAGS  = $(AM_CFLAGS) -Wno-unused-result
 copy_CFLAGS = $(AM_CFLAGS) -fno-builtin
 
 user_histo1_SOURCES = user_histo1.cpp
+user_histo1_CXXFLAGS = $(AM_CXXFLAGS) -std=c++11
