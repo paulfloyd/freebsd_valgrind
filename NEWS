@@ -1,4 +1,4 @@
-Release 3.21.0 (?? Apr 2023)
+Release 3.21.0 (28 Apr 2023)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This release supports X86/Linux, AMD64/Linux, ARM32/Linux, ARM64/Linux,
@@ -188,11 +188,17 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 468401  [PATCH] Add a style file for clang-format
 468556  Build failure for vgdb
 468606  build: remove "Valgrind relies on GCC" check/output
+469097  ppc64(be) doesn't support SCV syscall instruction
 n-i-bz  FreeBSD rfork syscall fail with EINVAL or ENOSYS rather than VG_(unimplemented)
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
 where XXXXXX is the bug number as listed above.
+
+* ==================== KNOWN ISSUES ===================
+
+* configure --enable-lto=yes is know to not work in all setups.
+  See bug 469049. Workaround: Build without LTO.
 
 (3.21.0.RC1: 14 Apr 2023)
 (3.21.0.RC2: 21 Apr 2023)
