@@ -953,6 +953,7 @@
 /memcheck/tests/post-syscall
 /memcheck/tests/reach_thread_register
 /memcheck/tests/realloc_size_zero
+/memcheck/tests/realloc_size_zero_again
 /memcheck/tests/realloc_size_zero_mismatch
 /memcheck/tests/realloc1
 /memcheck/tests/realloc2
@@ -1340,6 +1341,7 @@
 /memcheck/tests/freebsd/452275
 /memcheck/tests/freebsd/access
 /memcheck/tests/freebsd/bug464476
+/memcheck/tests/freebsd/bug470713
 /memcheck/tests/freebsd/capsicum
 /memcheck/tests/freebsd/chflags
 /memcheck/tests/freebsd/chmod_chown
