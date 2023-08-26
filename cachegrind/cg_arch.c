@@ -3,8 +3,8 @@
 /*--------------------------------------------------------------------*/
 
 /*
-   This file is part of Cachegrind, a Valgrind tool for cache
-   profiling programs.
+   This file is part of Cachegrind, a high-precision tracing profiler
+   built with Valgrind.
 
    Copyright (C) 2011-2017 Nicholas Nethercote
       njn@valgrind.org
@@ -311,7 +311,7 @@ void VG_(post_clo_init_configure_caches)(cache_t* I1c,
 #undef DEFINED
 }
 
-void VG_(print_cache_clo_opts)()
+void VG_(print_cache_clo_opts)(void)
 {
    VG_(printf)(
 "    --I1=<size>,<assoc>,<line_size>  set I1 cache manually\n"

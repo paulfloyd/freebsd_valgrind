@@ -33,6 +33,7 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+426751  Valgrind reports «still reachable» memory using musl (alpine running inside docker)
 460192  Add epoll_pwait2
 469049  link failure on ppc64 (big endian) valgrind 3.20
 469146  massif --ignore-fn does not ignore inlined functions
@@ -45,9 +46,12 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         Assertion 'resolved' failed
 470830  Don't print actions vgdb me ... continue for vgdb --multi mode
 470978  s390x: Valgrind cannot start qemu-kvm when "sysctl vm.allocate_pgste=0"
+471311  gdb --multi mode stdout redirecting to stderr
 471807  Add support for lazy reading and downloading of DWARF debuginfo
 472219  Syscall param ppoll(ufds.events) points to uninitialised byte(s)
 472963  Broken regular expression in configure.ac
+473604  Fix bug472219.c compile failure with Clang 16
+473677  make check compile failure with Clang 16 based on GCC 13.x
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

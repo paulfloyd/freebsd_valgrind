@@ -142,7 +142,6 @@ EXTRA_DIST = \
 	custom-overlap.stderr.exp custom-overlap.vgtest \
 	cxx17_aligned_new.stderr.exp cxx17_aligned_new.vgtest \
 		cxx17_aligned_new.stderr.exp_32 \
-		cxx17_aligned_new.stderr.exp-solaris \
 		cxx17_aligned_new.stdout.exp \
 	sized_aligned_new_delete_args.stderr.exp \
 		sized_aligned_new_delete_args.vgtest \
@@ -586,6 +585,11 @@ sized_aligned_new_delete_args_SOURCES = sized_aligned_new_delete_args.cpp
 sized_aligned_new_delete_args_CXXFLAGS = ${AM_CXXFLAGS} -std=c++17
 sized_aligned_new_delete_misaligned_SOURCES = sized_aligned_new_delete_misaligned.cpp
 sized_aligned_new_delete_misaligned_CXXFLAGS = ${AM_CXXFLAGS} -std=c++17
+if COMPILER_IS_CLANG
+cxx17_aligned_new_CXXFLAGS += -fsized-deallocation
+sized_aligned_new_delete_args_CXXFLAGS += -fsized-deallocation
+sized_aligned_new_delete_misaligned_CXXFLAGS += -fsized-deallocation
+endif
 endif
 
 demangle_SOURCES = demangle.cpp
