@@ -398,6 +398,8 @@ case "${host_os}" in
         freebsd_13_2=1320
         AC_DEFINE([FREEBSD_14], 1400, [FREEBSD_VERS value for FreeBSD 14.x])
         freebsd_14=1400
+        AC_DEFINE([FREEBSD_15], 1500, [FREEBSD_VERS value for FreeBSD 15.x])
+        freebsd_15=1500
 
         AC_MSG_CHECKING([for the kernel version])
         kernel=`uname -r`
@@ -446,7 +448,7 @@ case "${host_os}" in
               ;;
            *)
               AC_MSG_RESULT([unsupported (${kernel})])
-              AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 14.x])
+              AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 15.x])
               ;;
            esac
            ;;
@@ -455,9 +457,14 @@ case "${host_os}" in
            AC_DEFINE([FREEBSD_VERS], FREEBSD_14, [FreeBSD version])
            freebsd_vers=$freebsd_14
            ;;
+        15.*)
+           AC_MSG_RESULT([FreeBSD 15.x (${kernel})])
+           AC_DEFINE([FREEBSD_VERS], FREEBSD_15, [FreeBSD version])
+           freebsd_vers=$freebsd_15
+           ;;
         *)
            AC_MSG_RESULT([unsupported (${kernel})])
-           AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 14.x])
+           AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 15.x])
            ;;
         esac
 
@@ -2585,6 +2592,7 @@ AC_GCC_WARNING_SUBST_NO([static-local-in-inline], [FLAG_W_NO_STATIC_LOCAL_IN_INL
 AC_GCC_WARNING_SUBST_NO([mismatched-new-delete], [FLAG_W_NO_MISMATCHED_NEW_DELETE])
 AC_GCC_WARNING_SUBST_NO([infinite-recursion], [FLAG_W_NO_INFINITE_RECURSION])
 AC_GCC_WARNING_SUBST_NO([expansion-to-defined], [FLAG_W_NO_EXPANSION_TO_DEFINED])
+AC_GCC_WARNING_SUBST_NO([unused-variable], [FLAG_W_NO_UNUSED_VARIABLE])
 AC_GCC_WARNING_SUBST_NO([unused-but-set-variable], [FLAG_W_NO_UNUSED_BUT_SET_VARIABLE])
 AC_GCC_WARNING_SUBST_NO([non-power-of-two-alignment], [FLAG_W_NO_NON_POWER_OF_TWO_ALIGNMENT])
 AC_GCC_WARNING_SUBST_NO([sign-compare], [FLAG_W_NO_SIGN_COMPARE])
@@ -2598,6 +2606,7 @@ AC_GCC_WARNING_SUBST_NO([fortify-source], [FLAG_W_NO_FORTIFY_SOURCE])
 AC_GCC_WARNING_SUBST_NO([builtin-memcpy-chk-size], [FLAG_W_NO_BUILTIN_MEMCPY_CHK_SIZE])
 AC_GCC_WARNING_SUBST_NO([incompatible-pointer-types-discards-qualifiers], [FLAG_W_NO_INCOMPATIBLE_POINTER_TYPES_DISCARDS_QUALIFIERS])
 AC_GCC_WARNING_SUBST_NO([suspicious-bzero], [FLAG_W_NO_SUSPICIOUS_BZERO])
+AC_GCC_WARNING_SUBST_NO([attributes], [FLAG_W_NO_ATTRIBUTES])
 
 AC_GCC_WARNING_SUBST_NO_VAL([alloc-size-larger-than], [1677216], [FLAG_W_NO_ALLOC_SIZE_LARGER_THAN])
 
