@@ -1321,8 +1321,6 @@ struct vki_semid_ds {
    unsigned short    sem_nsems;     /* no. of semaphores in array */
    vki_time_t     sem_otime;     /* last semop time */
    vki_time_t     sem_ctime;     /* last change time */
-   long        sem_pad2;
-   long        sem_pad3[4];
 };
 
 struct vki_sembuf {
@@ -1610,6 +1608,7 @@ struct vki_dirent {
 
 #define VKI_RFSPAWN         (1U<<31U)
 
+#define VKI_CLOSE_RANGE_CLOEXEC     (1<<2)
 
 //----------------------------------------------------------------------
 // From sys/msg.h
