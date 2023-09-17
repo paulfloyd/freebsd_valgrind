@@ -3455,8 +3455,8 @@ POST(sys_getresgid)
 // int kqueue(void);
 PRE(sys_kqueue)
 {
-   PRINT("%s", "sys_kqueue ()");
-   PRE_REG_READ0(omt, "kqueue");
+   PRINT("%s", "sys_kqueue(void)");
+   PRE_REG_READ0(int, "kqueue");
 }
 
 POST(sys_kqueue)
@@ -6769,7 +6769,7 @@ PRE(sys___specialfd)
 // int swapoff(const char *special, u_int flags);
 PRE(sys_swapoff)
 {
-   PRINT("sys_swapoff ( %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,(char *)ARG1, ARG2);
+   PRINT("sys_swapoff(%#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u)", ARG1,(char *)ARG1, ARG2);
    PRE_REG_READ2(int, "swapoff", const char *, special, u_int, flags);
    PRE_MEM_RASCIIZ( "swapoff(special)", ARG1 );
 }
@@ -6778,9 +6778,37 @@ PRE(sys_swapoff)
 
 #if (FREEBSD_VERS >= FREEBSD_15)
 
-// SYS_kqueuex 583 unimpl
+// SYS_kqueuex 583
+// int kqueuex(u_int flags);
+PRE(sys_kqueuex)
+{
+   PRINT("sys_kqueuex(%#" FMT_REGWORD "x)", ARG1);
+   PRE_REG_READ1(int, "kqueuex", u_int, flags);
+}
 
-// SYS_membarrier 584 unimpl
+POST(sys_kqueuex)
+{
+   if (!ML_(fd_allowed)(RES, "kqueuex", tid, True)) {
+      VG_(close)(RES);
+      SET_STATUS_Failure(VKI_EMFILE);
+   } else {
+      if (VG_(clo_track_fds)) {
+         ML_(record_fd_open_nameless)(tid, RES);
+      }
+   }
+}
+
+// SYS_membarrier 584
+// syscalls.master
+// int membarrier(int cmd, unsigned flags, int cpu_id);
+PRE(sys_membarrier)
+{
+   // cmd is signed int but the constants in the headers
+   // are hex so print in hex
+   PRINT("sys_membarrier(%#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %" FMT_REGWORD "d)",
+         ARG1, ARG2, SARG3);
+   PRE_REG_READ3(int, "membarrier", int, cmd, unsigned, flags, int, cpu_id);
+}
 
 // SYS_timerfd_create 585
 // int timerfd_create(int clockid, int flags);
@@ -7575,8 +7603,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 #endif
 
 #if (FREEBSD_VERS >= FREEBSD_15)
-   // unimpl __NR_kqueuex             583
-   // unimpl __NR_kqueuex             584
+   BSDXY(__NR_kqueuex,          sys_kqueuex),           // 583
+   BSDX_(__NR_membarrier,       sys_membarrier),        // 584
    BSDXY(__NR_timerfd_create,   sys_timerfd_create),    // 585
    BSDXY(__NR_timerfd_settime,  sys_timerfd_settime),   // 586
    BSDXY(__NR_timerfd_gettime,  sys_timerfd_gettime),   // 587

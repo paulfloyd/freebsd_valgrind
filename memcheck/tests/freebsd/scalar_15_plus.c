@@ -7,10 +7,12 @@ int main(void)
    x0 = px[0];
 
    /* SYS_kqueuex                        583 */
-   /* unimpl */
+   GO(SYS_kqueuex, " 1s 0m");
+   SY(SYS_kqueuex, x0+123); FAIL;
 
    /* SYS_membarrier                     584 */
-   /* unimpl */
+   GO(SYS_membarrier, " 3s 0m");
+   SY(SYS_membarrier, x0+123, x0+456, x0+789); FAIL;
 
    /* SYS_timerfd_create                 585 */
    GO(SYS_timerfd_create, " 2s 0m");

@@ -106,6 +106,7 @@
 /cachegrind/tests/cachegrind.out.*
 /cachegrind/tests/chdir
 /cachegrind/tests/clreq
+/cachegrind/tests/clreq2
 /cachegrind/tests/dlclose
 /cachegrind/tests/wrap5
 
@@ -1365,6 +1366,8 @@
 /memcheck/tests/freebsd/getfsstat
 /memcheck/tests/freebsd/inlinfo
 /memcheck/tests/freebsd/inlinfo_nested.so
+/memcheck/tests/freebsd/kqueue
+/memcheck/tests/freebsd/kqueuex
 /memcheck/tests/freebsd/linkat
 /memcheck/tests/freebsd/memalign
 /memcheck/tests/freebsd/misc
