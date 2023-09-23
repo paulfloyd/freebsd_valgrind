@@ -2142,12 +2142,22 @@ Bool ML_(read_elf_object) ( struct _DebugInfo* di )
                Bool loaded = False;
                for (j = 0; j < VG_(sizeXA)(di->fsm.maps); j++) {
                   const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, j);
+                  Bool offset_checks = a_phdr.p_offset >= map->foff
+                                                     && a_phdr.p_offset <  map->foff + map->size
+                                                    && a_phdr.p_offset + a_phdr.p_filesz <= map->foff + map->size;
+#if defined(VGO_freebsd)
+                  /*
+                   * One special case where we can't get an accurate value
+                   * for the offset - the RW segment of the tool itself.
+                   * See aspacemgr-linux.c parse_procselfmaps()
+                   */
+                   if (map->ignore_foff) {
+                      offset_checks = True;
+                   }
+#endif
                   if (   (map->rx || map->rw || map->ro)
                       && map->size > 0 /* stay sane */
-                      && a_phdr.p_offset >= map->foff
-                      && a_phdr.p_offset <  map->foff + map->size
-                      && a_phdr.p_offset + a_phdr.p_filesz 
-                         <= map->foff + map->size) {
+                      && offset_checks) {
                      RangeAndBias item;
                      item.svma_base  = a_phdr.p_vaddr;
                      item.svma_limit = a_phdr.p_vaddr + a_phdr.p_memsz;
@@ -2883,6 +2893,7 @@ Bool ML_(read_elf_object) ( struct _DebugInfo* di )
 #        if defined(VGO_solaris)
          FIND_MIMG(   ".SUNW_ldynsym",      ldynsym_escn)
 #        endif
+         FIND_MIMG(   ".opd",               opd_escn)
 
          FINDX_MIMG(  ".eh_frame",          ehframe_escn[ehframe_mix],
                do { ehframe_mix++; vg_assert(ehframe_mix <= N_EHFRAME_SECTS);
