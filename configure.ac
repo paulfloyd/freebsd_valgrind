@@ -17,8 +17,8 @@
 m4_define([v_major_ver], [3])
 m4_define([v_minor_ver], [22])
 m4_define([v_micro_ver], [0])
-m4_define([v_suffix_ver], [GIT])
-m4_define([v_rel_date], ["?? Oct 2023"])
+m4_define([v_suffix_ver], [RC2])
+m4_define([v_rel_date], ["26 Oct 2023"])
 m4_define([v_version],
 	  m4_if(v_suffix_ver, [],
 		[v_major_ver.v_minor_ver.v_micro_ver],
@@ -4913,7 +4913,8 @@ AC_CHECK_FUNCS([     \
         strchrnul    \
         memrchr      \
         strndup      \
-        close_range
+        close_range  \
+        wcsncpy
         ])
 
 # AC_CHECK_LIB adds any library found to the variable LIBS, and links these
@@ -4943,6 +4944,8 @@ AM_CONDITIONAL([HAVE_GETADDRINFO],
                [test x$ac_cv_func_getaddrinfo = xyes])
 AM_CONDITIONAL([HAVE_CLOSE_RANGE],
                [test x$ac_cv_func_close_range = xyes])
+AM_CONDITIONAL([HAVE_WCSNCPY],
+               [test x$ac_cv_func_wcsncpy = xyes])
 
 if test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
@@ -5444,6 +5447,22 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ], [
     AC_MSG_RESULT([no])
 ])
+
+# Check for C11 thrd_create()
+AC_MSG_CHECKING([for thrd_create()])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+#include <threads.h>
+int thrd_entry(void *arg) { return 0; }
+], [[thrd_t thr; return thrd_create(&thr, thrd_entry, NULL);]])],
+[
+ac_cxx_have_thrd_create=yes
+AC_MSG_RESULT([yes])
+], [
+ac_cxx_have_thrd_create=no
+AC_MSG_RESULT([no])
+])
+
+AM_CONDITIONAL(HAVE_THRD_CREATE, test x$ac_cxx_have_thrd_create = xyes)
 
 
 

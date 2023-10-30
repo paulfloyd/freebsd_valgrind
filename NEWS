@@ -62,6 +62,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 433859  Add mismatched detection to C++ 17 aligned new/delete
 460192  Add epoll_pwait2
 461074  DWARF2 CFI reader: unhandled DW_OP_ 0x11 (consts) DW_OP_ 0x92 (bregx)
+465782  s390x: Valgrind doesn't compile with Clang on s390x
 466105  aligned_alloc problems, part 2
 467441  Add mismatched detection to C++ 14 sized delete
 469049  link failure on ppc64 (big endian) valgrind 3.20
@@ -86,12 +87,18 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 473870  FreeBSD 14 applications fail early at startup
 473944  Handle mold linker split RW PT_LOAD segments correctly
 474332  aligned_alloc under Valgrind returns nullptr when alignment is not a multiple of sizeof(void *)
+475650  DRD does not work with C11 threads
+475652  Missing suppression for __wcsncpy_avx2 (strncpy-avx2.S:308)?
+476108  vg_replace_malloc DELETE checks size
 n-i-bz  Allow arguments with spaces in .valgrindrc files
 n-i-bz  FreeBSD fixed reading of Valgrind tools own debuginfo
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
 where XXXXXX is the bug number as listed above.
+
+(3.22.0.RC1: 17 Oct 2023)
+(3.22.0.RC2: 26 Oct 2023)
 
 Release 3.21.0 (28 Apr 2023)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -172,6 +172,7 @@ EXTRA_DIST = \
 		sized_aligned_new_delete_misaligned3_supp.stderr.exp \
 		sized_aligned_new_delete_misaligned3_supp.stderr.exp_32 \
 	new_aligned_delete_default.stderr.exp \
+	new_aligned_delete_default.stderr.exp_32 \
 		new_aligned_delete_default.vgtest \
 	new_delete_mismatch_size.stderr.exp \
 		new_delete_mismatch_size.vgtest \
@@ -292,6 +293,7 @@ EXTRA_DIST = \
 	origin5-bz2.stderr.exp-glibc25-x86 \
 	origin5-bz2.stderr.exp-glibc25-amd64 \
 	origin5-bz2.stderr.exp-glibc25-amd64-b \
+	origin5-bz2.stderr.exp-glibc25-x86-b \
 	origin5-bz2.stderr.exp-glibc27-ppc64 \
 	origin5-bz2.stderr.exp-glibc212-s390x \
 	origin5-bz2.stderr.exp-glibc234-s390x \
@@ -423,6 +425,7 @@ EXTRA_DIST = \
 	vcpu_fnfns.stdout.exp-darwin vcpu_fnfns.stdout.exp-solaris \
 	vcpu_fnfns.stderr.exp vcpu_fnfns.vgtest \
 	wcs.vgtest wcs.stderr.exp wcs.stdout.exp \
+	wcsncpy.vgtest wcsncpy.stderr.exp \
 	wmemcmp.vgtest wmemcmp.stderr.exp \
 	wrap1.vgtest wrap1.stdout.exp wrap1.stderr.exp \
 	wrap2.vgtest wrap2.stdout.exp wrap2.stderr.exp \
@@ -579,6 +582,11 @@ endif
 
 if HAVE_PTHREAD_SETNAME_NP
 check_PROGRAMS += threadname 
+endif
+
+# are there still pre-C99 C compilers?
+if HAVE_WCSNCPY
+check_PROGRAMS += wcsncpy
 endif
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
