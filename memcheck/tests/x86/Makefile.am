@@ -65,3 +65,8 @@ tronical_SOURCES 	= tronical.S
 
 more_x86_fp_LDADD	= -lm
 pcmpgt_SOURCES = pcmpgt.cpp
+if VGCONF_OS_IS_FREEBSD
+pcmpgt_CXXFLAGS = $(AM_CXXFLAGS) $(FLAG_32ON64_GXX)
+else
+pcmpgt_CXXFLAGS = $(AM_CXXFLAGS)
+endif
