@@ -32,9 +32,11 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 476320  Build failure with GCC
 476535  Difference in allocation size for massif/tests/overloaded-new between
         clang++/libc++ and g++/libstdc++
+476708  valgrind-monitor.py regular expressions should use raw strings
 476780  Extend strlcat and strlcpy wrappers to GNU libc
 476787  Build of Valgrind 3.21.0 fails when SOLARIS_PT_SUNDWTRACE_THRP is
         defined
+476887  WARNING: unhandled amd64-freebsd syscall: 578
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
