@@ -3012,14 +3012,17 @@ PRE(sys_aio_cancel)
    } else {
       if (ARG2) {
          if (ML_(safe_to_deref)((struct vki_aiocb *)ARG2, sizeof(struct vki_aiocb))) {
-            struct vki_aiocb *iocb = (struct vki_aiocb *)ARG2;
+            // struct vki_aiocb *iocb = (struct vki_aiocb *)ARG2;
             // @todo PJF cancel only requests associated with
             // fildes and iocb
+            // Do I need to remove pending reads from iocb(v)_table
+            // or should the user always call aio_return even after
+            // aio_cancel?
          } else {
             SET_STATUS_Failure(VKI_EINVAL);
          }
       } else {
-         // @todo PJF cancel all requests associated with fildes
+         // @todo PJF cancel all requests associated with fildes, see above
       }
    }
 }
@@ -6883,7 +6886,15 @@ PRE(sys_aio_writev)
          // by the members of the iocb->aio_iov array
          // FreeBSD headers #define define this to aio_iovcnt
          SizeT vec_count = (SizeT)iocb->aio_nbytes;
+#if defined(__clang__)
+#pragma clang diagnostic push
+         // yes, I know it is volatile
+#pragma clang diagnostic ignored "-Wcast-qual"
+#endif
          struct vki_iovec* p_iovec  = (struct vki_iovec*)iocb->aio_buf;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
          PRE_MEM_READ("aio_writev(iocb->aio_iov)", (Addr)p_iovec, vec_count*sizeof(struct vki_iovec));
          // and this to aio_iov
 
@@ -6912,7 +6923,15 @@ PRE(sys_aio_readv)
          SET_STATUS_Failure( VKI_EBADF );
       } else {
          SizeT vec_count = (SizeT)iocb->aio_nbytes;
+#if defined(__clang__)
+#pragma clang diagnostic push
+         // yes, I know it is volatile
+#pragma clang diagnostic ignored "-Wcast-qual"
+#endif
          struct vki_iovec* p_iovec  = (struct vki_iovec*)iocb->aio_buf;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
          PRE_MEM_READ("aio_readv(iocb->aio_iov)", (Addr)p_iovec,  vec_count*sizeof(struct vki_iovec));
          // @todo PJF check that p_iovec is accessible
          if (ML_(safe_to_deref)(p_iovec, vec_count*sizeof(struct vki_iovec*))) {
