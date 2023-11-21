@@ -274,6 +274,8 @@ typedef uint32_t vki_u32;
 #define	VKI_O_EXCL	O_EXCL
 #define	VKI_O_EVTONLY	O_EVTONLY
 
+#define VKI_AT_FDCWD AT_FDCWD
+
 #define	VKI_F_DUPFD	F_DUPFD
 #define	VKI_F_GETFD	F_GETFD
 #define	VKI_F_SETFD	F_SETFD
@@ -1120,7 +1122,7 @@ typedef int vki_errno_t;
 
 /* necp stuff.  This doesn't appear to exist in any user space include
    file. */
-#if DARWIN_VERS == DARWIN_10_10
+#if DARWIN_VERS >= DARWIN_10_10
 struct vki_necp_aggregate_result {
    vki_u_int32_t field1;
    unsigned int  field2;
@@ -1130,7 +1132,10 @@ struct vki_necp_aggregate_result {
    u_int32_t     field6;
    u_int32_t     field7;
 };
-#endif /* DARWIN_VERS == DARWIN_10_10 */
+
+#define VKI_CSR_CHECK 0
+#define VKI_CSR_GET_ACTIVE_CONFIG 1
+#endif /* DARWIN_VERS >= DARWIN_10_10 */
 
 #if DARWIN_VERS >= DARWIN_10_12
 // ulock_wake & ulock_wait operations
