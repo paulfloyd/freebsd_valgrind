@@ -24,6 +24,7 @@ than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
 
+281059  Cannot connect to Oracle using valgrind
 390269  unhandled amd64-darwin syscall: unix:464 (openat_nocancel)
 401284  False positive "Source and destination overlap in strncat"
 428364  Signals inside io_uring_enter not handled
@@ -41,6 +42,12 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 476787  Build of Valgrind 3.21.0 fails when SOLARIS_PT_SUNDWTRACE_THRP is
         defined
 476887  WARNING: unhandled amd64-freebsd syscall: 578
+477198  Add fchmodat2 syscall on linux
+477628  Add mremap support for Solaris
+477630  Include ucontext.h rather than sys/ucontext.h in Solaris sources
+477719  vgdb incorrectly replies to qRcmd packet
+478211  Redundant code for vgdb.c and Valgrind core tools
+n-i-bz  Add redirect for memccpy
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

@@ -2673,6 +2673,7 @@ POST(sys_aio_read)
       if (!VG_(OSetWord_Contains)(iocb_table, (UWord)iocb)) {
          VG_(OSetWord_Insert)(iocb_table, (UWord)iocb);
       } else {
+         // @todo PJF this warns without callstack
          VG_(dmsg)("Warning: Duplicate control block %p in aio_read\n",
                    (void *)(Addr)ARG1);
          VG_(dmsg)("Warning: Ensure 'aio_return' is called when 'aio_read' has completed\n");
@@ -2957,7 +2958,7 @@ PRE(sys_aio_return)
    // read or write?
    if (ML_(safe_to_deref)((struct vki_aiocb *)ARG1, sizeof(struct vki_aiocb))) {
       SET_STATUS_from_SysRes(VG_(do_syscall1)(SYSNO, ARG1));
-      if (SUCCESS) {
+      /*if (SUCCESS)*/ {
          struct vki_aiocb* iocb = (struct vki_aiocb*)ARG1;
          if (!aio_init_done) {
             aio_init();
@@ -2965,11 +2966,27 @@ PRE(sys_aio_return)
          if (!aiov_init_done) {
             aiov_init();
          }
+
+         // for the happy path aio_return is supposed to be called
+         // after the io has completed (as determined by aio_error,
+         // aio_suspend or a signal).
+
+         // but what if the aio_read failed or hasn't completed?
+         // we want to remove the read from the iocb(v)_table
+         // in the case of aio_read failing
+         // if the read hasn't completed that's a user error
+         // I don't know if it's possible to recover in that case
+         // the iocb will have been removed from the table
+         // so if the user does recover and call aio_return
+         // 'correctly' we won't do the POST_MEM_WRITE
+         // I don't think that we can tell apart a failing
+         // read from a premature aio_return
+
          // check if it was a plain read
-         if (VG_(OSetWord_Remove)(iocb_table, (UWord)iocb)) {
+         if (VG_(OSetWord_Remove)(iocb_table, (UWord)iocb) && SUCCESS) {
             POST_MEM_WRITE((Addr)iocb->aio_buf, iocb->aio_nbytes);
          }
-         if (VG_(OSetWord_Remove)(iocbv_table, (UWord)iocb)) {
+         if (VG_(OSetWord_Remove)(iocbv_table, (UWord)iocb) && SUCCESS) {
             SizeT vec_count = (SizeT)iocb->aio_nbytes;
             // assume that id the read succeded p_iovec is accessible
             volatile struct vki_iovec* p_iovec  = (volatile struct vki_iovec*)iocb->aio_buf;
@@ -6956,6 +6973,7 @@ POST(sys_aio_readv)
       if (!VG_(OSetWord_Contains)(iocbv_table, (UWord)iocbv)) {
          VG_(OSetWord_Insert)(iocbv_table, (UWord)iocbv);
       } else {
+         // @todo PJF this warns without callstack
          VG_(dmsg)("Warning: Duplicate control block %p in aio_readv\n",
                    (void *)(Addr)ARG1);
          VG_(dmsg)("Warning: Ensure 'aio_return' is called when 'aio_readv' has completed\n");
