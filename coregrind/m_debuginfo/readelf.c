@@ -2490,7 +2490,12 @@ Bool ML_(read_elf_object) ( struct _DebugInfo* di )
             if (svma == tmp) { /* adjacent to previous .rodata* */
                di->rodata_size = size + tmp - di->rodata_svma;
             } else {
-               BAD(".rodata"); /* is OK, but we cannot handle multiple .rodata* */
+                /* is OK, but we cannot handle multiple .rodata* */
+               TRACE_SYMTAB("%s section avma = %#lx .. %#lx is not contiguous, not merged\n",
+                            name,
+                            di->rodata_avma,
+                            di->rodata_avma + di->rodata_size - 1);
+               goto out_rodata;
             }
          }
          if (inrx) {
@@ -2514,6 +2519,7 @@ Bool ML_(read_elf_object) ( struct _DebugInfo* di )
          TRACE_SYMTAB("acquiring .rodata bias = %#lx\n",
                       (UWord)di->rodata_bias);
       }
+  out_rodata:
 
       if (0 == VG_(strcmp)(name, ".dynbss")) {
          if (inrw1 && !di->bss_present) {
