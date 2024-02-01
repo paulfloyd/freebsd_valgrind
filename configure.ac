@@ -237,6 +237,8 @@ AC_MSG_CHECKING([for a supported CPU])
 # Endian.  Similarly, ppc64le or PPC64LE refer to only 64-bit systems that are
 # Little Endian.
 
+VGCONF_PLATFORM_ARM_ARCH=
+
 case "${host_cpu}" in
      i?86) 
 	AC_MSG_RESULT([ok (${host_cpu})])
@@ -271,8 +273,21 @@ case "${host_cpu}" in
         ARCH_MAX="s390x"
         ;;
 
+     armv8*)
+	AC_MSG_RESULT([ok (${host_cpu})])
+	VGCONF_PLATFORM_ARM_ARCH="-marm -mcpu=cortex-a8"
+	ARCH_MAX="arm"
+	;;
+
+     armv7*)
+	AC_MSG_RESULT([ok (${host_cpu})])
+	VGCONF_PLATFORM_ARM_ARCH="-marm -mcpu=cortex-a8"
+	ARCH_MAX="arm"
+	;;
+
      arm*)
 	AC_MSG_RESULT([ok (${host_cpu})])
+	VGCONF_PLATFORM_ARM_ARCH="-march=armv6"
 	ARCH_MAX="arm"
 	;;
 
@@ -315,6 +330,8 @@ case "${host_cpu}" in
 	AC_MSG_ERROR([Unsupported host architecture. Sorry])
 	;;
 esac
+
+AC_SUBST(VGCONF_PLATFORM_ARM_ARCH)
 
 #----------------------------------------------------------------------------
 
@@ -396,6 +413,8 @@ case "${host_os}" in
         freebsd_13_1=1310
         AC_DEFINE([FREEBSD_13_2], 1320, [FREEBSD_VERS value for FreeBSD 13.2])
         freebsd_13_2=1320
+        AC_DEFINE([FREEBSD_13_3], 1330, [FREEBSD_VERS value for FreeBSD 13.3])
+        freebsd_13_3=1330
         AC_DEFINE([FREEBSD_14], 1400, [FREEBSD_VERS value for FreeBSD 14.x])
         freebsd_14=1400
         AC_DEFINE([FREEBSD_15], 1500, [FREEBSD_VERS value for FreeBSD 15.x])
@@ -445,6 +464,11 @@ case "${host_os}" in
               AC_MSG_RESULT([FreeBSD 13.2 (${kernel})])
               AC_DEFINE([FREEBSD_VERS], FREEBSD_13_2, [FreeBSD version])
               freebsd_vers=$freebsd_13_2
+              ;;
+           13.3-*)
+              AC_MSG_RESULT([FreeBSD 13.3 (${kernel})])
+              AC_DEFINE([FREEBSD_VERS], FREEBSD_13_3, [FreeBSD version])
+              freebsd_vers=$freebsd_13_3
               ;;
            *)
               AC_MSG_RESULT([unsupported (${kernel})])

@@ -974,53 +974,23 @@ PRE(sys_setlogin)
 // int ioctl(int fd, unsigned long request, ...);
 PRE(sys_ioctl)
 {
-   UInt dir  = _VKI_IOC_DIR(ARG2);
-   UInt size = _VKI_IOC_SIZE(ARG2);
    *flags |= SfMayBlock;
    // @todo PJF presumably the presence of ARG3 depends on ARG2
    PRINT("sys_ioctl ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(int, "ioctl",
                  int, fd, unsigned long, request, unsigned long, arg);
 
-   /* On FreeBSD, ALL ioctl's are IOR/IOW encoded.  Just use the default decoder */
-   if (SimHintiS(SimHint_lax_ioctls, VG_(clo_sim_hints))) {
-      /*
-      * Be very lax about ioctl handling; the only
-      * assumption is that the size is correct. Doesn't
-      * require the full buffer to be initialized when
-      * writing.  Without this, using some device
-      * drivers with a large number of strange ioctl
-      * commands becomes very tiresome.
-      */
-   } else if (dir == _VKI_IOC_NONE && size > 0) {
-      static UWord unknown_ioctl[10];
-      static Int moans = sizeof(unknown_ioctl) / sizeof(unknown_ioctl[0]);
-      if (moans > 0 && !VG_(clo_xml)) {
-         /* Check if have not already moaned for this request. */
-         UInt i;
-         for (i = 0; i < sizeof(unknown_ioctl)/sizeof(unknown_ioctl[0]); i++) {
-            if (unknown_ioctl[i] == ARG2) {
-               break;
-            }
-            if (unknown_ioctl[i] == 0) {
-               unknown_ioctl[i] = ARG2;
-               moans--;
-               VG_(umsg)("Warning: noted but unhandled ioctl 0x%lx"
-                         " with no direction hints.\n", ARG2);
-               VG_(umsg)("   This could cause spurious value errors to appear.\n");
-               VG_(umsg)("   See README_MISSING_SYSCALL_OR_IOCTL for "
-                         "guidance on writing a proper wrapper.\n" );
-               return;
-            }
-         }
-      }
-   } else {
-      if ((dir & _VKI_IOC_WRITE) && size > 0) {
-         PRE_MEM_READ( "ioctl(generic)", ARG3, size);
-      }
-      if ((dir & _VKI_IOC_READ) && size > 0) {
-         PRE_MEM_WRITE( "ioctl(generic)", ARG3, size);
-      }
+   switch (ARG2) {
+   case VKI_FIODGNAME: {
+      struct vki_fiodgname_arg* data = (struct vki_fiodgname_arg*)(Addr)ARG3;
+      PRE_FIELD_READ("ioctl(FIODGNAME).len", data->len);
+      PRE_FIELD_READ("ioctl(FIODGNAME).buf", data->buf);
+      PRE_MEM_WRITE("ioctl(FIODGNAME).buf", (Addr)data->buf, data->len);
+      break;
+   }
+   default:
+      ML_(PRE_unknown_ioctl)(tid, ARG2, ARG3);
+      break;
    }
 
    // The block below is from Ryan Stone
@@ -1087,12 +1057,15 @@ PRE(sys_ioctl)
 
 POST(sys_ioctl)
 {
-   UInt dir  = _VKI_IOC_DIR(ARG2);
-   UInt size = _VKI_IOC_SIZE(ARG2);
-   vg_assert(SUCCESS);
-   if (size > 0 && (dir & _VKI_IOC_READ)
-         && RES == 0 && ARG3 != (Addr)NULL) {
-      POST_MEM_WRITE(ARG3, size);
+   switch (ARG2) {
+   case VKI_FIODGNAME: {
+      struct vki_fiodgname_arg* data = (struct vki_fiodgname_arg*)(Addr)ARG3;
+      POST_MEM_WRITE((Addr)data->buf, data->len);
+      break;
+   }
+   default:
+      ML_(POST_unknown_ioctl)(tid, RES, ARG2, ARG3);
+      break;
    }
 
 #if 0
@@ -4733,7 +4706,7 @@ PRE(sys__umtx_op)
                     struct umtx_robust_lists_params *, obj, int, op, unsigned long, flags);
       PRE_MEM_READ( "_umtx_op_robust_lists(mutex)", ARG3, sizeof(struct vki_umtx_robust_lists_params) );
       break;
-#if (FREEBSD_VERS >= FREEBSD_14)
+#if (FREEBSD_VERS >= FREEBSD_13_3)
    case VKI_UMTX_OP_GET_MIN_TIMEOUT:
       PRINT( "sys__umtx_op ( GET_MIN_TIMEOUT, %#" FMT_REGWORD "x)", ARG4);
       // bit of a pain just reads args 2 and 4
@@ -4821,7 +4794,7 @@ POST(sys__umtx_op)
    case VKI_UMTX_OP_SHM:
    case VKI_UMTX_OP_ROBUST_LISTS:
       break;
-#if (FREEBSD_VERS >= FREEBSD_14)
+#if (FREEBSD_VERS >= FREEBSD_13_3)
    case VKI_UMTX_OP_GET_MIN_TIMEOUT:
       POST_MEM_WRITE( ARG4, sizeof(long int) );
       break;
@@ -7018,7 +6991,7 @@ PRE(sys_swapoff)
 
 #endif
 
-#if (FREEBSD_VERS >= FREEBSD_15)
+#if (FREEBSD_VERS >= FREEBSD_15) || (FREEBSD_VERS >= FREEBSD_13_3)
 
 // SYS_kqueuex 583
 // int kqueuex(u_int flags);
@@ -7051,6 +7024,10 @@ PRE(sys_membarrier)
          ARG1, ARG2, SARG3);
    PRE_REG_READ3(int, "membarrier", int, cmd, unsigned, flags, int, cpu_id);
 }
+
+#endif
+
+#if (FREEBSD_VERS >= FREEBSD_15)
 
 // SYS_timerfd_create 585
 // int timerfd_create(int clockid, int flags);
@@ -7847,9 +7824,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDX_(__NR_swapoff,          sys_swapoff),           // 582
 #endif
 
-#if (FREEBSD_VERS >= FREEBSD_15)
+#if (FREEBSD_VERS >= FREEBSD_15) || (FREEBSD_VERS >= FREEBSD_13_3)
    BSDXY(__NR_kqueuex,          sys_kqueuex),           // 583
    BSDX_(__NR_membarrier,       sys_membarrier),        // 584
+#endif
+#if (FREEBSD_VERS >= FREEBSD_15)
    BSDXY(__NR_timerfd_create,   sys_timerfd_create),    // 585
    BSDXY(__NR_timerfd_settime,  sys_timerfd_settime),   // 586
    BSDXY(__NR_timerfd_gettime,  sys_timerfd_gettime),   // 587
