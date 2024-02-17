@@ -24,6 +24,7 @@ than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
 
+283429  ARM leak checking needs CLEAR_CALLER_SAVED_REGS
 281059  Cannot connect to Oracle using valgrind
 390269  unhandled amd64-darwin syscall: unix:464 (openat_nocancel)
 401284  False positive "Source and destination overlap in strncat"
@@ -31,7 +32,9 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 437790  valgrind reports "Conditional jump or move depends on uninitialised
         value" in memchr of macOS 10.12-10.15
 460616  disInstr(arm64): unhandled instruction 0x4E819402 (dotprod/ASIMDDP)
+466762  Add redirs for C23 free_sized() and free_aligned_sized()
 466884  Missing writev uninit padding suppression for _XSend
+471036  disInstr_AMD64: disInstr miscalculated next %rip on RORX imm8, m32/64, r32/6
 475498  Add reallocarray wrapper
 476320  Build failure with GCC
 476331  clean up generated/distributed filter scripts
@@ -59,6 +62,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         Assertion '!sr_isError(sr)' failed."
 480488  Add support for FreeBSD 13.3
 480706  Unhandled syscall 325 (mlock2)
+481131  [PATCH] x86 regtest: fix clobber lists in generated asm statements
 n-i-bz  Add redirect for memccpy
 
 To see details of a given bug, visit

@@ -139,6 +139,8 @@ EXTRA_DIST = \
 		cond_st.stderr.exp-64bit-non-arm \
 		cond_st.stderr.exp-32bit-non-arm \
 	leak_cpp_interior.stderr.exp leak_cpp_interior.stderr.exp-64bit leak_cpp_interior.vgtest libstdc++.supp \
+	leak_cpp_interior.stderr.exp-freebsd leak_cpp_interior.stderr.exp-freebsd-32bit \
+		leak_cpp_interior.stderr.exp-arm \
 	custom_alloc.stderr.exp custom_alloc.vgtest \
 		custom_alloc.stderr.exp-s390x-mvc \
 	custom-overlap.stderr.exp custom-overlap.vgtest \
@@ -304,6 +306,7 @@ EXTRA_DIST = \
 	origin5-bz2.stderr.exp-glibc212-s390x \
 	origin5-bz2.stderr.exp-glibc234-s390x \
 	origin5-bz2.stderr.exp-glibc218-mips32 \
+	origin5-bz2.stderr.exp-glibc236-arm \
 	origin6-fp.vgtest origin6-fp.stdout.exp \
 	origin6-fp.stderr.exp-glibc25-amd64 \
 	origin6-fp.stderr.exp-glibc27-ppc64 \
@@ -446,8 +449,7 @@ EXTRA_DIST = \
 	wrapmallocstatic.vgtest wrapmallocstatic.stdout.exp \
 	wrapmallocstatic.stderr.exp \
 	writev1.stderr.exp writev1.stderr.exp-solaris writev1.vgtest \
-	xml1.stderr.exp xml1.stdout.exp xml1.vgtest xml1.stderr.exp-s390x-mvc \
-	leak_cpp_interior.stderr.exp-freebsd leak_cpp_interior.stderr.exp-freebsd-32bit
+	xml1.stderr.exp xml1.stdout.exp xml1.vgtest xml1.stderr.exp-s390x-mvc
 
 check_PROGRAMS = \
 	accounting \
@@ -809,7 +811,7 @@ else
 endif
 
 varinfo5so_so_SOURCES   = varinfo5so.c
-varinfo5so_so_CFLAGS    = $(AM_CFLAGS) -fpic -O -Wno-shadow @FLAG_W_NO_MAYBE_UNINITIALIZED@
+varinfo5so_so_CFLAGS    = $(AM_CFLAGS) -fpic -O -Wno-shadow -fno-optimize-sibling-calls @FLAG_W_NO_MAYBE_UNINITIALIZED@
 if VGCONF_OS_IS_DARWIN
  varinfo5so_so_LDFLAGS  = -fpic $(AM_FLAG_M3264_PRI) -dynamic \
 				-dynamiclib -all_load

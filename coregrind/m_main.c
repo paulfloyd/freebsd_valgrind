@@ -166,6 +166,10 @@ static void usage_NORETURN ( int need_help )
 "                              size/blocks, full: profile current and cumulative\n"
 "                              allocated size/blocks and freed size/blocks.\n"
 "    --xtree-memory-file=<file>   xtree memory report file [xtmemory.kcg.%%p]\n"
+"    --realloc-zero-bytes-frees=yes|no [yes on Linux glibc, no otherwise]\n"
+"                              should calls to realloc with a size of 0\n"
+"                              free memory and return NULL or\n"
+"                              allocate/resize and return non-NULL\n"
 "\n"
 "  uncommon user options for all Valgrind tools:\n"
 "    --fullpath-after=         (with nothing after the '=')\n"
@@ -243,10 +247,6 @@ static void usage_NORETURN ( int need_help )
 "              attempt to avoid expensive address-space-resync operations\n"
 "    --max-threads=<number>    maximum number of threads that valgrind can\n"
 "                              handle [%d]\n"
-"    --realloc-zero-bytes-frees=yes|no [yes on Linux glibc, no otherwise]\n"
-"                              should calls to realloc with a size of 0\n"
-"                              free memory and return NULL or\n"
-"                              allocate/resize and return non-NULL\n"
 "\n";
 
    const HChar usage2[] =
@@ -255,6 +255,10 @@ static void usage_NORETURN ( int need_help )
 "    -d                        show verbose debugging output\n"
 "    --stats=no|yes            show tool and core statistics [no]\n"
 "    --sanity-level=<number>   level of sanity checking to do [1]\n"
+"                              1 - does occasional stack checking\n"
+"                              2 - more stack checks and malloc checks\n"
+"                              3 - as 2 and mmap checks\n"
+"                              4 - as 3 and translation sector checks\n"
 "    --trace-flags=<XXXXXXXX>   show generated code? (X = 0|1) [00000000]\n"
 "    --profile-flags=<XXXXXXXX> ditto, but for profiling (X = 0|1) [00000000]\n"
 "    --profile-interval=<number> show profile every <number> event checks\n"
