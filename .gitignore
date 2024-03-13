@@ -867,6 +867,7 @@
 /memcheck/tests/clireq_nofill
 /memcheck/tests/clo_redzone
 /memcheck/tests/cond_ld_st
+/memcheck/tests/close_range
 /memcheck/tests/custom-overlap
 /memcheck/tests/custom_alloc
 /memcheck/tests/cxx17_aligned_new
@@ -1377,7 +1378,6 @@
 /memcheck/tests/freebsd/capsicum
 /memcheck/tests/freebsd/chflags
 /memcheck/tests/freebsd/chmod_chown
-/memcheck/tests/freebsd/close_range
 /memcheck/tests/freebsd/delete_sized_mismatch
 /memcheck/tests/freebsd/errno_aligned_allocs
 /memcheck/tests/freebsd/eventfd1
@@ -1505,6 +1505,7 @@
 /none/tests/coolo_sigaction
 /none/tests/coolo_strlen
 /none/tests/discard
+/none/tests/double_close_range
 /none/tests/exec-sigmask
 /none/tests/execve
 /none/tests/faultstatus
@@ -1518,6 +1519,7 @@
 /none/tests/fdleak_open
 /none/tests/fdleak_pipe
 /none/tests/fdleak_socketpair
+/none/tests/file_dclose
 /none/tests/floored
 /none/tests/fork
 /none/tests/fucomip
@@ -1599,6 +1601,7 @@
 /none/tests/sigstackgrowth
 /none/tests/sigsusp
 /none/tests/smc1
+/none/tests/socket_close
 /none/tests/stackgrowth
 /none/tests/susphello
 /none/tests/syscall-restart1
@@ -1763,6 +1766,10 @@
 /none/tests/arm/vfpv4_fma
 
 # /none/tests/arm64/
+/none/tests/arm64/*.stderr.diff*
+/none/tests/arm64/*.stderr.out
+/none/tests/arm64/*.stdout.diff*
+/none/tests/arm64/*.stdout.out
 /none/tests/arm64/.deps
 /none/tests/arm64/Makefile
 /none/tests/arm64/Makefile.in
@@ -2175,9 +2182,9 @@
 /none/tests/solaris/threads_exitall
 
 # /none/tests/freebsd/
-/none/tests/freebsd/*.stderr.diff
+/none/tests/freebsd/*.stderr.diff*
 /none/tests/freebsd/*.stderr.out
-/none/tests/freebsd/*.stdout.diff
+/none/tests/freebsd/*.stdout.diff*
 /none/tests/freebsd/*.stdout.out
 /none/tests/freebsd/.deps
 /none/tests/freebsd/Makefile
@@ -2188,6 +2195,7 @@
 /none/tests/freebsd/fexecve
 /none/tests/freebsd/hello_world
 /none/tests/freebsd/452275
+/none/tests/freebsd/sanity_level_thread
 /none/tests/freebsd/usrstack
 /none/tests/freebsd/proc_pid_file
 

@@ -12,12 +12,6 @@
    fun:pthread_exit
 }
 {
-   DRD-PTHREAD_CREATE1
-   drd:ConflictingAccess
-   ...
-   fun:pthread_create
-}
-{
    DRD-PTHREAD-EXIT2
    drd:ConflictingAccess
    obj:*/lib*/libthr.so.3
@@ -248,4 +242,15 @@
    fun:nsdispatch
    obj:*/lib*/libc.so.7
    fun:getaddrinfo
+}
+{
+   DRD-FREEEBSD15-_UMTX_OP_ERR
+   drd:ConflictingAccess
+   fun:_umtx_op_err
+}
+{
+   DRD-FREEEBSD15-_MALLOC_THREAD_CLEANUP
+   drd:ConflictingAccess
+   ...
+   fun:_malloc_thread_cleanup
 }
