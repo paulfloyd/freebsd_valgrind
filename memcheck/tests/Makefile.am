@@ -74,6 +74,7 @@ dist_noinst_SCRIPTS = \
 	filter_allocs \
 	filter_leak_cases_possible \
 	filter_leak_cpp_interior \
+	filter_libc_variants \
 	filter_xml \
 	filter_strchr \
 	filter_varinfo3 \
@@ -167,22 +168,18 @@ EXTRA_DIST = \
 	sized_aligned_new_delete_misaligned1_supp.vgtest \
 		sized_aligned_new_delete_misaligned1_supp.supp \
 		sized_aligned_new_delete_misaligned1_supp.stderr.exp \
-		sized_aligned_new_delete_misaligned1_supp.stderr.exp_32 \
 	sized_aligned_new_delete_misaligned2_supp.vgtest \
 		sized_aligned_new_delete_misaligned2_supp.supp \
 		sized_aligned_new_delete_misaligned2_supp.stderr.exp \
-		sized_aligned_new_delete_misaligned2_supp.stderr.exp_32 \
 	sized_aligned_new_delete_misaligned3_supp.vgtest \
 		sized_aligned_new_delete_misaligned3_supp.supp \
 		sized_aligned_new_delete_misaligned3_supp.stderr.exp \
-		sized_aligned_new_delete_misaligned3_supp.stderr.exp_32 \
 	new_aligned_delete_default.stderr.exp \
 	new_aligned_delete_default.stderr.exp_32 \
 		new_aligned_delete_default.vgtest \
 	new_delete_mismatch_size.stderr.exp \
 		new_delete_mismatch_size.vgtest \
 	new_delete_mismatch_size_supp.stderr.exp \
-		new_delete_mismatch_size_supp.stderr.exp_32 \
 		new_delete_mismatch_size_supp.vgtest \
 		new_delete_mismatch_size_supp.supp \
 	deep-backtrace.vgtest deep-backtrace.stderr.exp \
@@ -272,7 +269,7 @@ EXTRA_DIST = \
 		memalign_args.stderr.exp-solaris \
 	memccpy1.stderr.exp memccpy1.stdout.exp memccpy1.vgtest \
 	memccpy2.stderr.exp memccpy2.vgtest \
-	memcmptest.stderr.exp memcmptest.stderr.exp2 \
+	memcmptest.stderr.exp \
 	memcmptest.stdout.exp memcmptest.vgtest \
 	memmem.stderr.exp memmem.vgtest \
 	mempool.stderr.exp mempool.vgtest \
