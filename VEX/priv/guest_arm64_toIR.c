@@ -44,8 +44,7 @@
      least significant mantissa bit is incorrect.  Fix: use the IR
      multiply-add IROps instead.
 
-   * FRINTA, FRINTN are kludged .. they just round to nearest.  No special
-     handling for the "ties" case.  FRINTX might be dubious too.
+   * FRINTX might be need updating to set the inexact computation FPSR flag
 
    * Ditto FCVTXN.  No idea what "round to odd" means.  This implementation
      just rounds to nearest.
@@ -8047,8 +8046,13 @@ static Bool AdvSIMDExpandImm ( /*OUT*/ULong* res,
       case 1:
          testimm8 = True; imm64 = Replicate32x2(imm8 << 8UL); break;
       case 2:
+         // Coverity is right but we want the overflow, Replicate32x2 expects
+         // (and asserts) that the top 32bits be zero so if we get rid of the
+         // overflow we would need to add a mask. So just let it overflow.
+         // coverity[OVERFLOW_BEFORE_WIDEN:FALSE]
          testimm8 = True; imm64 = Replicate32x2(imm8 << 16UL); break;
       case 3:
+         // coverity[OVERFLOW_BEFORE_WIDEN:FALSE]
          testimm8 = True; imm64 = Replicate32x2(imm8 << 24UL); break;
       case 4:
           testimm8 = False; imm64 = Replicate16x4(imm8); break;
@@ -15069,39 +15073,44 @@ Bool dis_AdvSIMD_fp_data_proc_1_source(/*MB_OUT*/DisResult* dres, UInt insn)
             001 +inf      (FRINTP)
             010 -inf      (FRINTM)
             011 zero      (FRINTZ)
-            000 tieeven   (FRINTN) -- !! FIXME KLUDGED !!
-            100 tieaway   (FRINTA) -- !! FIXME KLUDGED !!
+            000 tieeven   (FRINTN)
+            100 tieaway   (FRINTA)
             110 per FPCR + "exact = TRUE" (FRINTX)
             101 unallocated
       */
-      Bool    isD   = (ty & 1) == 1;
-      UInt    rm    = opcode & BITS6(0,0,0,1,1,1);
-      IRType  ity   = isD ? Ity_F64 : Ity_F32;
-      IRExpr* irrmE = NULL;
-      UChar   ch    = '?';
+      Bool    isD     = (ty & 1) == 1;
+      UInt    rm      = opcode & BITS6(0,0,0,1,1,1);
+      IRType  ity     = isD ? Ity_F64 : Ity_F32;
+      IRExpr* irrmE   = NULL;
+      UChar   ch      = '?';
+      IROp    op      = isD ? Iop_RoundF64toInt : Iop_RoundF32toInt;
+      Bool    isBinop = True;
       switch (rm) {
          case BITS3(0,1,1): ch = 'z'; irrmE = mkU32(Irrm_ZERO); break;
          case BITS3(0,1,0): ch = 'm'; irrmE = mkU32(Irrm_NegINF); break;
          case BITS3(0,0,1): ch = 'p'; irrmE = mkU32(Irrm_PosINF); break;
-         // The following is a kludge.  Should be: Irrm_NEAREST_TIE_AWAY_0
-         case BITS3(1,0,0): ch = 'a'; irrmE = mkU32(Irrm_NEAREST); break;
+         case BITS3(1,0,0): ch = 'a'; isBinop = False; op = isD ? Iop_RoundF64toIntA0 : Iop_RoundF32toIntA0; break;
          // I am unsure about the following, due to the "integral exact"
          // description in the manual.  What does it mean? (frintx, that is)
+         // PJF exact means that if the rounding can't be done without
+         // precision loss (dst numerically equal to src after the rounding)
+         // then an exception is raised / the IXC bit gets set in the FPSR
          case BITS3(1,1,0):
             ch = 'x'; irrmE = mkexpr(mk_get_IR_rounding_mode()); break;
          case BITS3(1,1,1):
             ch = 'i'; irrmE = mkexpr(mk_get_IR_rounding_mode()); break;
-         // The following is a kludge.  There's no Irrm_ value to represent
-         // this ("to nearest, with ties to even")
-         case BITS3(0,0,0): ch = 'n'; irrmE = mkU32(Irrm_NEAREST); break;
+         case BITS3(0,0,0): ch = 'n'; isBinop = False; op = isD ? Iop_RoundF64toIntE : Iop_RoundF32toIntE; break;
          default: break;
       }
-      if (irrmE) {
+      if (irrmE || !isBinop) {
          IRTemp src = newTemp(ity);
          IRTemp dst = newTemp(ity);
          assign(src, getQRegLO(nn, ity));
-         assign(dst, binop(isD ? Iop_RoundF64toInt : Iop_RoundF32toInt,
-                           irrmE, mkexpr(src)));
+         if (isBinop) {
+            assign(dst, binop(op, irrmE, mkexpr(src)));
+         } else {
+             assign(dst, unop(op, mkexpr(src)));
+         }
          putQReg128(dd, mkV128(0x0000));
          putQRegLO(dd, mkexpr(dst));
          DIP("frint%c %s, %s\n",

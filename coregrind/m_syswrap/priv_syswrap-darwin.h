@@ -622,8 +622,8 @@ DECL_TEMPLATE(darwin, guarded_writev_np);           // 487
 #endif /* DARWIN_VERS >= DARWIN_10_11 */
 #if DARWIN_VERS >= DARWIN_10_12
 DECL_TEMPLATE(darwin, getentropy);                  // 500
-// NYI necp_open                                    // 501
-// NYI necp_client_action                           // 502
+DECL_TEMPLATE(darwin, necp_open);                   // 501
+DECL_TEMPLATE(darwin, necp_client_action);          // 502
 // 503
 // 504
 // 505
