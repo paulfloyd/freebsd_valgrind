@@ -668,6 +668,7 @@
 /helgrind/tests/bug322621
 /helgrind/tests/bug327548
 /helgrind/tests/bug392331
+/helgrind/tests/bug484480
 /helgrind/tests/cond_init_destroy
 /helgrind/tests/cond_timedwait_invalid
 /helgrind/tests/cond_timedwait_test
@@ -690,6 +691,8 @@
 /helgrind/tests/pth_mempcpy_false_races
 /helgrind/tests/rwlock_race
 /helgrind/tests/rwlock_test
+/helgrind/tests/sem_clockwait_np
+/helgrind/tests/sem_timedwait
 /helgrind/tests/shmem_abits
 /helgrind/tests/stackteardown
 /helgrind/tests/t2t
@@ -1100,6 +1103,15 @@
 /memcheck/tests/amd64-solaris/context_sse
 /memcheck/tests/amd64-solaris/ldsoexec
 /memcheck/tests/amd64-solaris/scalar
+
+# /memcheck/tests/arm64/
+/memcheck/tests/arm64/*.diff*
+/memcheck/tests/arm64/*.dSYM
+/memcheck/tests/arm64/*.out
+/memcheck/tests/arm64/.deps
+/memcheck/tests/arm64/Makefile
+/memcheck/tests/arm64/Makefile.in
+/memcheck/tests/arm64/bug484935
 
 # /memcheck/tests/arm64-linux/
 /memcheck/tests/arm64-linux/.deps
@@ -1787,6 +1799,7 @@
 /none/tests/arm64/fmadd_sub
 /none/tests/arm64/fp_and_simd
 /none/tests/arm64/fp_and_simd_v82
+/none/tests/arm64/frinta_frintn
 /none/tests/arm64/ldxp_stxp
 /none/tests/arm64/integer
 /none/tests/arm64/memory_test
