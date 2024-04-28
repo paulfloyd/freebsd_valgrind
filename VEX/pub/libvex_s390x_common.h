@@ -108,6 +108,16 @@
 #define S390_FAC_DFLT    151 // deflate-conversion facility
 #define S390_FAC_NNPA    165 // NNPA facility
 
+/*--------------------------------------------------------------*/
+/*--- Extensions                                             ---*/
+/*--------------------------------------------------------------*/
+
+/* The extension ID is stored in the low 16 bits of the guest_SYSNO pseudo
+   register. */
+#define S390_EXT_ID_NBITS 16
+
+#define S390_EXT_PRNO    1
+#define S390_EXT_NNPA    2
 
 /*--------------------------------------------------------------*/
 /*--- Miscellaneous                                          ---*/

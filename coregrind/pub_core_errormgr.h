@@ -44,6 +44,8 @@ typedef
       // could detect them.  This example is left as an example should new
       // core errors ever be added.
       ThreadErr = -1,
+      FdBadClose = -2,
+      FdNotClosed = -3,
    }
    CoreErrorKind;
 
@@ -79,6 +81,8 @@ extern Bool VG_(showing_core_errors)      ( void );
 
 extern UInt VG_(get_n_errs_found)         ( void );
 extern UInt VG_(get_n_errs_shown)         ( void );
+
+extern Bool VG_(found_or_suppressed_errs) ( void );
 
 extern void VG_(print_errormgr_stats)     ( void );
 

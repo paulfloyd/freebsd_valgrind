@@ -66,6 +66,7 @@
 #include "pub_core_clreq.h"      // for VG_USERREQ__*
 #include "pub_core_dispatch.h"
 #include "pub_core_errormgr.h"   // For VG_(get_n_errs_found)()
+#include "pub_core_extension.h"
 #include "pub_core_gdbserver.h"  // for VG_(gdbserver)/VG_(gdbserver_activity)
 #include "pub_core_libcbase.h"
 #include "pub_core_libcassert.h"
@@ -277,6 +278,7 @@ const HChar* name_of_sched_event ( UInt event )
       case VEX_TRC_JMP_YIELD:          return "YIELD";
       case VEX_TRC_JMP_NODECODE:       return "NODECODE";
       case VEX_TRC_JMP_MAPFAIL:        return "MAPFAIL";
+      case VEX_TRC_JMP_EXTENSION:      return "EXTENSION";
       case VEX_TRC_JMP_SYS_SYSCALL:    return "SYSCALL";
       case VEX_TRC_JMP_SYS_INT32:      return "INT32";
       case VEX_TRC_JMP_SYS_INT128:     return "INT128";
@@ -1003,7 +1005,7 @@ void run_thread_for_a_while ( /*OUT*/HWord* two_words,
 #  if defined(VGP_mips32_linux) || defined(VGP_mips64_linux) \
       || defined(VGP_nanomips_linux)
    tst->arch.vex.guest_LLaddr = (RegWord)(-1);
-#  elif defined(VGP_arm64_linux)
+#  elif defined(VGP_arm64_linux) || defined(VGP_arm64_freebsd)
    tst->arch.vex.guest_LLSC_SIZE = 0;
 #  endif
 
@@ -1217,6 +1219,32 @@ static void handle_syscall(ThreadId tid, UInt trc)
 		  tid, VG_(running_tid), tid, tst->status);
    vg_assert(VG_(is_running_thread)(tid));
    
+   if (jumped != (UWord)0) {
+      block_signals();
+      VG_(poll_signals)(tid);
+   }
+}
+
+static void handle_extension(ThreadId tid)
+{
+   volatile UWord jumped;
+   enum ExtensionError err;
+
+   SCHEDSETJMP(tid, jumped, err = VG_(client_extension)(tid));
+   vg_assert(VG_(is_running_thread)(tid));
+
+   if (err != ExtErr_OK) {
+      ThreadState* tst = VG_(get_ThreadState)(tid);
+      Addr addr = tst->arch.vex.guest_IP_AT_SYSCALL;
+      switch (err) {
+      case ExtErr_Illop:
+         VG_(synth_sigill)(tid, addr);
+         break;
+      default:
+         VG_(core_panic)("scheduler: bad return code from extension");
+      }
+   }
+
    if (jumped != (UWord)0) {
       block_signals();
       VG_(poll_signals)(tid);
@@ -1541,6 +1569,11 @@ VgSchedReturnCode VG_(scheduler) ( ThreadId tid )
       case VEX_TRC_JMP_CLIENTREQ:
 	 do_client_request(tid);
 	 break;
+
+      case VEX_TRC_JMP_EXTENSION: {
+         handle_extension(tid);
+         break;
+      }
 
       case VEX_TRC_JMP_SYS_INT128:  /* x86-linux */
       case VEX_TRC_JMP_SYS_INT129:  /* x86-darwin */

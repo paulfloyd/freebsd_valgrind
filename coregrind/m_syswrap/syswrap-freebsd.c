@@ -278,6 +278,16 @@ static void run_a_thread_NORETURN ( Word tidW )
          : "n" (VgTs_Empty), "n" (__NR_thr_exit), "m" (tst->os_state.exitcode)
          : "rax", "rdi"
       );
+#elif defined(VGP_arm64_freebsd)
+      __asm__ volatile (
+         "str  %w1, %0\n"     /* set tst->status = VgTs_Empty (32-bit store) */
+         "mov  x8,  %2\n"     /* set %x8 = __NR_thr_exit */
+         "ldr  x0,  %3\n"     /* set %x0 = tst->os_state.exitcode */
+         "svc  0x00000000\n"  /* exit(tst->os_state.exitcode) */
+         : "=m" (tst->status)
+         : "r" (VgTs_Empty), "n" (__NR_thr_exit), "m" (tst->os_state.exitcode)
+         : "x0", "x8"
+      );
 #else
 # error Unknown platform
 #endif
@@ -5438,7 +5448,7 @@ PRE(sys_mkdirat)
    *flags |= SfMayBlock;
    PRINT("sys_mkdirat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,ARG2,(char*)ARG2,ARG3);
    PRE_REG_READ3(int, "mkdirat",
-                 int, fd, const char *, path, int, mode);
+                 int, fd, const char *, path, unsigned int, mode);
    PRE_MEM_RASCIIZ( "mkdirat(path)", ARG2 );
 }
 
@@ -5477,7 +5487,6 @@ PRE(sys_mknodat)
 // int openat(int fd, const char *path, int flags, ...);
 PRE(sys_openat)
 {
-
    if (ARG3 & VKI_O_CREAT) {
       // 4-arg version
       PRINT("sys_openat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
@@ -6680,8 +6689,8 @@ PRE(sys___sysctlbyname)
    // makes sense as the pid is variable and using
    // a MIB is easier than generating a string
 
-   // read number of ints specified in ARG2 from mem pointed to by ARG1
-   PRE_MEM_READ("__sysctlbyname(name)", (Addr)ARG1, ARG2 * sizeof(int));
+   // string length specified in ARG2 from mem pointed to by ARG1
+   PRE_MEM_READ("__sysctlbyname(name)", (Addr)ARG1, ARG2);
 
    // if 'newp' is not NULL can read namelen bytes from that addess
    if (ARG5 != (UWord)NULL) {
@@ -7129,6 +7138,32 @@ POST(sys_timerfd_settime)
       POST_MEM_WRITE(ARG4, sizeof(struct vki_itimerspec));
    }
 }
+
+// SYS_kcmp 588
+// int kcmp(pid_t pid1, pid_t pid2, int type, uintptr_t idx1, uintptr_t idx2);
+PRE(sys_kcmp)
+{
+   PRINT("kcmp(%ld, %ld, %ld, %" FMT_REGWORD "u, %" FMT_REGWORD "u)",
+         SARG1, SARG2, SARG3, ARG4, ARG5);
+   switch (ARG3) {
+   case VKI_KCMP_FILES:
+   case VKI_KCMP_VM:
+   case VKI_KCMP_SIGHAND:
+      /* Most of the comparison types don't look at |idx1| or |idx2|. */
+      PRE_REG_READ3(int, "kcmp",
+                    vki_pid_t, pid1, vki_pid_t, pid2, int, type);
+      break;
+   case VKI_KCMP_FILE:
+   case VKI_KCMP_FILEOBJ:
+   default:
+      PRE_REG_READ5(int, "kcmp",
+                    vki_pid_t, pid1, vki_pid_t, pid2, int, type,
+                    unsigned long, idx1, unsigned long, idx2);
+      break;
+   }
+}
+
+
 #endif
 
 #undef PRE
@@ -7188,7 +7223,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // 4.3 lstat                                            40
    GENXY(__NR_dup,              sys_dup),               // 41
 
+#if defined(VGP_arm64_freebsd)
+   GENX_(__NR_freebsd10_pipe,   sys_ni_syscall),        // 42
+#else
    BSDXY(__NR_freebsd10_pipe,   sys_pipe),              // 42
+#endif
    GENX_(__NR_getegid,          sys_getegid),           // 43
 
    GENX_(__NR_profil,           sys_ni_syscall),        // 44
@@ -7860,6 +7899,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_timerfd_create,   sys_timerfd_create),    // 585
    BSDXY(__NR_timerfd_settime,  sys_timerfd_settime),   // 586
    BSDXY(__NR_timerfd_gettime,  sys_timerfd_gettime),   // 587
+   BSDX_(__NR_kcmp,             sys_kcmp),              // 588
 #endif
 
 

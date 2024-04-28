@@ -34,6 +34,8 @@
 /svn-commit.2.tmp
 /svn-commit.tmp
 /valgrind
+/valgrind-*tar.gz
+/valgrind-*tar.bz2
 /valgrind.pc
 /valgrind.spec
 /valt_load_address*.lds
@@ -211,6 +213,13 @@
 /coregrind/m_dispatch/.dirstamp
 /coregrind/m_dispatch/Makefile
 /coregrind/m_dispatch/Makefile.in
+
+# /coregrind/m_extension/
+/coregrind/m_extension/*.a
+/coregrind/m_extension/.deps
+/coregrind/m_extension/.dirstamp
+/coregrind/m_extension/Makefile
+/coregrind/m_extension/Makefile.in
 
 # /coregrind/m_gdbserver/
 /coregrind/m_gdbserver/.deps
@@ -1401,6 +1410,7 @@
 /memcheck/tests/freebsd/eventfd1
 /memcheck/tests/freebsd/eventfd2
 /memcheck/tests/freebsd/extattr
+/memcheck/tests/freebsd/fbsd278566
 /memcheck/tests/freebsd/fexecve
 /memcheck/tests/freebsd/file_locking_wait6
 /memcheck/tests/freebsd/get_set_context
@@ -1991,9 +2001,13 @@
 /none/tests/ppc64/power6_bcmp
 /none/tests/ppc64/power6_mf_gpr
 /none/tests/ppc64/round
+/none/tests/ppc64/scv_test
 /none/tests/ppc64/std_reg_imm
+/none/tests/ppc64/subnormal_test
 /none/tests/ppc64/twi_tdi
 /none/tests/ppc64/tw_td
+/none/tests/ppc64/test_copy_paste
+/none/tests/ppc64/test_darn_inst
 /none/tests/ppc64/test_dfp1
 /none/tests/ppc64/test_dfp2
 /none/tests/ppc64/test_dfp3
@@ -2004,6 +2018,17 @@
 /none/tests/ppc64/test_isa_2_06_part3
 /none/tests/ppc64/test_isa_2_07_part1
 /none/tests/ppc64/test_isa_2_07_part2
+/none/tests/ppc64/test_isa_3_0
+/none/tests/ppc64/test_isa_3_1_AT
+/none/tests/ppc64/test_isa_3_1_Misc
+/none/tests/ppc64/test_isa_3_1_R1_RT
+/none/tests/ppc64/test_isa_3_1_R1_XT
+/none/tests/ppc64/test_isa_3_1_RT
+/none/tests/ppc64/test_isa_3_1_VRT
+/none/tests/ppc64/test_isa_3_1_XT
+/none/tests/ppc64/test_lxvx_stxvx
+/none/tests/ppc64/test_mcrxrx
+/none/tests/ppc64/test_mod_instructions
 /none/tests/ppc64/allexec
 /none/tests/ppc64/data-cache-instructions
 /none/tests/ppc64/ldst_multiple

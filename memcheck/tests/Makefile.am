@@ -174,15 +174,18 @@ EXTRA_DIST = \
 	sized_aligned_new_delete_misaligned2_supp.vgtest \
 		sized_aligned_new_delete_misaligned2_supp.supp \
 		sized_aligned_new_delete_misaligned2_supp.stderr.exp \
+		sized_aligned_new_delete_misaligned2_supp.stderr.exp-32 \
 	sized_aligned_new_delete_misaligned3_supp.vgtest \
 		sized_aligned_new_delete_misaligned3_supp.supp \
 		sized_aligned_new_delete_misaligned3_supp.stderr.exp \
+		sized_aligned_new_delete_misaligned3_supp.stderr.exp-32 \
 	new_aligned_delete_default.stderr.exp \
 	new_aligned_delete_default.stderr.exp_32 \
 		new_aligned_delete_default.vgtest \
 	new_delete_mismatch_size.stderr.exp \
 		new_delete_mismatch_size.vgtest \
 	new_delete_mismatch_size_supp.stderr.exp \
+	new_delete_mismatch_size_supp.stderr.exp-32 \
 		new_delete_mismatch_size_supp.vgtest \
 		new_delete_mismatch_size_supp.supp \
 	deep-backtrace.vgtest deep-backtrace.stderr.exp \
@@ -314,6 +317,7 @@ EXTRA_DIST = \
 	origin6-fp.stderr.exp-glibc25-amd64 \
 	origin6-fp.stderr.exp-glibc27-ppc64 \
 	overlap.stderr.exp overlap.stdout.exp overlap.vgtest \
+		overlap.stderr.exp-no_memcpy \
 	partiallydefinedeq.vgtest partiallydefinedeq.stderr.exp \
 	partiallydefinedeq.stderr.exp4 \
 	partiallydefinedeq.stderr.exp3 \
@@ -464,7 +468,6 @@ check_PROGRAMS = \
 	badpoll \
 	badrw \
 	big_blocks_freed_list \
-	brk2 \
 	buflen_check \
 	bug155125 \
 	bug287260 \
@@ -556,7 +559,9 @@ check_PROGRAMS += long_namespace_xml
 endif
 
 if DWARF4
+if HAVE_SBRK
 check_PROGRAMS += dw4
+endif
 endif
 
 bug464969_d_demangle_SOURCES = bug464969_d_demangle.cpp
@@ -576,6 +581,10 @@ if GZ_ZLIB_GNU
 check_PROGRAMS += cdebug_zlib_gnu
 cdebug_zlib_gnu_SOURCES = cdebug.c
 cdebug_zlib_gnu_CFLAGS = $(AM_CFLAGS) -g -gz=zlib-gnu @FLAG_W_NO_UNINITIALIZED@
+endif
+
+if HAVE_SBRK
+check_PROGRAMS += brk2
 endif
 
 if HAVE_ALIGNED_CXX_ALLOC
