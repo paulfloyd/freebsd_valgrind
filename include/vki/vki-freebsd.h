@@ -59,8 +59,8 @@
 #  error Unknown platform
 #endif
 
-#include <sys/fcntl.h>
-#include <sys/param.h>
+#include <sys/fcntl.h> // O_RDONLY
+#include <sys/param.h> // MAXPATHLEN
 
 
 //----------------------------------------------------------------------
@@ -126,8 +126,13 @@ typedef  vki_uint32_t   __vki_fixpt_t;
 
 
 //----------------------------------------------------------------------
-// sys/types.h
+// From sys/types.h
 //----------------------------------------------------------------------
+
+typedef	unsigned char	vki_u_char;
+typedef	unsigned short	vki_u_short;
+typedef	unsigned int	vki_u_int;
+typedef	unsigned long	vki_u_long;
 
 typedef  vki_uint8_t    vki_u_int8_t;
 typedef  vki_uint16_t      vki_u_int16_t;
@@ -712,11 +717,11 @@ static __inline struct vki_cmsghdr * vki_cmsg_nxthdr (struct vki_msghdr *__msg, 
 
 #define VKI_SOCK_STREAM 1
 
-#include <netinet/tcp.h>
+#include <netinet/tcp.h> // TCP_NODELAY
 
 #define VKI_TCP_NODELAY  TCP_NODELAY
 
-#include <netinet/in.h>
+#include <netinet/in.h> // IPPROTO_TCP
 
 #define VKI_IPPROTO_TCP  IPPROTO_TCP
 
@@ -1018,48 +1023,13 @@ extern unsigned int __vki_invalid_size_argument_for_IOC;
 // From sys/termios.h
 //----------------------------------------------------------------------
 
-#if 0
-#define VKI_TCGETS   0x5401
-#define VKI_TCSETS   0x5402 /* Clashes with SNDCTL_TMR_START sound ioctl */
-#define VKI_TCSETSW  0x5403
-#define VKI_TCSETSF  0x5404
-#define VKI_TCGETA   0x5405   y
-#define VKI_TCSETA   0x5406   y
-#define VKI_TCSETAW  0x5407   y
-#define VKI_TCSETAF  0x5408   y
-#define VKI_TCSBRK   0x5409
-#define VKI_TCXONC   0x540A
-#define VKI_TCFLSH   0x540B   y
-#define VKI_TIOCSCTTY   0x540E
-#define VKI_TIOCGPGRP   0x540F   y
-#define VKI_TIOCSPGRP   0x5410   y
-#define VKI_TIOCOUTQ 0x5411
-#define VKI_TIOCGWINSZ  0x5413   y
-#define VKI_TIOCSWINSZ  0x5414   y
-#define VKI_TIOCMGET 0x5415   y
-#define VKI_TIOCMBIS 0x5416   y
-#define VKI_TIOCMBIC 0x5417   y
-#define VKI_TIOCMSET 0x5418   y
-#define VKI_FIONREAD 0x541B
-#define VKI_TIOCLINUX   0x541C
-#define VKI_FIONBIO  0x5421
-#define VKI_TCSBRKP  0x5425   /* Needed for POSIX tcsendbreak() */
-#define VKI_TIOCGPTN _VKI_IOR('T',0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
-#define VKI_TIOCSPTLCK  _VKI_IOW('T',0x31, int)  /* Lock/unlock Pty */
+#define VKI_TIOCFLUSH  _VKI_IOW('t', 16, int);
+#define VKI_TIOCGETA   _VKI_IOR('t', 19, struct vki_termios)  /* get termios */
+#define VKI_TIOCSETA   _VKI_IOR('t', 20, struct vki_termios)  /* set termios */
+#define VKI_TIOCSETAW  _VKI_IOR('t', 21, struct vki_termios)  /* drain,set */
+#define VKI_TIOCSETAF  _VKI_IOR('t', 22, struct vki_termios)  /* flush,set */
 
-#define VKI_FIOASYNC 0x5452
-#define VKI_TIOCSERGETLSR   0x5459 /* Get line status register */
-
-#define VKI_TIOCGICOUNT 0x545D   /* read serial port inline interrupt counts */
-#endif
-
-#define  VKI_TIOCFLUSH  _VKI_IOW('t', 16, int);
-#define  VKI_TIOCGETA   _VKI_IOR('t', 19, struct vki_termios)  /* get termios */
-#define  VKI_TIOCSETA   _VKI_IOR('t', 20, struct vki_termios)  /* set termios */
-#define  VKI_TIOCSETAW  _VKI_IOR('t', 21, struct vki_termios)  /* drain,set */
-#define  VKI_TIOCSETAF  _VKI_IOR('t', 22, struct vki_termios)  /* flush,set */
-
-#define  _VKI_TIOCPTMASTER  _VKI_IO('t', 28)    /* pts master validation */
+#define _VKI_TIOCPTMASTER  _VKI_IO('t', 28)    /* pts master validation */
 
 #define VKI_TIOCSWINSZ  _VKI_IOW('t', 103, struct vki_winsize)  /* set window size */
 #define VKI_TIOCGWINSZ  _VKI_IOR('t', 104, struct vki_winsize)  /* get window size */
@@ -1095,7 +1065,27 @@ struct vki_fiodgname_arg {
 };
 #define VKI_FIODGNAME   _VKI_IOW('f', 120, struct vki_fiodgname_arg) /* get dev. name */
 
-// See syswrap-freebsd.c PRE/POST(sys_ioctl)
+//----------------------------------------------------------------------
+// From net/bpf.h
+//----------------------------------------------------------------------
+
+struct vki_bpf_program {
+   vki_u_int bf_len;
+   struct vki_bpf_insn *bf_insns;
+};
+
+typedef vki_u_int32_t vki_bpf_u_int32;
+
+struct vki_bpf_insn {
+   u_short         code;
+   u_char          jt;
+   u_char          jf;
+   vki_bpf_u_int32     k;
+};
+
+
+#define VKI_BIOCSETF _VKI_IOW('B', 103, struct vki_bpf_program)
+
 //----------------------------------------------------------------------
 // From net/if.h
 //----------------------------------------------------------------------
@@ -1123,9 +1113,9 @@ struct vki_ifreq_buffer {
 };
 
 struct vki_ifreq_nv_req {
-   u_int   buf_length;     /* Total size of buffer,
+   vki_u_int   buf_length;     /* Total size of buffer,
                         u_int for ABI struct ifreq */
-   u_int   length;         /* Length of the filled part */
+   vki_u_int   length;         /* Length of the filled part */
    void    *buffer;        /* Buffer itself, containing packed nv */
 };
 
@@ -1145,8 +1135,8 @@ struct vki_ifreq {
       int     ifru_media;
       __vki_caddr_t ifru_data;
       int     ifru_cap[2];
-      u_int   ifru_fib;
-      u_char  ifru_vlan_pcp;
+      vki_u_int   ifru_fib;
+      vki_u_char  ifru_vlan_pcp;
       struct  vki_ifreq_nv_req ifru_nv;
    } ifr_ifru;
 };
@@ -2029,14 +2019,14 @@ struct vki_uuid {
 #define VKI__SS_PAD1SIZE    (VKI__SS_ALIGNSIZE - sizeof(unsigned char) - \
                             sizeof(vki_sa_family_t))
 #define VKI__SS_PAD2SIZE    (VKI__SS_MAXSIZE - sizeof(unsigned char) - \
-                            sizeof(sa_family_t) - VKI__SS_PAD1SIZE - VKI__SS_ALIGNSIZE)
+                            sizeof(vki_sa_family_t) - VKI__SS_PAD1SIZE - VKI__SS_ALIGNSIZE)
 
 struct vki_sockaddr_storage {
         unsigned char   vki_ss_len;         /* address length */
         vki_sa_family_t     vki_ss_family;      /* address family */
         char            vki___ss_pad1[VKI__SS_PAD1SIZE];
         __int64_t       vki___ss_align;     /* force desired struct alignment */
-        char            vki___ss_pad2VKI_[_SS_PAD2SIZE];
+        char            vki___ss_pad2VKI_[VKI__SS_PAD2SIZE];
 };
 
 //----------------------------------------------------------------------
@@ -2232,7 +2222,6 @@ struct vki_kinfo_file {
 // From sys/sysctl.h (and related)
 //----------------------------------------------------------------------
 
-#include <sys/types.h>
 #include <sys/sysctl.h>
 
 #define VKI_CTL_KERN         CTL_KERN
@@ -2365,29 +2354,29 @@ typedef struct vki_domainset vki_domainset_t;
 #define VKI_PROC_WXMAP_STATUS       22
 
 struct vki_procctl_reaper_status {
-   u_int   rs_flags;
-   u_int   rs_children;
-   u_int   rs_descendants;
+   vki_u_int   rs_flags;
+   vki_u_int   rs_children;
+   vki_u_int   rs_descendants;
    vki_pid_t   rs_reaper;
    vki_pid_t   rs_pid;
-   u_int   rs_pad0[15];
+   vki_u_int   rs_pad0[15];
 };
 
 struct vki_procctl_reaper_pidinfo;
 
 struct vki_procctl_reaper_pids {
-   u_int   rp_count;
-   u_int   rp_pad0[15];
+   vki_u_int   rp_count;
+   vki_u_int   rp_pad0[15];
    struct vki_procctl_reaper_pidinfo *rp_pids;
 };
 
 struct vki_procctl_reaper_kill {
    int     rk_sig;
-   u_int   rk_flags;
+   vki_u_int   rk_flags;
    vki_pid_t   rk_subtree;
-   u_int   rk_killed;
+   vki_u_int   rk_killed;
    vki_pid_t   rk_fpid;
-   u_int   rk_pad0[15];
+   vki_u_int   rk_pad0[15];
 };
 
 //----------------------------------------------------------------------
@@ -2481,7 +2470,7 @@ struct vki_ps_strings {
  * registers.
  *
  * I can't just change mode_t to be 32bit. that will mess up
- * the 'stat' structures in thie file.
+ * the 'stat' structures in this file.
  *
  * Instead I'll just do what the compiler does, and promote
  * it to 32bits.
@@ -2501,8 +2490,6 @@ struct vki_ps_strings {
 #if defined(VGP_arm64_freebsd)
 #define vki_mode_t vki_int32_t
 #endif
-
-// See syswrap-freebsd.c PRE/POST(sys_ioctl)
 
 //----------------------------------------------------------------------
 // From sys/pciio.h
@@ -2787,36 +2774,40 @@ struct vki_scsi_inquiry_data {
 // From sys/queue.h
 //----------------------------------------------------------------------
 
-#define SLIST_ENTRY(type)                                               \
+#define VKI_SLIST_ENTRY(type)                                               \
 struct {                                                                \
         struct type *sle_next;  /* next element */                      \
 }
 
-#define LIST_ENTRY(type)                                                \
+#define VKI_LIST_ENTRY(type)                                                \
 struct {                                                                \
         struct type *le_next;   /* next element */                      \
         struct type **le_prev;  /* address of previous next element */  \
 }
 
-#define STAILQ_ENTRY(type)                                              \
+#define VKI_STAILQ_ENTRY(type)                                              \
 struct {                                                                \
         struct type *stqe_next; /* next element */                      \
 }
 
-struct qm_trace {
+#ifdef VKI_QUEUE_MACRO_DEBUG_TRACE
+struct vki_qm_trace {
    unsigned long    lastline;
    unsigned long    prevline;
    const char      *lastfile;
    const char      *prevfile;
 };
 
-#define TRACEBUF        struct qm_trace trace;
+#define VKI_TRACEBUF        struct vki_qm_trace trace;
+#else
+#define VKI_TRACEBUF
+#endif
 
-#define TAILQ_ENTRY(type)                                               \
+#define VKI_TAILQ_ENTRY(type)                                               \
 struct {                                                                \
         struct type *tqe_next;  /* next element */                      \
         struct type **tqe_prev; /* address of previous next element */  \
-        TRACEBUF                                                        \
+        VKI_TRACEBUF                                                        \
 }
 
 
@@ -2824,13 +2815,13 @@ struct {                                                                \
 // From cam/cam_ccb.h
 //----------------------------------------------------------------------
 
-#define VKI_CAM_VERSION       0x15    /* Hex value for current version */
+#define VKI_CAM_VERSION 0x1a    /* Hex value for current version */
 
 typedef union {
-   LIST_ENTRY(vki_ccb_hdr) le;
-   SLIST_ENTRY(vki_ccb_hdr) sle;
-   TAILQ_ENTRY(vki_ccb_hdr) tqe;
-   STAILQ_ENTRY(vki_ccb_hdr) stqe;
+   VKI_LIST_ENTRY(vki_ccb_hdr) le;
+   VKI_SLIST_ENTRY(vki_ccb_hdr) sle;
+   VKI_TAILQ_ENTRY(vki_ccb_hdr) tqe;
+   VKI_STAILQ_ENTRY(vki_ccb_hdr) stqe;
 } vki_camq_entry;
 
 typedef enum {
@@ -2934,7 +2925,11 @@ typedef enum {
    /* Notify Host Target driver of event */
    VKI_XPT_NOTIFY_ACKNOWLEDGE  = 0x37 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB,
    /* Acknowledgement of event */
+   VKI_XPT_REPROBE_LUN		= 0x38 | VKI_XPT_FC_QUEUED | VKI_XPT_FC_USER_CCB,
+   /* Query device capacity and notify GEOM */
 
+   VKI_XPT_MMC_SET_TRAN_SETTINGS = 0x40 | VKI_XPT_FC_DEV_QUEUED,
+   VKI_XPT_MMC_GET_TRAN_SETTINGS = 0x41 | VKI_XPT_FC_DEV_QUEUED,
    /* Vendor Unique codes: 0x80->0x8F */
    VKI_XPT_VUNIQUE             = 0x80
 } vki_xpt_opcode;
@@ -2943,21 +2938,27 @@ typedef enum {
 /* CAM CCB flags */
 typedef enum {
    VKI_CAM_CDB_POINTER         = 0x00000001,/* The CDB field is a pointer    */
-   VKI_CAM_QUEUE_ENABLE        = 0x00000002,/* SIM queue actions are enabled */
-   VKI_CAM_CDB_LINKED          = 0x00000004,/* CCB contains a linked CDB     */
+   VKI_CAM_unused1             = 0x00000002,
+   VKI_CAM_unused2             = 0x00000004,
    VKI_CAM_NEGOTIATE           = 0x00000008,/*
                                               * Perform transport negotiation
                                               * with this command.
                                               */
-   VKI_CAM_SCATTER_VALID       = 0x00000010,/* Scatter/gather list is valid  */
+   VKI_CAM_DATA_ISPHYS         = 0x00000010,/* Data type with physical addrs */
    VKI_CAM_DIS_AUTOSENSE       = 0x00000020,/* Disable autosense feature     */
-   VKI_CAM_DIR_RESV            = 0x00000000,/* Data direction (00:reserved)  */
+   VKI_CAM_DIR_BOTH            = 0x00000000,/* Data direction (00:IN/OUT)  */
    VKI_CAM_DIR_IN              = 0x00000040,/* Data direction (01:DATA IN)   */
    VKI_CAM_DIR_OUT             = 0x00000080,/* Data direction (10:DATA OUT)  */
    VKI_CAM_DIR_NONE            = 0x000000C0,/* Data direction (11:no data)   */
    VKI_CAM_DIR_MASK            = 0x000000C0,/* Data direction Mask           */
-   VKI_CAM_SOFT_RST_OP         = 0x00000100,/* Use Soft reset alternative    */
-   VKI_CAM_ENG_SYNC            = 0x00000200,/* Flush resid bytes on complete */
+   VKI_CAM_DATA_VADDR		= 0x00000000,/* Data type (000:Virtual)       */
+   VKI_CAM_DATA_PADDR		= 0x00000010,/* Data type (001:Physical)      */
+   VKI_CAM_DATA_SG		= 0x00040000,/* Data type (010:sglist)        */
+   VKI_CAM_DATA_SG_PADDR	= 0x00040010,/* Data type (011:sglist phys)   */
+   VKI_CAM_DATA_BIO		= 0x00200000,/* Data type (100:bio)           */
+   VKI_CAM_DATA_MASK		= 0x00240010,/* Data type mask                */
+   VKI_CAM_unused3		= 0x00000100,
+   VKI_CAM_unused4		= 0x00000200,
    VKI_CAM_DEV_QFRZDIS         = 0x00000400,/* Disable DEV Q freezing        */
    VKI_CAM_DEV_QFREEZE         = 0x00000800,/* Freeze DEV Q on execution     */
    VKI_CAM_HIGH_POWER          = 0x00001000,/* Command takes a lot of power  */
@@ -2966,27 +2967,27 @@ typedef enum {
    VKI_CAM_TAG_ACTION_VALID    = 0x00008000,/* Use the tag action in this ccb*/
    VKI_CAM_PASS_ERR_RECOVER    = 0x00010000,/* Pass driver does err. recovery*/
    VKI_CAM_DIS_DISCONNECT      = 0x00020000,/* Disable disconnect            */
-   VKI_CAM_SG_LIST_PHYS        = 0x00040000,/* SG list has physical addrs.   */
-   VKI_CAM_MSG_BUF_PHYS        = 0x00080000,/* Message buffer ptr is physical*/
-   VKI_CAM_SNS_BUF_PHYS        = 0x00100000,/* Autosense data ptr is physical*/
-   VKI_CAM_DATA_PHYS           = 0x00200000,/* SG/Buffer data ptrs are phys. */
+   VKI_CAM_unused5             = 0x00080000,
+   VKI_CAM_unused6             = 0x00100000,
    VKI_CAM_CDB_PHYS            = 0x00400000,/* CDB poiner is physical        */
-   VKI_CAM_ENG_SGLIST          = 0x00800000,/* SG list is for the HBA engine */
+   VKI_CAM_unused7             = 0x00800000,
 
    /* Phase cognizant mode flags */
-   VKI_CAM_DIS_AUTOSRP         = 0x01000000,/* Disable autosave/restore ptrs */
-   VKI_CAM_DIS_AUTODISC        = 0x02000000,/* Disable auto disconnect       */
-   VKI_CAM_TGT_CCB_AVAIL       = 0x04000000,/* Target CCB available          */
-   VKI_CAM_TGT_PHASE_MODE      = 0x08000000,/* The SIM runs in phase mode    */
-   VKI_CAM_MSGB_VALID          = 0x10000000,/* Message buffer valid          */
-   VKI_CAM_STATUS_VALID        = 0x20000000,/* Status buffer valid           */
-   VKI_CAM_DATAB_VALID         = 0x40000000,/* Data buffer valid             */
+   VKI_CAM_unused8             = 0x01000000,
+   VKI_CAM_unused9             = 0x02000000,
+   VKI_CAM_unused10            = 0x04000000,
+   VKI_CAM_unused11            = 0x08000000,
+   VKI_CAM_unused12            = 0x10000000,
+   VKI_CAM_unused13            = 0x20000000,
+   VKI_CAM_unused14            = 0x40000000,
 
    /* Host target Mode flags */
    VKI_CAM_SEND_SENSE          = 0x08000000,/* Send sense data with status   */
-   VKI_CAM_TERM_IO             = 0x10000000,/* Terminate I/O Message sup.    */
-   VKI_CAM_DISCONNECT          = 0x20000000,/* Disconnects are mandatory     */
-   VKI_CAM_SEND_STATUS         = 0x40000000 /* Send status after data phase  */
+   VKI_CAM_unused15            = 0x10000000,
+   VKI_CAM_unused16            = 0x20000000,
+   VKI_CAM_SEND_STATUS         = 0x40000000, /* Send status after data phase  */
+
+   VKI_CAM_UNLOCKED		= 0x80000000 /* Call callback without lock.   */
 } vki_ccb_flags;
 
 typedef union {
@@ -3012,12 +3013,24 @@ typedef union {
 union vki_ccb;
 struct vki_cam_periph;
 
+typedef struct {
+   struct vki_timeval	*etime;
+   vki_uintptr_t	sim_data;
+   vki_uintptr_t	periph_data;
+} vki_ccb_qos_area;
+
 struct vki_ccb_hdr {
    vki_cam_pinfo   pinfo;          /* Info for priority scheduling */
    vki_camq_entry  xpt_links;      /* For chaining in the XPT layer */
    vki_camq_entry  sim_links;      /* For chaining in the SIM layer */
    vki_camq_entry  periph_links;   /* For chaining in the type driver */
-   vki_uint32_t    retry_count;
+#if BYTE_ORDER == LITTLE_ENDIAN
+   vki_uint16_t       retry_count;
+   vki_uint16_t       alloc_flags;	/* ccb_alloc_flags */
+#else
+   vki_uint16_t       alloc_flags;	/* ccb_alloc_flags */
+   vki_uint16_t       retry_count;
+#endif
    void         (*cbfcnp)(struct vki_cam_periph *, union vki_ccb *);
    /* Callback on completion function */
    vki_xpt_opcode  func_code;      /* XPT function code */
@@ -3027,15 +3040,12 @@ struct vki_ccb_hdr {
    vki_target_id_t target_id;      /* Target device ID */
    vki_lun_id_t    target_lun;     /* Target LUN number */
    vki_uint32_t    flags;          /* ccb_flags */
+   vki_uint32_t	xflags;		/* Extended flags */
    vki_ccb_ppriv_area  periph_priv;
    vki_ccb_spriv_area  sim_priv;
-   vki_uint32_t    timeout;        /* Timeout value */
-
-   /*
-    * Deprecated, only for use by non-MPSAFE SIMs.  All others must
-    * allocate and initialize their own callout storage.
-    */
-   struct      vki_callout_handle timeout_ch;
+   vki_ccb_qos_area	qos;
+   vki_uint32_t	timeout;	/* Hard timeout value in mseconds */
+   struct vki_timeval	softtimeout;	/* Soft timeout value in sec + usec */
 };
 
 typedef union {
@@ -3072,6 +3082,7 @@ struct vki_ccb_scsiio {
     * non-tagged transaction) or one of the defined scsi tag messages
     * from scsi_message.h.
     */
+   vki_uint8_t	   priority;		/* Command priority for SIMPLE tag */
    vki_u_int      tag_id;          /* tag id from initator (target mode) */
    vki_u_int      init_id;         /* initiator id of who selected */
 };
@@ -3110,6 +3121,9 @@ typedef enum {
    VKI_PROTO_ATA,      /* AT Attachment */
    VKI_PROTO_ATAPI,    /* AT Attachment Packetized Interface */
    VKI_PROTO_SATAPM,   /* SATA Port Multiplier */
+   VKI_PROTO_SEMB,	/* SATA Enclosure Management Bridge */
+   VKI_PROTO_NVME,	/* NVME */
+   VKI_PROTO_MMCSD,	/* MMC, SD, SDIO */
 } vki_cam_proto;
 
 typedef enum {
@@ -3230,10 +3244,10 @@ union vki_ccb {
    struct  ccb_debug               cdbg;
    struct  ccb_ataio               ataio;
 #endif
-   char make_union_right_size[0x4A8];
+   char make_union_right_size[0x4E0];
 };
 
-#define VKI_CAMIOCOMMAND    _VKI_IOWR(VKI_CAM_VERSION, 2, union vki_ccb)
+#define VKI_CAMIOCOMMAND _VKI_IOWR(VKI_CAM_VERSION, 2, union vki_ccb)
 
 
 /*--------------------------------------------------------------------*/

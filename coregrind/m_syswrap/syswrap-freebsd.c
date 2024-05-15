@@ -985,7 +985,6 @@ PRE(sys_setlogin)
 PRE(sys_ioctl)
 {
    *flags |= SfMayBlock;
-   // @todo PJF presumably the presence of ARG3 depends on ARG2
    PRINT("sys_ioctl ( %" FMT_REGWORD "u, 0x%" FMT_REGWORD "x, %#" FMT_REGWORD "x )",ARG1,ARG2,ARG3);
    PRE_REG_READ3(int, "ioctl",
                  int, fd, unsigned long, request, unsigned long, arg);
@@ -993,39 +992,16 @@ PRE(sys_ioctl)
    switch (ARG2 /* request */) {
    /* Handle specific ioctls which pass structures which may have pointers to other
       buffers */
-   case VKI_FIODGNAME:
-      // #define FIODGNAME _IOW('f', 120, struct fiodgname_arg) /* get dev. name */
-      // has a regression test
-      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_fiodgname_arg))) {
-         struct vki_fiodgname_arg* data = (struct vki_fiodgname_arg*)(Addr)ARG3;
-         PRE_FIELD_READ("ioctl(FIODGNAME).len", data->len);
-         PRE_FIELD_READ("ioctl(FIODGNAME).buf", data->buf);
-         PRE_MEM_WRITE("ioctl(FIODGNAME).buf", (Addr)data->buf, data->len);
-      }
-      break;
-   // The block below is from Ryan Stone
-   // https://bitbucket.org/rysto32/valgrind-freebsd/commits/5323c22be9f6c71a00e842c3ddfa1fa8a7feb279
-   case VKI_SIOCGIFMEDIA:
-      // #define SIOCGIFMEDIA _IOWR('i', 56, struct ifmediareq) /* get net media */
-      // test with "ifconfig -m"
-      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_ifmediareq))) {
-         struct vki_ifmediareq* imr = (struct vki_ifmediareq*)ARG3;
-         if (imr->ifm_ulist) {
-            PRE_MEM_WRITE("ioctl(SIOCGIFMEDIA).ifm_ulist",
-                          (Addr)(imr->ifm_ulist), imr->ifm_count * sizeof(int));
-         }
-      }
-      break;
-
-   case VKI_PCIOCGETCONF:
-      // #define PCIOCGETCONF _IOWR('p', 5, struct pci_conf_io)
-      // test with "pciconf -l"
-      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_pci_conf_io))) {
-         struct vki_pci_conf_io* pci = (struct vki_pci_conf_io*)ARG3;
-         PRE_MEM_READ("ioctl(PCIOCGETCONF).patterns",
-                      (Addr)(pci->patterns), pci->pat_buf_len);
-         PRE_MEM_WRITE("ioctl(PCIOCGETCONF).matches",
-                       (Addr)(pci->matches), pci->match_buf_len);
+   case VKI_BIOCSETF:
+      // #define BIOCSETF _IOW('B', 103, struct bpf_program)
+      // "usbconfig" to get a list of devices then
+      // test with "usbdump -i usbus0" (as root)
+      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_bpf_program))) {
+         struct vki_bpf_program* fp = (struct vki_bpf_program*)ARG3;
+         PRE_FIELD_READ("ioctl(BIOCSETF).bf_len", fp->bf_len);
+         PRE_FIELD_READ("ioctl(BIOCSETF).bf_insns", fp->bf_insns);
+         PRE_MEM_READ("ioctl(BIOCSETF).bf_insns",
+                      (Addr)(fp->bf_insns), fp->bf_len*sizeof(struct vki_bpf_insn));
       }
       break;
    case VKI_CAMIOCOMMAND:
@@ -1037,6 +1013,8 @@ PRE(sys_ioctl)
          if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
             PRE_FIELD_READ("ioctl(CAMIOCOMMAND).cdm.match_buf_len", ccb->cdm.match_buf_len);
             PRE_FIELD_READ("ioctl(CAMIOCOMMAND).cdm.matches", ccb->cdm.matches);
+            PRE_MEM_WRITE("ioctl(CAMIOCOMMAND:XPT_DEV_MATCH).num_matches",
+                          (Addr)(&ccb->cdm.num_matches), sizeof(ccb->cdm.num_matches));
             PRE_MEM_WRITE("ioctl(CAMIOCOMMAND:XPT_DEV_MATCH).matches",
                           (Addr)(ccb->cdm.matches), ccb->cdm.match_buf_len);
          } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
@@ -1061,6 +1039,16 @@ PRE(sys_ioctl)
          }
       }
       break;
+   case VKI_FIODGNAME:
+      // #define FIODGNAME _IOW('f', 120, struct fiodgname_arg) /* get dev. name */
+      // has a regression test
+      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_fiodgname_arg))) {
+         struct vki_fiodgname_arg* data = (struct vki_fiodgname_arg*)(Addr)ARG3;
+         PRE_FIELD_READ("ioctl(FIODGNAME).len", data->len);
+         PRE_FIELD_READ("ioctl(FIODGNAME).buf", data->buf);
+         PRE_MEM_WRITE("ioctl(FIODGNAME).buf", (Addr)data->buf, data->len);
+      }
+      break;
    case VKI_SIOCGIFCONF:
       // #define SIOCGIFCONF _IOWR('i', 36, struct ifconf)   /* get ifnet list */
       // test with "traceroute www.siemens.com" (as root)
@@ -1071,6 +1059,17 @@ PRE(sys_ioctl)
          PRE_MEM_WRITE("ioctl(SIOCGIFCONF).buf", (Addr)ifc->ifc_ifcu.ifcu_req, ifc->ifc_len);
       }
       break;
+   case VKI_SIOCGIFMEDIA:
+      // #define SIOCGIFMEDIA _IOWR('i', 56, struct ifmediareq) /* get net media */
+      // test with "ifconfig -m"
+      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_ifmediareq))) {
+         struct vki_ifmediareq* imr = (struct vki_ifmediareq*)ARG3;
+         if (imr->ifm_ulist) {
+            PRE_MEM_WRITE("ioctl(SIOCGIFMEDIA).ifm_ulist",
+                          (Addr)(imr->ifm_ulist), imr->ifm_count * sizeof(int));
+         }
+      }
+      break;
    case VKI_SIOCGIFSTATUS:
       // #define SIOCGIFSTATUS _IOWR('i', 59, struct ifstat) /* get IF status */
       // test with "ifconfig -a"
@@ -1078,6 +1077,17 @@ PRE(sys_ioctl)
          struct vki_ifstat* data = (struct vki_ifstat*)(Addr)ARG3;
          PRE_MEM_RASCIIZ("ioctl(SIOCGIFSTATUS).ifs_name", (Addr)data->ifs_name);
          PRE_MEM_WRITE("ioctl(SIOCGIFSTATUS).ascii", (Addr)data->ascii, sizeof(data->ascii));
+      }
+      break;
+   case VKI_PCIOCGETCONF:
+      // #define PCIOCGETCONF _IOWR('p', 5, struct pci_conf_io)
+      // test with "pciconf -l"
+      if (ARG3 && ML_(safe_to_deref)((const void*)ARG3, sizeof(struct vki_pci_conf_io))) {
+         struct vki_pci_conf_io* pci = (struct vki_pci_conf_io*)ARG3;
+         PRE_MEM_READ("ioctl(PCIOCGETCONF).patterns",
+                      (Addr)(pci->patterns), pci->pat_buf_len);
+         PRE_MEM_WRITE("ioctl(PCIOCGETCONF).matches",
+                       (Addr)(pci->matches), pci->match_buf_len);
       }
       break;
    default:
@@ -1091,6 +1101,22 @@ POST(sys_ioctl)
    switch (ARG2/* request */) {
    /* Handle specific ioctls which pass structures which may have pointers to other
       buffers */
+   case VKI_CAMIOCOMMAND:
+      if (ARG3) {
+         union vki_ccb* ccb = (union vki_ccb*)ARG3;
+         if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
+            POST_MEM_WRITE((Addr)(&ccb->cdm.num_matches), sizeof(ccb->cdm.num_matches));
+            POST_MEM_WRITE((Addr)(ccb->cdm.matches), ccb->cdm.num_matches*sizeof(struct vki_dev_match_result));
+         } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
+            struct vki_ccb_scsiio* scsiio = (struct vki_ccb_scsiio*)ccb;
+            if (scsiio->dxfer_len) {
+               if ((scsiio->ccb_h.flags & VKI_CAM_DIR_MASK) == VKI_CAM_DIR_IN) {
+                  POST_MEM_WRITE((Addr)(scsiio->data_ptr), scsiio->dxfer_len);
+               }
+            }
+         }
+      }
+      break;
    case VKI_FIODGNAME:
       if (ARG3) {
          struct vki_fiodgname_arg* data = (struct vki_fiodgname_arg*)(Addr)ARG3;
@@ -1104,19 +1130,19 @@ POST(sys_ioctl)
          POST_MEM_WRITE((Addr)ifc->ifc_ifcu.ifcu_req, ifc->ifc_len);
       }
       break;
-   case VKI_SIOCGIFSTATUS:
-      // #define SIOCGIFSTATUS _IOWR('i', 59, struct ifstat) /* get IF status */
-      if (ARG3) {
-         struct vki_ifstat* data = (struct vki_ifstat*)(Addr)ARG3;
-         POST_MEM_WRITE((Addr)data->ascii, sizeof(data->ascii));
-      }
-      break;
    case VKI_SIOCGIFMEDIA:
       if (ARG3) {
          struct vki_ifmediareq* imr = (struct vki_ifmediareq*)ARG3;
          if (imr->ifm_ulist) {
             POST_MEM_WRITE((Addr)(imr->ifm_ulist), imr->ifm_count * sizeof(int));
          }
+      }
+      break;
+   case VKI_SIOCGIFSTATUS:
+      // #define SIOCGIFSTATUS _IOWR('i', 59, struct ifstat) /* get IF status */
+      if (ARG3) {
+         struct vki_ifstat* data = (struct vki_ifstat*)(Addr)ARG3;
+         POST_MEM_WRITE((Addr)data->ascii, sizeof(data->ascii));
       }
       break;
    case VKI_PCIOCGETCONF:
@@ -1126,21 +1152,7 @@ POST(sys_ioctl)
       }
       break;
 
-   case VKI_CAMIOCOMMAND:
-      if (ARG3) {
-         union vki_ccb* ccb = (union vki_ccb*)ARG3;
-         if (ccb->ccb_h.func_code == VKI_XPT_DEV_MATCH) {
-            POST_MEM_WRITE((Addr)(ccb->cdm.matches), ccb->cdm.num_matches*sizeof(struct vki_dev_match_result));
-         } else if (ccb->ccb_h.func_code == VKI_XPT_SCSI_IO) {
-            struct vki_ccb_scsiio* scsiio = (struct vki_ccb_scsiio*)ccb;
-            if (scsiio->dxfer_len) {
-               if ((scsiio->ccb_h.flags & VKI_CAM_DIR_MASK) == VKI_CAM_DIR_IN) {
-                  POST_MEM_WRITE((Addr)(scsiio->data_ptr), scsiio->dxfer_len);
-               }
-            }
-         }
-      }
-      break;
+
    default:
       ML_(POST_unknown_ioctl)(tid, RES, ARG2, ARG3);
       break;
@@ -7094,7 +7106,7 @@ PRE(sys_membarrier)
 
 #endif
 
-#if (FREEBSD_VERS >= FREEBSD_15)
+#if (FREEBSD_VERS >= FREEBSD_14)
 
 // SYS_timerfd_create 585
 // int timerfd_create(int clockid, int flags);
@@ -7169,6 +7181,8 @@ POST(sys_timerfd_settime)
    }
 }
 
+#if (FREEBSD_VERS >= FREEBSD_14_1)
+
 // SYS_kcmp 588
 // int kcmp(pid_t pid1, pid_t pid2, int type, uintptr_t idx1, uintptr_t idx2);
 PRE(sys_kcmp)
@@ -7193,8 +7207,10 @@ PRE(sys_kcmp)
    }
 }
 
+#endif // FREEBSD_14_1
 
-#endif
+
+#endif // FREEBSD_14
 
 #undef PRE
 #undef POST
@@ -7925,11 +7941,13 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_kqueuex,          sys_kqueuex),           // 583
    BSDX_(__NR_membarrier,       sys_membarrier),        // 584
 #endif
-#if (FREEBSD_VERS >= FREEBSD_15)
+#if (FREEBSD_VERS >= FREEBSD_14)
    BSDXY(__NR_timerfd_create,   sys_timerfd_create),    // 585
    BSDXY(__NR_timerfd_settime,  sys_timerfd_settime),   // 586
    BSDXY(__NR_timerfd_gettime,  sys_timerfd_gettime),   // 587
+#if (FREEBSD_VERS >= FREEBSD_14_1)
    BSDX_(__NR_kcmp,             sys_kcmp),              // 588
+#endif
 #endif
 
 

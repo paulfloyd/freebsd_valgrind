@@ -116,10 +116,21 @@ extern ULong arm64g_calc_crc32cw ( ULong acc, ULong bits );
 extern ULong arm64g_calc_crc32cx ( ULong acc, ULong bits );
 
 /* --- DIRTY HELPERS --- */
+extern ULong arm64g_dirtyhelper_MRS_DCZID_EL0 ( void );
 
 extern ULong arm64g_dirtyhelper_MRS_CNTVCT_EL0 ( void );
 
 extern ULong arm64g_dirtyhelper_MRS_CNTFRQ_EL0 ( void );
+
+extern ULong arm64g_dirtyhelper_MRS_MIDR_EL1 ( void );
+
+extern ULong arm64g_dirtyhelper_MRS_ID_AA64PFR0_EL1 ( void );
+
+extern ULong arm64g_dirtyhelper_MRS_ID_AA64MMFR0_EL1 ( void );
+extern ULong arm64g_dirtyhelper_MRS_ID_AA64MMFR1_EL1 ( void );
+
+extern ULong arm64g_dirtyhelper_MRS_ID_AA64ISAR0_EL1 ( void );
+extern ULong arm64g_dirtyhelper_MRS_ID_AA64ISAR1_EL1 ( void );
 
 extern void  arm64g_dirtyhelper_PMULLQ ( /*OUT*/V128* res,
                                          ULong arg1, ULong arg2 );

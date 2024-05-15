@@ -1037,7 +1037,7 @@ static SyscallTableEntry syscall_main_table[] = {
    LINXY (__NR_mq_timedreceive,        sys_mq_timedreceive),         // 274
    LINX_ (__NR_mq_notify,              sys_mq_notify),               // 275
    LINXY (__NR_mq_getsetattr,          sys_mq_getsetattr),           // 276
-   LINX_ (__NR_inotify_init,           sys_inotify_init),            // 275
+   LINXY (__NR_inotify_init,           sys_inotify_init),            // 275
    LINX_ (__NR_inotify_add_watch,      sys_inotify_add_watch),       // 276
    LINX_ (__NR_inotify_rm_watch,       sys_inotify_rm_watch),        // 277
    LINXY (__NR_waitid,                 sys_waitid),                  // 278
@@ -1110,6 +1110,7 @@ static SyscallTableEntry syscall_main_table[] = {
    LINX_ (__NR_pwritev2,               sys_pwritev2),                // 362
    //..
    LINXY(__NR_statx,                   sys_statx),                   // 366
+   GENX_(__NR_rseq,                    sys_ni_syscall),              // 367
 
    LINXY(__NR_clock_gettime64,         sys_clock_gettime64),         // 403
    LINX_(__NR_clock_settime64,         sys_clock_settime64),         // 404
