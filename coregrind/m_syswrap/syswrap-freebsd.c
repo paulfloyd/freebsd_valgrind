@@ -1255,11 +1255,18 @@ PRE(sys_vfork)
 }
 
 // SYS_sbrk 69
-// void * sbrk(intptr_t incr);
+// int sbrk(int incr);
 PRE(sys_sbrk)
 {
    PRINT("sys_sbrk ( %#" FMT_REGWORD "x )",ARG1);
-   PRE_REG_READ1(void*, "sbrk", vki_intptr_t, incr);
+   PRE_REG_READ1(int, "sbrk", int, incr);
+
+   // removed in FreeBSD 15
+   // prior to that it just returned EOPNOTSUPP
+   // with a comment "Not yet implemented"
+
+   // libc sbrk doesn't call this, it calls __sys_break
+   // which maps to sys_brk
 }
 
 // SYS_freebsd11_vadvise   72
@@ -7037,7 +7044,7 @@ POST(sys_aio_readv)
 
 #if (FREEBSD_VERS >= FREEBSD_13_1)
 
-#if (FREEBSD_VERS >= FREEBSD_14)
+#if (FREEBSD_VERS >= FREEBSD_14_0)
 // SYS_fspacectl 580
 // int fspacectl(int fd, int cmd, const struct spacectl_range *rqsr, int flags,
 //     struct spacectl_range *rmsr);
@@ -7106,7 +7113,7 @@ PRE(sys_membarrier)
 
 #endif
 
-#if (FREEBSD_VERS >= FREEBSD_14)
+#if (FREEBSD_VERS >= FREEBSD_14_0)
 
 // SYS_timerfd_create 585
 // int timerfd_create(int clockid, int flags);
@@ -7209,8 +7216,7 @@ PRE(sys_kcmp)
 
 #endif // FREEBSD_14_1
 
-
-#endif // FREEBSD_14
+#endif // FREEBSD_14_0
 
 #undef PRE
 #undef POST
@@ -7237,7 +7243,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENX_(__NR_chmod,            sys_chmod),             // 15
 
    GENX_(__NR_chown,            sys_chown),             // 16
+#if defined(VGP_arm64_freebsd)
+   BSDX_(__NR_break,            sys_brk),               // 17
+#else
    GENX_(__NR_break,            sys_brk),               // 17
+#endif
    // freebsd 4 getfsstat                                  18
    // 4.3 lseek                                            19
 
@@ -7930,7 +7940,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
 #if (FREEBSD_VERS >= FREEBSD_13_1)
 
-#if (FREEBSD_VERS >= FREEBSD_14)
+#if (FREEBSD_VERS >= FREEBSD_14_0)
    BSDXY(__NR_fspacectl,        sys_fspacectl),        //  580
 #endif
    // unimpl __NR_sched_getcpu        581
@@ -7941,7 +7951,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    BSDXY(__NR_kqueuex,          sys_kqueuex),           // 583
    BSDX_(__NR_membarrier,       sys_membarrier),        // 584
 #endif
-#if (FREEBSD_VERS >= FREEBSD_14)
+#if (FREEBSD_VERS >= FREEBSD_14_0)
    BSDXY(__NR_timerfd_create,   sys_timerfd_create),    // 585
    BSDXY(__NR_timerfd_settime,  sys_timerfd_settime),   // 586
    BSDXY(__NR_timerfd_gettime,  sys_timerfd_gettime),   // 587

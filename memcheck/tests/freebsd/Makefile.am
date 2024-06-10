@@ -3,7 +3,8 @@ include $(top_srcdir)/Makefile.tool-tests.am
 
 dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout filter_sigwait \
 	filter_scalar filter_realpathat filter_fstat filter_eventfd2 \
-	toucher1 toucher2 filter_getfsstat filter_context filter_frame
+	toucher1 toucher2 filter_getfsstat filter_context filter_frame \
+	filter_supp
 
 EXTRA_DIST = \
 	access.vgtest \
@@ -90,6 +91,7 @@ EXTRA_DIST = \
 	scalar.h scalar.vgtest \
 	scalar.stderr.exp \
 		scalar.stderr.exp-arm64 \
+		scalar.stderr.exp-arm64_2 \
 		scalar.stderr.exp-x86 \
 	scalar_abort2.vgtest \
 	scalar_13_plus.vgtest \
