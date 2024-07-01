@@ -1643,6 +1643,7 @@
 /none/tests/threadederrno
 /none/tests/timestamp
 /none/tests/tls
+/none/tests/track-fds-exec-children
 /none/tests/unit_debuglog
 /none/tests/valgrind_cpp_test
 /none/tests/vgcore.*
@@ -1662,6 +1663,7 @@
 /none/tests/amd64/amd64locked
 /none/tests/amd64/asorep
 /none/tests/amd64/avx-1
+/none/tests/amd64/avx-vmovq
 /none/tests/amd64/avx2-1
 /none/tests/amd64/avx_estimate_insn
 /none/tests/amd64/bmi
@@ -1672,6 +1674,7 @@
 /none/tests/amd64/bug137714-amd64
 /none/tests/amd64/bug156404-amd64
 /none/tests/amd64/bug485148
+/none/tests/amd64/bug487439
 /none/tests/amd64/cet_nops
 /none/tests/amd64/clc
 /none/tests/amd64/cmpxchg
@@ -1807,9 +1810,11 @@
 /none/tests/arm64/allexec
 /none/tests/arm64/atomics_v81
 /none/tests/arm64/bug484426
+/none/tests/arm64/bug489338
 /none/tests/arm64/crc32
 /none/tests/arm64/cvtf_imm
 /none/tests/arm64/dc_cvax
+/none/tests/arm64/fcvta_s_u
 /none/tests/arm64/fmadd_sub
 /none/tests/arm64/fp_and_simd
 /none/tests/arm64/fp_and_simd_v82
