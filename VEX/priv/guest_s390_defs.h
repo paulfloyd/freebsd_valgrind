@@ -69,11 +69,10 @@ extern VexGuestLayout s390xGuest_layout;
 /*------------------------------------------------------------*/
 /*--- Helper functions.                                    ---*/
 /*------------------------------------------------------------*/
-void s390x_dirtyhelper_EX(ULong torun);
+void s390x_dirtyhelper_EX(ULong torun, Addr64 addr);
 ULong s390x_dirtyhelper_STCK(ULong *addr);
 ULong s390x_dirtyhelper_STCKF(ULong *addr);
 ULong s390x_dirtyhelper_STCKE(ULong *addr);
-ULong s390x_dirtyhelper_STFLE(VexGuestS390XState *guest_state, ULong *addr);
 void  s390x_dirtyhelper_CUxy(UChar *addr, ULong data, ULong num_bytes);
 ULong s390x_dirtyhelper_vec_op(VexGuestS390XState *guest_state,
                                ULong details);
@@ -253,6 +252,9 @@ UInt s390_calculate_cond(ULong mask, ULong op, ULong dep1, ULong dep2,
 
 /* Last target instruction for the EX helper */
 extern ULong last_execute_target;
+
+/* Base for relative addressing while processing EX */
+extern Addr64 guest_IA_rel_base;
 
 /*------------------------------------------------------------*/
 /*--- Vector helpers.                                      ---*/

@@ -2542,7 +2542,7 @@ FLAG_MLONG_DOUBLE_128="-mlong-double-128"
 AC_SUBST(FLAG_MLONG_DOUBLE_128)
 
 # does this toolchain support lto ?
-# Not checked for if --enable-lto=no was given, or if LTO_AR or LTO_RANLIG
+# Not checked for if --enable-lto=no was given, or if LTO_AR or LTO_RANLIB
 # are not defined
 # If not enable-lto=* arg is provided, default to no, as  lto builds are
 # a lot slower, and so not appropriate for Valgrind developments.
@@ -2556,9 +2556,7 @@ AC_CACHE_CHECK([for using the link time optimisation], vg_cv_lto,
 if test "x${vg_cv_lto}" != "xno" -a "x${LTO_AR}" != "x" -a "x${LTO_RANLIB}" != "x"; then
 AC_MSG_CHECKING([if toolchain accepts lto])
 safe_CFLAGS=$CFLAGS
-TEST_LTO_CFLAGS="-flto -flto-partition=one -fuse-linker-plugin"
-# Note : using 'one' partition is giving a slightly smaller/faster memcheck
-# and ld/lto-trans1 still needs a reasonable memory (about 0.5GB) when linking.
+TEST_LTO_CFLAGS="-flto -fuse-linker-plugin"
 CFLAGS="$TEST_LTO_CFLAGS -Werror"
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
@@ -2664,6 +2662,9 @@ AC_GCC_WARNING_SUBST_NO([builtin-memcpy-chk-size], [FLAG_W_NO_BUILTIN_MEMCPY_CHK
 AC_GCC_WARNING_SUBST_NO([incompatible-pointer-types-discards-qualifiers], [FLAG_W_NO_INCOMPATIBLE_POINTER_TYPES_DISCARDS_QUALIFIERS])
 AC_GCC_WARNING_SUBST_NO([suspicious-bzero], [FLAG_W_NO_SUSPICIOUS_BZERO])
 AC_GCC_WARNING_SUBST_NO([attributes], [FLAG_W_NO_ATTRIBUTES])
+AC_GCC_WARNING_SUBST_NO([unused-result], [FLAG_W_NO_UNUSED_RESULT])
+AC_GCC_WARNING_SUBST_NO([infinite-recursion], [FLAG_W_NO_INFINITE_RECURSION])
+AC_GCC_WARNING_SUBST_NO([deprecated], [FLAG_W_NO_DEPRECATED])
 
 AC_GCC_WARNING_SUBST_NO_VAL([alloc-size-larger-than], [1677216], [FLAG_W_NO_ALLOC_SIZE_LARGER_THAN])
 
