@@ -399,8 +399,6 @@ case "${host_os}" in
      *freebsd*)
         AC_MSG_RESULT([ok (${host_os})])
         VGCONF_OS="freebsd"
-        AC_DEFINE([FREEBSD_10], 1000, [FREEBSD_VERS value for FreeBSD 10.x])
-        freebsd_10=1000
         AC_DEFINE([FREEBSD_11], 1100, [FREEBSD_VERS value for FreeBSD 11.x])
         freebsd_11=1100
         AC_DEFINE([FREEBSD_12], 1200, [FREEBSD_VERS value for FreeBSD 12.0 to 12.1])
@@ -415,6 +413,8 @@ case "${host_os}" in
         freebsd_13_2=1320
         AC_DEFINE([FREEBSD_13_3], 1330, [FREEBSD_VERS value for FreeBSD 13.3])
         freebsd_13_3=1330
+        AC_DEFINE([FREEBSD_13_4], 1340, [FREEBSD_VERS value for FreeBSD 13.4])
+        freebsd_13_4=1340
         AC_DEFINE([FREEBSD_14_0], 1400, [FREEBSD_VERS value for FreeBSD 14.0])
         freebsd_14_0=1400
         AC_DEFINE([FREEBSD_14_1], 1410, [FREEBSD_VERS value for FreeBSD 14.1])
@@ -426,11 +426,6 @@ case "${host_os}" in
         kernel=`uname -r`
 
         case "${kernel}" in
-        10.*)
-           AC_MSG_RESULT([FreeBSD 10.x (${kernel})])
-           AC_DEFINE([FREEBSD_VERS], FREEBSD_10, [FreeBSD version])
-           freebsd_vers=$freebsd_10
-           ;;
         11.*)
            AC_MSG_RESULT([FreeBSD 11.x (${kernel})])
            AC_DEFINE([FREEBSD_VERS], FREEBSD_11, [FreeBSD version])
@@ -472,9 +467,14 @@ case "${host_os}" in
               AC_DEFINE([FREEBSD_VERS], FREEBSD_13_3, [FreeBSD version])
               freebsd_vers=$freebsd_13_3
               ;;
+           13.4-*)
+              AC_MSG_RESULT([FreeBSD 13.4 (${kernel})])
+              AC_DEFINE([FREEBSD_VERS], FREEBSD_13_4, [FreeBSD version])
+              freebsd_vers=$freebsd_13_4
+              ;;
            *)
               AC_MSG_RESULT([unsupported (${kernel})])
-              AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 15.x])
+              AC_MSG_ERROR([Valgrind works on FreeBSD 11.x to 15.x])
               ;;
            esac
            ;;
@@ -492,7 +492,7 @@ case "${host_os}" in
               ;;
            *)
               AC_MSG_RESULT([unsupported (${kernel})])
-              AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 15.x])
+              AC_MSG_ERROR([Valgrind works on FreeBSD 11.x to 15.x])
               ;;
            esac
            ;;
@@ -503,7 +503,7 @@ case "${host_os}" in
            ;;
         *)
            AC_MSG_RESULT([unsupported (${kernel})])
-           AC_MSG_ERROR([Valgrind works on FreeBSD 10.x to 15.x])
+           AC_MSG_ERROR([Valgrind works on FreeBSD 11.x to 15.x])
            ;;
         esac
 
@@ -5204,6 +5204,27 @@ CC=$saved_CC
 CFLAGS=$saved_CFLAGS
 LDFLAGS="$saved_LDFLAGS"
 AM_CONDITIONAL(BUILD_MPIWRAP_SEC, test x$ac_have_mpi2_sec = xyes)
+
+#----------------------------------------------------------------------------
+# static libc check
+#----------------------------------------------------------------------------
+AC_MSG_CHECKING([if static libc is available])
+
+saved_LDFLAGS="$LDFLAGS"
+LDFLAGS="-nostdlib -lc -static"
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
+int main(void)
+{
+}
+]])], [
+ac_have_static_libc=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_static_libc=no
+AC_MSG_RESULT([no])
+])
+LDFLAGS="$saved_LDFLAGS"
+AM_CONDITIONAL(HAVE_STATIC_LIBC, test x$ac_have_static_libc = xyes)
 
 
 #----------------------------------------------------------------------------

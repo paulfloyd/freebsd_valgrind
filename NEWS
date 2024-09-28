@@ -15,6 +15,9 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
 * S390X added support for the DFLTCC instruction provided by the
   deflate-conversion facility (z15/arch13).
 
+* S390X added support for the instructions provided by the MSA facility
+  and MSA extensions 1-9.
+
 * ==================== TOOL CHANGES ===================
 
 * ==================== FIXED BUGS ====================
@@ -57,6 +60,12 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 489338  arm64: Instruction fcvtas should round 322.5 to 323, but result is 322.
 489676  vgdb handle EINTR and EAGAIN more consistently
 490651  Stop using -flto-partition=one
+491394  (vgModuleLocal_addDiCfSI): Assertion 'di->fsm.have_rx_map &&
+        di->fsm.rw_map_count' failed
+492210  False positive on x86/amd64 with ZF taken directly from addition
+492214  statx(fd, NULL, AT_EMPTY_PATH) is supported since Linux 6.11
+        but not supported in valgrind
+492663  Valgrind ignores debug info for some binaries
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
