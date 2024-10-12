@@ -10,6 +10,12 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * ==================== CORE CHANGES ===================
 
+* Bad file descriptor usage now generates a real error with
+  --track-fds=yes that is suppressible and shows up in the xml output
+  with full execution backtrace. The warnings shown without using the
+  option are deprecated and will be removed in a future valgrind
+  version.
+
 * ================== PLATFORM CHANGES =================
 
 * S390X added support for the DFLTCC instruction provided by the
@@ -42,6 +48,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 392146  aarch64: unhandled instruction 0xD5380001 (MRS rT, midr_el1)
 412377  SIGILL on cache flushes on arm64
 417572  vex amd64->IR: unhandled instruction bytes: 0xC5 0x79 0xD6 0xED 0xC5
+440180  s390x: Failed assertion in disassembler
 444781  MIPS: wrong syscall numbers used
 447989  Support Armv8.2 SHA-512 instructions
 453044  gbserver_tests failures in aarch64
@@ -66,6 +73,13 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 492214  statx(fd, NULL, AT_EMPTY_PATH) is supported since Linux 6.11
         but not supported in valgrind
 492663  Valgrind ignores debug info for some binaries
+493454  Missing FUSE_COMPATIBLE_MAY_BLOCK markers
+493507  direct readlink syscall from PRE handler is incompatible with
+        FUSE_COMPATIBLE_MAY_BLOCK
+493970  s390x: Store/restore FPC upon helper call causes slowdown
+494252  s390x: incorrect disassembly for LOCHI and friends
+n-i-bz  Improve messages for sigaltstack errors, use specific
+        stack_t member names
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

@@ -591,6 +591,10 @@ struct BadCloseExtra {
    ExeContext *where_opened;      /* recordwhere the fd  was opened */
 };
 
+struct FdBadUse {
+  Int fd;                        /* The file descriptor */
+};
+
 struct NotClosedExtra {
    Int fd;
    HChar *pathname;
@@ -1136,7 +1140,7 @@ void fd_pp_Error (const Error *err)
       }
       VG_(emit)("%sFile descriptor %d: %s is already closed%s\n",
                 whatpre, bce->fd, bce->description, whatpost);
-      VG_(pp_ExeContext)( VG_(get_error_where)(err) );
+      VG_(pp_ExeContext)( where );
       VG_(emit)("%sPreviously closed%s\n", auxpre, auxpost);
       VG_(pp_ExeContext)(bce->where_closed);
       VG_(emit)("%sOriginally opened%s\n", auxpre, auxpost);
@@ -1158,6 +1162,13 @@ void fd_pp_Error (const Error *err)
          VG_(message)(Vg_UserMsg, "   <inherited from parent>\n");
          VG_(message)(Vg_UserMsg, "\n");
       }
+   } else if (VG_(get_error_kind)(err) == FdBadUse) {
+      if (xml) VG_(emit)("  <kind>FdBadUse</kind>\n");
+      struct FdBadUse *nce = (struct FdBadUse *)
+         VG_(get_error_extra)(err);
+      if (xml) VG_(emit)("  <fd>%d</fd>\n", nce->fd);
+      VG_(emit)("%sInvalid file descriptor %d%s\n", whatpre, nce->fd, whatpost);
+      VG_(pp_ExeContext)(where);
    } else {
       vg_assert2 (False, "Unknown error kind: %d",
                   VG_(get_error_kind)(err));
@@ -1172,6 +1183,8 @@ UInt fd_update_extra (const Error *err)
       return sizeof (struct BadCloseExtra);
    else if (VG_(get_error_kind)(err) == FdNotClosed)
       return sizeof (struct NotClosedExtra);
+   else if (VG_(get_error_kind)(err) == FdBadUse)
+      return sizeof (struct FdBadUse);
    else {
       vg_assert2 (False, "Unknown error kind: %d",
                   VG_(get_error_kind)(err));
@@ -1627,22 +1640,34 @@ Bool ML_(fd_allowed)(Int fd, const HChar *syscallname, ThreadId tid,
       client is exactly what we don't want.  */
 
    /* croak? */
-   if ((!allowed) && VG_(showing_core_errors)() ) {
-      VG_(message)(Vg_UserMsg,
-         "Warning: invalid file descriptor %d in syscall %s()\n",
-         fd, syscallname);
-      if (fd == VG_(log_output_sink).fd && VG_(log_output_sink).fd >= 0)
-	 VG_(message)(Vg_UserMsg, 
+   if ((!allowed) && !isNewFd) {
+      // XXX FdBadUse might want to add more info if we are going to include
+      // already closed file descriptors, then we do have a bit more info
+      if (VG_(clo_track_fds)) {
+         struct FdBadUse badfd;
+         badfd.fd = fd;
+         VG_(maybe_record_error)(tid, FdBadUse, 0,
+                                 "invalid file descriptor", &badfd);
+      } else if (VG_(showing_core_warnings) ()) {
+         // XXX legacy warnings, will be removed eventually
+         VG_(message)(Vg_UserMsg,
+                      "Warning: invalid file descriptor %d in syscall %s()\n",
+                      fd, syscallname);
+      }
+
+      if (VG_(showing_core_warnings) ()) {
+         if (fd == VG_(log_output_sink).fd && VG_(log_output_sink).fd >= 0)
+            VG_(message)(Vg_UserMsg, 
             "   Use --log-fd=<number> to select an alternative log fd.\n");
-      if (fd == VG_(xml_output_sink).fd && VG_(xml_output_sink).fd >= 0)
-	 VG_(message)(Vg_UserMsg, 
+         if (fd == VG_(xml_output_sink).fd && VG_(xml_output_sink).fd >= 0)
+            VG_(message)(Vg_UserMsg, 
             "   Use --xml-fd=<number> to select an alternative XML "
             "output fd.\n");
-      // DDD: consider always printing this stack trace, it's useful.
-      // Also consider also making this a proper core error, ie.
-      // suppressible and all that.
-      if (VG_(clo_verbosity) > 1) {
-         VG_(get_and_pp_StackTrace)(tid, VG_(clo_backtrace_size));
+
+         // XXX This is the legacy warning, will be removed eventually
+         if (VG_(clo_verbosity) > 1 && !VG_(clo_track_fds)) {
+            VG_(get_and_pp_StackTrace)(tid, VG_(clo_backtrace_size));
+         }
       }
    }
 
@@ -3457,6 +3482,7 @@ PRE(sys_execve)
 
 PRE(sys_access)
 {
+   FUSE_COMPATIBLE_MAY_BLOCK();
    PRINT("sys_access ( %#" FMT_REGWORD "x(%s), %ld )", ARG1,
          (HChar*)(Addr)ARG1, SARG2);
    PRE_REG_READ2(long, "access", const char *, pathname, int, mode);
@@ -4565,18 +4591,19 @@ POST(sys_poll)
 PRE(sys_readlink)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
-   Word saved = SYSNO;
-
    PRINT("sys_readlink ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %llu )",
          ARG1, (char*)(Addr)ARG1, ARG2, (ULong)ARG3);
    PRE_REG_READ3(long, "readlink",
                  const char *, path, char *, buf, int, bufsiz);
    PRE_MEM_RASCIIZ( "readlink(path)", ARG1 );
    PRE_MEM_WRITE( "readlink(buf)", ARG2,ARG3 );
+}
 
-
-   {
+POST(sys_readlink)
+{
 #if defined(VGO_linux) || defined(VGO_solaris)
+   {
+      Word saved = SYSNO;
 #if defined(VGO_linux)
 #define PID_EXEPATH  "/proc/%d/exe"
 #define SELF_EXEPATH "/proc/self/exe"
@@ -4597,15 +4624,10 @@ PRE(sys_readlink)
           && (VG_STREQ(arg1s, name) || VG_STREQ(arg1s, SELF_EXEPATH))) {
          VG_(sprintf)(name, SELF_EXEFD, VG_(cl_exec_fd));
          SET_STATUS_from_SysRes( VG_(do_syscall3)(saved, (UWord)name, 
-                                                         ARG2, ARG3));
-      } else
-#endif
-      {
-         /* Normal case */
-         SET_STATUS_from_SysRes( VG_(do_syscall3)(saved, ARG1, ARG2, ARG3));
+                                                  ARG2, ARG3));
       }
    }
-
+#endif
    if (SUCCESS && RES > 0)
       POST_MEM_WRITE( ARG2, RES );
 }
@@ -4846,6 +4868,7 @@ POST(sys_statfs)
 
 PRE(sys_statfs64)
 {
+   FUSE_COMPATIBLE_MAY_BLOCK();
    PRINT("sys_statfs64 ( %#" FMT_REGWORD "x(%s), %llu, %#" FMT_REGWORD "x )",
          ARG1, (char*)(Addr)ARG1, (ULong)ARG2, ARG3);
    PRE_REG_READ3(long, "statfs64",
@@ -5035,9 +5058,9 @@ PRE(sys_sigaltstack)
                  const vki_stack_t *, ss, vki_stack_t *, oss);
    if (ARG1 != 0) {
       const vki_stack_t *ss = (vki_stack_t *)(Addr)ARG1;
-      PRE_MEM_READ( "sigaltstack(ss)", (Addr)&ss->ss_sp, sizeof(ss->ss_sp) );
-      PRE_MEM_READ( "sigaltstack(ss)", (Addr)&ss->ss_flags, sizeof(ss->ss_flags) );
-      PRE_MEM_READ( "sigaltstack(ss)", (Addr)&ss->ss_size, sizeof(ss->ss_size) );
+      PRE_MEM_READ( "sigaltstack(ss->ss_sp)", (Addr)&ss->ss_sp, sizeof(ss->ss_sp) );
+      PRE_MEM_READ( "sigaltstack(ss->ss_size)", (Addr)&ss->ss_size, sizeof(ss->ss_size) );
+      PRE_MEM_READ( "sigaltstack(ss->ss_flags)", (Addr)&ss->ss_flags, sizeof(ss->ss_flags) );
    }
    if (ARG2 != 0) {
       PRE_MEM_WRITE( "sigaltstack(oss)", ARG2, sizeof(vki_stack_t) );
