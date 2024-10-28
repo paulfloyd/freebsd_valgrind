@@ -1,4 +1,4 @@
-Release 3.24.0 (?? Oct 2024)
+Release 3.24.0.RC1 (27 Oct 2024)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This release supports X86/Linux, AMD64/Linux, ARM32/Linux, ARM64/Linux,
@@ -15,6 +15,8 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
   with full execution backtrace. The warnings shown without using the
   option are deprecated and will be removed in a future valgrind
   version.
+
+* Ada name demangling is now supported in error messages.
 
 * ================== PLATFORM CHANGES =================
 
@@ -51,6 +53,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 440180  s390x: Failed assertion in disassembler
 444781  MIPS: wrong syscall numbers used
 447989  Support Armv8.2 SHA-512 instructions
+445235  Java/Ada/D demangling is probably broken
 453044  gbserver_tests failures in aarch64
 479661  Valgrind leaks file descriptors
 486180  [Valgrind][MIPS] 'VexGuestArchState' has no member named
@@ -78,6 +81,10 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         FUSE_COMPATIBLE_MAY_BLOCK
 493970  s390x: Store/restore FPC upon helper call causes slowdown
 494252  s390x: incorrect disassembly for LOCHI and friends
+495278  PowerPC instruction dcbf should allow the L field values of 4, 6 on
+        ISA 3.0 and earlier, just ignore the value
+495469  aligned_alloc and posix_memalign missing MALLOC_TRACE with returned
+        pointer
 n-i-bz  Improve messages for sigaltstack errors, use specific
         stack_t member names
 
@@ -85,7 +92,7 @@ To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
 where XXXXXX is the bug number as listed above.
 
-(3.24.0.RC1: ?? Oct 2024)
+(3.24.0.RC1: 27 Oct 2024)
 
 
 Release 3.23.0 (26 Apr 2024)

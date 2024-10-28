@@ -93,10 +93,6 @@ EXTRA_DIST = \
 		scalar.stderr.exp-x86 \
 		scalar.supp \
 	scalar_abort2.vgtest \
-	scalar_13_plus.vgtest \
-	scalar_13_plus.stderr.exp \
-	scalar_15_plus.vgtest \
-	scalar_15_plus.stderr.exp \
 	scalar_abort2.stderr.exp \
 	scalar_fork.vgtest \
 	scalar_fork.stderr.exp \
@@ -187,14 +183,20 @@ inlinfo_nested_so_LDFLAGS = -Wl,-rpath,$(top_builddir)/memcheck/tests/freebsd -s
 bug464476_SOURCES = bug464476.cpp
 bug470713_SOURCES = bug470713.cpp
 
-if FREEBSD_VERS_13_PLUS
-check_PROGRAMS += realpathat scalar_13_plus eventfd1 eventfd2
-scalar_13_plus_CFLAGS = ${AM_CFLAGS} -g
+if FREEBSD_EVENTFD
+check_PROGRAMS += eventfd1 eventfd2
 endif
 
-if FREEBSD_VERS_15_PLUS
-check_PROGRAMS += kqueuex scalar_15_plus timerfd
-scalar_15_plus_CFLAGS = ${AM_CFLAGS} -g
+if FREEBSD_REALPATHAT_SYSCALL
+check_PROGRAMS += realpathat
+endif
+
+if FREEBSD_KQUEUEX_SYSCALL
+check_PROGRAMS += kqueuex
+endif
+
+if FREEBSD_TIMERFD_SYSCALL
+check_PROGRAMS += timerfd
 timerfd_LDFLAGS = -lm
 endif
 
@@ -204,6 +206,7 @@ delete_sized_mismatch_CXXFLAGS = ${AM_CXXFLAGS} --std=c++14
 delete_sized_mismatch_SOURCES = delete_sized_mismatch.cpp
 
 errno_aligned_allocs_CFLAGS = ${AM_CFLAGS} @FLAG_W_NO_NON_POWER_OF_TWO_ALIGNMENT@
+
 
 extattr_CFLAGS = ${AM_CFLAGS} @FLAG_W_NO_UNUSED_BUT_SET_VARIABLE@
 

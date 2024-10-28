@@ -283,7 +283,7 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
    if (do_stats) stats.nr++;
 
    // Does this apply to macOS 10.14 and earlier?
-#  if defined(VGO_freebsd) && (FREEBSD_VERS < FREEBSD_13_0)
+#  if defined(VGO_freebsd) && (__FreeBSD_version < 1300000)
    if (VG_(is_valid_tid)(tid_if_known) &&
       VG_(is_in_syscall)(tid_if_known) &&
       i < max_n_ips) {
@@ -521,6 +521,24 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
 #if defined(VGP_amd64_linux) || defined(VGP_amd64_darwin) \
     || defined(VGP_amd64_solaris) || defined(VGP_amd64_freebsd)
 
+/*
+ * Concerning the comment in the function about syscalls, I'm not sure
+ * what changed or when with FreeBSD. The situation going at least
+ * as far back as FreeBSD 12.1 (so Nov 2019) is that system calls are
+ * implemented with generated wrappers that call through an interposing
+ * table of function pointers. The result when built with clang is that
+ * code for the frame pointer prolog is generated but then an optimized
+ * sibling call is made. That means the frame pointer is popped off
+ * the stack and a jmp is made to the function in the table rather than
+ * a call.
+ *
+ * The end result is that, when we are in a syscall it is as though there were
+ * no prolog but a copy of the frame pointer is stored one 64bit word below the
+ * stack pointer. If more recent FreeBSD uses the hack that sets
+ *  ips[i] = *(Addr *)uregs.xsp - 1;
+ * then the caller of the syscall gets added twice.
+ */
+
 UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
                                /*OUT*/Addr* ips, UInt max_n_ips,
                                /*OUT*/Addr* sps, /*OUT*/Addr* fps,
@@ -594,11 +612,11 @@ UInt VG_(get_StackTrace_wrk) ( ThreadId tid_if_known,
       VG_(printf)("     ipsS[%d]=%#08lx rbp %#08lx rsp %#08lx\n",
                   i-1, ips[i-1], uregs.xbp, uregs.xsp);
 
-#  if defined(VGO_darwin) || (defined(VGO_freebsd) && (FREEBSD_VERS < FREEBSD_13_0))
+#  if defined(VGO_darwin) || (defined(VGO_freebsd) && __FreeBSD_version < 1300000)
    if (VG_(is_valid_tid)(tid_if_known) &&
       VG_(is_in_syscall)(tid_if_known) &&
       i < max_n_ips) {
-      /* On Darwin and FreeBSD, all the system call stubs have no function
+      /* On Darwin, all the system call stubs have no function
        * prolog.  So instead of top of the stack being a new
        * frame comprising a saved BP and a return address, we
        * just have the return address in the caller's frame.
