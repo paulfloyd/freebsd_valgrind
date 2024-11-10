@@ -1716,18 +1716,7 @@ void evh__pre_thread_ll_exit ( ThreadId quit_tid )
    /* Complain if this thread holds any locks. */
    nHeld = HG_(cardinalityWS)( univ_lsets, thr_q->locksetA );
    tl_assert(nHeld >= 0);
-   Bool lock_at_exit = False;
-#if defined(VGO_freebsd)
-   /* Bugzilla 494337
-    * temporary (?): turn off this check on FreeBSD 14.2+
-    * there is a lock during exit() to make it thread safe
-    * but that lock gets leaked.
-    */
-   if (VG_(getosreldate)() > 1401500) {
-      lock_at_exit = True;
-   }
-#endif
-   if (nHeld > 0 && (lock_at_exit == False)) {
+   if (nHeld > 0) {
       HChar buf[80];
       VG_(sprintf)(buf, "Exiting thread still holds %d lock%s",
                         nHeld, nHeld > 1 ? "s" : "");
@@ -5328,7 +5317,7 @@ Bool hg_handle_client_request ( ThreadId tid, UWord* args, UWord* ret)
 
          gnat_dmmls_INIT();
          /* Similar loop as for master completed hook below, but stops at
-            the first matching occurence, only comparing master and
+            the first matching occurrence, only comparing master and
             dependent. */
          for (n = VG_(sizeXA) (gnat_dmmls) - 1; n >= 0; n--) {
             GNAT_dmml *dmml = (GNAT_dmml*) VG_(indexXA)(gnat_dmmls, n);

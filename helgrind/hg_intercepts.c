@@ -55,6 +55,8 @@
 #include "pub_tool_clreq.h"
 #include "helgrind.h"
 #include "config.h"
+#include <string.h>
+#include <unistd.h>
 
 
 #if defined(VGO_solaris)
@@ -113,6 +115,8 @@
 #define LIBC_FUNC(ret_ty, f, args...) \
    ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)(args); \
    ret_ty I_WRAP_SONAME_FNNAME_ZZ(VG_Z_LIBC_SONAME,f)(args)
+
+#include <osreldate.h>
 #endif
 
 // Do a client request.  These are macros rather than a functions so
@@ -915,6 +919,50 @@ static int mutex_destroy_WRK(pthread_mutex_t *mutex)
 #  error "Unsupported OS"
 #endif
 
+#if defined(VGO_freebsd)
+
+/*
+ * Bugzilla 494337
+ *
+ * Hacks'R'Us
+ * FreeBSD 15 (backported to 14.2) add a mutex lock to
+ * exit to ensure that it is thread-safe. But this lock
+ * never gets unlocked. That meant this lock was causing
+ * all threaded apps to generate a Helgrind still holding
+ * lock errors. So in time honoured tradition, this can
+ * be fixed with a hack. This adds a wrapper to exit()
+ * that sets a global variable hg_in_exit. In the next
+ * call to pthread_mutex_lock, if that variable is 1
+ * then the pthread_mutex_lock wrapper only calls the
+ * wrapped function. It does not call the PRE and POST
+ * userreq functions. It then resets hg_in_exit to 0
+ * (because there will be more locks in the atexit
+ * processing).
+ */
+
+int hg_in_exit = 0;
+
+static int exit_WRK(int status)
+{
+   int ret;
+   OrigFn fn;
+   VALGRIND_GET_ORIG_FN(fn);
+
+#if (__FreeBSD_version >= 1401500)
+   hg_in_exit = 1;
+#endif
+
+   CALL_FN_W_W(ret, fn, status);
+
+   return ret;
+}
+
+LIBC_FUNC(int, exit, int res) {
+   return exit_WRK(res);
+}
+
+#endif
+
 
 //-----------------------------------------------------------
 // glibc:   pthread_mutex_lock
@@ -928,8 +976,19 @@ static int mutex_lock_WRK(pthread_mutex_t *mutex)
    OrigFn fn;
    VALGRIND_GET_ORIG_FN(fn);
    if (TRACE_PTH_FNS) {
-      fprintf(stderr, "<< pthread_mxlock %p", mutex); fflush(stderr);
+      char buf[30];
+      snprintf(buf, 30, "<< pthread_mxlock %p", mutex);
+      write(STDERR_FILENO, buf, strlen(buf));
+      fsync(STDERR_FILENO);
    }
+
+#if defined(VGO_freebsd)
+   if (hg_in_exit) {
+      CALL_FN_W_W(ret, fn, mutex);
+      hg_in_exit = 0;
+      goto HG_MUTEX_LOCK_OUT;
+   }
+#endif
 
    DO_CREQ_v_WW(_VG_USERREQ__HG_PTHREAD_MUTEX_LOCK_PRE,
                 pthread_mutex_t*,mutex, long,0/*!isTryLock*/);
@@ -944,12 +1003,18 @@ static int mutex_lock_WRK(pthread_mutex_t *mutex)
    DO_CREQ_v_WW(_VG_USERREQ__HG_PTHREAD_MUTEX_LOCK_POST,
                 pthread_mutex_t *, mutex, long, (ret == 0) ? True : False);
 
+#if defined(VGO_freebsd)
+HG_MUTEX_LOCK_OUT:
+#endif
+
    if (ret != 0) {
       DO_PthAPIerror( "pthread_mutex_lock", ret );
    }
 
    if (TRACE_PTH_FNS) {
-      fprintf(stderr, " :: mxlock -> %d >>\n", ret);
+      char buf[30];
+      snprintf(buf, 30, " :: mxlock -> %d >>\n", ret);
+      write(STDERR_FILENO, buf, strlen(buf));
    }
    return ret;
 }
@@ -1175,7 +1240,10 @@ static int mutex_unlock_WRK(pthread_mutex_t *mutex)
    VALGRIND_GET_ORIG_FN(fn);
 
    if (TRACE_PTH_FNS) {
-      fprintf(stderr, "<< pthread_mxunlk %p", mutex); fflush(stderr);
+      char buf[30];
+      snprintf(buf, 30, "<< pthread_mxunlk %p", mutex);
+      write(STDERR_FILENO, buf, strlen(buf));
+      fsync(STDERR_FILENO);
    }
 
    DO_CREQ_v_W(_VG_USERREQ__HG_PTHREAD_MUTEX_UNLOCK_PRE,
@@ -1191,7 +1259,9 @@ static int mutex_unlock_WRK(pthread_mutex_t *mutex)
    }
 
    if (TRACE_PTH_FNS) {
-      fprintf(stderr, " mxunlk -> %d >>\n", ret);
+      char buf[30];
+      snprintf(buf, 30, " :: mxunlk -> %d >>\n", ret);
+      write(STDERR_FILENO, buf, strlen(buf));
    }
    return ret;
 }

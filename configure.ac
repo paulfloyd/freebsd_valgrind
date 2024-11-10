@@ -15,10 +15,10 @@
 # Also set the (expected/last) release date here.
 # Do not forget to rerun ./autogen.sh
 m4_define([v_major_ver], [3])
-m4_define([v_minor_ver], [24])
+m4_define([v_minor_ver], [25])
 m4_define([v_micro_ver], [0])
-m4_define([v_suffix_ver], [RC1])
-m4_define([v_rel_date], ["27 Oct 2024"])
+m4_define([v_suffix_ver], [GIT])
+m4_define([v_rel_date], ["?? Apr 2025"])
 m4_define([v_version],
 	  m4_if(v_suffix_ver, [],
 		[v_major_ver.v_minor_ver.v_micro_ver],
@@ -4955,7 +4955,8 @@ AC_CHECK_FUNCS([     \
         sem_timedwait \
         sem_clockwait_np \
         fdatasync    \
-        getrandom
+        getrandom    \
+        getrlimitusage
         ])
 
 # AC_CHECK_LIB adds any library found to the variable LIBS, and links these
@@ -5009,6 +5010,8 @@ AM_CONDITIONAL([HAVE_FDATASYNC],
                [test x$ac_cv_func_fdatasync = xyes])
 AM_CONDITIONAL([HAVE_GETRANDOM],
                [test x$ac_cv_func_getrandom = xyes])
+AM_CONDITIONAL([HAVE_GETRLIMITUSAGE],
+               [test x$ac_cv_func_getrlimitusage = xyes])
 
 if test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \

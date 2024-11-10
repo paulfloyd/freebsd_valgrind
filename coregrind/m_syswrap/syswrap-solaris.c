@@ -2357,10 +2357,6 @@ PRE(sys_fstat)
    PRINT("sys_fstat ( %ld, %#lx )", SARG1, ARG2);
    PRE_REG_READ2(long, "fstat", int, fildes, struct stat *, buf);
    PRE_MEM_WRITE("fstat(buf)", ARG2, sizeof(struct vki_stat));
-
-   /* Be strict. */
-   if (!ML_(fd_allowed)(ARG1, "fstat", tid, False))
-      SET_STATUS_Failure(VKI_EBADF);
 }
 
 POST(sys_fstat)
@@ -3930,7 +3926,7 @@ PRE(sys_execve)
 #if defined(SOLARIS_EXECVE_SYSCALL_TAKES_FLAGS)
    if (ARG1_is_fd)
       VG_(message)(Vg_UserMsg, "execve(%ld, %#lx, %#lx, %lu) failed, "
-                   "errno %ld\n", SARG1, ARG2, ARG3, ARG4, ERR);
+                   "errno %lu\n", SARG1, ARG2, ARG3, ARG4, ERR);
    else
       VG_(message)(Vg_UserMsg, "execve(%#lx(%s), %#lx, %#lx, %ld) failed, errno"
                    " %lu\n", ARG1, (HChar *) ARG1, ARG2, ARG3, SARG4, ERR);

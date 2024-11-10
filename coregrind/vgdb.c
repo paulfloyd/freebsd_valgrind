@@ -441,8 +441,8 @@ Bool write_buf(int fd, const char* buf, size_t size, const char* desc,
 {
    size_t nrwritten;
    ssize_t nrw;
-   DEBUG(2, "writing %s len %d %.*s notify: %d\n", desc, size,
-         size, buf, notify);
+   DEBUG(2, "writing %s len %zu %.*s notify: %d\n", desc, size,
+         (int)size, buf, notify);
    nrwritten = 0;
    while (nrwritten < size) {
       nrw = write(fd, buf+nrwritten, size - nrwritten);
@@ -1167,7 +1167,7 @@ static void count_len(char delim, char *buf, size_t *len)
    If speaking with GDB, early_exit will ensure the GDB user sees
    the error messages produced by vgdb:
    early_exit should be used when vgdb exits due to an early error i.e.
-   error during arg processing, before it could succesfully process the
+   error during arg processing, before it could successfully process the
    first packet from GDB.
    early_exit will then read the first packet send by GDB (i.e.
    the qSupported packet) and will reply to it with an error and then exit.
