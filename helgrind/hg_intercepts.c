@@ -978,7 +978,7 @@ static int mutex_lock_WRK(pthread_mutex_t *mutex)
    if (TRACE_PTH_FNS) {
       char buf[30];
       snprintf(buf, 30, "<< pthread_mxlock %p", mutex);
-      write(STDERR_FILENO, buf, strlen(buf));
+      (void)write(STDERR_FILENO, buf, strlen(buf));
       fsync(STDERR_FILENO);
    }
 
@@ -1014,7 +1014,7 @@ HG_MUTEX_LOCK_OUT:
    if (TRACE_PTH_FNS) {
       char buf[30];
       snprintf(buf, 30, " :: mxlock -> %d >>\n", ret);
-      write(STDERR_FILENO, buf, strlen(buf));
+      (void)write(STDERR_FILENO, buf, strlen(buf));
    }
    return ret;
 }
@@ -1242,7 +1242,7 @@ static int mutex_unlock_WRK(pthread_mutex_t *mutex)
    if (TRACE_PTH_FNS) {
       char buf[30];
       snprintf(buf, 30, "<< pthread_mxunlk %p", mutex);
-      write(STDERR_FILENO, buf, strlen(buf));
+      (void)write(STDERR_FILENO, buf, strlen(buf));
       fsync(STDERR_FILENO);
    }
 
@@ -1261,7 +1261,7 @@ static int mutex_unlock_WRK(pthread_mutex_t *mutex)
    if (TRACE_PTH_FNS) {
       char buf[30];
       snprintf(buf, 30, " :: mxunlk -> %d >>\n", ret);
-      write(STDERR_FILENO, buf, strlen(buf));
+      (void)write(STDERR_FILENO, buf, strlen(buf));
    }
    return ret;
 }

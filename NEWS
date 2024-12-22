@@ -10,6 +10,10 @@ AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * ==================== CORE CHANGES ===================
 
+* The valgrind gdbserver now supports the GDB remote protocol packet
+  'x addr,len' (available in GDB release >= 16).
+  The x packet can reduce the time taken by GDB to read memory from valgrind.
+
 * ================== PLATFORM CHANGES =================
 
 * ==================== TOOL CHANGES ===================
@@ -23,9 +27,17 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+489913  WARNING: unhandled amd64-linux syscall: 444 (landlock_create_ruleset)
+494246  syscall fsopen not wrapped
 494327  Crash when running Helgrind built with #define TRACE_PTH_FNS 1
 494337  All threaded applications cause still holding lock errors
 495488  Add FreeBSD getrlimitusage syscall wrapper
+496571  False positive for null key passed to bpf_map_get_next_key syscall.
+469782  Valgrind does not support zstd-compressed debug sections
+497130  Recognize new DWARF5 DW_LANG constants
+497455  Update drd/scripts/download-and-build-gcc
+497723  Enabling Ada demangling breaks callgrind differentiation between
+        overloaded functions and procedures
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
@@ -117,6 +129,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         FUSE_COMPATIBLE_MAY_BLOCK
 493959  s390x: Fix regtest failure for none/tests/s390x/op00
 493970  s390x: Store/restore FPC upon helper call causes slowdown
+494218  Remove FREEBSD_VERS from configure and build
 494252  s390x: incorrect disassembly for LOCHI and friends
 494960  Fixes and tweaks for gsl19test
 495278  PowerPC instruction dcbf should allow the L field values of 4, 6 on

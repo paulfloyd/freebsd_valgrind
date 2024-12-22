@@ -265,6 +265,7 @@ noinst_HEADERS = \
 	m_debuginfo/lzoconf.h		\
 	m_debuginfo/lzodefs.h		\
 	m_debuginfo/minilzo.h		\
+	m_debuginfo/zstd.h              \
 	m_demangle/ansidecl.h	\
 	m_demangle/cp-demangle.h \
 	m_demangle/dyn-string.h	\
@@ -372,6 +373,7 @@ COREGRIND_SOURCES_COMMON = \
 	m_debuginfo/storage.c \
 	m_debuginfo/tinfl.c \
 	m_debuginfo/tytypes.c \
+	m_debuginfo/zstddeclib.c \
 	m_demangle/cp-demangle.c \
 	m_demangle/cplus-dem.c \
 	m_demangle/demangle.c \

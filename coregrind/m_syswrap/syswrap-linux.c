@@ -4163,6 +4163,54 @@ POST(sys_memfd_create)
    }
 }
 
+PRE(sys_landlock_create_ruleset)
+{
+   PRINT("sys_landlock_create_ruleset ( %#" FMT_REGWORD "x, %lu, %lu )",
+         ARG1, ARG2, ARG3);
+   PRE_REG_READ3(long, "landlock_create_ruleset",
+                 const struct vki_landlock_ruleset_attr*, attr,
+                 vki_size_t, size, vki_uint32_t, flags);
+   PRE_MEM_READ( "landlock_create_ruleset(value)", ARG1, ARG2 );
+
+   /* XXX Alternatively we could always fail with EOPNOTSUPP
+      since the rules might interfere with valgrind itself.  */
+}
+
+POST(sys_landlock_create_ruleset)
+{
+   /* Returns either the abi version or a file descriptor.  */
+   if (ARG3 != VKI_LANDLOCK_CREATE_RULESET_VERSION) {
+      if (!ML_(fd_allowed)(RES, "landlock_create_ruleset", tid, True)) {
+         VG_(close)(RES);
+         SET_STATUS_Failure( VKI_EMFILE );
+      } else {
+         if (VG_(clo_track_fds))
+            ML_(record_fd_open_nameless)(tid, RES);
+      }
+   }
+}
+
+PRE(sys_landlock_add_rule)
+{
+   PRINT("sys_landlock_add_rule ( %ld, %lu, %#" FMT_REGWORD "x, %lu )",
+         SARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(long, "landlock_add_rule",
+                 int, ruleset_fd, enum vki_landlock_rule_type, rule_type,
+                 const void*, rule_attr, vki_uint32_t, flags);
+   if (!ML_(fd_allowed)(ARG1, "landlock_add_rule", tid, False))
+      SET_STATUS_Failure(VKI_EBADF);
+   /* XXX Depending on rule_type we should also check the given rule_attr.  */
+}
+
+PRE(sys_landlock_restrict_self)
+{
+   PRINT("sys_landlock_restrict_self ( %ld, %lu )", SARG1, ARG2);
+   PRE_REG_READ2(long, "landlock_create_ruleset",
+                 int, ruleset_fd, vki_uint32_t, flags);
+   if (!ML_(fd_allowed)(ARG1, "landlock_restrict_self", tid, False))
+      SET_STATUS_Failure(VKI_EBADF);
+}
+
 PRE(sys_memfd_secret)
 {
    PRINT("sys_memfd_secret ( %#" FMT_REGWORD "x )", ARG1);
@@ -12993,7 +13041,11 @@ PRE(sys_bpf)
             }
             /* Get size of key for this map. */
             if (bpf_map_get_sizes(attr->map_fd, &key_size, &value_size)) {
-               PRE_MEM_READ("bpf(attr->key)", attr->key, key_size);
+               /* see https://bugs.kde.org/show_bug.cgi?id=496571 */
+               /* Key is null when getting first entry in map. */
+               if (attr->key) {
+                  PRE_MEM_READ("bpf(attr->key)", attr->key, key_size);
+               }
                PRE_MEM_WRITE("bpf(attr->next_key)", attr->next_key, key_size);
             }
          }
@@ -13573,8 +13625,9 @@ PRE(sys_execveat)
 PRE(sys_close_range)
 {
    SysRes res = VG_(mk_SysRes_Success)(0);
-   unsigned int beg, end;
-   unsigned int last = ARG2;
+   Int beg, end;
+   Int first = ARG1;
+   Int last = ARG2;
 
    FUSE_COMPATIBLE_MAY_BLOCK();
    PRINT("sys_close_range ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %"
@@ -13583,7 +13636,7 @@ PRE(sys_close_range)
                  unsigned int, first, unsigned int, last,
                  unsigned int, flags);
 
-   if (ARG1 > last) {
+   if (first > last) {
       SET_STATUS_Failure( VKI_EINVAL );
       return;
    }
@@ -13591,12 +13644,12 @@ PRE(sys_close_range)
    if (last >= VG_(fd_hard_limit))
       last = VG_(fd_hard_limit) - 1;
 
-   if (ARG1 > last) {
+   if (first > last) {
       SET_STATUS_Success ( 0 );
       return;
    }
 
-   beg = end = ARG1;
+   beg = end = first;
    do {
       if (end > last
 	  || (end == 2/*stderr*/ && VG_(debugLog_getLevel)() > 0)
@@ -13616,8 +13669,9 @@ PRE(sys_close_range)
 
 POST(sys_close_range)
 {
-   unsigned int fd;
-   unsigned int last = ARG2;
+   Int fd;
+   Int first = ARG1;
+   Int last = ARG2;
 
    if (!VG_(clo_track_fds)
        || (ARG3 & VKI_CLOSE_RANGE_CLOEXEC) != 0)
@@ -13628,10 +13682,10 @@ POST(sys_close_range)
 
    /* If the close_range range is too wide, we don't want to loop
       through the whole range.  */
-   if (ARG2 == ~0U)
-     ML_(record_fd_close_range)(tid, ARG1);
+   if (last == ~0U)
+     ML_(record_fd_close_range)(tid, first);
    else {
-     for (fd = ARG1; fd <= last; fd++)
+     for (fd = first; fd <= last; fd++)
        if ((fd != 2/*stderr*/ || VG_(debugLog_getLevel)() == 0)
            && fd != VG_(log_output_sink).fd
            && fd != VG_(xml_output_sink).fd)
@@ -13785,6 +13839,152 @@ POST(sys_pidfd_getfd)
    } else {
       if (VG_(clo_track_fds))
          ML_(record_fd_open_nameless) (tid, RES);
+   }
+}
+
+/* int open_tree (int dfd, const char *filename, unsigned int flags)  */
+PRE(sys_open_tree)
+{
+   PRINT("sys_open_tree ( %ld, %#" FMT_REGWORD "x(%s), %ld",
+         SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3);
+   PRE_REG_READ3(long, "open_tree",
+                 int, dfd, const char *, filename, int, flags);
+   PRE_MEM_RASCIIZ( "open_tree(filename)", ARG2);
+   /* For absolute filenames, dfd is ignored.  If dfd is AT_FDCWD,
+      filename is relative to cwd.  When comparing dfd against AT_FDCWD,
+      be sure only to compare the bottom 32 bits. */
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
+       && *(Char *)(Addr)ARG2 != '/'
+       && ((Int)ARG1) != ((Int)VKI_AT_FDCWD)
+       && !ML_(fd_allowed)(ARG1, "open_tree", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+}
+
+POST(sys_open_tree)
+{
+   if (!ML_(fd_allowed)(RES, "open_tree", tid, True)) {
+      VG_(close)(RES);
+      SET_STATUS_Failure( VKI_EMFILE );
+   } else {
+      if (VG_(clo_track_fds))
+         ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)(Addr)ARG2);
+   }
+}
+
+/* int move_mount (int from_dfd, const char *from_pathname,
+                   int to_dfd, const char *to_pathname,
+                   unsigned int flags)  */
+PRE(sys_move_mount)
+{
+   PRINT("sys_move_mount ( %ld, %#" FMT_REGWORD "x(%s), "
+         "%ld, %#" FMT_REGWORD "x(%s), %ld",
+         SARG1, ARG2, (HChar*)(Addr)ARG2,
+         SARG3, ARG4, (HChar*)(Addr)ARG4, SARG5);
+   PRE_REG_READ5(long, "mount_move",
+                 int, from_dfd, const char *, from_pathname,
+                 int, to_dfd, const char*, to_pathname, int, flags);
+   PRE_MEM_RASCIIZ( "mount_move(from_pathname)", ARG2);
+   /* For absolute filenames, from_dfd is ignored.  If from_dfd is AT_FDCWD,
+      from_pathname is relative to cwd.  When comparing from_dfd against
+      AT_FDCWD, be sure only to compare the bottom 32 bits. */
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
+       && *(Char *)(Addr)ARG2 != '/'
+       && ((Int)ARG1) != ((Int)VKI_AT_FDCWD)
+       && !ML_(fd_allowed)(ARG1, "mount_move", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+   PRE_MEM_RASCIIZ( "mount_move(from_pathname)", ARG4);
+   /* For absolute filenames, to_dfd is ignored.  If to_dfd is AT_FDCWD,
+      to_pathname is relative to cwd.  When comparing to_dfd against
+      AT_FDCWD, be sure only to compare the bottom 32 bits. */
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG4, 1 )
+       && *(Char *)(Addr)ARG4 != '/'
+       && ((Int)ARG4) != ((Int)VKI_AT_FDCWD)
+       && !ML_(fd_allowed)(ARG3, "mount_move", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+}
+
+/* int fsopen (const char *fs_name, unsigned int flags)  */
+PRE(sys_fsopen)
+{
+   PRINT("sys_fsopen ( %#" FMT_REGWORD "x(%s), %ld",
+         ARG1, (HChar*)(Addr)ARG1, SARG2);
+   PRE_REG_READ2(long, "fsopen", const char *, fs_name, int, flags);
+   PRE_MEM_RASCIIZ( "fsopen(filename)", ARG1);
+}
+
+POST(sys_fsopen)
+{
+   if (!ML_(fd_allowed)(RES, "fsopen", tid, True)) {
+      VG_(close)(RES);
+      SET_STATUS_Failure( VKI_EMFILE );
+   } else {
+      if (VG_(clo_track_fds))
+         ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)(Addr)ARG1);
+   }
+}
+
+/* int fsmount (int fd, unsigned int flags, unsigned int ms_flags)  */
+PRE(sys_fsmount)
+{
+   PRINT("sys_fsmount ( %ld, %ld, %ld", SARG1, SARG2, SARG3);
+   PRE_REG_READ3(long, "fsmount", int, fd, int, flags, int, ms_flags);
+   if (!ML_(fd_allowed)(ARG1, "fsmount", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+}
+
+POST(sys_fsmount)
+{
+   if (!ML_(fd_allowed)(RES, "fsmount", tid, True)) {
+      VG_(close)(RES);
+      SET_STATUS_Failure( VKI_EMFILE );
+   } else {
+      if (VG_(clo_track_fds))
+         ML_(record_fd_open_nameless)(tid, RES);
+   }
+}
+
+/* int fsconfig (int fd, unsigned int cmd, const char *key,
+                 const void *value, int aux)  */
+PRE(sys_fsconfig)
+{
+   PRINT("sys_fsconfig ( %ld, %ld, %#" FMT_REGWORD "x(%s), "
+         "%#" FMT_REGWORD "x, %ld )",
+         SARG1, SARG2, ARG3, (HChar*)(Addr)ARG3, ARG4, SARG6);
+   PRE_REG_READ5(long, "fsconfig", int, fd, int, cmd,
+                 const char *, key, const void *, value, int, aux);
+   if (ARG3)
+      PRE_MEM_RASCIIZ( "fsconfig(key)", ARG3);
+   if (!ML_(fd_allowed)(ARG1, "fsconfig", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+   /* XXX we could also check the value based on the cmd FSCONFIG_...  */
+}
+
+/* int fspick (int dfd, const char *path, unsigned int flags)  */
+PRE(sys_fspick)
+{
+   PRINT("sys_fspick ( %ld, %#" FMT_REGWORD "x(%s), %ld",
+         SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3);
+   PRE_REG_READ3(long, "fspick",
+                 int, dfd, const char *, filename, int, flags);
+   PRE_MEM_RASCIIZ( "fspick(path)", ARG2);
+   /* For absolute filenames, dfd is ignored.  If dfd is AT_FDCWD,
+      path is relative to cwd.  When comparing dfd against AT_FDCWD,
+      be sure only to compare the bottom 32 bits. */
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
+       && *(Char *)(Addr)ARG2 != '/'
+       && ((Int)ARG1) != ((Int)VKI_AT_FDCWD)
+       && !ML_(fd_allowed)(ARG1, "fspick", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
+}
+
+POST(sys_fspick)
+{
+   if (!ML_(fd_allowed)(RES, "fspick", tid, True)) {
+      VG_(close)(RES);
+      SET_STATUS_Failure( VKI_EMFILE );
+   } else {
+      if (VG_(clo_track_fds))
+         ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)(Addr)ARG2);
    }
 }
 

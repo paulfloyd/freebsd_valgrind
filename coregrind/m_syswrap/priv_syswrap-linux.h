@@ -321,12 +321,25 @@ DECL_TEMPLATE(linux, sys_io_uring_setup);
 DECL_TEMPLATE(linux, sys_io_uring_enter);
 DECL_TEMPLATE(linux, sys_io_uring_register);
 
+// open_tree and friends (shared linux syscalls)
+DECL_TEMPLATE(linux, sys_open_tree);
+DECL_TEMPLATE(linux, sys_move_mount);
+DECL_TEMPLATE(linux, sys_fsopen);
+DECL_TEMPLATE(linux, sys_fsconfig);
+DECL_TEMPLATE(linux, sys_fsmount);
+DECL_TEMPLATE(linux, sys_fspick);
+
 // Linux-specific (new in Linux 5.3)
 DECL_TEMPLATE(linux, sys_pidfd_open);
 
 // Linux-specific (new in Linux 5.9)
 DECL_TEMPLATE(linux, sys_close_range);
 DECL_TEMPLATE(linux, sys_openat2);
+
+// Linux-specific (new in Linux 5.13)
+DECL_TEMPLATE(linux, sys_landlock_create_ruleset)
+DECL_TEMPLATE(linux, sys_landlock_add_rule)
+DECL_TEMPLATE(linux, sys_landlock_restrict_self)
 
 // Linux-specific (new in Linux 5.14)
 DECL_TEMPLATE(linux, sys_memfd_secret);
