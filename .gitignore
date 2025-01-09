@@ -1854,6 +1854,7 @@
 /none/tests/linux/blockfault
 /none/tests/linux/brk-overflow1
 /none/tests/linux/brk-overflow2
+/none/tests/linux/bug498317
 /none/tests/linux/clonev
 /none/tests/linux/Makefile
 /none/tests/linux/Makefile.in
@@ -2250,6 +2251,7 @@
 /none/tests/freebsd/Makefile
 /none/tests/freebsd/Makefile.in
 /none/tests/freebsd/auxv
+/none/tests/freebsd/bug498317
 /none/tests/freebsd/osrel
 /none/tests/freebsd/swapcontext
 /none/tests/freebsd/fexecve
