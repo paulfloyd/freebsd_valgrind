@@ -53,6 +53,9 @@ endif
 if VGCONF_PLATFORMS_INCLUDE_ARM64_LINUX
 SUBDIRS += arm64-linux
 endif
+if VGCONF_PLATFORMS_INCLUDE_RISCV64_LINUX
+SUBDIRS += riscv64-linux
+endif
 if VGCONF_PLATFORMS_INCLUDE_X86_SOLARIS
 SUBDIRS += x86-solaris
 endif
@@ -67,7 +70,7 @@ SUBDIRS += amd64-freebsd
 endif
 
 DIST_SUBDIRS = x86 amd64 arm64 ppc32 ppc64 s390x linux \
-		darwin solaris x86-linux amd64-linux arm64-linux \
+		darwin solaris x86-linux amd64-linux arm64-linux riscv64-linux \
 		x86-solaris amd64-solaris mips32 mips64 \
 		freebsd amd64-freebsd x86-freebsd \
 		common .
@@ -443,6 +446,7 @@ EXTRA_DIST = \
 	vcpu_fbench.stdout.exp vcpu_fbench.stderr.exp vcpu_fbench.vgtest \
 	vcpu_fnfns.stdout.exp vcpu_fnfns.stdout.exp-glibc28-amd64 \
 	vcpu_fnfns.stdout.exp-darwin vcpu_fnfns.stdout.exp-solaris \
+	vcpu_fnfns.stdout.exp-illumos \
 	vcpu_fnfns.stderr.exp vcpu_fnfns.vgtest \
 	wcpncpy.stderr.exp wcpncpy.vgtest \
 	wcs.vgtest wcs.stderr.exp wcs.stdout.exp \

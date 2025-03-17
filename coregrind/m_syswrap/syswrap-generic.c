@@ -941,30 +941,30 @@ HChar *getsockdetails(Int fd, UInt len, HChar *buf)
 void VG_(show_open_fds) (const HChar* when)
 {
    OpenFd *i;
-   int non_std = 0;
+   int inherited = 0;
 
    for (i = allocated_fds; i; i = i->next) {
-      if (i->fd > 2 && i->fd_closed != True)
-         non_std++;
+      if (i->where == NULL)
+         inherited++;
    }
 
    /* If we are running quiet and there are either no open file descriptors
       or not tracking all fds, then don't report anything.  */
    if ((fd_count == 0
-        || ((non_std == 0) && (VG_(clo_track_fds) < 2)))
+        || ((fd_count - inherited == 0) && (VG_(clo_track_fds) < 2)))
        && (VG_(clo_verbosity) == 0))
       return;
 
    if (!VG_(clo_xml)) {
-      VG_(umsg)("FILE DESCRIPTORS: %d open (%d std) %s.\n",
-                fd_count, fd_count - non_std, when);
+      VG_(umsg)("FILE DESCRIPTORS: %d open (%d inherited) %s.\n",
+                fd_count, inherited, when);
    }
 
    for (i = allocated_fds; i; i = i->next) {
       if (i->fd_closed)
          continue;
 
-      if (i->fd <= 2 && VG_(clo_track_fds) < 2)
+      if (i->where == NULL && VG_(clo_track_fds) < 2)
           continue;
 
       struct NotClosedExtra nce;
@@ -1185,6 +1185,7 @@ void fd_pp_Error (const Error *err)
       }
       VG_(emit)("%sFile descriptor %d %s%s\n", whatpre, nce->fd,
           error_string, whatpost);
+      VG_(pp_ExeContext)(where);
       /* If the file descriptor was never created we won't have
          where_closed and where_opened. Only print them in a
          use after close case.  */
@@ -1196,7 +1197,6 @@ void fd_pp_Error (const Error *err)
         VG_(emit)("%sOriginally opened%s\n", auxpre, auxpost);
         VG_(pp_ExeContext)(nce->where_opened);
       }
-      VG_(pp_ExeContext)(where);
    } else {
       vg_assert2 (False, "Unknown error kind: %d",
                   VG_(get_error_kind)(err));
@@ -2630,7 +2630,7 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
    if (arg4 & VKI_MAP_FIXED) {
       mreq.rkind = MFixed;
    } else
-#if defined(VKI_MAP_ALIGN) /* Solaris specific */
+#if defined(VGO_solaris) && defined(VKI_MAP_ALIGN)
    if (arg4 & VKI_MAP_ALIGN) {
       mreq.rkind = MAlign;
       if (mreq.start == 0) {
@@ -2638,6 +2638,15 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
       }
       /* VKI_MAP_FIXED and VKI_MAP_ALIGN don't like each other. */
       arg4 &= ~VKI_MAP_ALIGN;
+   } else
+#endif
+#if defined(VGO_freebsd)
+   if (arg4 & VKI_MAP_ALIGNMENT_MASK) {
+      mreq.rkind = MAlign;
+      if (mreq.start == 0U) {
+         mreq.start = 1U << (arg4 >> VKI_MAP_ALIGNMENT_SHIFT);
+      }
+      arg4 &= ~VKI_MAP_ALIGNMENT_MASK;
    } else
 #endif
    if (arg1 != 0) {
@@ -2959,6 +2968,14 @@ PRE(sys_setitimer)
                          &(value->it_interval));
       PRE_timeval_READ( "setitimer(&value->it_value)",
                          &(value->it_value));
+      // "Setting it_value to 0 disables a timer"
+      // poll for signals in that case
+      if (ML_(safe_to_deref)(value, sizeof(*value))) {
+         if (value->it_value.tv_sec == 0 &&
+             value->it_value.tv_usec == 0) {
+            *flags |= SfPollAfter;
+         }
+      }
    }
    if (ARG3 != (Addr)NULL) {
       struct vki_itimerval *ovalue = (struct vki_itimerval*)(Addr)ARG3;
@@ -3739,7 +3756,7 @@ POST(sys_newfstat)
 #endif
 
 #if !defined(VGO_solaris) && !defined(VGP_arm64_linux) && \
-    !defined(VGP_nanomips_linux)
+    !defined(VGP_nanomips_linux) && !defined(VGP_riscv64_linux)
 static vki_sigset_t fork_saved_mask;
 
 // In Linux, the sys_fork() function varies across architectures, but we
@@ -3790,7 +3807,7 @@ PRE(sys_fork)
       VG_(sigprocmask)(VKI_SIG_SETMASK, &fork_saved_mask, NULL);
    }
 }
-#endif // !defined(VGO_solaris) && !defined(VGP_arm64_linux)
+#endif
 
 PRE(sys_ftruncate)
 {

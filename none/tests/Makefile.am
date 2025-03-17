@@ -35,6 +35,9 @@ endif
 if VGCONF_ARCHS_INCLUDE_NANOMIPS
 SUBDIRS += nanomips
 endif
+if VGCONF_ARCHS_INCLUDE_RISCV64
+SUBDIRS += riscv64
+endif
 
 
 # OS-specific tests
@@ -75,8 +78,9 @@ SUBDIRS += x86-freebsd
 endif
 
 DIST_SUBDIRS = x86 amd64 ppc32 ppc64 arm arm64 s390x mips32 mips64 nanomips \
-               linux darwin solaris freebsd amd64-linux x86-linux amd64-darwin \
-               x86-darwin amd64-solaris x86-solaris x86-freebsd scripts .
+               riscv64 linux darwin solaris freebsd amd64-linux x86-linux \
+               amd64-darwin x86-darwin amd64-solaris x86-solaris x86-freebsd \
+               scripts .
 
 dist_noinst_SCRIPTS = \
 	filter_cmdline0 \
@@ -103,6 +107,7 @@ EXTRA_DIST = \
 	bug129866.vgtest bug129866.stderr.exp bug129866.stdout.exp \
 	bug234814.vgtest bug234814.stderr.exp bug234814.stdout.exp \
 	bug491394.vgtest bug491394.stderr.exp \
+	bug492678.vgtest bug492678.stderr.exp \
 	closeall.stderr.exp closeall.vgtest \
 	cmdline0.stderr.exp cmdline0.stdout.exp cmdline0.vgtest \
 	cmdline1.stderr.exp cmdline1.stdout.exp cmdline1.vgtest \
@@ -241,6 +246,7 @@ EXTRA_DIST = \
 	threaded-fork.stderr.exp threaded-fork.stdout.exp threaded-fork.vgtest \
 	threadederrno.stderr.exp threadederrno.stdout.exp \
 	threadederrno.vgtest \
+	timer_delete.vgtest timer_delete.stderr.exp \
 	timestamp.stderr.exp timestamp.vgtest \
 	tls.vgtest tls.stderr.exp tls.stdout.exp  \
 	track-fds-exec-children.vgtest track-fds-exec-children.stderr.exp \
@@ -267,7 +273,7 @@ check_PROGRAMS = \
 	args \
 	async-sigs \
 	bitfield1 \
-	bug129866 bug234814 \
+	bug129866 bug234814 bug492678\
 	closeall coolo_strlen \
 	discard exec-sigmask execve faultstatus fcntl_setown \
 	fdleak_cmsg fdleak_creat fdleak_dup fdleak_dup2 \
@@ -356,6 +362,10 @@ if BUILD_IFUNC_TESTS
    check_PROGRAMS += ifunc
 endif
 
+if HAVE_TIMER_DELETE
+   check_PROGRAMS += timer_delete
+endif
+
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 
@@ -395,6 +405,11 @@ libvex_test_CFLAGS      = $(AM_CFLAGS) @FLAG_FSANITIZE@
 libvex_test_LDADD       = ../../VEX/libvex-@VGCONF_ARCH_PRI@-@VGCONF_OS@.a \
 			   @LIB_UBSAN@
 libvexmultiarch_test_CFLAGS= $(AM_CFLAGS) @FLAG_FSANITIZE@
+if VGCONF_ARCHS_INCLUDE_RISCV64
+# Disable RISC-V linker relaxation, it takes GNU ld 2.39 tens of minutes to sort
+# it through on this large test.
+libvexmultiarch_test_LDFLAGS = -Wl,--no-relax
+endif
 libvexmultiarch_test_LDADD = \
 	../../VEX/libvexmultiarch-@VGCONF_ARCH_PRI@-@VGCONF_OS@.a \
 	../../VEX/libvex-@VGCONF_ARCH_PRI@-@VGCONF_OS@.a @LIB_UBSAN@
@@ -439,6 +454,9 @@ thread_exits_LDADD	= -lpthread
 threaded_fork_LDADD	= -lpthread
 threadederrno_CFLAGS	= $(AM_CFLAGS)
 threadederrno_LDADD	= -lpthread
+if HAVE_TIMER_DELETE
+   timer_delete_LDADD      = -lrt
+endif
 timestamp_CFLAGS	= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@
 tls_SOURCES		= tls.c tls2.c
 tls_DEPENDENCIES	= tls.so tls2.so

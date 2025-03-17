@@ -8,7 +8,9 @@
 ##------------------------------------------------------------##
 
 # Process this file with autoconf to produce a configure script.
-#
+# We would like to have at least autoconf 2.69
+AC_PREREQ(2.69)
+
 # Define major, minor, micro and suffix here once, then reuse them
 # for version number in valgrind.h and vg-entities (documentation).
 # suffix must be empty for a release, otherwise it is GIT or RC1, etc.
@@ -50,26 +52,15 @@ CXXFLAGS="$CXXFLAGS"
 #----------------------------------------------------------------------------
 
 AC_PROG_LN_S
-m4_version_prereq([2.70], [AC_PROG_CC], [AC_PROG_CC_C99])
-# Make sure we can compile in C99 mode.
-if test "$ac_cv_prog_cc_c99" = "no"; then
-    AC_MSG_ERROR([Valgrind relies on a C compiler supporting C99])
-fi
+
+# Provided by gnulib's m4/std-gnu11.m4 for autoconf pre 2.70
+# Make sure we can compile in C11 mode.
+AC_PROG_CC
+AS_IF([test "x$ac_cv_prog_cc_c11" = "xno"],
+      [AC_MSG_ERROR([Valgrind relies on a C compiler supporting C11])])
+
 AC_PROG_CPP
 AC_PROG_CXX
-# AC_PROG_OBJC apparently causes problems on older Linux distros (eg. with
-# autoconf 2.59).  If we ever have any Objective-C code in the Valgrind code
-# base (eg. most likely as Darwin-specific tests) we'll need one of the
-# following:
-# - put AC_PROG_OBJC in a Darwin-specific part of this file
-# - Use AC_PROG_OBJC here and up the minimum autoconf version
-# - Use the following, which is apparently equivalent:
-#     m4_ifdef([AC_PROG_OBJC],
-#        [AC_PROG_OBJC],
-#        [AC_CHECK_TOOL([OBJC], [gcc])
-#         AC_SUBST([OBJC])
-#         AC_SUBST([OBJCFLAGS])
-#        ])
 AC_PROG_RANLIB
 # Set LTO_RANLIB variable to an lto enabled ranlib
 if test "x$LTO_RANLIB" = "x"; then
@@ -77,12 +68,6 @@ if test "x$LTO_RANLIB" = "x"; then
 fi
 AC_ARG_VAR([LTO_RANLIB],[Library indexer command for link time optimisation])
 
-# provide a very basic definition for AC_PROG_SED if it's not provided by
-# autoconf (as e.g. in autoconf 2.59).
-m4_ifndef([AC_PROG_SED],
-          [AC_DEFUN([AC_PROG_SED],
-                    [AC_ARG_VAR([SED])
-                     AC_CHECK_PROGS([SED],[gsed sed])])])
 AC_PROG_SED
 
 AC_DEFUN([AC_PROG_SHA256SUM],
@@ -110,16 +95,8 @@ AC_PATH_PROG(PERL, perl)
 AC_PATH_PROG(GDB, gdb, "/no/gdb/was/found/at/configure/time")
 AC_DEFINE_UNQUOTED(GDB_PATH, "$GDB", [path to GDB])
 
-# some older automake's don't have it so try something on our own
-ifdef([AM_PROG_AS],[AM_PROG_AS],
-[
-AS="${CC}"
-AC_SUBST(AS)
-
-ASFLAGS=""
-AC_SUBST(ASFLAGS)
-])
-
+# figure out how to compile assembler sources
+AM_PROG_AS
 
 # Check if 'diff' supports -u (universal diffs) and use it if possible.
 
@@ -324,6 +301,11 @@ case "${host_cpu}" in
         AC_MSG_RESULT([ok (${host_cpu})])
         ARCH_MAX="nanomips"
         ;;
+
+     riscv64)
+       AC_MSG_RESULT([ok (${host_cpu})])
+       ARCH_MAX="riscv64"
+       ;;
 
      *) 
 	AC_MSG_RESULT([no (${host_cpu})])
@@ -897,6 +879,17 @@ case "$ARCH_MAX-$VGCONF_OS" in
         valt_load_address_sec_inner="0xUNSET"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
         ;;
+     riscv64-linux)
+        VGCONF_ARCH_PRI="riscv64"
+        VGCONF_ARCH_SEC=""
+        VGCONF_PLATFORM_PRI_CAPS="RISCV64_LINUX"
+        VGCONF_PLATFORM_SEC_CAPS=""
+        valt_load_address_pri_norml="0x58000000"
+        valt_load_address_pri_inner="0x38000000"
+        valt_load_address_sec_norml="0xUNSET"
+        valt_load_address_sec_inner="0xUNSET"
+        AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
+        ;;
      x86-solaris)
         VGCONF_ARCH_PRI="x86"
         VGCONF_ARCH_SEC=""
@@ -990,6 +983,8 @@ AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_MIPS64,
                test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX ) 
 AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_NANOMIPS,
                test x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX )
+AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_RISCV64,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xRISCV64_LINUX )
 
 # Set up VGCONF_PLATFORMS_INCLUDE_<platform>.  Either one or two of these
 # become defined.
@@ -1020,6 +1015,8 @@ AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_MIPS64_LINUX,
                test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX)
 AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_NANOMIPS_LINUX,
                test x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)
+AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_RISCV64_LINUX,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xRISCV64_LINUX)
 AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_FREEBSD,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_FREEBSD)
@@ -1053,7 +1050,8 @@ AM_CONDITIONAL(VGCONF_OS_IS_LINUX,
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xS390X_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
-                 -o x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX)
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xNANOMIPS_LINUX \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xRISCV64_LINUX)
 AM_CONDITIONAL(VGCONF_OS_IS_FREEBSD,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_FREEBSD \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_FREEBSD \
@@ -1076,20 +1074,6 @@ AM_CONDITIONAL(VGCONF_OS_IS_DARWIN_OR_FREEBSD,
 # there is a secondary target.
 AM_CONDITIONAL(VGCONF_HAVE_PLATFORM_SEC,
                test x$VGCONF_PLATFORM_SEC_CAPS != x)
-
-dnl automake-1.10 does not have AM_COND_IF (added in 1.11), so we supply a
-dnl fallback definition
-dnl The macro is courtesy of Dave Hart:
-dnl   https://lists.gnu.org/archive/html/automake/2010-12/msg00045.html
-m4_ifndef([AM_COND_IF], [AC_DEFUN([AM_COND_IF], [
-if test -z "$$1_TRUE"; then :
-  m4_n([$2])[]dnl
-m4_ifval([$3],
-[else
-  $3
-])dnl
-fi[]dnl
-])])
 
 #----------------------------------------------------------------------------
 # Inner Valgrind?
@@ -4929,6 +4913,7 @@ AC_FUNC_MMAP
 
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([rt], [clock_gettime])
+AC_CHECK_LIB([rt], [timer_delete])
 
 AC_CHECK_FUNCS([     \
         aligned_alloc \
@@ -4992,7 +4977,8 @@ AC_CHECK_FUNCS([     \
         sem_clockwait_np \
         fdatasync    \
         getrandom    \
-        getrlimitusage
+        getrlimitusage \
+        timer_delete
         ])
 
 # AC_CHECK_LIB adds any library found to the variable LIBS, and links these
@@ -5048,6 +5034,8 @@ AM_CONDITIONAL([HAVE_GETRANDOM],
                [test x$ac_cv_func_getrandom = xyes])
 AM_CONDITIONAL([HAVE_GETRLIMITUSAGE],
                [test x$ac_cv_func_getrlimitusage = xyes])
+AM_CONDITIONAL([HAVE_TIMER_DELETE],
+               [test x$ac_cv_func_timer_delete = xyes])
 
 if test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
@@ -5082,7 +5070,8 @@ elif test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_LINUX \
        -o x$VGCONF_PLATFORM_PRI_CAPS = xARM64_LINUX \
        -o x$VGCONF_PLATFORM_PRI_CAPS = xARM64_FREEBSD \
        -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
-       -o x$VGCONF_PLATFORM_PRI_CAPS = xS390X_LINUX ; then
+       -o x$VGCONF_PLATFORM_PRI_CAPS = xS390X_LINUX \
+       -o x$VGCONF_PLATFORM_PRI_CAPS = xRISCV64_LINUX ; then
   mflag_primary=$FLAG_M64
 elif test x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN ; then
   mflag_primary="$FLAG_M32 -arch i386"
@@ -5690,6 +5679,7 @@ AC_CONFIG_FILES([
    memcheck/tests/amd64-linux/Makefile
    memcheck/tests/arm64-linux/Makefile
    memcheck/tests/x86-linux/Makefile
+   memcheck/tests/riscv64-linux/Makefile
    memcheck/tests/amd64-solaris/Makefile
    memcheck/tests/x86-solaris/Makefile
    memcheck/tests/amd64-freebsd/Makefile
@@ -5732,9 +5722,11 @@ AC_CONFIG_FILES([
    none/tests/arm/Makefile
    none/tests/arm64/Makefile
    none/tests/s390x/Makefile
+   none/tests/s390x/disasm-test/Makefile
    none/tests/mips32/Makefile
    none/tests/mips64/Makefile
    none/tests/nanomips/Makefile
+   none/tests/riscv64/Makefile
    none/tests/linux/Makefile
    none/tests/darwin/Makefile
    none/tests/solaris/Makefile

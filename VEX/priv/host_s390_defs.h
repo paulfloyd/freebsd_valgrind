@@ -907,7 +907,7 @@ VexInvalRange patchProfInc_S390(VexEndness endness_host,
                                 void  *code_to_patch,
                                 const ULong *location_of_counter);
 
-/* KLUDGE: See detailled comment in host_s390_defs.c. */
+/* KLUDGE: See detailled comment in main_main.c. */
 extern UInt s390_host_hwcaps;
 
 /* Convenience macros to test installed facilities */
@@ -939,6 +939,8 @@ extern UInt s390_host_hwcaps;
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_VX))
 #define s390_host_has_msa5 \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA5))
+#define s390_host_has_mi2 \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MI2))
 #define s390_host_has_lsc2 \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_LSC2))
 #define s390_host_has_vxe \
@@ -947,6 +949,18 @@ extern UInt s390_host_hwcaps;
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_NNPA))
 #define s390_host_has_dflt \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_DFLT))
+#define s390_host_has_vxe2 \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_VXE2))
+#define s390_host_has_vxd \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_VXD))
+#define s390_host_has_msa \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA))
+#define s390_host_has_msa4 \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA4))
+#define s390_host_has_msa8 \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA8))
+#define s390_host_has_msa9 \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA9))
 #endif /* ndef __VEX_HOST_S390_DEFS_H */
 
 /*---------------------------------------------------------------*/

@@ -152,6 +152,11 @@ void VG_(get_UnwindStartRegs) ( /*OUT*/UnwindStartRegs* regs,
       = VG_(threads)[tid].arch.vex.guest_r31;
    regs->misc.MIPS64.r28
       = VG_(threads)[tid].arch.vex.guest_r28;
+#  elif defined(VGA_riscv64)
+   regs->r_pc = VG_(threads)[tid].arch.vex.guest_pc;
+   regs->r_sp = VG_(threads)[tid].arch.vex.guest_x2;
+   regs->misc.RISCV64.r_fp = VG_(threads)[tid].arch.vex.guest_x8;
+   regs->misc.RISCV64.r_ra = VG_(threads)[tid].arch.vex.guest_x1;
 #  else
 #    error "Unknown arch"
 #  endif
@@ -369,6 +374,39 @@ static void apply_to_GPs_of_tid(ThreadId tid, void (*f)(ThreadId,
    (*f)(tid, "x28", vex->guest_X28);
    (*f)(tid, "x29", vex->guest_X29);
    (*f)(tid, "x30", vex->guest_X30);
+#elif defined(VGA_riscv64)
+   (*f)(tid, "x0" , vex->guest_x0 );
+   (*f)(tid, "x1" , vex->guest_x1 );
+   (*f)(tid, "x2" , vex->guest_x2 );
+   (*f)(tid, "x3" , vex->guest_x3 );
+   (*f)(tid, "x4" , vex->guest_x4 );
+   (*f)(tid, "x5" , vex->guest_x5 );
+   (*f)(tid, "x6" , vex->guest_x6 );
+   (*f)(tid, "x7" , vex->guest_x7 );
+   (*f)(tid, "x8" , vex->guest_x8 );
+   (*f)(tid, "x9" , vex->guest_x9 );
+   (*f)(tid, "x10", vex->guest_x10);
+   (*f)(tid, "x11", vex->guest_x11);
+   (*f)(tid, "x12", vex->guest_x12);
+   (*f)(tid, "x13", vex->guest_x13);
+   (*f)(tid, "x14", vex->guest_x14);
+   (*f)(tid, "x15", vex->guest_x15);
+   (*f)(tid, "x16", vex->guest_x16);
+   (*f)(tid, "x17", vex->guest_x17);
+   (*f)(tid, "x18", vex->guest_x18);
+   (*f)(tid, "x19", vex->guest_x19);
+   (*f)(tid, "x20", vex->guest_x20);
+   (*f)(tid, "x21", vex->guest_x21);
+   (*f)(tid, "x22", vex->guest_x22);
+   (*f)(tid, "x23", vex->guest_x23);
+   (*f)(tid, "x24", vex->guest_x24);
+   (*f)(tid, "x25", vex->guest_x25);
+   (*f)(tid, "x26", vex->guest_x26);
+   (*f)(tid, "x27", vex->guest_x27);
+   (*f)(tid, "x28", vex->guest_x28);
+   (*f)(tid, "x29", vex->guest_x29);
+   (*f)(tid, "x30", vex->guest_x30);
+   (*f)(tid, "x31", vex->guest_x31);
 #else
 #  error Unknown arch
 #endif
@@ -1582,23 +1620,31 @@ Bool VG_(machine_get_hwcaps)( void )
         UInt hwcaps_bit;
         const HChar name[6];   // may need adjustment for new facility names
      } fac_hwcaps[] = {
-        { False, S390_FAC_EIMM,  VEX_HWCAPS_S390X_EIMM,  "EIMM"  },
-        { False, S390_FAC_GIE,   VEX_HWCAPS_S390X_GIE,   "GIE"   },
-        { False, S390_FAC_DFP,   VEX_HWCAPS_S390X_DFP,   "DFP"   },
-        { False, S390_FAC_FPSE,  VEX_HWCAPS_S390X_FGX,   "FGX"   },
-        { False, S390_FAC_ETF2,  VEX_HWCAPS_S390X_ETF2,  "ETF2"  },
-        { False, S390_FAC_ETF3,  VEX_HWCAPS_S390X_ETF3,  "ETF3"  },
-        { False, S390_FAC_STCKF, VEX_HWCAPS_S390X_STCKF, "STCKF" },
-        { False, S390_FAC_FPEXT, VEX_HWCAPS_S390X_FPEXT, "FPEXT" },
-        { False, S390_FAC_LSC,   VEX_HWCAPS_S390X_LSC,   "LSC"   },
-        { False, S390_FAC_PFPO,  VEX_HWCAPS_S390X_PFPO,  "PFPO"  },
-        { False, S390_FAC_VX,    VEX_HWCAPS_S390X_VX,    "VX"    },
-        { False, S390_FAC_MSA5,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
-        { False, S390_FAC_MI2,   VEX_HWCAPS_S390X_MI2,   "MI2"   },
-        { False, S390_FAC_LSC2,  VEX_HWCAPS_S390X_LSC2,  "LSC2"  },
-        { False, S390_FAC_VXE,   VEX_HWCAPS_S390X_VXE,   "VXE"   },
-        { False, S390_FAC_DFLT,  VEX_HWCAPS_S390X_DFLT,  "DFLT"  },
-        { False, S390_FAC_NNPA,  VEX_HWCAPS_S390X_NNPA,  "NNPA"  },
+        { False,  18,  VEX_HWCAPS_S390X_LDISP, "LDISP" },
+        { False,  21,  VEX_HWCAPS_S390X_EIMM,  "EIMM"  },
+        { False,  34,  VEX_HWCAPS_S390X_GIE,   "GIE"   },
+        { False,  42,  VEX_HWCAPS_S390X_DFP,   "DFP"   },
+        { False,  41,  VEX_HWCAPS_S390X_FGX,   "FGX"   },
+        { False,  24,  VEX_HWCAPS_S390X_ETF2,  "ETF2"  },
+        { False,   7,  VEX_HWCAPS_S390X_STFLE, "STFLE" },
+        { False,  30,  VEX_HWCAPS_S390X_ETF3,  "ETF3"  },
+        { False,  25,  VEX_HWCAPS_S390X_STCKF, "STCKF" },
+        { False,  37,  VEX_HWCAPS_S390X_FPEXT, "FPEXT" },
+        { False,  45,  VEX_HWCAPS_S390X_LSC,   "LSC"   },
+        { False,  44,  VEX_HWCAPS_S390X_PFPO,  "PFPO"  },
+        { False, 129,  VEX_HWCAPS_S390X_VX,    "VX"    },
+        { False,  57,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
+        { False,  58,  VEX_HWCAPS_S390X_MI2,   "MI2"   },
+        { False,  53,  VEX_HWCAPS_S390X_LSC2,  "LSC2"  },
+        { False, 135,  VEX_HWCAPS_S390X_VXE,   "VXE"   },
+        { False, 151,  VEX_HWCAPS_S390X_DFLT,  "DFLT"  },
+        { False, 165,  VEX_HWCAPS_S390X_NNPA,  "NNPA"  },
+        { False, 148,  VEX_HWCAPS_S390X_VXE2,  "VXE2"  },
+        { False, 134,  VEX_HWCAPS_S390X_VXD,   "VXD"   },
+        { False,  17,  VEX_HWCAPS_S390X_MSA,   "MSA"   },
+        { False,  77,  VEX_HWCAPS_S390X_MSA4,  "MSA4"  },
+        { False, 146,  VEX_HWCAPS_S390X_MSA8,  "MSA8"  },
+        { False, 155,  VEX_HWCAPS_S390X_MSA9,  "MSA9"  },
      };
 
      /* Set hwcaps according to the detected facilities */
@@ -2241,6 +2287,22 @@ Bool VG_(machine_get_hwcaps)( void )
 
      return True;
    }
+
+#elif defined(VGA_riscv64)
+   {
+     va = VexArchRISCV64;
+     vai.endness = VexEndnessLE;
+
+     /* Hardware baseline is RV64GC. */
+     vai.hwcaps = 0;
+
+     VG_(debugLog)(1, "machine", "hwcaps = 0x%x\n", vai.hwcaps);
+
+     VG_(machine_get_cache_info)(&vai);
+
+     return True;
+   }
+
 #else
 #  error "Unknown arch"
 #endif
@@ -2381,6 +2443,10 @@ Int VG_(machine_get_size_of_largest_guest_register) ( void )
 #  elif defined(VGA_mips64)
    return 8;
 
+#  elif defined(VGA_riscv64)
+   /* 64-bit integer and floating-point registers, no vector set. */
+   return 8;
+
 #  else
 #    error "Unknown arch"
 #  endif
@@ -2397,7 +2463,7 @@ void* VG_(fnptr_to_fnentry)( void* f )
       || defined(VGP_s390x_linux) || defined(VGP_mips32_linux) \
       || defined(VGP_mips64_linux) || defined(VGP_arm64_linux) \
       || defined(VGP_x86_solaris) || defined(VGP_amd64_solaris) \
-      || defined(VGP_nanomips_linux)
+      || defined(VGP_nanomips_linux) || defined(VGP_riscv64_linux)
    return f;
 #  elif defined(VGP_ppc64be_linux)
    /* ppc64-linux uses the AIX scheme, in which f is a pointer to a

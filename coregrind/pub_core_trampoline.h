@@ -82,6 +82,7 @@ extern Addr VG_(amd64_linux_REDIR_FOR_vtime);
 extern Addr VG_(amd64_linux_REDIR_FOR_vgetcpu);
 extern UInt VG_(amd64_linux_REDIR_FOR_strlen)( void* );
 extern Int VG_(amd64_linux_REDIR_FOR_strcmp)( void*, void* );
+extern Int VG_(amd64_linux_REDIR_FOR_memcmp)( void*, void*, SizeT );
 extern Char* VG_(amd64_linux_REDIR_FOR_index) ( const Char*, Int );
 #endif
 
@@ -174,6 +175,13 @@ extern UInt  VG_(mips64_linux_REDIR_FOR_strlen)( void* );
 extern Addr  VG_(nanomips_linux_SUBST_FOR_rt_sigreturn);
 extern Char* VG_(nanomips_linux_REDIR_FOR_index)( const Char*, Int );
 extern UInt  VG_(nanomips_linux_REDIR_FOR_strlen)( void* );
+#endif
+
+#if defined(VGP_riscv64_linux)
+extern Addr   VG_(riscv64_linux_SUBST_FOR_rt_sigreturn);
+extern HChar* VG_(riscv64_linux_REDIR_FOR_index)( const HChar*, Int );
+extern SizeT  VG_(riscv64_linux_REDIR_FOR_strlen)( const HChar* );
+extern Int    VG_(riscv64_linux_REDIR_FOR_strcmp)( const HChar*, const HChar* );
 #endif
 
 #if defined(VGP_x86_solaris)

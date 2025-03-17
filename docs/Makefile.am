@@ -63,6 +63,7 @@ EXTRA_DIST = \
 	internals/porting-to-ARM.txt \
 	internals/qemu-aarch64-linux-HOWTO.txt \
 	internals/qemu-mips64-linux-HOWTO.txt \
+	internals/qemu-riscv64-linux-HOWTO.txt \
 	internals/register-uses.txt \
 	internals/s390-opcodes.csv \
 	internals/release-HOWTO.txt \
@@ -185,14 +186,20 @@ all-docs: FAQ.txt man-pages html-docs print-docs
 
 valid-manual: $(MANUAL_XML_FILES)
 	if type $(XMLLINT) 2>/dev/null; then \
-	  $(XMLLINT) $(XMLLINT_FLAGS) $(myxmldir)/index.xml && \
-	  touch $@; \
+	  if [ -f $(XML_CATALOG_FILES) ]; then \
+	    export XML_CATALOG_FILES=$(XML_CATALOG_FILES) && \
+	    $(XMLLINT) $(XMLLINT_FLAGS) $(myxmldir)/index.xml && \
+	    touch $@; \
+	  fi \
 	fi
 
 valid-manpages: $(MANPAGES_XML_FILES)
 	if type $(XMLLINT) 2>/dev/null; then \
-	  $(XMLLINT) $(XMLLINT_FLAGS) $(myxmldir)/manpages-index.xml && \
-	  touch $@; \
+	  if [ -f $(XML_CATALOG_FILES) ]; then \
+	    export XML_CATALOG_FILES=$(XML_CATALOG_FILES) && \
+	    $(XMLLINT) $(XMLLINT_FLAGS) $(myxmldir)/manpages-index.xml && \
+	    touch $@; \
+	  fi \
 	fi
 
 check-local: valid-manual valid-manpages

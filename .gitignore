@@ -57,6 +57,7 @@
 /auxprogs/getoff-mips32-linux
 /auxprogs/getoff-mips64-linux
 /auxprogs/getoff-nanomips-linux
+/auxprogs/getoff-riscv64-linux
 /auxprogs/getoff-amd64-solaris
 /auxprogs/getoff-x86-solaris
 /auxprogs/getoff-*-freebsd
@@ -1132,6 +1133,18 @@
 /memcheck/tests/arm64-linux/Makefile.in
 /memcheck/tests/arm64-linux/scalar
 
+# /memcheck/tests/riscv64-linux/
+/memcheck/tests/riscv64-linux/*.stderr.diff
+/memcheck/tests/riscv64-linux/*.stderr.out
+/memcheck/tests/riscv64-linux/*.stdout.diff
+/memcheck/tests/riscv64-linux/*.stdout.out
+/memcheck/tests/riscv64-linux/.deps
+/memcheck/tests/riscv64-linux/Makefile
+/memcheck/tests/riscv64-linux/Makefile.in
+/memcheck/tests/riscv64-linux/context_float
+/memcheck/tests/riscv64-linux/context_integer
+/memcheck/tests/riscv64-linux/scalar
+
 # /memcheck/tests/common/
 /memcheck/tests/common/Makefile
 /memcheck/tests/common/Makefile.in
@@ -1452,6 +1465,7 @@
 /memcheck/tests/freebsd/timing_safe
 /memcheck/tests/freebsd/utimens
 /memcheck/tests/freebsd/utimes
+/memcheck/tests/freebsd/utrace
 
 # /memcheck/tests/amd64-freebsd
 /memcheck/tests/amd64-freebsd/*.stderr.diff
@@ -1534,6 +1548,7 @@
 /none/tests/bug129866
 /none/tests/bug234814
 /none/tests/bug491394
+/none/tests/bug492678
 /none/tests/closeall
 /none/tests/coolo_sigaction
 /none/tests/coolo_strlen
@@ -1645,6 +1660,7 @@
 /none/tests/thread-exits
 /none/tests/threaded-fork
 /none/tests/threadederrno
+/none/tests/timer_delete
 /none/tests/timestamp
 /none/tests/tls
 /none/tests/track-fds-exec-children
@@ -2198,6 +2214,34 @@
 /none/tests/s390x/vec2
 /none/tests/s390x/vec2_float
 
+# /none/tests/riscv64/
+/none/tests/riscv64/*.stderr.diff
+/none/tests/riscv64/*.stderr.out
+/none/tests/riscv64/*.stdout.diff
+/none/tests/riscv64/*.stdout.out
+/none/tests/riscv64/.deps
+/none/tests/riscv64/Makefile
+/none/tests/riscv64/Makefile.in
+/none/tests/riscv64/allexec
+/none/tests/riscv64/atomic
+/none/tests/riscv64/compressed
+/none/tests/riscv64/csr
+/none/tests/riscv64/float32
+/none/tests/riscv64/float64
+/none/tests/riscv64/integer
+/none/tests/riscv64/muldiv
+
+# /none/tests/s390x/disasm-test/
+/none/tests/s390x/disasm-test/*.dSYM
+/none/tests/s390x/disasm-test/*.stderr.diff*
+/none/tests/s390x/disasm-test/*.stderr.out
+/none/tests/s390x/disasm-test/*.stdout.diff*
+/none/tests/s390x/disasm-test/*.stdout.out
+/none/tests/s390x/disasm-test/.deps
+/none/tests/s390x/disasm-test/Makefile
+/none/tests/s390x/disasm-test/Makefile.in
+/none/tests/s390x/disasm-test/disasm-test
+
 # /none/tests/scripts/
 /none/tests/scripts/*.dSYM
 /none/tests/scripts/*.so
@@ -2253,6 +2297,7 @@
 /none/tests/freebsd/auxv
 /none/tests/freebsd/bug452274
 /none/tests/freebsd/bug498317
+none/tests/freebsd/bug499212
 /none/tests/freebsd/osrel
 /none/tests/freebsd/swapcontext
 /none/tests/freebsd/fexecve

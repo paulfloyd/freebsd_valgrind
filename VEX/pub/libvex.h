@@ -60,6 +60,7 @@ typedef
       VexArchMIPS32,
       VexArchMIPS64,
       VexArchNANOMIPS,
+      VexArchRISCV64,
    }
    VexArch;
 
@@ -133,7 +134,7 @@ typedef
 /* s390x: Hardware capability encoding
 
    Bits [26:31] encode the machine model (see VEX_S390X_MODEL... below)
-   Bits [0:20]  encode specific hardware capabilities
+   Bits [0:25]  encode specific hardware capabilities
                 (see VEX_HWAPS_S390X_... below)
 */
 
@@ -173,12 +174,18 @@ typedef
 #define VEX_HWCAPS_S390X_LSC   (1<<16)  /* Conditional load/store facility */
 #define VEX_HWCAPS_S390X_PFPO  (1<<17)  /* Perform floating point ops facility */
 #define VEX_HWCAPS_S390X_VX    (1<<18)  /* Vector facility */
-#define VEX_HWCAPS_S390X_MSA5  (1<<19)  /* message security assistance facility */
-#define VEX_HWCAPS_S390X_MI2   (1<<20)  /* miscellaneous-instruction-extensions facility 2 */
+#define VEX_HWCAPS_S390X_MSA5  (1<<19)  /* Message-security-assistance facility 5 */
+#define VEX_HWCAPS_S390X_MI2   (1<<20)  /* Miscellaneous-instruction-extensions facility 2 */
 #define VEX_HWCAPS_S390X_LSC2  (1<<21)  /* Conditional load/store facility2 */
 #define VEX_HWCAPS_S390X_VXE   (1<<22)  /* Vector-enhancements facility */
 #define VEX_HWCAPS_S390X_NNPA  (1<<23)  /* NNPA facility */
 #define VEX_HWCAPS_S390X_DFLT  (1<<24)  /* Deflate-conversion facility */
+#define VEX_HWCAPS_S390X_VXE2  (1<<25)  /* Vector-enhancements facility 2 */
+#define VEX_HWCAPS_S390X_VXD   (1<<26)  /* Vector packed-decimal facility */
+#define VEX_HWCAPS_S390X_MSA   (1<<27)  /* Message-security assist */
+#define VEX_HWCAPS_S390X_MSA4  (1<<28)  /* Message-security-assist extension 4 */
+#define VEX_HWCAPS_S390X_MSA8  (1<<29)  /* Message-security-assist extension 8 */
+#define VEX_HWCAPS_S390X_MSA9  (1<<30)  /* Message-security-assist extension 9 */
 
 /* Special value representing all available s390x hwcaps */
 #define VEX_HWCAPS_S390X_ALL   (VEX_HWCAPS_S390X_LDISP | \
@@ -199,7 +206,13 @@ typedef
                                 VEX_HWCAPS_S390X_LSC2  | \
                                 VEX_HWCAPS_S390X_VXE   | \
                                 VEX_HWCAPS_S390X_NNPA  | \
-                                VEX_HWCAPS_S390X_DFLT)
+                                VEX_HWCAPS_S390X_DFLT  | \
+                                VEX_HWCAPS_S390X_VXE2  | \
+                                VEX_HWCAPS_S390X_VXD   | \
+                                VEX_HWCAPS_S390X_MSA   | \
+                                VEX_HWCAPS_S390X_MSA4  | \
+                                VEX_HWCAPS_S390X_MSA8  | \
+                                VEX_HWCAPS_S390X_MSA9)
 
 #define VEX_HWCAPS_S390X(x)  ((x) & ~VEX_S390X_MODEL_MASK)
 #define VEX_S390X_MODEL(x)   ((x) &  VEX_S390X_MODEL_MASK)
@@ -1032,6 +1045,16 @@ extern void LibVEX_InitIRI ( const IRICB * );
    arm64
    ~~~~~
    r21 is GSP.
+
+   riscv64
+   ~~~~~~~
+   On entry, x8/s0 should point to the guest state + 2048. RISC-V has
+   load/store instructions with immediate (offset from the base
+   register) in range -2048 to 2047. The adjustment of 2048 allows
+   LibVEX to effectively use the full range. When translating
+   riscv64->riscv64, only a single instruction is then needed to
+   read/write values in the guest state (primary + 2x shadow state
+   areas) and most of the spill area.
 
    ALL GUEST ARCHITECTURES
    ~~~~~~~~~~~~~~~~~~~~~~~

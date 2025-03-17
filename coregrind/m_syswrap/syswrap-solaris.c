@@ -511,6 +511,9 @@ ULong ML_(fletcher64)(UInt *buf, SizeT blocks)
    return (sum2 << 32) | sum1;
 }
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+
 /* Save a complete context (VCPU state, sigmask) of a given client thread
    into the vki_ucontext_t structure.  This structure is supposed to be
    allocated in the client memory, a caller must make sure that the memory can
@@ -665,6 +668,8 @@ void VG_(restore_context)(ThreadId tid, vki_ucontext_t *uc, CorePart part,
                   (new_esp - old_esp) + VG_STACK_REDZONE_SZB);
    }
 }
+
+#pragma GCC pop_options
 
 /* Set a client stack associated with a given thread id according to values
    passed in the vki_stack_t structure. */
@@ -3984,11 +3989,13 @@ PRE(sys_fcntl)
       PRE_REG_READ3(long, "fcntl", int, fildes, int, cmd, int, arg);
       /* Check if a client program isn't going to poison any of V's output
          fds. */
+      /*
       if (ARG2 == VKI_F_DUP2FD &&
           !ML_(fd_allowed)(ARG3, "fcntl(F_DUP2FD)", tid, False)) {
          SET_STATUS_Failure(VKI_EBADF);
          return;
       }
+      */
       break;
 
    /* These ones use ARG3 as "native lock" (input only). */
@@ -8531,6 +8538,7 @@ PRE(sys_timer_delete)
    /* int timer_delete(timer_t timerid); */
    PRINT("sys_timer_delete ( %ld )", SARG1);
    PRE_REG_READ1(long, "timer_delete", vki_timer_t, timerid);
+   *flags |= SfPollAfter;
 }
 
 PRE(sys_timer_settime)
@@ -10941,7 +10949,7 @@ static SyscallTableEntry syscall_table[] = {
    SOLXY(__NR_uuidsys,              sys_uuidsys),               /* 124 */
 #endif /* SOLARIS_UUIDSYS_SYSCALL */
 #if defined(HAVE_MREMAP)
-   GENX_(__NR_mremap,               sys_mremap),                /* 126 */
+   GENX_(__NR_mremap,               sys_mremap),                /* 126 (Solaris only, not Illumos) */
 #endif /* HAVE_MREMAP */
    SOLX_(__NR_mmapobj,              sys_mmapobj),               /* 127 */
    GENX_(__NR_setrlimit,            sys_setrlimit),             /* 128 */
@@ -10962,7 +10970,7 @@ static SyscallTableEntry syscall_table[] = {
    SOLX_(__NR_seteuid,              sys_seteuid),               /* 141 */
    SOLX_(__NR_forksys,              sys_forksys),               /* 142 */
 #if defined(SOLARIS_GETRANDOM_SYSCALL)
-   SOLXY(__NR_getrandom,            sys_getrandom),             /* 143 */
+   SOLXY(__NR_getrandom,            sys_getrandom),             /* 143 (Solaris) 126 (Illumos) */
 #endif /* SOLARIS_GETRANDOM_SYSCALL */
    SOLXY(__NR_sigtimedwait,         sys_sigtimedwait),          /* 144 */
    SOLX_(__NR_yield,                sys_yield),                 /* 146 */
