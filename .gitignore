@@ -1045,6 +1045,7 @@
 /memcheck/tests/vcpu_fnfns
 /memcheck/tests/vgtest_ume
 /memcheck/tests/wcs
+/memcheck/tests/wcscat
 /memcheck/tests/weirdioctl
 /memcheck/tests/with space
 /memcheck/tests/wcpncpy
@@ -1180,6 +1181,8 @@
 /memcheck/tests/linux/.deps
 /memcheck/tests/linux/aligned_alloc
 /memcheck/tests/linux/brk
+/memcheck/tests/linux/bug420682_1
+/memcheck/tests/linux/bug420682_2
 /memcheck/tests/linux/bug480706
 /memcheck/tests/linux/capget
 /memcheck/tests/linux/check_preadv2_pwritev2
@@ -1263,6 +1266,7 @@
 /memcheck/tests/s390x/cu21
 /memcheck/tests/s390x/cu42
 /memcheck/tests/s390x/ltgjhe
+/memcheck/tests/s390x/tmxx
 /memcheck/tests/s390x/vstrc
 /memcheck/tests/s390x/vfae
 /memcheck/tests/s390x/vistr
@@ -1384,6 +1388,7 @@
 /memcheck/tests/x86-linux/scalar_fork
 /memcheck/tests/x86-linux/scalar_supp
 /memcheck/tests/x86-linux/scalar_vfork
+/memcheck/tests/x86-linux/shm
 
 # /memcheck/tests/x86-solaris/
 /memcheck/tests/x86-solaris/*.stderr.diff
@@ -1547,6 +1552,7 @@
 /none/tests/blockfault
 /none/tests/bug129866
 /none/tests/bug234814
+/none/tests/bug290061
 /none/tests/bug491394
 /none/tests/bug492678
 /none/tests/closeall
@@ -1664,6 +1670,7 @@
 /none/tests/timestamp
 /none/tests/tls
 /none/tests/track-fds-exec-children
+/none/tests/track_new
 /none/tests/unit_debuglog
 /none/tests/use_after_close
 /none/tests/valgrind_cpp_test

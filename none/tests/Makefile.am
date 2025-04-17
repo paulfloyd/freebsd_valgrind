@@ -106,6 +106,7 @@ EXTRA_DIST = \
 	bitfield1.stderr.exp bitfield1.vgtest \
 	bug129866.vgtest bug129866.stderr.exp bug129866.stdout.exp \
 	bug234814.vgtest bug234814.stderr.exp bug234814.stdout.exp \
+	bug290061.vgtest bug290061.stderr.exp \
 	bug491394.vgtest bug491394.stderr.exp \
 	bug492678.vgtest bug492678.stderr.exp \
 	closeall.stderr.exp closeall.vgtest \
@@ -266,14 +267,18 @@ EXTRA_DIST = \
 	log-track-fds.stderr.exp log-track-fds.vgtest \
 	xml-track-fds.stderr.exp xml-track-fds.vgtest \
 	fdbaduse.stderr.exp fdbaduse.vgtest \
-	use_after_close.stderr.exp use_after_close.vgtest
+	use_after_close.stderr.exp use_after_close.vgtest \
+	track_new.stderr.exp track_new.stdout.exp \
+	track_new.stderr.exp.debian32 track_new.vgtest track_new.stderr.exp-illumos
 
 
 check_PROGRAMS = \
 	args \
 	async-sigs \
 	bitfield1 \
-	bug129866 bug234814 bug492678\
+	bug129866 bug234814 \
+	bug290061 \
+	bug492678 \
 	closeall coolo_strlen \
 	discard exec-sigmask execve faultstatus fcntl_setown \
 	fdleak_cmsg fdleak_creat fdleak_dup fdleak_dup2 \
@@ -322,7 +327,8 @@ check_PROGRAMS = \
 	socket_close \
 	file_dclose \
 	fdbaduse \
-        use_after_close
+        use_after_close \
+	track_new
 
 if HAVE_STATIC_LIBC
 if ! VGCONF_OS_IS_LINUX
@@ -371,6 +377,7 @@ AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 
 # Extra stuff for C tests
 ansi_CFLAGS		= $(AM_CFLAGS) -ansi
+bug290061_LDFLAGS	= @FLAG_PIE@
 bug491394_LDADD		= -lc
 bug491394_LDFLAGS	= -nostdlib -static
 bug491394_CFLAGS	= ${AM_CFLAGS} -Os

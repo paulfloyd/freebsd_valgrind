@@ -2103,6 +2103,7 @@ PRE(sys_epoll_create)
 POST(sys_epoll_create)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "epoll_create", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -2120,6 +2121,7 @@ PRE(sys_epoll_create1)
 POST(sys_epoll_create1)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "epoll_create1", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -2234,6 +2236,7 @@ PRE(sys_eventfd)
 }
 POST(sys_eventfd)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "eventfd", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -2250,6 +2253,7 @@ PRE(sys_eventfd2)
 }
 POST(sys_eventfd2)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "eventfd2", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -2569,32 +2573,49 @@ PRE(sys_io_destroy)
    }  
 }  
 
+static
+void common_pre_io_getevents(ThreadId tid, UWord a1, UWord a2, UWord a3, UWord a4, UWord a5, UWord a6, UWord* flags, const HChar* funtion_name)
+{
+   HChar buf[25];
+   *flags |= SfMayBlock;
+   PRINT("sys_%s ( %llu, %lld, %lld, %#" FMT_REGWORD "x, %#"
+         FMT_REGWORD "x )", funtion_name,
+         (ULong)a1,(Long)a2,(Long)a3,a4,a5);
+   if (a3 > 0) {
+      VG_(snprintf)(buf, 25, "%s(events)", funtion_name);
+      PRE_MEM_WRITE( buf, a4, sizeof(struct vki_io_event)*a3 );
+   }
+   if (a5 != 0) {
+      VG_(snprintf)(buf, 25, "%s(timeout)", funtion_name);
+      PRE_MEM_READ( buf, a5, sizeof(struct vki_timespec));
+   }
+
+   if (a6 != 0) {
+      // only for io_pgetevents
+      PRE_MEM_READ("io_pgetevents(usig)",
+                   a6, sizeof(struct vki__aio_sigset));
+   }
+}
+
 PRE(sys_io_getevents)
 {
-   *flags |= SfMayBlock;
-   PRINT("sys_io_getevents ( %llu, %lld, %lld, %#" FMT_REGWORD "x, %#"
-         FMT_REGWORD "x )",
-         (ULong)ARG1,(Long)ARG2,(Long)ARG3,ARG4,ARG5);
    PRE_REG_READ5(long, "io_getevents",
                  vki_aio_context_t, ctx_id, long, min_nr, long, nr,
                  struct io_event *, events,
                  struct timespec *, timeout);
-   if (ARG3 > 0)
-      PRE_MEM_WRITE( "io_getevents(events)",
-                     ARG4, sizeof(struct vki_io_event)*ARG3 );
-   if (ARG5 != 0)
-      PRE_MEM_READ( "io_getevents(timeout)",
-                    ARG5, sizeof(struct vki_timespec));
+   common_pre_io_getevents(tid, ARG1, ARG2, ARG3, ARG4, ARG5, 0U, flags, "io_getevents");
 }
-POST(sys_io_getevents)
+
+static
+void common_post_sys_io_events(ThreadId tid, UWord a4, SyscallStatus* status, const HChar* funtion_name)
 {
    Int i;
    vg_assert(SUCCESS);
    if (RES > 0) {
-      POST_MEM_WRITE( ARG4, sizeof(struct vki_io_event)*RES );
+      POST_MEM_WRITE( a4, sizeof(struct vki_io_event)*RES );
       for (i = 0; i < RES; i++) {
          const struct vki_io_event *vev =
-            ((struct vki_io_event *)(Addr)ARG4) + i;
+            ((struct vki_io_event *)(Addr)a4) + i;
          const struct vki_iocb *cb = (struct vki_iocb *)(Addr)vev->obj;
 
          switch (cb->aio_lio_opcode) {
@@ -2613,32 +2634,38 @@ POST(sys_io_getevents)
             break;
 
          case VKI_IOCB_CMD_PREADV:
-	     if (vev->result > 0) {
-                  struct vki_iovec * vec = (struct vki_iovec *)(Addr)cb->aio_buf;
-                  Int remains = vev->result;
-                  Int j;
+            if (vev->result > 0) {
+               struct vki_iovec * vec = (struct vki_iovec *)(Addr)cb->aio_buf;
+               Int remains = vev->result;
+                Int j;
 
-                  for (j = 0; j < cb->aio_nbytes; j++) {
-                       Int nReadThisBuf = vec[j].iov_len;
-                       if (nReadThisBuf > remains) nReadThisBuf = remains;
-                       POST_MEM_WRITE( (Addr)vec[j].iov_base, nReadThisBuf );
-                       remains -= nReadThisBuf;
-                       if (remains < 0) VG_(core_panic)("io_getevents(PREADV): remains < 0");
-                  }
-	     }
-             break;
+               for (j = 0; j < cb->aio_nbytes; j++) {
+                   Int nReadThisBuf = vec[j].iov_len;
+                  if (nReadThisBuf > remains) nReadThisBuf = remains;
+                  POST_MEM_WRITE( (Addr)vec[j].iov_base, nReadThisBuf );
+                  remains -= nReadThisBuf;
+                  if (remains < 0) VG_(core_panic)("io_getevents(PREADV): remains < 0");
+               }
+            }
+            break;
 
          case VKI_IOCB_CMD_PWRITEV:
              break;
 
          default:
             VG_(message)(Vg_DebugMsg,
-                        "Warning: unhandled io_getevents opcode: %u\n",
+                        "Warning: unhandled %s opcode: %u\n",
+                        funtion_name,
                         cb->aio_lio_opcode);
             break;
          }
       }
    }
+}
+
+POST(sys_io_getevents)
+{
+   common_post_sys_io_events(tid, ARG4, status, "io_getevents");
 }
 
 PRE(sys_io_submit)
@@ -2776,6 +2803,7 @@ PRE(sys_fanotify_init)
 
 POST(sys_fanotify_init)
 {
+   POST_newFd_RES;
    vg_assert(SUCCESS);
    if (!ML_(fd_allowed)(RES, "fanotify_init", tid, True)) {
       VG_(close)(RES);
@@ -2824,6 +2852,7 @@ PRE(sys_inotify_init)
 POST(sys_inotify_init)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "inotify_init", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -5922,6 +5951,7 @@ PRE(sys_openat)
 POST(sys_openat)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "openat", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -13460,6 +13490,20 @@ PRE(sys_pkey_free)
   /* Since pkey_alloc () can never succeed, see above, freeing any pkey is
      always an error.  */
   SET_STATUS_Failure( VKI_EINVAL );
+}
+
+PRE(sys_io_pgetevents)
+{
+   PRE_REG_READ5(long, "io_pgetevents",
+                 vki_aio_context_t, ctx_id, long, min_nr, long, nr,
+                 struct io_event *, events,
+                 struct timespec *, timeout);
+   common_pre_io_getevents(tid, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, flags, "io_pgetevents");
+}
+
+POST(sys_io_pgetevents)
+{
+   common_post_sys_io_events(tid, ARG4, status, "io_pgetevents");
 }
 
 PRE(sys_pkey_mprotect)
