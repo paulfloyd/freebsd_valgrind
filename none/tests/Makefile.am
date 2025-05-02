@@ -165,6 +165,7 @@ EXTRA_DIST = \
 	fdleak_pipe_xml.stderr.exp fdleak_pipe_xml.vgtest \
 	fdleak_socketpair.stderr.exp fdleak_socketpair.vgtest \
 	fdleak_socketpair_xml.stderr.exp fdleak_socketpair_xml.vgtest \
+		fdleak_socketpair_xml.stderr.exp-illumos \
 	floored.stderr.exp floored.stdout.exp floored.vgtest \
 	fork.stderr.exp fork.stdout.exp fork.vgtest \
 	fucomip.stderr.exp fucomip.vgtest \
@@ -269,7 +270,7 @@ EXTRA_DIST = \
 	fdbaduse.stderr.exp fdbaduse.vgtest \
 	use_after_close.stderr.exp use_after_close.vgtest \
 	track_new.stderr.exp track_new.stdout.exp \
-	track_new.stderr.exp.debian32 track_new.vgtest track_new.stderr.exp-illumos
+	track_new.vgtest track_new.stderr.exp-illumos
 
 
 check_PROGRAMS = \
@@ -377,6 +378,7 @@ AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 
 # Extra stuff for C tests
 ansi_CFLAGS		= $(AM_CFLAGS) -ansi
+bug290061_CFLAGS	= -fPIC
 bug290061_LDFLAGS	= @FLAG_PIE@
 bug491394_LDADD		= -lc
 bug491394_LDFLAGS	= -nostdlib -static
