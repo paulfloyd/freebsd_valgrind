@@ -14,6 +14,12 @@ X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * ==================== TOOL CHANGES ===================
 
+* There is a new utility script, "vgstack". It has two
+  option, -h for minimal help, and -v for the version information.
+  In normal use pass it the PID of a running Valgrind process
+  and it will perform a vgdb attach and print the backtrace(s)
+  of the guest executable.
+
 * ==================== FIXED BUGS ====================
 
 The following bugs have been fixed or resolved.  Note that "n-i-bz"
@@ -23,6 +29,9 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+506076  unimplemented fcntl command: 1028 (F_CREATED_QUERY)
+338803  Handling of dwz debug alt files or cross-CU is broken
+493434  Add --track-fds=bad mode (no "leak" tracking)
 503098  Incorrect NAN-boxing for float registers in RISC-V
 503641  close_range syscalls started failing with 3.25.0
 503677  duplicated-cond compiler warning in dis_RV64M
@@ -36,6 +45,14 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 504265  FreeBSD: missing syscall wrappers for fchroot and setcred
 504341  Valgrind killed by LTP syscall testcase setrlimit05
 504466  Double close causes SEGV
+504904  Hide "bad act handler address" warnings when -q (quiet) flag is set
+504909  Hide "Bad oldset address" warnings when -q (quiet) flag is set
+504919  Hide "client tried to modify addresses" warnings when -q (quiet) set
+504936  Add FreeBSD amd64 sysarch subcommands AMD64_SET_TLSBASE and
+        AMD64_GET_TLSBASE
+505228  Wrap linux specific mseal syscall
+502968  Wrap linux specific syscalls 457 (listmount) and 458 (statmount)
+506795  Better report which clone flags are problematic
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

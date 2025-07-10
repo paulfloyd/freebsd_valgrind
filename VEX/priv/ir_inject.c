@@ -46,13 +46,12 @@
 
 /* The IR Injection Control Block. vex_inject_ir will query its contents
    to construct IR statements for testing purposes. */
-static IRICB iricb;
-
+static IRICB the_iricb;
 
 void
 LibVEX_InitIRI(const IRICB *iricb_in)
 {
-   iricb = *iricb_in;  // copy in
+   the_iricb = *iricb_in;  // copy in
 }
 
 
@@ -67,7 +66,8 @@ load_aux(IREndness endian, IRType type, IRExpr *addr)
                   IRExpr_Load(endian, Ity_I64, addr));
    }
    if (type == Ity_I1) {
-      /* A Boolean value is stored as a 32-bit entity (see store_aux). */
+      /* A Boolean value is stored as a 32-bit entity. For an explanation
+         see comment in vbit-test/vbits.h */
       return unop(Iop_32to1, IRExpr_Load(endian, Ity_I32, addr));
    }
 
@@ -131,8 +131,8 @@ store_aux(IRSB *irsb, IREndness endian, IRExpr *addr, IRExpr *data)
       data = unop(Iop_ReinterpD64asI64, data);
    }
    if (typeOfIRExpr(irsb->tyenv, data) == Ity_I1) {
-      /* We cannot store a single bit. So we store it in a 32-bit container.
-         See also load_aux. */
+      /* A Boolean value is stored as a 32-bit entity. For an explanation
+         see comment in vbit-test/vbits.h */
       data = unop(Iop_1Uto32, data);
    }
    stmt(irsb, IRStmt_Store(endian, addr, data));
@@ -189,9 +189,10 @@ store(IRSB *irsb, IREndness endian, HWord haddr, IRExpr *data)
 
 /* Inject IR stmts depending on the data provided in the control
    block iricb. */
-void
-vex_inject_ir(IRSB *irsb, IREndness endian)
+static void
+vex_inject_ir_vbit(IRSB *irsb, IREndness endian)
 {
+   IRICB_vbit_payload iricb = the_iricb.vbit;
    IRExpr *data, *rounding_mode, *opnd1, *opnd2, *opnd3, *opnd4;
 
    rounding_mode = NULL;
@@ -317,6 +318,19 @@ vex_inject_ir(IRSB *irsb, IREndness endian)
          ppIRStmt(irsb->stmts[irsb->stmts_used - 1]);
       }
       vex_printf("\nEND inject\n");
+   }
+}
+
+void
+vex_inject_ir(IRSB *irsb, IREndness endian)
+{
+   switch (the_iricb.kind) {
+   case IRICB_vbit:
+      vex_inject_ir_vbit(irsb, endian);
+      break;
+
+   default:
+      vpanic("unknown IRICB kind");
    }
 }
 

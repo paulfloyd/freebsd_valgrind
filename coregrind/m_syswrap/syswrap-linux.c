@@ -955,8 +955,17 @@ PRE(sys_clone)
                    "x\n", ARG_FLAGS);
       VG_(message)(Vg_UserMsg, "\n");
       VG_(message)(Vg_UserMsg, "The only supported clone() uses are:\n");
-      VG_(message)(Vg_UserMsg, " - via a threads library (LinuxThreads or NPTL)\n");
-      VG_(message)(Vg_UserMsg, " - via the implementation of fork or vfork\n");
+      VG_(message)(Vg_UserMsg,
+                   " - via a threads library (VM, FS and FILES flags set)\n");
+      VG_(message)(Vg_UserMsg,
+                   " - via the implementation of vfork (VFORK or VFORK and VM flags set)\n");
+      VG_(message)(Vg_UserMsg,
+                   " - via plain fork (no VM, FS, FILES, VFORK flags set)\n");
+      VG_(message)(Vg_UserMsg, " clone call had %s%s%s%sflags set\n",
+                   cloneflags & VKI_CLONE_VM ? "CLONE_VM " : "",
+                   cloneflags & VKI_CLONE_FS ? "CLONE_FS " : "",
+                   cloneflags & VKI_CLONE_FILES ? "CLONE_FILES " : "",
+                   cloneflags & VKI_CLONE_VFORK ? "CLONE_VFORK " : "");
       VG_(unimplemented)
          ("Valgrind does not support general clone().");
    }
@@ -2690,12 +2699,15 @@ PRE(sys_io_submit)
                  vki_aio_context_t, ctx_id, long, nr,
                  struct iocb **, iocbpp);
    PRE_MEM_READ( "io_submit(iocbpp)", ARG3, ARG2*sizeof(struct vki_iocb *) );
-   if (ARG3 != 0) {
+   if (ML_(safe_to_deref)((void *)(Addr)ARG3, ARG2*sizeof(struct vki_iocb *))) {
       for (i = 0; i < ARG2; i++) {
          struct vki_iocb *cb = ((struct vki_iocb **)(Addr)ARG3)[i];
          struct vki_iovec *iov;
 
          PRE_MEM_READ( "io_submit(iocb)", (Addr)cb, sizeof(struct vki_iocb) );
+         if (!ML_(safe_to_deref)(&cb->aio_lio_opcode,
+                                 sizeof(cb->aio_lio_opcode)))
+            continue;
          switch (cb->aio_lio_opcode) {
          case VKI_IOCB_CMD_PREAD:
             PRE_MEM_WRITE( "io_submit(PREAD)", cb->aio_buf, cb->aio_nbytes );
@@ -4296,6 +4308,68 @@ PRE(sys_membarrier)
    PRE_REG_READ1(int, "membarrier", int, flags);
 }
 
+PRE(sys_mseal)
+{
+    /* int mseal(void *addr, size_t len, unsigned long flags) */
+    PRINT("sys_mseal ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, )", ARG1, ARG2, ARG3);
+    PRE_REG_READ3(int, "mseal", void *, addr,  vki_size_t, len, int, flags);
+    if (!ML_(valid_client_addr)(ARG1, ARG2, tid, "mseal"))
+       SET_STATUS_Failure(VKI_ENOMEM);
+}
+
+PRE(sys_statmount)
+{
+   // int syscall(SYS_statmount, struct mnt_id_req *req,
+   //             struct statmount *smbuf, size_t bufsize,
+   //             unsigned long flags);
+   FUSE_COMPATIBLE_MAY_BLOCK();
+   PRINT("sys_statmount ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %lu,  %#" FMT_REGWORD "x)", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(long, "statmount", struct vki_mnt_id_req *, req, struct vki_statmount *, smbuf, vki_size_t, bufsize, unsigned long, flags);
+
+   struct vki_mnt_id_req *req = (struct vki_mnt_id_req *)(Addr)ARG1;
+   if (!ML_(safe_to_deref) ((void *)&req->size, sizeof(vki_size_t)))
+      PRE_MEM_READ("statmount(req)", ARG1, sizeof(struct vki_mnt_id_req));
+   else
+      PRE_MEM_READ("statmount(req)", ARG1, req->size);
+
+   struct vki_statmount *smbuf = (struct vki_statmount *)(Addr)ARG2;
+   if (!ML_(safe_to_deref) ((void *)&smbuf->size, sizeof(struct vki_statmount)))
+      PRE_MEM_WRITE("statmount(smbuf)", ARG2, sizeof(struct vki_statmount));
+   else
+     PRE_MEM_WRITE("statmount(smbuf)", ARG2, ARG3);
+}
+
+POST(sys_statmount)
+{
+   struct vki_statmount *smbuf = (struct vki_statmount *)(Addr)ARG2;
+   POST_MEM_WRITE((Addr)smbuf, smbuf->size);
+}
+
+PRE(sys_listmount)
+{
+   // int syscall(SYS_listmount, struct mnt_id_req *req,
+   //             uint64_t *mnt_ids, size_t nr_mnt_ids,
+   //             unsigned long flags);
+   FUSE_COMPATIBLE_MAY_BLOCK();
+   PRINT("sys_listmount ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x, %lu,  %#" FMT_REGWORD "x)", ARG1, ARG2, ARG3, ARG4);
+   PRE_REG_READ4(long, "listmount", struct vki_mnt_id_req *, req, vki_uint64_t *, mnt_ids, vki_size_t, nr_mnt_ids, unsigned long, flags);
+
+   struct vki_mnt_id_req *req = (struct vki_mnt_id_req *)(Addr)ARG1;
+   if (!ML_(safe_to_deref) ((void *)&req->size, sizeof(vki_size_t)))
+      PRE_MEM_READ("listmount(req)", ARG1, sizeof(struct vki_mnt_id_req));
+   else
+      PRE_MEM_READ("listmount(req)", ARG1, req->size);
+
+   PRE_MEM_WRITE("listmount(mnt_ids)", ARG2, ARG3 * sizeof(vki_uint64_t));
+}
+
+POST(sys_listmount)
+{
+   if (RES > 0) {
+      POST_MEM_WRITE(ARG2, RES * sizeof(vki_uint64_t));
+   }
+}
+
 PRE(sys_syncfs)
 {
    *flags |= SfMayBlock;
@@ -4610,14 +4684,18 @@ PRE(sys_rt_sigaction)
    if (ARG2 != 0
        && ! ML_(safe_to_deref)((void *)(Addr)ARG2,
                                sizeof(vki_sigaction_toK_t))) {
-      VG_(umsg)("Warning: bad act handler address %p in rt_sigaction()\n",
-                (void *)(Addr)ARG2);
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(umsg)("Warning: bad act handler address %p in rt_sigaction()\n",
+                   (void *)(Addr)ARG2);
+      }
       SET_STATUS_Failure ( VKI_EFAULT );
    } else if ((ARG3 != 0
                && ! ML_(safe_to_deref)((void *)(Addr)ARG3,
                                        sizeof(vki_sigaction_fromK_t)))) {
-      VG_(umsg)("Warning: bad oldact handler address %p in rt_sigaction()\n",
-                (void *)(Addr)ARG3);
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(umsg)("Warning: bad oldact handler address %p in rt_sigaction()\n",
+                   (void *)(Addr)ARG3);
+      }
       SET_STATUS_Failure ( VKI_EFAULT );
    } else {
 
@@ -4657,14 +4735,18 @@ PRE(sys_rt_sigprocmask)
       SET_STATUS_Failure( VKI_EINVAL );
    else if (ARG2 != 0
              && ! ML_(safe_to_deref)((void *)(Addr)ARG2, sizeof(vki_sigset_t))) {
-            VG_(dmsg)("Warning: Bad set handler address %p in sigprocmask\n",
-                      (void *)(Addr)ARG2);
+            if (VG_(clo_verbosity) >= 1) {
+               VG_(dmsg)("Warning: Bad set handler address %p in sigprocmask\n",
+                         (void *)(Addr)ARG2);
+            }
             SET_STATUS_Failure ( VKI_EFAULT );
          }
    else if (ARG3 != 0
              && ! ML_(safe_to_deref)((void *)(Addr)ARG3, sizeof(vki_sigset_t))) {
-            VG_(dmsg)("Warning: Bad oldset address %p in sigprocmask\n",
-                      (void *)(Addr)ARG3);
+            if (VG_(clo_verbosity) >= 1) {
+               VG_(dmsg)("Warning: Bad oldset address %p in sigprocmask\n",
+                         (void *)(Addr)ARG3);
+            }
             SET_STATUS_Failure ( VKI_EFAULT );
          }
 
@@ -7030,6 +7112,7 @@ PRE(sys_fcntl)
    case VKI_F_GETSIG:
    case VKI_F_GETLEASE:
    case VKI_F_GETPIPE_SZ:
+   case VKI_F_CREATED_QUERY:
    case VKI_F_GET_SEALS:
       PRINT("sys_fcntl ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2);
       PRE_REG_READ2(long, "fcntl", unsigned int, fd, unsigned int, cmd);
@@ -7119,8 +7202,9 @@ PRE(sys_fcntl)
    default:
       PRINT("sys_fcntl[UNKNOWN] ( %" FMT_REGWORD "u, %" FMT_REGWORD "u, %"
             FMT_REGWORD "u )", ARG1, ARG2, ARG3);
-      VG_(umsg)("Warning: unimplemented fcntl command: %" FMT_REGWORD "u\n",
-                ARG2);
+      if (VG_(clo_verbosity) >= 1)
+         VG_(umsg)("Warning: unimplemented fcntl command: %" FMT_REGWORD "u\n",
+                   ARG2);
       SET_STATUS_Failure( VKI_EINVAL );
       break;
    }

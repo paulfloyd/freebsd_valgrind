@@ -1927,29 +1927,40 @@ static void sysctl_kern_usrstack(SizeT* out, SizeT* outlen)
    *outlen = sizeof(ULong);
 }
 
-static Bool sysctl_kern_proc_pathname(HChar *out, SizeT *len)
+static Int sysctl_kern_proc_pathname(HChar *out, SizeT *len)
 {
    const HChar *exe_name = VG_(resolved_exename);
+   // assert that exe_name is an absolute path
+   vg_assert(exe_name && exe_name[0] == '/');
 
    if (!len) {
-      return False;
+      return VKI_ENOMEM;
    }
 
+   if (!ML_(safe_to_deref)(len, sizeof(len))) {
+      // ???? check
+      return VKI_ENOMEM;
+   }
+
+   SizeT exe_name_length = VG_(strlen)(exe_name)+1;
    if (!out) {
-      HChar tmp[VKI_PATH_MAX];
-      if (!VG_(realpath)(exe_name, tmp)) {
-         return False;
-      }
-      *len = VG_(strlen)(tmp)+1;
-      return True;
+      *len = exe_name_length;
+      return 0;
    }
 
-   if (!VG_(realpath)(exe_name, out)) {
-      return False;
+   if (*len < exe_name_length) {
+      return VKI_ENOMEM;
    }
 
-   *len = VG_(strlen)(out)+1;
-   return True;
+   if (ML_(safe_to_deref)(out, exe_name_length)) {
+      VG_(strncpy)(out, exe_name, exe_name_length);
+   } else {
+      // ???? check
+      return VKI_EFAULT;
+   }
+
+   *len = exe_name_length;
+   return 0;
 }
 
 // SYS___sysctl   202
@@ -2031,7 +2042,7 @@ PRE(sys___sysctl)
    if (SARG2 == 2 && ML_(safe_to_deref)(name, 2*sizeof(int))) {
       if (name[0] == 1 && name[1] == 32) {
          if (sysctl_kern_ps_strings((SizeT*)ARG3, (SizeT*)ARG4)) {
-           SET_STATUS_Success(0);
+            SET_STATUS_Success(0);
          }
       }
    }
@@ -2043,8 +2054,12 @@ PRE(sys___sysctl)
       if (name[0] == 1 && name[1] == 14 && name[2] == 12) {
          vki_pid_t pid = (vki_pid_t)name[3];
          if (pid == -1 || pid == VG_(getpid)()) {
-            sysctl_kern_proc_pathname((HChar *)ARG3, (SizeT *)ARG4);
-            SET_STATUS_Success(0);
+            int res = sysctl_kern_proc_pathname((HChar *)ARG3, (SizeT *)ARG4);
+            if (res == 0) {
+               SET_STATUS_Success(0);
+            } else {
+               SET_STATUS_Failure(res);
+            }
          }
       }
    }
@@ -2082,8 +2097,10 @@ PRE(sys___sysctl)
          if (ML_(safe_to_deref)((void*)(Addr)ARG4, sizeof(vki_size_t))) {
             PRE_MEM_WRITE("sysctl(oldp)", (Addr)ARG3, *(vki_size_t *)ARG4);
          } else {
-            VG_(dmsg)("Warning: Bad oldlenp address %p in sysctl\n",
-                      (void *)(Addr)ARG4);
+             if (VG_(clo_verbosity) >= 1) {
+               VG_(dmsg)("Warning: Bad oldlenp address %p in sysctl\n",
+                         (void *)(Addr)ARG4);
+             }
             SET_STATUS_Failure ( VKI_EFAULT );
          }
       } else {
@@ -3197,13 +3214,17 @@ PRE(sys_sigprocmask)
 
    if (ARG2 != 0  &&
          !ML_(safe_to_deref)((void *)(Addr)ARG2, sizeof(vki_sigset_t))) {
-      VG_(dmsg)("Warning: Bad set handler address %p in sigprocmask\n",
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(dmsg)("Warning: Bad set handler address %p in sigprocmask\n",
                 (void *)(Addr)ARG2);
+      }
       SET_STATUS_Failure ( VKI_EFAULT );
    } else if (ARG3 != 0 &&
               !ML_(safe_to_deref)((void *)(Addr)ARG3, sizeof(vki_sigset_t))) {
-      VG_(dmsg)("Warning: Bad oldset address %p in sigprocmask\n",
-                (void *)(Addr)ARG3);
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(dmsg)("Warning: Bad oldset address %p in sigprocmask\n",
+                   (void *)(Addr)ARG3);
+      }
       SET_STATUS_Failure ( VKI_EFAULT );
    } else {
       SET_STATUS_from_SysRes(VG_(do_sys_sigprocmask)(tid, ARG1 /*how*/,
@@ -3687,7 +3708,9 @@ PRE(sys_kenv)
    case VKI_KENV_DUMP:
       break;
    default:
-      VG_(dmsg)("Warning: Bad action %" FMT_REGWORD "u in kenv\n", ARG1);
+      VG_(message)(Vg_UserMsg, "unhandled kenv cmd %" FMT_REGWORD "u", ARG1);
+      VG_(unimplemented) ("unhandled kenv cmd");
+      break;
    }
 }
 
@@ -3922,14 +3945,18 @@ PRE(sys_sigaction)
    if (ARG2 != 0
          && ! ML_(safe_to_deref)((void *)(Addr)ARG2,
                                  sizeof(struct vki_sigaction))) {
-      VG_(umsg)("Warning: bad act handler address %p in sigaction()\n",
-                (void *)(Addr)ARG2);
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(umsg)("Warning: bad act handler address %p in sigaction()\n",
+                   (void *)(Addr)ARG2);
+      }
       SET_STATUS_Failure ( VKI_EFAULT );
    } else if ((ARG3 != 0
                && ! ML_(safe_to_deref)((void *)(Addr)ARG3,
                                        sizeof(struct vki_sigaction)))) {
-      VG_(umsg)("Warning: bad oact handler address %p in sigaction()\n",
-                (void *)(Addr)ARG3);
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(umsg)("Warning: bad oact handler address %p in sigaction()\n",
+                   (void *)(Addr)ARG3);
+      }
       SET_STATUS_Failure ( VKI_EFAULT );
    } else {
       if (ARG2 != 0) {

@@ -121,9 +121,11 @@ Bool ML_(valid_client_addr)(Addr start, SizeT size, ThreadId tid,
 		  syscallname, start, start+size-1, (Int)ret);
 
    if (!ret && syscallname != NULL) {
-      VG_(message)(Vg_UserMsg, "Warning: client syscall %s tried "
-                               "to modify addresses %#lx-%#lx\n",
-                               syscallname, start, start+size-1);
+      if (VG_(clo_verbosity) >= 1) {
+         VG_(message)(Vg_UserMsg, "Warning: client syscall %s tried "
+                                  "to modify addresses %#lx-%#lx\n",
+                                  syscallname, start, start+size-1);
+      }
       if (VG_(clo_verbosity) > 1) {
          VG_(get_and_pp_StackTrace)(tid, VG_(clo_backtrace_size));
       }
@@ -3756,6 +3758,8 @@ PRE(sys_dup2)
 {
    PRINT("sys_dup2 ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "dup2", unsigned int, oldfd, unsigned int, newfd);
+   if (!ML_(fd_allowed)(ARG1, "dup2", tid, False))
+      SET_STATUS_Failure( VKI_EBADF );
    if (!ML_(fd_allowed)(ARG2, "dup2", tid, True))
       SET_STATUS_Failure( VKI_EBADF );
 }
