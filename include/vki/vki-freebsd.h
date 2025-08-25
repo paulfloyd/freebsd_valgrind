@@ -1526,6 +1526,7 @@ typedef enum vki_idtype {
 #define VKI_MAP_STACK  0x400
 #define VKI_MAP_ANON 0x1000   /* don't use a file */
 #define VKI_MAP_ANONYMOUS VKI_MAP_ANON
+#define VKI_MAP_GUARD 0x00002000
 
 #define VKI_MAP_ALIGNED(n)   ((n) << VKI_MAP_ALIGNMENT_SHIFT)
 #define VKI_MAP_ALIGNMENT_SHIFT     24
@@ -2228,10 +2229,12 @@ struct vki_kinfo_file {
 //----------------------------------------------------------------------
 // From sys/kenv.h
 //----------------------------------------------------------------------
-#define VKI_KENV_GET    0
-#define VKI_KENV_SET    1
-#define VKI_KENV_UNSET     2
-#define VKI_KENV_DUMP      3
+#define VKI_KENV_GET         0
+#define VKI_KENV_SET         1
+#define VKI_KENV_UNSET       2
+#define VKI_KENV_DUMP        3
+#define VKI_KENV_DUMP_LOADER 4
+#define VKI_KENV_DUMP_STATIC 5
 
 //----------------------------------------------------------------------
 // From sys/sysctl.h (and related)

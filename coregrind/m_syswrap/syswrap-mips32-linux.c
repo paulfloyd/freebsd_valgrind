@@ -826,7 +826,7 @@ static SyscallTableEntry syscall_main_table[] = {
    //..    //   (__NR_oldolduname,       sys_olduname),          // 59
    GENX_ (__NR_umask,                  sys_umask),                   // 60
    GENX_ (__NR_chroot,                 sys_chroot),                  // 61
-   //..    //   (__NR_ustat,             sys_ustat)              // 62
+   LINXY (__NR_ustat,                  sys_ustat),                   // 62
    GENXY (__NR_dup2,                   sys_dup2),                    // 63
    GENX_ (__NR_getppid,                sys_getppid),                 // 64
    GENX_ (__NR_getpgrp,                sys_getpgrp),                 // 65
@@ -899,7 +899,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENX_ (__NR_getpgid,                sys_getpgid),                 // 132
    GENX_ (__NR_fchdir,                 sys_fchdir),                  // 133
    //..    //   (__NR_bdflush,           sys_bdflush),           // 134
-   //..    //   (__NR_sysfs,             sys_sysfs),             // 135
+   LINXY (__NR_sysfs,                  sys_sysfs),                   // 135
    LINX_ (__NR_personality,            sys_personality),            // 136
    //..    GENX_(__NR_afs_syscall,       sys_ni_syscall),        // 137
    LINX_ (__NR_setfsuid,               sys_setfsuid),                // 138

@@ -685,7 +685,7 @@ static SyscallTableEntry syscall_table[] = {
 
    GENX_(__NR_umask,             sys_umask),             // 60
    GENX_(__NR_chroot,            sys_chroot),            // 61
-//..    //   (__NR_ustat,             sys_ustat)              // 62 SVr4 -- deprecated
+   LINXY(__NR_ustat,             sys_ustat),             // 62 SVr4 -- deprecated
    GENXY(__NR_dup2,              sys_dup2),              // 63
    GENX_(__NR_getppid,           sys_getppid),           // 64
 
@@ -774,7 +774,7 @@ static SyscallTableEntry syscall_table[] = {
    GENX_(__NR_fchdir,            sys_fchdir),            // 133
 //..    //   (__NR_bdflush,           sys_bdflush),           // 134 */Linux
 //.. 
-//..    //   (__NR_sysfs,             sys_sysfs),             // 135 SVr4
+   LINXY(__NR_sysfs,             sys_sysfs),             // 135 SVr4
    LINX_(__NR_personality,       sys_personality),       // 136
 //..    GENX_(__NR_afs_syscall,       sys_ni_syscall),        // 137
    LINX_(__NR_setfsuid,          sys_setfsuid),          // 138

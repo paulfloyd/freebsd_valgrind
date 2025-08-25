@@ -572,6 +572,9 @@ typedef
          - '3': current, faster implementation; perhaps producing slightly worse
                 spilling decisions. */
       UInt regalloc_version;
+      /* When false constant folding and algebric simplification is disabled.
+         This is used in the iropt tester. */
+      Bool iropt_fold_expr;
    }
    VexControl;
 
@@ -581,6 +584,8 @@ typedef
 extern 
 void LibVEX_default_VexControl ( /*OUT*/ VexControl* vcon );
 
+extern
+void LibVEX_set_VexControl ( VexControl );
 
 /*-------------------------------------------------------*/
 /*--- Storage management control                      ---*/
@@ -963,6 +968,7 @@ extern void LibVEX_ShowStats ( void );
 typedef
    enum {
       IRICB_vbit,
+      IRICB_iropt,
    }
    IRICB_t;
 
@@ -994,9 +1000,24 @@ typedef
 
 typedef
    struct {
+      IROp   op;            // the operation to perform
+      HWord  result_fold;   // address of the result (with folding)
+      HWord  result_nofold; // address of the result (without folding)
+      HWord  opnd1;         // address of 1st operand
+      HWord  opnd2;         // address of 2nd operand
+      IRType t_result;      // type of result
+      IRType t_opnd1;       // type of 1st operand
+      IRType t_opnd2;       // type of 2nd operand
+      UInt   num_operands;
+   }
+   IRICB_iropt_payload;
+
+typedef
+   struct {
       IRICB_t kind;
       union {
          IRICB_vbit_payload vbit;
+         IRICB_iropt_payload iropt;
       };
    }
    IRICB;

@@ -1118,8 +1118,10 @@ s390_insn_map_regs(HRegRemap *m, s390_insn *insn)
       break;
 
    case S390_INSN_COND_MOVE:
-      insn->variant.cond_move.dst = lookupHRegRemap(m, insn->variant.cond_move.dst);
-      s390_opnd_RMI_map_regs(m, &insn->variant.cond_move.src);
+      if (insn->variant.cond_move.cond != S390_CC_NEVER) {
+         insn->variant.cond_move.dst = lookupHRegRemap(m, insn->variant.cond_move.dst);
+         s390_opnd_RMI_map_regs(m, &insn->variant.cond_move.src);
+      }
       break;
 
    case S390_INSN_LOAD_IMMEDIATE:
@@ -9256,7 +9258,10 @@ s390_widen_emit(UChar *buf, const s390_insn *insn, UInt from_size,
 
       case 2:
          if (insn->size == 4) {  /* 16 --> 32 */
-            return s390_emit_LHI(buf, r1, value);
+            if (sign_extend)
+               return s390_emit_LHI(buf, r1, value);
+            else
+               return s390_emit_IILF(buf, r1, value);
          }
          if (insn->size == 8) {  /* 16 --> 64 */
             if (sign_extend)

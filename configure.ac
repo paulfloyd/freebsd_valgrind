@@ -35,7 +35,7 @@ AC_SUBST(VG_DATE, v_rel_date)
 
 AC_CONFIG_SRCDIR(coregrind/m_main.c)
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE([foreign dist-bzip2 subdir-objects])
+AM_INIT_AUTOMAKE([foreign dist-bzip2 tar-ustar subdir-objects])
 
 AM_MAINTAINER_MODE
 
@@ -4943,6 +4943,12 @@ AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([rt], [clock_gettime])
 AC_CHECK_LIB([rt], [timer_delete])
 
+if test "$VGCONF_OS" = "solaris" ; then
+# for mallinfo
+saved_LDFLAGS="$LDFLAGS"
+LDFLAGS="$saved_LDFLAGS -lmalloc"
+fi
+
 AC_CHECK_FUNCS([     \
         aligned_alloc \
         clock_gettime\
@@ -4952,6 +4958,7 @@ AC_CHECK_FUNCS([     \
         getaddrinfo  \
         klogctl      \
         mallinfo     \
+        mallinfo2    \
         memchr       \
         memfd_create \
         memset       \
@@ -5008,8 +5015,13 @@ AC_CHECK_FUNCS([     \
         getrlimitusage \
         timer_delete \
         fchroot      \
-        setcred
+        setcred      \
+        exterrctl
         ])
+
+if test "$VGCONF_OS" = "solaris" ; then
+LDFLAGS="$saved_LDFLAGS"
+fi
 
 # AC_CHECK_LIB adds any library found to the variable LIBS, and links these
 # libraries with any shared object and/or executable. This is NOT what we
@@ -5070,6 +5082,8 @@ AM_CONDITIONAL([HAVE_FCHROOT],
                [test x$ac_cv_func_fchroot = xyes])
 AM_CONDITIONAL([HAVE_SETCRED],
                [test x$ac_cv_func_setcred = xyes])
+AM_CONDITIONAL([HAVE_EXTERRCTL],
+               [test x$ac_cv_func_exterrctl = xyes])
 
 if test x$VGCONF_PLATFORM_PRI_CAPS = xMIPS32_LINUX \
      -o x$VGCONF_PLATFORM_PRI_CAPS = xMIPS64_LINUX \
@@ -5757,6 +5771,7 @@ AC_CONFIG_FILES([
    none/tests/arm64/Makefile
    none/tests/s390x/Makefile
    none/tests/s390x/disasm-test/Makefile
+   none/tests/iropt-test/Makefile
    none/tests/mips32/Makefile
    none/tests/mips64/Makefile
    none/tests/nanomips/Makefile

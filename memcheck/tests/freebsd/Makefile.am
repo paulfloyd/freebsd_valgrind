@@ -4,7 +4,7 @@ include $(top_srcdir)/Makefile.tool-tests.am
 dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout filter_sigwait \
 	filter_scalar filter_realpathat filter_fstat filter_eventfd2 \
 	toucher1 toucher2 filter_getfsstat filter_context filter_frame \
-	filter_supp
+	filter_supp filter_kenv
 
 EXTRA_DIST = \
 	access.vgtest \
@@ -51,6 +51,8 @@ EXTRA_DIST = \
 	eventfd2.stderr.exp \
 	extattr.vgtest \
 	extattr.stderr.exp \
+	exterrctl.vgtest \
+	exterrctl.stderr.exp \
 	fbsd278566.vgtest \
 	fbsd278566.stderr.exp \
 	fchroot.vgtest \
@@ -70,6 +72,8 @@ EXTRA_DIST = \
 	getfsstat.supp \
 		getfsstat.stderr.exp-x86 \
 	getrlimitusage.vgtest getrlimitusage.stderr.exp \
+	kenv.vgtest \
+	kenv.stderr.exp \
 	kqueue.vgtest \
 	kqueue.stderr.exp \
 	kqueue.stdout.exp \
@@ -87,6 +91,7 @@ EXTRA_DIST = \
 	openpty.stderr.exp \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
+	pdfork_pdkill.supp \
 	realpathat.vgtest \
 	realpathat.stderr.exp \
 	revoke.vgtest \
@@ -156,6 +161,7 @@ check_PROGRAMS = \
 	fexecve \
 	file_locking_wait6 \
 	get_set_context get_set_login getfh \
+	kenv \
 	kqueue linkat memalign misc \
 	openpty \
 	pdfork_pdkill getfsstat inlinfo inlinfo_nested.so \
@@ -178,6 +184,10 @@ AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 
 if HAVE_AIO_READV
 check_PROGRAMS += aiov
+endif
+
+if HAVE_EXTERRCTL
+check_PROGRAMS += exterrctl
 endif
 
 if HAVE_FCHROOT
@@ -233,9 +243,14 @@ delete_sized_mismatch_CXXFLAGS	= ${AM_CXXFLAGS} --std=c++14
 delete_sized_mismatch_SOURCES	= delete_sized_mismatch.cpp
 errno_aligned_allocs_CFLAGS	= ${AM_CFLAGS} @FLAG_W_NO_NON_POWER_OF_TWO_ALIGNMENT@
 extattr_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_UNUSED_BUT_SET_VARIABLE@ @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
+if HAVE_EXTERRCTL
+exterrctl_SOURCES = exterrctl.cpp
+endif
 get_set_login_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@
 getfh_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@
 getfsstat_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
+kenv_SOURCES			= kenv.cpp
+kenv_CXXFLAGS			= ${AM_CXXFLAGS} @FLAG_W_NO_UNINITIALIZED@
 linkat_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_MAYBE_UNINITIALIZED@ @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
 memalign_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_NON_POWER_OF_TWO_ALIGNMENT@
 misc_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@

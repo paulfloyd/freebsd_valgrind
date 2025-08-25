@@ -40,6 +40,7 @@ extern void ML_(call_on_new_stack_0_1) ( Addr stack, Addr retaddr,
 
 // Linux-specific (but non-arch-specific) syscalls
 
+DECL_TEMPLATE(linux, sys_ustat);
 DECL_TEMPLATE(linux, sys_clone)
 DECL_TEMPLATE(linux, sys_mount);
 DECL_TEMPLATE(linux, sys_oldumount);
@@ -60,6 +61,7 @@ DECL_TEMPLATE(linux, sys_vmsplice);
 DECL_TEMPLATE(linux, sys_readahead);
 DECL_TEMPLATE(linux, sys_move_pages);
 DECL_TEMPLATE(linux, sys_cachestat);
+DECL_TEMPLATE(linux, sys_sysfs);
 
 // clone is similar enough between linux variants to have a generic
 // version, but which will call an extern defined in syswrap-<platform>-linux.c

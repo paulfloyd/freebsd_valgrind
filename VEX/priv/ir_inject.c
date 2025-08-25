@@ -31,8 +31,10 @@
 #include "libvex_ir.h"
 #include "libvex.h"
 #include "main_util.h"
+#include "main_globals.h"           // vex_control
 
 /* Convenience macros for readibility */
+#define mkU1(v)   IRExpr_Const(IRConst_U1(v))
 #define mkU8(v)   IRExpr_Const(IRConst_U8(v))
 #define mkU16(v)  IRExpr_Const(IRConst_U16(v))
 #define mkU32(v)  IRExpr_Const(IRConst_U32(v))
@@ -321,12 +323,83 @@ vex_inject_ir_vbit(IRSB *irsb, IREndness endian)
    }
 }
 
+
+static void
+vex_inject_ir_iropt(IRSB *irsb, IREndness endian)
+{
+   IRICB_iropt_payload iricb = the_iricb.iropt;
+   IRExpr *opnd1, *opnd2, *expr;
+   ULong val1, val2;
+
+   val1 = *(ULong *)iricb.opnd1;
+   switch (iricb.t_opnd1) {
+   case Ity_I1:  opnd1 = mkU1(val1);  break;
+   case Ity_I8:  opnd1 = mkU8(val1);  break;
+   case Ity_I16: opnd1 = mkU16(val1); break;
+   case Ity_I32: opnd1 = mkU32(val1); break;
+   case Ity_I64: opnd1 = mkU64(val1); break;
+   default:
+      vpanic("unsupported type");
+   }
+
+   switch (iricb.num_operands) {
+   case 1:
+      expr = unop(iricb.op, opnd1);
+      break;
+
+   case 2:
+      val2 = *(ULong *)iricb.opnd2;
+      switch (iricb.t_opnd2) {
+      case Ity_I1:  opnd2 = mkU1(val2);  break;
+      case Ity_I8:  opnd2 = mkU8(val2);  break;
+      case Ity_I16: opnd2 = mkU16(val2); break;
+      case Ity_I32: opnd2 = mkU32(val2); break;
+      case Ity_I64: opnd2 = mkU64(val2); break;
+      default:
+         vpanic("unsupported type");
+      }
+      expr = binop(iricb.op, opnd1, opnd2);
+      break;
+
+   default:
+      vpanic("unsupported operator");
+   }
+
+   if (! vex_control.iropt_fold_expr) {
+      store(irsb, endian, iricb.result_nofold, expr);
+      return;
+   }
+
+   /* Make sure the expression gets folded ! */
+   IRExpr *env[1] = { 0 };
+   IRExpr *res = foldIRExpr(env, expr);
+
+// vex_printf("FOLDED RESULT "); ppIRExpr(res); vex_printf("\n");
+
+   if (res->tag != Iex_Const) {
+      vex_printf("*** ");
+      ppIROp(iricb.op);
+      vex_printf(": not folded: result = ");
+      ppIRExpr(res);
+      vex_printf("\n");
+//      *(ULong *)iricb.result_fold = 0;     // whatever
+//      return;
+      res = mkU32(0);        // whatever
+   }
+   store(irsb, endian, iricb.result_fold, res);
+}
+
+
 void
 vex_inject_ir(IRSB *irsb, IREndness endian)
 {
    switch (the_iricb.kind) {
    case IRICB_vbit:
       vex_inject_ir_vbit(irsb, endian);
+      break;
+
+   case IRICB_iropt:
+      vex_inject_ir_iropt(irsb, endian);
       break;
 
    default:

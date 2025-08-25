@@ -2653,6 +2653,31 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
    VG_(core_panic)("can't use ML_(generic_PRE_sys_mmap) on Darwin");
 #  endif
 
+#if !defined(VKI_MAP_GUARD)
+// on platforms without MAP_GUARD the compiler should optimise away
+// the term using it below as it will always be true
+#define VKI_MAP_GUARD 0
+#endif
+
+#if !defined(VKI_MAP_STACK)
+// as above
+#define VKI_MAP_STACK 0
+#endif
+
+   /* fd (arg5) is only used when flags (arg4) does not contain
+      MAP_ANONYMOUS (or, on FreeBSD, MAP_GUARD and MAP_STACK).
+      ML_(fd_allowed) might just warn (with --track-fds)
+      and not fail, unless it is a Valgrind owned file descriptor.
+      So also check with fcntl (F_GETFD) to know if it really is a bad
+      fd. Fail early in that case with EBADF.  */
+   if (!(arg4 & VKI_MAP_ANONYMOUS)
+       && !(arg4 & VKI_MAP_GUARD)
+       && !(arg4 & VKI_MAP_STACK)
+       && (!ML_(fd_allowed)(arg5, "mmap", tid, False)
+           || VG_(fcntl) (arg5, VKI_F_GETFD, 0) < 0)) {
+      return VG_(mk_SysRes_Error)( VKI_EBADF );
+   }
+
    if (arg2 == 0) {
       /* SuSV3 says: If len is zero, mmap() shall fail and no mapping
          shall be established. */
@@ -2678,7 +2703,12 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
       (fixed/hint/any), and ask aspacem what we should do. */
    mreq.start = arg1;
    mreq.len   = arg2;
-   if (arg4 & VKI_MAP_FIXED) {
+   if ((arg4 & VKI_MAP_FIXED)
+#if defined(VKI_MAP_FIXED_NOREPLACE)
+       || (arg4 & VKI_MAP_FIXED_NOREPLACE)
+#endif
+      )
+   {
       mreq.rkind = MFixed;
    } else
 #if defined(VGO_solaris) && defined(VKI_MAP_ALIGN)
@@ -2710,6 +2740,11 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
    advised = VG_(am_get_advisory)( &mreq, True/*client*/, &mreq_ok );
    if (!mreq_ok) {
       /* Our request was bounced, so we'd better fail. */
+#if defined(VKI_MAP_FIXED_NOREPLACE)
+      if (arg4 & VKI_MAP_FIXED_NOREPLACE) {
+         return VG_(mk_SysRes_Error)( VKI_EEXIST );
+      }
+#endif
       return VG_(mk_SysRes_Error)( VKI_EINVAL );
    }
 
@@ -2741,6 +2776,13 @@ ML_(generic_PRE_sys_mmap) ( ThreadId tid,
    if ((arg4 & VKI_MAP_32BIT) && !(arg4 & VKI_MAP_FIXED)
        && sr_isError(sres)) {
       return VG_(mk_SysRes_Error)( VKI_ENOMEM );
+   }
+#  endif
+
+#  if defined(VKI_MAP_FIXED_NOREPLACE)
+   /* FIXED_NOREPLACE is fatal, no retries. */
+   if ((arg4 & VKI_MAP_FIXED_NOREPLACE) && sr_isError(sres)) {
+      return VG_(mk_SysRes_Error)( VKI_EEXIST );
    }
 #  endif
 
@@ -2902,6 +2944,8 @@ PRE(sys_fsync)
    *flags |= SfMayBlock;
    PRINT("sys_fsync ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "fsync", unsigned int, fd);
+   if ( !ML_(fd_allowed)(ARG1, "fsync", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_fdatasync)
@@ -2909,6 +2953,8 @@ PRE(sys_fdatasync)
    *flags |= SfMayBlock;
    PRINT("sys_fdatasync ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "fdatasync", unsigned int, fd);
+   if ( !ML_(fd_allowed)(ARG1, "fdatasync", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_msync)
@@ -3173,6 +3219,8 @@ PRE(sys_fstatfs)
    PRE_REG_READ2(long, "fstatfs",
                  unsigned int, fd, struct statfs *, buf);
    PRE_MEM_WRITE( "fstatfs(buf)", ARG2, sizeof(struct vki_statfs) );
+   if ( !ML_(fd_allowed)(ARG1, "fstatfs", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 POST(sys_fstatfs)
@@ -3188,6 +3236,8 @@ PRE(sys_fstatfs64)
    PRE_REG_READ3(long, "fstatfs64",
                  unsigned int, fd, vki_size_t, size, struct statfs64 *, buf);
    PRE_MEM_WRITE( "fstatfs64(buf)", ARG3, ARG2 );
+   if ( !ML_(fd_allowed)(ARG1, "fstatfs64", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 POST(sys_fstatfs64)
 {
@@ -3246,6 +3296,8 @@ PRE(sys_flock)
    *flags |= SfMayBlock;
    PRINT("sys_flock ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2 );
    PRE_REG_READ2(long, "flock", unsigned int, fd, unsigned int, operation);
+   if ( !ML_(fd_allowed)(ARG1, "flock", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 // Pre_read a char** argument.
@@ -3776,6 +3828,8 @@ PRE(sys_fchdir)
    FUSE_COMPATIBLE_MAY_BLOCK();
    PRINT("sys_fchdir ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "fchdir", unsigned int, fd);
+   if ( !ML_(fd_allowed)(ARG1, "fchdir", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_fchown)
@@ -3785,6 +3839,8 @@ PRE(sys_fchown)
          FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "fchown",
                  unsigned int, fd, vki_uid_t, owner, vki_gid_t, group);
+   if ( !ML_(fd_allowed)(ARG1, "fchown", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_fchmod)
@@ -3792,6 +3848,8 @@ PRE(sys_fchmod)
    FUSE_COMPATIBLE_MAY_BLOCK();
    PRINT("sys_fchmod ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "fchmod", unsigned int, fildes, vki_mode_t, mode);
+   if ( !ML_(fd_allowed)(ARG1, "fchmod", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 #if !defined(VGP_nanomips_linux) && !defined (VGO_freebsd)
@@ -3868,6 +3926,8 @@ PRE(sys_ftruncate)
    *flags |= SfMayBlock;
    PRINT("sys_ftruncate ( %" FMT_REGWORD "u, %" FMT_REGWORD "u )", ARG1, ARG2);
    PRE_REG_READ2(long, "ftruncate", unsigned int, fd, unsigned long, length);
+   if ( !ML_(fd_allowed)(ARG1, "ftruncate", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_truncate)
@@ -3894,6 +3954,8 @@ PRE(sys_ftruncate64)
    PRE_REG_READ2(long, "ftruncate64",
                  unsigned int,fd, UWord,length);
 #endif
+   if ( !ML_(fd_allowed)(ARG1, "ftruncate64", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_truncate64)
@@ -4560,8 +4622,23 @@ Bool ML_(handle_self_exe_open)(SyscallStatus *status, const HChar *filename,
 }
 #endif // defined(VGO_linux)
 
+// int open(const char *path, int flags, mode_t mode);
 PRE(sys_open)
 {
+#if defined(VGO_linux)
+   HChar  name[30];   // large enough
+   Bool   proc_self_exe = False;
+
+   /* Check for /proc/self/exe or /proc/<pid>/exe case
+    * first so that we can then use the later checks. */
+   VG_(sprintf)(name, "/proc/%d/exe", VG_(getpid)());
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG1, 1 )
+       && (VG_(strcmp)((HChar *)(Addr)ARG1, name) == 0
+           || VG_(strcmp)((HChar *)(Addr)ARG1, "/proc/self/exe") == 0)) {
+      proc_self_exe = True;
+   }
+#endif
+
    if (ARG2 & VKI_O_CREAT) {
       // 3-arg version
       PRINT("sys_open ( %#" FMT_REGWORD "x(%s), %ld, %ld )",ARG1,
@@ -4577,13 +4654,39 @@ PRE(sys_open)
    }
    PRE_MEM_RASCIIZ( "open(filename)", ARG1 );
 
+   // check that we are not trying to open the client exe for writing
+   if ((ARG2 & VKI_O_WRONLY) ||
+       (ARG2 & VKI_O_RDWR)) {
+#if defined(VGO_linux)
+      if (proc_self_exe) {
+
+         SET_STATUS_Failure( VKI_ETXTBSY );
+         return;
+      } else {
+#endif
+      vg_assert(VG_(resolved_exename));
+      const HChar* path = (const HChar*)ARG1;
+      if (ML_(safe_to_deref)(path, 1)) {
+         // we need something like a "ML_(safe_to_deref_path)" that does a binary search for the addressable length, and maybe nul
+         HChar tmp[VKI_PATH_MAX];
+         if (VG_(realpath)(path, tmp)) {
+            if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+               SET_STATUS_Failure( VKI_ETXTBSY );
+               return;
+            }
+         }
+      }
+#if defined(VGO_linux)
+      }
+#endif
+   }
+
 #if defined(VGO_linux)
    /* Handle the case where the open is of /proc/self/cmdline or
       /proc/<pid>/cmdline, and just give it a copy of the fd for the
       fake file we cooked up at startup (in m_main).  Also, seek the
       cloned fd back to the start. */
    {
-      HChar  name[30];   // large enough
       HChar* arg1s = (HChar*) (Addr)ARG1;
       SysRes sres;
 
@@ -4606,6 +4709,11 @@ PRE(sys_open)
    if (ML_(handle_auxv_open)(status, (const HChar *)(Addr)ARG1, ARG2)
        || ML_(handle_self_exe_open)(status, (const HChar *)(Addr)ARG1, ARG2))
       return;
+
+   if (proc_self_exe) {
+      // do the syscall with VG_(resolved_exename)
+      ARG1 = (Word)VG_(resolved_exename);
+   }
 #endif // defined(VGO_linux)
 
    /* Otherwise handle normally */
@@ -4713,6 +4821,9 @@ PRE(sys_poll)
       PRE_MEM_READ( "poll(ufds.fd)",
                     (Addr)(&ufds[i].fd), sizeof(ufds[i].fd) );
       if (ML_(safe_to_deref)(&ufds[i].fd, sizeof(ufds[i].fd)) && ufds[i].fd >= 0) {
+         if (!ML_(fd_allowed)(ufds[i].fd, "poll(ufds.fd)", tid, False)) {
+            /* do nothing? Just let fd_allowed produce a warning? */
+         }
          PRE_MEM_READ( "poll(ufds.events)",
                        (Addr)(&ufds[i].events), sizeof(ufds[i].events) );
       }

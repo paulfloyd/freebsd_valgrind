@@ -2041,6 +2041,8 @@ static void ppoll_pre_helper ( ThreadId tid, SyscallArgLayout* layout,
    for (i = 0; i < ARG2; i++) {
       PRE_MEM_READ( "ppoll(ufds.fd)",
                     (Addr)(&ufds[i].fd), sizeof(ufds[i].fd) );
+      if (!ML_(safe_to_deref)(&ufds[i].fd, sizeof(ufds[i].fd)))
+         break;
       if (ufds[i].fd >= 0) {
          PRE_MEM_READ( "ppoll(ufds.events)",
                        (Addr)(&ufds[i].events), sizeof(ufds[i].events) );
@@ -2516,6 +2518,8 @@ PRE(sys_fadvise64)
    PRE_REG_READ5(long, "fadvise64",
                  int, fd, vki_u32, MERGE64_FIRST(offset), vki_u32, MERGE64_SECOND(offset),
                  vki_size_t, len, int, advice);
+   if ( !ML_(fd_allowed)(SARG1, "fadvise64", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_fadvise64_64)
@@ -2525,6 +2529,8 @@ PRE(sys_fadvise64_64)
    PRE_REG_READ6(long, "fadvise64_64",
                  int, fd, vki_u32, MERGE64_FIRST(offset), vki_u32, MERGE64_SECOND(offset),
                  vki_u32, MERGE64_FIRST(len), vki_u32, MERGE64_SECOND(len), int, advice);
+   if ( !ML_(fd_allowed)(SARG1, "fadvise64_64", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 /* ---------------------------------------------------------------------
@@ -2859,6 +2865,8 @@ PRE(sys_fanotify_mark)
                  int, dfd, const char *, pathname);
    if (ARG5)
       PRE_MEM_RASCIIZ( "fanotify_mark(path)", ARG5);
+   if ( !ML_(fd_allowed)(SARG1, "fanotify_mark", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 #else
 #  error Unexpected word size
 #endif
@@ -2895,6 +2903,7 @@ PRE(sys_inotify_init1)
 POST(sys_inotify_init1)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "inotify_init", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -2941,6 +2950,7 @@ PRE(sys_mq_open)
 POST(sys_mq_open)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "mq_open", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -3371,6 +3381,7 @@ PRE(sys_timerfd_create)
 }
 POST(sys_timerfd_create)
 {
+   POST_newFd_RES;
    if (linux_kernel_2_6_22())
    {
       /* 2.6.22 kernel: timerfd system call. */
@@ -3613,6 +3624,9 @@ PRE(sys_fchown16)
          FMT_REGWORD "u )", ARG1, ARG2, ARG3);
    PRE_REG_READ3(long, "fchown16",
                  unsigned int, fd, vki_old_uid_t, owner, vki_old_gid_t, group);
+   if ( !ML_(fd_allowed)(ARG1, "fchown16", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
+
 }
 
 /* ---------------------------------------------------------------------
@@ -3707,6 +3721,9 @@ PRE(sys_fgetxattr)
                  int, fd, char *, name, void *, value, vki_size_t, size);
    PRE_MEM_RASCIIZ( "fgetxattr(name)", ARG2 );
    PRE_MEM_WRITE( "fgetxattr(value)", ARG3, ARG4 );
+   if ( !ML_(fd_allowed)(SARG1, "fgetxattr", tid, False) )
+     SET_STATUS_Failure( VKI_EBADF );
+
 }
 POST(sys_fgetxattr)
 {
@@ -3754,6 +3771,9 @@ PRE(sys_flistxattr)
    PRE_REG_READ3(ssize_t, "flistxattr",
                  int, fd, char *, list, vki_size_t, size);
    PRE_MEM_WRITE( "flistxattr(list)", ARG2, ARG3 );
+   if ( !ML_(fd_allowed)(ARG1, "flistxattr", tid, False) )
+     SET_STATUS_Failure( VKI_EBADF );
+
 }
 POST(sys_flistxattr)
 {
@@ -3787,6 +3807,9 @@ PRE(sys_fremovexattr)
    PRINT("sys_fremovexattr ( %ld, %#" FMT_REGWORD "x )", SARG1, ARG2);
    PRE_REG_READ2(long, "fremovexattr", int, fd, char *, name);
    PRE_MEM_RASCIIZ( "fremovexattr(name)", ARG2 );
+   if ( !ML_(fd_allowed)(SARG1, "fremovexattr", tid, False) )
+     SET_STATUS_Failure( VKI_EBADF );
+
 }
 
 /* ---------------------------------------------------------------------
@@ -4149,6 +4172,7 @@ PRE(sys_perf_event_open)
 POST(sys_perf_event_open)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "perf_event_open", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -4227,6 +4251,7 @@ PRE(sys_memfd_create)
 POST(sys_memfd_create)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "memfd_create", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -4253,6 +4278,7 @@ POST(sys_landlock_create_ruleset)
 {
    /* Returns either the abi version or a file descriptor.  */
    if (ARG3 != VKI_LANDLOCK_CREATE_RULESET_VERSION) {
+      POST_newFd_RES;
       if (!ML_(fd_allowed)(RES, "landlock_create_ruleset", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
@@ -4293,6 +4319,7 @@ PRE(sys_memfd_secret)
 POST(sys_memfd_secret)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "memfd_secret", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -4313,7 +4340,10 @@ PRE(sys_mseal)
     /* int mseal(void *addr, size_t len, unsigned long flags) */
     PRINT("sys_mseal ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u, %#" FMT_REGWORD "x, )", ARG1, ARG2, ARG3);
     PRE_REG_READ3(int, "mseal", void *, addr,  vki_size_t, len, int, flags);
-    if (!ML_(valid_client_addr)(ARG1, ARG2, tid, "mseal"))
+    /* First check for overflow which produces EINVAL.  */
+    if ((Addr)ARG1 > ((SizeT)(-1) - (SizeT)ARG2)) {
+       SET_STATUS_Failure(VKI_EINVAL);
+    } else if (!ML_(valid_client_addr)(ARG1, ARG2, tid, "mseal"))
        SET_STATUS_Failure(VKI_ENOMEM);
 }
 
@@ -4375,6 +4405,42 @@ PRE(sys_syncfs)
    *flags |= SfMayBlock;
    PRINT("sys_syncfs ( %" FMT_REGWORD "u )", ARG1);
    PRE_REG_READ1(long, "syncfs", unsigned int, fd);
+}
+
+PRE(sys_sysfs)
+{
+   FUSE_COMPATIBLE_MAY_BLOCK();
+   switch (ARG1) {
+      case 1:
+         PRINT("sys_sysfs ( %lu, %lu )", ARG1, ARG2);
+         PRE_REG_READ2(long, "sysfs", int, flags, const void *, path);
+         PRE_MEM_RASCIIZ("sysfs(path)", ARG2);
+         break;
+      case 2:
+         PRINT("sys_sysfs ( %lu, %lu, %#" FMT_REGWORD "x )",
+               ARG1, ARG2, ARG3);
+         PRE_REG_READ3(long, "sysfs", int, flags, int, desc, void *, path);
+         PRE_MEM_WRITE("sysfs(path)", ARG3, 1);
+         break;
+      case 3:
+         PRINT("sys_sysfs ( %lu )", ARG1);
+         PRE_REG_READ1(long, "sysfs", int, flags);
+         break;
+      default:
+         if (VG_(clo_verbosity) >= 1) {
+            VG_(message)(Vg_DebugMsg,
+               "WARNING: unhandled sysfs option %lu\n", ARG1);
+         }
+         break;
+   }
+}
+
+POST(sys_sysfs)
+{
+   if (ARG1 == 2) {
+      // For option 2, getting the fsname, there is no way to know how big the buffer needs to be.
+      POST_MEM_WRITE(ARG3, VG_(strlen)((void *)ARG3));
+   }
 }
 
 PRE(sys_statx)
@@ -4621,6 +4687,7 @@ PRE(sys_signalfd)
 }
 POST(sys_signalfd)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "signalfd", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -4642,6 +4709,7 @@ PRE(sys_signalfd4)
 }
 POST(sys_signalfd4)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "signalfd4", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -5961,25 +6029,89 @@ PRE(sys_openat)
 {
    HChar  name[30];   // large enough
    SysRes sres;
+   Bool   proc_self_exe = False;
+
+   /* Check for /proc/self/exe or /proc/<pid>/exe case
+    * first so that we can then use the later checks. */
+   VG_(sprintf)(name, "/proc/%d/exe", VG_(getpid)());
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
+       && (VG_(strcmp)((HChar *)(Addr)ARG2, name) == 0
+           || VG_(strcmp)((HChar *)(Addr)ARG2, "/proc/self/exe") == 0)) {
+      proc_self_exe = True;
+   }
 
    if (ARG3 & VKI_O_CREAT) {
       // 4-arg version
       PRINT("sys_openat ( %ld, %#" FMT_REGWORD "x(%s), %ld, %ld )",
             SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3, SARG4);
       PRE_REG_READ4(long, "openat",
-                    int, dfd, const char *, filename, int, flags, int, mode);
+                    int, dirfd, const char *, pathname, int, flags, int, mode);
    } else {
       // 3-arg version
       PRINT("sys_openat ( %ld, %#" FMT_REGWORD "x(%s), %ld )",
             SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3);
       PRE_REG_READ3(long, "openat",
-                    int, dfd, const char *, filename, int, flags);
+                    int, dirfd, const char *, pathname, int, flags);
    }
 
-   PRE_MEM_RASCIIZ( "openat(filename)", ARG2 );
+   PRE_MEM_RASCIIZ( "openat(pathname)", ARG2 );
 
-   /* For absolute filenames, dfd is ignored.  If dfd is AT_FDCWD,
-      filename is relative to cwd.  When comparing dfd against AT_FDCWD,
+   // check that we are not trying to open the client exe for writing
+   if ((ARG3 & VKI_O_WRONLY) ||
+       (ARG3 & VKI_O_RDWR)) {
+      if (proc_self_exe) {
+         SET_STATUS_Failure( VKI_ETXTBSY );
+         return;
+      } else {
+         vg_assert(VG_(resolved_exename));
+         if (!VG_(strncmp)(VG_(resolved_exename), "#!", 2)) {
+            goto no_client_write;
+         }
+         Int fd = ARG1;
+         const HChar* path = (const HChar*)ARG2;
+         if (ML_(safe_to_deref)(path, 1)) {
+            // we need something like a "ML_(safe_to_deref_path)" that does a binary search for the addressable length, and maybe nul
+            if (path[0] == '/') {
+               // ignore fd
+               HChar tmp[VKI_PATH_MAX];
+               if (VG_(realpath)(path, tmp)) {
+                  if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+                     SET_STATUS_Failure( VKI_ETXTBSY );
+                     return;
+                  }
+               }
+            } else {
+               if (fd  == VKI_AT_FDCWD) {
+                  HChar tmp[VKI_PATH_MAX];
+                  if (VG_(realpath)(path, tmp)) {
+                     if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+                        SET_STATUS_Failure( VKI_ETXTBSY );
+                     }
+                  }
+               } else {
+                  const HChar* dirname;
+                  if (VG_(resolve_filename)(fd, &dirname) == False) {
+                     goto no_client_write; // let the OS do the error handling
+                  }
+                  HChar tmp1[VKI_PATH_MAX];
+                  VG_(snprintf)(tmp1, VKI_PATH_MAX, "%s/%s", dirname, path);
+                  tmp1[VKI_PATH_MAX - 1] = '\0';
+                  HChar tmp2[VKI_PATH_MAX];
+                  if (VG_(realpath)(tmp1, tmp2)) {
+                     if (!VG_(strcmp)(tmp2, VG_(resolved_exename))) {
+                        SET_STATUS_Failure( VKI_ETXTBSY );
+                        return;
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+no_client_write:
+
+   /* For absolute filenames, dirfd is ignored.  If dirfd is AT_FDCWD,
+      filename is relative to cwd.  When comparing dirfd against AT_FDCWD,
       be sure only to compare the bottom 32 bits. */
    if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
        && *(Char *)(Addr)ARG2 != '/'
@@ -6022,20 +6154,10 @@ PRE(sys_openat)
       return;
    }
 
-   /* And for /proc/self/exe or /proc/<pid>/exe case. */
+   if (proc_self_exe) {
 
-   VG_(sprintf)(name, "/proc/%d/exe", VG_(getpid)());
-   if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
-       && (VG_(strcmp)((HChar *)(Addr)ARG2, name) == 0 
-           || VG_(strcmp)((HChar *)(Addr)ARG2, "/proc/self/exe") == 0)) {
-      sres = VG_(dup)( VG_(cl_exec_fd) );
-      SET_STATUS_from_SysRes( sres );
-      if (!sr_isError(sres)) {
-         OffT off = VG_(lseek)( sr_Res(sres), 0, VKI_SEEK_SET );
-         if (off < 0)
-            SET_STATUS_Failure( VKI_EMFILE );
-      }
-      return;
+      // do the syscall with VG_(resolved_exename)
+      ARG2 = (Word)VG_(resolved_exename);
    }
 
    /* Otherwise handle normally */
@@ -6077,26 +6199,41 @@ PRE(sys_mknodat)
 
 PRE(sys_fchownat)
 {
+   Int arg_1 = (Int)ARG1;
+   const HChar *path = (const HChar*) ARG2;
    FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_fchownat ( %ld, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%"
-          FMT_REGWORD "x )", SARG1, ARG2, (HChar*)(Addr)ARG2, ARG3, ARG4);
+   PRINT("sys_fchownat ( %d, %#" FMT_REGWORD "x(%s), 0x%" FMT_REGWORD "x, 0x%"
+          FMT_REGWORD "x )", arg_1, ARG2, path, ARG3, ARG4);
    PRE_REG_READ4(long, "fchownat",
                  int, dfd, const char *, path,
                  vki_uid_t, owner, vki_gid_t, group);
    PRE_MEM_RASCIIZ( "fchownat(path)", ARG2 );
+   if ((ML_(safe_to_deref) (path, 1)) && (path[0] != '/'))
+      if ( (arg_1 != VKI_AT_FDCWD) && !ML_(fd_allowed)(arg_1, "fchownat", tid, False) )
+        SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_futimesat)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_futimesat ( %ld, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",
-         SARG1, ARG2, (HChar*)(Addr)ARG2, ARG3);
+   Int arg_1 = (Int)ARG1;
+   const HChar *path = (const HChar*) ARG2;
+   PRINT("sys_futimesat ( %d, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x )",
+         arg_1, ARG2, path, ARG3);
    PRE_REG_READ3(long, "futimesat",
                  int, dfd, char *, filename, struct timeval *, tvp);
    if (ARG2 != 0)
       PRE_MEM_RASCIIZ( "futimesat(filename)", ARG2 );
    if (ARG3 != 0)
       PRE_MEM_READ( "futimesat(tvp)", ARG3, 2 * sizeof(struct vki_timeval) );
+   if (ML_(safe_to_deref) (path, 1)) {
+      /* If pathname is relative and dirfd is the special value AT_FDCWD, then pathname is interpreted ... */
+      if (path[0] != '/')
+         if ( arg_1 != VKI_AT_FDCWD && !ML_(fd_allowed)(arg_1, "futimesat", tid, False) )
+            SET_STATUS_Failure( VKI_EBADF );
+      /* If pathname is absolute, then dirfd is ignored. */
+   }
+
 }
 
 PRE(sys_utimensat)
@@ -6261,6 +6398,7 @@ POST(sys_readlinkat)
    HChar name[30];       // large enough
    Word  saved = SYSNO;
 
+   // @todo PJF why is this done in POST and not in PRE?
    /*
     * Handle the case where readlinkat is looking at /proc/self/exe or
     * /proc/<pid>/exe.
@@ -6280,12 +6418,21 @@ POST(sys_readlinkat)
 
 PRE(sys_fchmodat)
 {
+   Int arg_1 = (Int) ARG1;
+   const HChar *path = (const HChar*) ARG2;
    FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_fchmodat ( %ld, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )",
-         SARG1, ARG2, (HChar*)(Addr)ARG2, ARG3);
+   PRINT("sys_fchmodat ( %d, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )",
+         arg_1, ARG2, path, ARG3);
    PRE_REG_READ3(long, "fchmodat",
                  int, dfd, const char *, path, vki_mode_t, mode);
    PRE_MEM_RASCIIZ( "fchmodat(path)", ARG2 );
+   if (ML_(safe_to_deref) (path, 1)) {
+      // If pathname is relative and dirfd is the special value AT_FDCWD, then pathname is interpreted ...
+      if (path[0] != '/')
+         if ( arg_1 != VKI_AT_FDCWD && !ML_(fd_allowed)(arg_1, "fchmodat", tid, False) )
+            SET_STATUS_Failure( VKI_EBADF );
+      // If pathname is absolute, then dirfd is ignored
+   }
 }
 
 PRE(sys_cachestat)
@@ -6310,34 +6457,56 @@ POST(sys_cachestat)
 
 PRE(sys_fchmodat2)
 {
+   Int arg_1 = (Int) ARG1;
+   const HChar *path = (const HChar*) ARG2;
    FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_fchmodat2 ( %ld, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %"
+   PRINT("sys_fchmodat2 ( %d, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %"
 	  FMT_REGWORD "u )",
-         SARG1, ARG2, (HChar*)(Addr)ARG2, ARG3, ARG4);
+         arg_1, ARG2, path, ARG3, ARG4);
    PRE_REG_READ4(long, "fchmodat2",
                  int, dfd, const char *, path, vki_mode_t, mode,
                  unsigned int, flags);
    PRE_MEM_RASCIIZ( "fchmodat2(pathname)", ARG2 );
+   if (ML_(safe_to_deref) (path, 1)) {
+      // If pathname is relative and dirfd is the special value AT_FDCWD, then pathname is interpreted ...
+      if (path[0] != '/')
+          if ( arg_1 != VKI_AT_FDCWD && !ML_(fd_allowed)(arg_1, "fchmodat2", tid, False) )
+             SET_STATUS_Failure( VKI_EBADF );
+      // If pathname is absolute, then dirfd is ignored
+   }
 }
 
 PRE(sys_faccessat)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_faccessat ( %ld, %#" FMT_REGWORD "x(%s), %ld )",
-         SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3);
+   Int arg_1 = (Int) ARG1;
+   const HChar *path = (const HChar*) ARG2;
+   Int arg_3 = (Int) ARG3;
+   PRINT("sys_faccessat ( %d, %#" FMT_REGWORD "x(%s), %d )",
+         arg_1, ARG2, path, arg_3);
    PRE_REG_READ3(long, "faccessat",
                  int, dfd, const char *, pathname, int, mode);
    PRE_MEM_RASCIIZ( "faccessat(pathname)", ARG2 );
+   if ((ML_(safe_to_deref) (path, 1)) && (path[0] != '/'))
+      if ( arg_1 != VKI_AT_FDCWD && !ML_(fd_allowed)(arg_1, "faccessat", tid, False) )
+         SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_faccessat2)
 {
    FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_faccessat2 ( %ld, %#" FMT_REGWORD "x(%s), %ld, %ld )",
-         SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3, SARG4);
+   Int arg_1 = (Int) ARG1;
+   const HChar *path = (const HChar*) ARG2;
+   Int arg_3 = (Int) ARG3;
+   Int arg_4 = (Int) ARG4;
+   PRINT("sys_faccessat2 ( %d, %#" FMT_REGWORD "x(%s), %d, %d )",
+         arg_1, ARG2, path, arg_3, arg_4);
    PRE_REG_READ4(long, "faccessat2",
                  int, dfd, const char *, pathname, int, mode, int, flags);
    PRE_MEM_RASCIIZ( "faccessat2(pathname)", ARG2 );
+   if ((ML_(safe_to_deref) (path, 1)) && (path[0] != '/'))
+      if ( arg_1 != VKI_AT_FDCWD && !ML_(fd_allowed)(arg_1, "faccessat2", tid, False) )
+         SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_name_to_handle_at)
@@ -6382,6 +6551,7 @@ PRE(sys_open_by_handle_at)
 POST(sys_open_by_handle_at)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "open_by_handle_at", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -6955,6 +7125,8 @@ PRE(sys_finit_module)
    PRE_REG_READ3(long, "finit_module",
                  int, fd, const char *, params, int, flags);
    PRE_MEM_RASCIIZ("finit_module(params)", ARG2);
+   if ( !ML_(fd_allowed)(ARG1, "finit_module", tid, False) )
+     SET_STATUS_Failure( VKI_EBADF );
 }
 
 PRE(sys_delete_module)
@@ -7225,6 +7397,7 @@ POST(sys_fcntl)
 {
    vg_assert(SUCCESS);
    if (ARG2 == VKI_F_DUPFD) {
+      POST_newFd_RES;
       if (!ML_(fd_allowed)(RES, "fcntl(DUPFD)", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
@@ -7234,6 +7407,7 @@ POST(sys_fcntl)
       }
    }
    else if (ARG2 == VKI_F_DUPFD_CLOEXEC) {
+      POST_newFd_RES;
       if (!ML_(fd_allowed)(RES, "fcntl(DUPFD_CLOEXEC)", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
@@ -7339,6 +7513,7 @@ POST(sys_fcntl64)
 {
    vg_assert(SUCCESS);
    if (ARG2 == VKI_F_DUPFD) {
+      POST_newFd_RES;
       if (!ML_(fd_allowed)(RES, "fcntl64(DUPFD)", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
@@ -7348,6 +7523,7 @@ POST(sys_fcntl64)
       }
    }
    else if (ARG2 == VKI_F_DUPFD_CLOEXEC) {
+      POST_newFd_RES;
       if (!ML_(fd_allowed)(RES, "fcntl64(DUPFD_CLOEXEC)", tid, True)) {
          VG_(close)(RES);
          SET_STATUS_Failure( VKI_EMFILE );
@@ -13462,6 +13638,7 @@ POST(sys_bpf)
       case VKI_BPF_MAP_GET_FD_BY_ID:
       case VKI_BPF_BTF_GET_FD_BY_ID:
       case VKI_BPF_RAW_TRACEPOINT_OPEN:
+         POST_newFd_RES;
          if (!ML_(fd_allowed)(RES, "bpf", tid, True)) {
             VG_(close)(RES);
             SET_STATUS_Failure(VKI_EMFILE);
@@ -13484,6 +13661,7 @@ POST(sys_bpf)
          break;
       case VKI_BPF_PROG_LOAD:
          /* Return a file descriptor for loaded program, write into log_buf. */
+         POST_newFd_RES;
          if (!ML_(fd_allowed)(RES, "bpf", tid, True)) {
             VG_(close)(RES);
             SET_STATUS_Failure(VKI_EMFILE);
@@ -13512,6 +13690,7 @@ POST(sys_bpf)
          break;
       case VKI_BPF_BTF_LOAD:
          /* Return a file descriptor for BTF data, write into btf_log_buf. */
+         POST_newFd_RES;
          if (!ML_(fd_allowed)(RES, "bpf", tid, True)) {
             VG_(close)(RES);
             SET_STATUS_Failure(VKI_EMFILE);
@@ -13670,6 +13849,7 @@ PRE(sys_io_uring_setup)
 POST(sys_io_uring_setup)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "io_uring_setup", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -13745,12 +13925,12 @@ PRE(sys_execveat)
    return;
 #endif
 
+   Int arg_1 = (Int) ARG1;
    const HChar *path = (const HChar*) ARG2;
    Addr arg_2    = ARG3;
    Addr arg_3    = ARG4;
    const HChar   *buf;
    HChar         *abs_path = NULL;
-   Bool check_at_symlink = False;
    Bool check_pathptr = True;
 
    if (ML_(safe_to_deref) (path, 1)) {
@@ -13758,8 +13938,12 @@ PRE(sys_execveat)
         * and just pass the pathname, try to determine
         * the absolute path otherwise. */
        if (path[0] != '/') {
-           /* Check dirfd is a valid fd. */
-           if (!ML_(fd_allowed)(ARG1, "execveat", tid, False)) {
+           /* Check dirfd is a valid fd.
+            * BUT: allow special value of AT_FDCWD (-101) per the execveat(2) man page:
+            *      If pathname is relative and dirfd is the special value AT_FDCWD,
+            *      then pathname is interpreted relative to the current working directory
+            *      of the calling process  (like execve(2)). */
+           if (arg_1 != VKI_AT_FDCWD && !ML_(fd_allowed)(arg_1, "execveat", tid, False)) {
                SET_STATUS_Failure( VKI_EBADF );
                return;
            }
@@ -13767,37 +13951,32 @@ PRE(sys_execveat)
               set then dirfd describes the whole path. */
            if (path[0] == '\0') {
                if (ARG5 & VKI_AT_EMPTY_PATH) {
-                   if (VG_(resolve_filename)(ARG1, &buf)) {
+                   if (VG_(resolve_filename)(arg_1, &buf)) {
                        path = buf;
                        check_pathptr = False;
                    }
                }
-           }
-           else if (ARG1 == VKI_AT_FDCWD) {
-               check_at_symlink = True;
-           } else
-               if (ARG5 & VKI_AT_SYMLINK_NOFOLLOW)
-                   check_at_symlink = True;
-               else if (VG_(resolve_filename)(ARG1, &buf)) {
+           } else if (VG_(resolve_filename)(arg_1, &buf)) {
 		   abs_path = VG_(malloc)("execveat",
                                           (VG_(strlen)(buf) + 1
                                           + VG_(strlen)(path) + 1));
                    VG_(sprintf)(abs_path, "%s/%s", buf, path);
                    path = abs_path;
                    check_pathptr = False;
-               }
-               else
-                   path = NULL;
-           if (check_at_symlink) {
-               struct vg_stat statbuf;
-               SysRes statres;
-
-               statres = VG_(stat)(path, &statbuf);
-               if (sr_isError(statres) || VKI_S_ISLNK(statbuf.mode)) {
-                   SET_STATUS_Failure( VKI_ELOOP );
-                   return;
-               }
            }
+       }
+       if (ARG5 & VKI_AT_SYMLINK_NOFOLLOW) {
+          struct vg_stat statbuf;
+          SysRes statres;
+          statres = VG_(stat)(path, &statbuf);
+          if (sr_isError(statres) || VKI_S_ISLNK(statbuf.mode)) {
+             SET_STATUS_Failure( VKI_ELOOP );
+             return;
+          }
+       }
+       if(ARG5 & ~(VKI_AT_SYMLINK_NOFOLLOW | VKI_AT_EMPTY_PATH)) {
+          SET_STATUS_Failure( VKI_EINVAL );
+          return;
        }
    } else {
        SET_STATUS_Failure(VKI_EFAULT);
@@ -13895,43 +14074,109 @@ PRE(sys_openat2)
 {
    HChar  name[30];   // large enough
    SysRes sres;
-   struct vki_open_how * how;
+   struct vki_open_how* how = (struct vki_open_how *)ARG3;
+   Bool   proc_self_exe = False;
+   Bool   can_deref_how = how && ML_(safe_to_deref)(how, sizeof(*how));
+
+   // ARG4 is supposed to be sizeof(struct vki_open_how)
+   // but we can't trust it
+   if (can_deref_how) {
+      // check that we are not trying to open the client exe for writing
+      // this doesn't handle all of the RESOLVE options, there may be cases
+      // like RESOLVE_NO_XDEV and RESOLVE_BENEATH where the path is
+      // invalid and we might return the wrong errno
+      if (how->vki_resolve != VKI_RESOLVE_IN_ROOT &&
+          how->vki_resolve != VKI_RESOLVE_NO_MAGICLINKS) {
+         /* Check for /proc/self/exe or /proc/<pid>/exe case
+          * first so that we can then use the later checks. */
+         VG_(sprintf)(name, "/proc/%d/exe", VG_(getpid)());
+         if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
+             && (VG_(strcmp)((HChar *)(Addr)ARG2, name) == 0
+                 || VG_(strcmp)((HChar *)(Addr)ARG2, "/proc/self/exe") == 0)) {
+            proc_self_exe = True;
+         }
+      }
+   }
 
    PRINT("sys_openat2 ( %ld, %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %ld )",
             SARG1, ARG2, (HChar*)(Addr)ARG2, ARG3, SARG4);
    PRE_REG_READ4(long, "openat2",
-                    int, dfd, const char *, filename, struct vki_open_how *, how, vki_size_t, size);
+                    int, dirfd, const char *, pathname, struct vki_open_how *, how, vki_size_t, size);
 
-   PRE_MEM_RASCIIZ( "openat2(filename)", ARG2 );
+   PRE_MEM_RASCIIZ( "openat2(pathname)", ARG2 );
    PRE_MEM_READ( "openat2(how)", ARG3, sizeof(struct vki_open_how));
 
-   /* For absolute filenames, dfd is ignored.  If dfd is AT_FDCWD,
-      filename is relative to cwd.  When comparing dfd against AT_FDCWD,
+   if (can_deref_how &&
+       ((how->vki_flags & VKI_O_WRONLY) ||
+       (how->vki_flags & VKI_O_RDWR))) {
+      if (proc_self_exe) {
+         SET_STATUS_Failure( VKI_ETXTBSY );
+         return;
+      } else {
+         vg_assert(VG_(resolved_exename));
+         if (!VG_(strncmp)(VG_(resolved_exename), "#!", 2)) {
+            goto no_client_write;
+         }
+         Int fd = ARG1;
+         const HChar* path = (const HChar*)ARG2;
+         if (ML_(safe_to_deref)(path, 1)) {
+            // we need something like a "ML_(safe_to_deref_path)" that does a binary search for the addressable length, and maybe nul
+            if (path[0] == '/' && how->vki_resolve != VKI_RESOLVE_IN_ROOT) {
+               // absolute path, ignore fd
+               HChar tmp[VKI_PATH_MAX];
+               if (VG_(realpath)(path, tmp)) {
+                  if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+                     SET_STATUS_Failure( VKI_ETXTBSY );
+                     return;
+                  }
+               }
+            } else {
+               // relative or rooted path
+               // or RESOLVE_IN_ROOT
+               if (how->vki_resolve == VKI_RESOLVE_IN_ROOT) {
+                  while (*path == '/' && *path != '\0') {
+                     ++path;
+                  }
+               }
+               if (fd  == VKI_AT_FDCWD) {
+                  HChar tmp[VKI_PATH_MAX];
+                  if (VG_(realpath)(path, tmp)) {
+                     if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+                        SET_STATUS_Failure( VKI_ETXTBSY );
+                        return;
+                     }
+                  }
+               } else {
+                  // build absolute path from fd and path
+                  const HChar* dirname;
+                  if (VG_(resolve_filename)(fd, &dirname) == False) {
+                     goto no_client_write; // let the OS do the error handling
+                  }
+                  HChar tmp1[VKI_PATH_MAX];
+                  VG_(snprintf)(tmp1, VKI_PATH_MAX, "%s/%s", dirname, path);
+                  tmp1[VKI_PATH_MAX - 1] = '\0';
+                  HChar tmp2[VKI_PATH_MAX];
+                  if (VG_(realpath)(tmp1, tmp2)) {
+                     if (!VG_(strcmp)(tmp2, VG_(resolved_exename))) {
+                        SET_STATUS_Failure( VKI_ETXTBSY );
+                        return;
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+ no_client_write:
+
+   /* For absolute filenames, dirfd is ignored.  If dirfd is AT_FDCWD,
+      filename is relative to cwd.  When comparing dirfd against AT_FDCWD,
       be sure only to compare the bottom 32 bits. */
    if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
        && *(Char *)(Addr)ARG2 != '/'
        && ((Int)ARG1) != ((Int)VKI_AT_FDCWD)
-       && !ML_(fd_allowed)(ARG1, "openat2", tid, False))
+       && !ML_(fd_allowed)(ARG1, "openat", tid, False))
       SET_STATUS_Failure( VKI_EBADF );
-
-   how = (struct vki_open_how *)ARG3;
-
-   if (how && ML_(safe_to_deref) (how, sizeof(struct vki_open_how))) {
-      if (how->vki_mode) {
-         if (!(how->vki_flags & ((vki_uint64_t)VKI_O_CREAT | VKI_O_TMPFILE))) {
-            SET_STATUS_Failure( VKI_EINVAL );
-         }
-      }
-      if (how->vki_resolve & ~((vki_uint64_t)VKI_RESOLVE_NO_XDEV |
-                            VKI_RESOLVE_NO_MAGICLINKS |
-                            VKI_RESOLVE_NO_SYMLINKS |
-                            VKI_RESOLVE_BENEATH |
-                            VKI_RESOLVE_IN_ROOT |
-                            VKI_RESOLVE_CACHED)) {
-          SET_STATUS_Failure( VKI_EINVAL );
-      }
-   }
-
    /* Handle the case where the open is of /proc/self/cmdline or
       /proc/<pid>/cmdline, and just give it a copy of the fd for the
       fake file we cooked up at startup (in m_main).  Also, seek the
@@ -13967,20 +14212,9 @@ PRE(sys_openat2)
       return;
    }
 
-   /* And for /proc/self/exe or /proc/<pid>/exe case. */
-
-   VG_(sprintf)(name, "/proc/%d/exe", VG_(getpid)());
-   if (ML_(safe_to_deref)( (void*)(Addr)ARG2, 1 )
-       && (VG_(strcmp)((HChar *)(Addr)ARG2, name) == 0
-           || VG_(strcmp)((HChar *)(Addr)ARG2, "/proc/self/exe") == 0)) {
-      sres = VG_(dup)( VG_(cl_exec_fd) );
-      SET_STATUS_from_SysRes( sres );
-      if (!sr_isError(sres)) {
-         OffT off = VG_(lseek)( sr_Res(sres), 0, VKI_SEEK_SET );
-         if (off < 0)
-            SET_STATUS_Failure( VKI_EMFILE );
-      }
-      return;
+   if (proc_self_exe) {
+      // do the syscall with VG_(resolved_exename)
+      ARG2 = (Word)VG_(resolved_exename);
    }
 
    /* Otherwise handle normally */
@@ -13990,6 +14224,7 @@ PRE(sys_openat2)
 POST(sys_openat2)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "openat2", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14006,6 +14241,7 @@ PRE(sys_pidfd_open)
 
 POST(sys_pidfd_open)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "pidfd", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14024,6 +14260,7 @@ PRE(sys_pidfd_getfd)
 POST(sys_pidfd_getfd)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "pidfd_getfd", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14053,6 +14290,7 @@ PRE(sys_open_tree)
 
 POST(sys_open_tree)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "open_tree", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14105,6 +14343,7 @@ PRE(sys_fsopen)
 
 POST(sys_fsopen)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "fsopen", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14125,6 +14364,7 @@ PRE(sys_fsmount)
 
 POST(sys_fsmount)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "fsmount", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14170,6 +14410,7 @@ PRE(sys_fspick)
 
 POST(sys_fspick)
 {
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "fspick", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14190,6 +14431,7 @@ PRE(sys_userfaultfd)
 POST(sys_userfaultfd)
 {
    vg_assert(SUCCESS);
+   POST_newFd_RES;
    if (!ML_(fd_allowed)(RES, "userfaultfd", tid, True)) {
       VG_(close)(RES);
       SET_STATUS_Failure( VKI_EMFILE );
@@ -14197,6 +14439,19 @@ POST(sys_userfaultfd)
       if (VG_(clo_track_fds))
          ML_(record_fd_open_nameless)(tid, RES);
    }
+}
+
+PRE(sys_ustat)
+{
+   FUSE_COMPATIBLE_MAY_BLOCK();
+   PRINT("sys_ustat ( %#" FMT_REGWORD "x, %#" FMT_REGWORD "x)", ARG1, ARG2);
+   PRE_REG_READ2(long, "ustat", __vki_u32, dev, struct vki_ustat *, ubuf);
+   PRE_MEM_WRITE( "ustat(ubuf)", ARG2, sizeof(struct vki_ustat) );
+}
+
+POST(sys_ustat)
+{
+   POST_MEM_WRITE( ARG2, sizeof(struct vki_ustat) );
 }
 
 #undef PRE

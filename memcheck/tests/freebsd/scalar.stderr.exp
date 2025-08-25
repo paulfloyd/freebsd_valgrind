@@ -2065,6 +2065,10 @@ Syscall param preadv(iovcnt) contains uninitialised byte(s)
 Syscall param preadv(offset) contains uninitialised byte(s)
    ...
 
+Syscall param preadv(iov) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
 ---------------------------------------------------------
 290:             SYS_pwritev 4s 0m
 ---------------------------------------------------------
@@ -2079,6 +2083,10 @@ Syscall param pwritev(iovcnt) contains uninitialised byte(s)
 
 Syscall param pwritev(offset) contains uninitialised byte(s)
    ...
+
+Syscall param pwritev(vector) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
 298:              SYS_fhopen 2s 1m
@@ -2506,6 +2514,19 @@ Syscall param sigwaitinfo(set) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 Syscall param sigwaitinfo(info) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+346:         SYS_sigwaitinfo (NULL info) 2s 1m
+---------------------------------------------------------
+Syscall param sigwaitinfo(set) contains uninitialised byte(s)
+   ...
+
+Syscall param sigwaitinfo(info) contains uninitialised byte(s)
+   ...
+
+Syscall param sigwaitinfo(set) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -2968,13 +2989,14 @@ Syscall param kenv(name) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
+Syscall param kenv(value) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
 ---------------------------------------------------------
 390:                SYS_kenv (KENV_DUMP) 4s 0m
 ---------------------------------------------------------
 Syscall param kenv(action) contains uninitialised byte(s)
-   ...
-
-Syscall param kenv(name) contains uninitialised byte(s)
    ...
 
 Syscall param kenv(value) contains uninitialised byte(s)
@@ -2982,6 +3004,10 @@ Syscall param kenv(value) contains uninitialised byte(s)
 
 Syscall param kenv(len) contains uninitialised byte(s)
    ...
+
+Syscall param kenv(value) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
 391:            SYS_lchflags 2s 1m
@@ -3340,6 +3366,23 @@ Syscall param __acl_aclcheck_link(aclp) points to unaddressable byte(s)
 
 ---------------------------------------------------------
 429:             SYS_sigwait 2s 2m
+---------------------------------------------------------
+Syscall param sigwait(set) contains uninitialised byte(s)
+   ...
+
+Syscall param sigwait(sig) contains uninitialised byte(s)
+   ...
+
+Syscall param sigwait(set) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param sigwait(sig) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+429:             SYS_sigwait (NULL ags) 2s 2m
 ---------------------------------------------------------
 Syscall param sigwait(set) contains uninitialised byte(s)
    ...
@@ -4154,11 +4197,11 @@ Syscall param fstatat(buf) contains uninitialised byte(s)
 Syscall param fstatat(flag) contains uninitialised byte(s)
    ...
 
-Syscall param fstatat(path) points to unaddressable byte(s)
+Syscall param freebsd11_fstatat(path) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
-Syscall param fstatat(sb) points to unaddressable byte(s)
+Syscall param freebsd11_fstatat(sb) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -4243,19 +4286,19 @@ Syscall param mkfifoat(path) points to unaddressable byte(s)
 ---------------------------------------------------------
 498:   SYS_freebsd11_mknodat 4s 1m
 ---------------------------------------------------------
-Syscall param mknodat(dfd) contains uninitialised byte(s)
+Syscall param freebsd11_mknodat(dfd) contains uninitialised byte(s)
    ...
 
-Syscall param mknodat(pathname) contains uninitialised byte(s)
+Syscall param freebsd11_mknodat(pathname) contains uninitialised byte(s)
    ...
 
-Syscall param mknodat(mode) contains uninitialised byte(s)
+Syscall param freebsd11_mknodat(mode) contains uninitialised byte(s)
    ...
 
-Syscall param mknodat(dev) contains uninitialised byte(s)
+Syscall param freebsd11_mknodat(dev) contains uninitialised byte(s)
    ...
 
-Syscall param mknodat(pathname) points to unaddressable byte(s)
+Syscall param freebsd11_mknodat(pathname) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
@@ -5740,6 +5783,47 @@ Syscall param setcred(size) contains uninitialised byte(s)
 Syscall param setcred(wcred) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+592:           SYS_exterrctl 3s, 1m
+---------------------------------------------------------
+Syscall param exterrctl(op) contains uninitialised byte(s)
+   ...
+
+Syscall param exterrctl(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param exterrctl(ptr) contains uninitialised byte(s)
+   ...
+
+Syscall param exterrctl(ptr) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+593:SYS_inotify_add_watch_at 3s, 1m
+---------------------------------------------------------
+Syscall param inotify_add_watch_at(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param inotify_add_watch_at(dfd) contains uninitialised byte(s)
+   ...
+
+Syscall param inotify_add_watch_at(path) contains uninitialised byte(s)
+   ...
+
+Syscall param inotify_add_watch_at(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+594:    SYS_inotify_rm_watch 2s, 0m
+---------------------------------------------------------
+Syscall param sys_inotify_rm_watch(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param sys_inotify_rm_watch(wd) contains uninitialised byte(s)
+   ...
 
 ---------------------------------------------------------
   1:                SYS_exit 1s 0m
