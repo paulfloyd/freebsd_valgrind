@@ -987,8 +987,7 @@ PRE(sys_mknodat)
    PRE_REG_READ4(long, "mknodat",
                  int, fd, const char *, path, vki_mode_t, mode, vki_dev_t, dev);
    PRE_MEM_RASCIIZ( "mknodat(pathname)", ARG2 );
-   if (!ML_(fd_allowed)(ARG1, "mknodat", tid, False))
-      SET_STATUS_Failure(VKI_EBADF);
+   ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "mknodat", tid, status);
 }
 
 // SYS_cpuset_getdomain 561

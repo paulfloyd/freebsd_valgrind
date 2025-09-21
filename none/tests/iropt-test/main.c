@@ -45,8 +45,8 @@ unsigned num_random_tests;
 int
 main(int argc, char *argv[])
 {
-// FIXME: temporarily until ppc,amd64,x86 have been fixed
-#if !defined(__s390x__)
+// FIXME: temporarily until ppc and mips have been fixed
+#if !defined(__s390x__) && !defined(__i386__) && !defined(__x86_64__)
    return 0;
 #endif
    assert(sizeof(long long) == 8);
@@ -125,7 +125,7 @@ check_irops_table(void)
       if (op->result_type != t_res   ||
           op->opnd1_type  != t_opnd1 ||
           (op->num_opnds == 2 && op->opnd2_type  != t_opnd2))
-         fprintf(stderr, "%s: type mismatch\n", op->name);
+         panic("%s: type mismatch\n", op->name);
    }
 }
 
@@ -163,6 +163,9 @@ is_enabled(const irop_t *op)
 #endif
 #ifdef __s390x__
    return op->enabled_arch & ARCH_s390;
+#endif
+#ifdef __mips__
+   return op->enabled_arch & ((__mips == 64) ? ARCH_mips64 : ARCH_mips32);
 #endif
 #ifdef __powerpc__    /* defined for both 32-bit and 64-bit */
 #define  MIN_POWER_ISA  "../../../tests/min_power_isa"

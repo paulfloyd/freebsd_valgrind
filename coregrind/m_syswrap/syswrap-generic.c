@@ -1794,6 +1794,12 @@ Bool ML_(fd_allowed)(Int fd, const HChar *syscallname, ThreadId tid,
    return allowed;
 }
 
+void ML_(fd_at_check_allowed)(Int fd, const HChar* path, const HChar* function_name, ThreadId tid, SyscallStatus* status)
+{
+   if ((ML_(safe_to_deref) (path, 1)) && (path[0] != '/'))
+      if ((fd != VKI_AT_FDCWD) && !ML_(fd_allowed)(fd, function_name, tid, False))
+           SET_STATUS_Failure(VKI_EBADF);
+}
 
 /* ---------------------------------------------------------------------
    Deal with a bunch of socket-related syscalls
@@ -3859,6 +3865,8 @@ PRE(sys_newfstat)
    PRINT("sys_newfstat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x )", ARG1, ARG2);
    PRE_REG_READ2(long, "fstat", unsigned int, fd, struct stat *, buf);
    PRE_MEM_WRITE( "fstat(buf)", ARG2, sizeof(struct vki_stat) );
+   if ( !ML_(fd_allowed)(ARG1, "fstat", tid, False) )
+      SET_STATUS_Failure( VKI_EBADF );
 }
 
 POST(sys_newfstat)

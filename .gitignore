@@ -1102,6 +1102,7 @@
 /memcheck/tests/amd64-linux/defcfaexpr
 /memcheck/tests/amd64-linux/int3-amd64
 /memcheck/tests/amd64-linux/reallocarray
+/memcheck/tests/amd64-linux/scalar
 /memcheck/tests/amd64-linux/Makefile
 /memcheck/tests/amd64-linux/Makefile.in
 
@@ -1176,7 +1177,7 @@
 /memcheck/tests/darwin/scalar_vfork
 
 # /memcheck/tests/linux/
-/memcheck/tests/linux/*.stderr.diff
+/memcheck/tests/linux/*.stderr.diff*
 /memcheck/tests/linux/*.stderr.out
 /memcheck/tests/linux/*.stdout.diff
 /memcheck/tests/linux/*.stdout.out
@@ -1269,6 +1270,7 @@
 /memcheck/tests/s390x/cu42
 /memcheck/tests/s390x/ltgjhe
 /memcheck/tests/s390x/tmxx
+/memcheck/tests/s390x/vme
 /memcheck/tests/s390x/vstrc
 /memcheck/tests/s390x/vfae
 /memcheck/tests/s390x/vistr
@@ -1490,6 +1492,7 @@
 /memcheck/tests/amd64-freebsd/posix_fallocate
 /memcheck/tests/amd64-freebsd/reallocarray
 /memcheck/tests/amd64-freebsd/reallocf
+/memcheck/tests/amd64-freebsd/scalar_arg_check
 
 # /memcheck/tests/x86-freebsd
 /memcheck/tests/x86-freebsd/*.stderr.diff
@@ -1502,6 +1505,16 @@
 /memcheck/tests/x86-freebsd/posix_fadvise
 /memcheck/tests/x86-freebsd/posix_fallocate
 /memcheck/tests/x86-freebsd/reallocarray
+
+# /memcheck/tests/arm64-freebsd
+/memcheck/tests/arm64-freebsd/*.stderr.diff
+/memcheck/tests/arm64-freebsd/*.stderr.out
+/memcheck/tests/arm64-freebsd/*.stdout.diff
+/memcheck/tests/arm64-freebsd/*.stdout.out
+/memcheck/tests/arm64-freebsd/.deps
+/memcheck/tests/arm64-freebsd/Makefile
+/memcheck/tests/arm64-freebsd/Makefile.in
+/memcheck/tests/arm64-freebsd/scalar_arg_check
 
 # /mpi/
 /mpi/*.dSYM
@@ -2330,6 +2343,7 @@
 none/tests/freebsd/bug499212
 /none/tests/freebsd/osrel
 /none/tests/freebsd/readlinkat
+/none/tests/freebsd/readlinkat2
 /none/tests/freebsd/swapcontext
 /none/tests/freebsd/fexecve
 /none/tests/freebsd/hello_world

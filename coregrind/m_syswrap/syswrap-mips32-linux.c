@@ -551,6 +551,7 @@ PRE(sys_fstatat64)
         SARG1, ARG2, (HChar*)ARG2, ARG3, ARG4);
   PRE_REG_READ4(long, "fstatat64",
                  int, dfd, char *, file_name, struct stat64 *, buf, int, flags);
+  ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "fstatat64", tid, status);
   PRE_MEM_RASCIIZ ("fstatat64(file_name)", ARG2);
   PRE_MEM_WRITE ("fstatat64(buf)", ARG3, sizeof (struct vki_stat64));
 }
@@ -885,7 +886,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENX_ (__NR_fsync,                  sys_fsync),                   // 118
    PLAX_ (__NR_sigreturn,              sys_sigreturn),               // 119
    LINX_ (__NR_clone,                  sys_clone),                   // 120
-   //..    //   (__NR_setdomainname,     sys_setdomainname),     // 121
+   LINX_ (__NR_setdomainname,          sys_setdomainname),           // 121
    GENXY (__NR_uname,                  sys_newuname),                // 122
    //..    PLAX_(__NR_modify_ldt,        sys_modify_ldt),        // 123
    LINXY (__NR_adjtimex,               sys_adjtimex),                // 124
@@ -1175,10 +1176,13 @@ static SyscallTableEntry syscall_main_table[] = {
    LINX_ (__NR_faccessat2,             sys_faccessat2),              // 439
 
    LINXY(__NR_epoll_pwait2,      sys_epoll_pwait2),      // 441
+   LINX_(__NR_mount_setattr,     sys_mount_setattr),     // 442
 
+   LINX_(__NR_quotactl_fd,             sys_quotactl_fd),             // 443
    LINXY(__NR_landlock_create_ruleset, sys_landlock_create_ruleset), // 444
    LINX_(__NR_landlock_add_rule,       sys_landlock_add_rule),       // 445
    LINX_(__NR_landlock_restrict_self,  sys_landlock_restrict_self),  // 446
+   LINX_(__NR_futex_waitv,             sys_futex_waitv),             // 449
 
    LINXY(__NR_cachestat,               sys_cachestat),               // 451
    LINX_(__NR_fchmodat2,               sys_fchmodat2),               // 452

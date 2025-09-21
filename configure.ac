@@ -35,7 +35,7 @@ AC_SUBST(VG_DATE, v_rel_date)
 
 AC_CONFIG_SRCDIR(coregrind/m_main.c)
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE([foreign dist-bzip2 tar-ustar subdir-objects])
+AM_INIT_AUTOMAKE([foreign dist-bzip2 no-dist-gzip tar-ustar subdir-objects])
 
 AM_MAINTAINER_MODE
 
@@ -1992,6 +1992,54 @@ CXXFLAGS=$safe_CXXFLAGS
 AC_LANG(C)
 
 AM_CONDITIONAL(HAVE_CXX17, test x$ac_have_cxx_17 = xyes)
+
+# Compiler may announce C++17 support as above but may lack
+# some features
+AC_MSG_CHECKING([that C++ compiler supports constexpr if])
+AC_LANG(C++)
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS=-std=c++17
+
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+void f()
+{
+   if constexpr (true)
+      ;
+}
+])],
+[
+ac_have_constexpr_if=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_constexpr_if=no
+AC_MSG_RESULT([no])
+			])
+CXXFLAGS=$safe_CXXFLAGS
+AC_LANG(C)
+
+AM_CONDITIONAL(HAVE_CONSTEXPR_IF, test x$ac_have_constexpr_if = xyes)
+
+AC_MSG_CHECKING([that C++ compiler supports std::align_val_t])
+AC_LANG(C++)
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS=-std=c++17
+
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#include <new>
+std::align_val_t a;
+])],
+[
+ac_have_align_val_t=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_align_val_t=no
+AC_MSG_RESULT([no])
+			])
+CXXFLAGS=$safe_CXXFLAGS
+AC_LANG(C)
+
+AM_CONDITIONAL(HAVE_ALIGN_VAL_T, test x$ac_have_align_val_t = xyes)
+
 
 AC_MSG_CHECKING([that C++ compiler can include <thread> header file])
 AC_LANG(C++)
@@ -5731,6 +5779,7 @@ AC_CONFIG_FILES([
    memcheck/tests/amd64-solaris/Makefile
    memcheck/tests/x86-solaris/Makefile
    memcheck/tests/amd64-freebsd/Makefile
+   memcheck/tests/arm64-freebsd/Makefile
    memcheck/tests/x86-freebsd/Makefile
    memcheck/tests/ppc32/Makefile
    memcheck/tests/ppc64/Makefile
