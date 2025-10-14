@@ -1505,6 +1505,7 @@
 /memcheck/tests/x86-freebsd/posix_fadvise
 /memcheck/tests/x86-freebsd/posix_fallocate
 /memcheck/tests/x86-freebsd/reallocarray
+/memcheck/tests/x86-freebsd/scalar_arg_check
 
 # /memcheck/tests/arm64-freebsd
 /memcheck/tests/arm64-freebsd/*.stderr.diff
@@ -1700,6 +1701,7 @@
 /none/tests/vgprintf
 /none/tests/vgprintf_nvalgrind
 /none/tests/yield
+/none/tests/getdents_filter
 
 # /none/tests/amd64/
 /none/tests/amd64/*.dSYM
@@ -1914,6 +1916,7 @@
 /none/tests/linux/open_client
 /none/tests/linux/pthread-stack
 /none/tests/linux/stack-overflow
+/none/tests/linux/getdents_filter
 
 # /none/tests/mips32/
 /none/tests/mips32/Makefile
@@ -2136,7 +2139,7 @@
 /none/tests/s390x/sub
 /none/tests/s390x/sub-z14
 /none/tests/s390x/sub_EI
-/none/tests/s390x/tcxb
+/none/tests/s390x/hfp
 /none/tests/s390x/xc
 /none/tests/s390x/xor
 /none/tests/s390x/xor_EI
@@ -2144,7 +2147,6 @@
 /none/tests/s390x/stcke
 /none/tests/s390x/stckf
 /none/tests/s390x/op_exception
-/none/tests/s390x/fgx
 /none/tests/s390x/condloadstore
 /none/tests/s390x/fold_And16
 /none/tests/s390x/stfle
@@ -2181,20 +2183,16 @@
 /none/tests/s390x/cu14_1
 /none/tests/s390x/cu41
 /none/tests/s390x/ecag
-/none/tests/s390x/fpext
 /none/tests/s390x/fpext_warn
-/none/tests/s390x/fpconv
-/none/tests/s390x/rounding-1
-/none/tests/s390x/rounding-2
-/none/tests/s390x/rounding-3
-/none/tests/s390x/rounding-4
-/none/tests/s390x/rounding-5
-/none/tests/s390x/bfp-1
-/none/tests/s390x/bfp-2
-/none/tests/s390x/bfp-3
-/none/tests/s390x/bfp-4
-/none/tests/s390x/srnm
-/none/tests/s390x/srnmb
+/none/tests/s390x/fpext_fail
+/none/tests/s390x/bfp-306054
+/none/tests/s390x/bfp-arith
+/none/tests/s390x/bfp-load
+/none/tests/s390x/bfp-fpc
+/none/tests/s390x/bfp-tdc
+/none/tests/s390x/bfp-muldiv
+/none/tests/s390x/bfp-compare
+/none/tests/s390x/bfp-convert
 /none/tests/s390x/comp-1
 /none/tests/s390x/comp-2
 /none/tests/s390x/ex
@@ -2219,7 +2217,6 @@
 /none/tests/s390x/spechelper-slgr
 /none/tests/s390x/spechelper-or
 /none/tests/s390x/spechelper-tm
-/none/tests/s390x/rounding-6
 /none/tests/s390x/laa
 /none/tests/s390x/dfp-1
 /none/tests/s390x/dfp-2
@@ -2231,7 +2228,6 @@
 /none/tests/s390x/srnmt
 /none/tests/s390x/pfpo
 /none/tests/s390x/rxsbg
-/none/tests/s390x/fixbr
 /none/tests/s390x/popcnt
 /none/tests/s390x/vector
 /none/tests/s390x/lsc2
@@ -2476,7 +2472,7 @@ none/tests/freebsd/bug499212
 /none/tests/x86-freebsd/.deps
 /none/tests/x86-freebsd/Makefile
 /none/tests/x86-freebsd/Makefile.in
-/none/tests/x86-freebsd/445032
+/none/tests/x86-freebsd/bug445032
 
 # /perf/
 /perf/*.dSYM

@@ -16,6 +16,21 @@ X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * ================== PLATFORM CHANGES =================
 
+FreeBSD 15 (which is expected to ship in December 2025, after
+Valgrind 3.26 is released) contains a change to ptrace that affects
+use of Valgrind with vgdb. This impacts the mechanism that vgdb
+uses to interrupt Valgrind if all threads are blocked and you want
+to get back to the gdb prompt by hitting ctrl-c. This mechanism
+is no longer reliable. On arm64 Valgrind will crash with an assert.
+On amd64 syscalls may give spurious and incorrect return codes.
+
+There is a workaround. Run the following command (as root).
+
+ sysctl debug.ptrace_attach_transparent=0
+
+ See also
+ https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=290008
+
 * ==================== TOOL CHANGES ===================
 
 * There is a new utility script, "vgstack". It has two
@@ -55,7 +70,7 @@ X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
   "UnsafeZeroSize".
 
   Checks for C23 free_sized and free_aligned_sized have been added to
-  Linux. Almost no libraries support these functions yes, with
+  Linux. Almost no libraries support these functions yet, with
   the exception being Google tcmalloc.
 
 * ==================== FIXED BUGS ====================
@@ -67,8 +82,14 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+286849  [PATCH] Interceptors for new/delete on Darwin were erroneously
+        commented out in r12043
+306098  s390x: Alternate opcode form for convert to/from fixed and friends
+309100  s390x: Testcases for extended BFP
 309554  Wrap syscall remap_file_pages (216)
+331311  Valgrind shows open files in /proc/self/fd that don't work for the process
 338803  Handling of dwz debug alt files or cross-CU is broken
+368791  Handle swapon and swapoff syscalls as linux generic
 369030  Wrap linux syscall: 171 (setdomainname)
 388526  Inconsistent severity in message text: "WARNING: Serious error"
 418756  MAP_FIXED_NOREPLACE mmap flag unsupported
@@ -137,12 +158,15 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 509107  memcheck/tests/duplicate_align_size_errors.cpp fails
 509139  Update BadSize error messages
 509258  FreeBSD: add jail_attach_jd and jail_remove_jd syscall wrappers
+509406  FreeBSD 15 issues
 509517  s390x: Even/odd lane confusion in various vector insns
 509566  Wrap amd64-linux syscall: 442 (mount_setattr)
+509572  s390x: Overhaul BFP testsuite
 509590  Run the LTP tests with LTP_QUIET
 509567  unhandled amd64-linux syscall: 443 (quotactl_fd)
 509642  Add missing ppc64-linux syswraps
 509643  Add missing s390x-linux syswraps
+510169  Update the LTP version in valgrind testsuite to 20250930
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
@@ -981,6 +1005,10 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 451626  Syscall param bpf(attr->raw_tracepoint.name) points to unaddressable byte(s)
 451827  [ppc64le] VEX temporary storage exhausted with several vbpermq instructions
 451843  valgrind fails to start on a FreeBSD system which enforces W^X
+495483  Control building documentation via BUILD_DOCS
+506211  Constant folding improvements
+506453  Unexpected behaviour with IR injection and vex-guest-chase=yes
+509157  riscv64: Shift instructions can behave wrong
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
