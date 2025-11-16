@@ -12,7 +12,7 @@
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License as
-  published by the Free Software Foundation; either version 2 of the
+  published by the Free Software Foundation; either version 3 of the
   License, or (at your option) any later version.
 
   This program is distributed in the hope that it will be useful, but
@@ -67,7 +67,8 @@
 				  void* guest_state,		// rsi
 				  const vki_sigset_t *sysmask,	// rdx
 				  const vki_sigset_t *postmask,	// rcx
-				  Int sigsetSzB)		// r8
+				  Int sigsetSzB,		// r8
+				  UChar *cflag)			// r9
 
         Note that sigsetSzB is totally ignored (and irrelevant).
 */
@@ -90,6 +91,7 @@
 	pushq	%rdx  // -24(%rbp)  sysmask
 	pushq	%rcx  // -32(%rbp)  postmask
 	pushq	%r8   // -40(%rbp)  sigsetSzB
+	pushq	%r9   // -48(%rbp)  cflag
 	// stack is now aligned
 	
 L_$0_1:	/* Even though we can't take a signal until the sigprocmask completes,
@@ -97,18 +99,13 @@ L_$0_1:	/* Even though we can't take a signal until the sigprocmask completes,
 	   If rip is in the range [1,2), the syscall hasn't been started yet */
 
 	/* Set the signal mask which should be current during the syscall. */
-	/* GrP fixme signals
-           DDD: JRS fixme: use __NR___pthread_sigmask, not __NR_rt_sigprocmask
-	movq	$__NR_rt_sigprocmask, %rax	// syscall #
-	movq	$VKI_SIG_SETMASK, %rdi		// how
+	movq	$$__NR___pthread_sigmask, %rax	// syscall #
+	movq	$$VKI_SIG_SETMASK, %rdi		// how
 	movq	-24(%rbp), %rsi			// sysmask
 	movq	-32(%rbp), %rdx			// postmask
-	movq	-40(%rbp), %r10			// sigsetSzB in r10 not rcx
-	DDD: fixme return address
 	syscall
 
-	jnc	7f	// sigprocmask failed
-	*/
+	jc	L_$0_7	// sigprocmask failed
 	
 	/* OK, that worked.  Now do the syscall proper. */
 
@@ -140,58 +137,40 @@ L_$0_3:	/* In the range [3, 4), the syscall result is in %rax,
 	   but hasn't been committed to RAX. */
 
 	/* stack contents: 3 words for syscall above, plus our prologue */
-	setc	0(%rsp) 	/* stash returned carry flag */
 
 	movq	-16(%rbp), %r11	/* r11 = VexGuestAMD64State * */
 	movq	%rax, OFFSET_amd64_RAX(%r11)	/* save back to RAX */
 	movq	%rdx, OFFSET_amd64_RDX(%r11)	/* save back to RDX */
 
 .if $0 == UNIX
-	/* save carry flag to VEX */
-	xor	%rax, %rax
-	movb	0(%rsp), %al
-	movq	%rax, %rdi	/* arg1 = new flag */
-	movq	%r11, %rsi	/* arg2 = vex state */
-	addq	$$24, %rsp	/* remove syscall parameters */
-        movl    $$1, OFFSET_amd64_SETC(%r11)
-	call	_LibVEX_GuestAMD64_put_rflag_c
-        movq	-16(%rbp), %r11
-        movl    $$0, OFFSET_amd64_SETC(%r11)
+	movq	-48(%rbp), %rcx
+	setc	0(%rcx)				/* save returned carry flag */
 .else
-	addq	$$24, %rsp	/* remove syscall parameters*/
+	addq	$$24, %rsp			/* remove syscall parameters*/
 .endif
 
 L_$0_4:	/* Re-block signals.  If eip is in [4,5), then the syscall 
 	   is complete and we needn't worry about it. */
-	/* GrP fixme signals
-           DDD: JRS fixme: use __NR___pthread_sigmask, not __NR_rt_sigprocmask
-	PUSH_di_si_dx_cx_8
-
-	movq	$__NR_rt_sigprocmask, %rax	// syscall #
-	movq	$VKI_SIG_SETMASK, %rdi		// how
-	movq	%rcx, %rsi			// postmask
+	movq	$$__NR___pthread_sigmask, %rax	// syscall #
+	movq	$$VKI_SIG_SETMASK, %rdi		// how
+	movq	-32(%rbp), %rsi			// postmask
 	xorq	%rdx, %rdx			// NULL
-	movq	%r8, %r10			// sigsetSzB
-	DDD: fixme return address
 	syscall
 
-	POP_di_si_dx_cx_8
+	jc	L_$0_7	// sigprocmask failed
 
-	jnc	7f	// sigprocmask failed
-	*/
 L_$0_5:	/* now safe from signals */
 	movq	$$0, %rax	/* SUCCESS */
 	movq	%rbp, %rsp
 	popq	%rbp
 	ret
 
-/* GrP fixme signals
 L_$0_7:	// failure:	 return 0x8000 | error code
-	DDD: fixme return value
+	andq	$$0x7FFF, %rax
+	orq	$$0x8000, %rax
 	movq	%rbp, %rsp
 	popq	%rbp
 	ret
-*/
 
 .endmacro
 

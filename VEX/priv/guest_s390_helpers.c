@@ -12,7 +12,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -784,6 +784,10 @@ decode_bfp_rounding_mode(UInt irrm)
    case Irrm_ZERO:    return S390_BFP_ROUND_ZERO;
    case Irrm_NEAREST_TIE_AWAY_0: return S390_BFP_ROUND_NEAREST_AWAY;
    case Irrm_PREPARE_SHORTER:    return S390_BFP_ROUND_PREPARE_SHORT;
+   case Irrm_AWAY_FROM_ZERO:
+   case Irrm_NEAREST_TIE_TOWARD_0:
+      /* These cannot occur as they are DFP specific */
+      break;
    }
    vpanic("decode_bfp_rounding_mode");
 }
@@ -1013,7 +1017,6 @@ decode_bfp_rounding_mode(UInt irrm)
       break;                                                          \
    case S390_BFP_ROUND_PREPARE_SHORT:                                 \
       cc = S390_CC_FOR_BFP128_UCONVERT_AUX(opcode,cc_dep1,cc_dep2,3); \
-      cc = S390_CC_FOR_BFP_UCONVERT_AUX(opcode,cc_dep1,3);            \
       break;                                                          \
    case S390_BFP_ROUND_NEAREST_EVEN:                                  \
       cc = S390_CC_FOR_BFP128_UCONVERT_AUX(opcode,cc_dep1,cc_dep2,4); \

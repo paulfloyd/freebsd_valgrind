@@ -13,7 +13,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -237,7 +237,7 @@ static inline void my_exit ( int x )
  //STRRCHR(VG_Z_DYLD,          rindex)
  STRRCHR(VG_Z_LIBC_SONAME, strrchr)
 # if DARWIN_VERS >= DARWIN_10_9
-  STRRCHR(libsystemZucZddylib, strrchr)
+  STRRCHR(VG_Z_LIBSYSTEM_C_SONAME, strrchr)
 # endif
 
 #elif defined(VGO_solaris)
@@ -290,15 +290,15 @@ static inline void my_exit ( int x )
 #elif defined(VGO_darwin)
  STRCHR(VG_Z_LIBC_SONAME, strchr)
 # if DARWIN_VERS == DARWIN_10_9
-  STRCHR(libsystemZuplatformZddylib, _platform_strchr)
+  STRCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strchr)
 # endif
 # if DARWIN_VERS >= DARWIN_10_10
   /* _platform_strchr$VARIANT$Generic */
-  STRCHR(libsystemZuplatformZddylib, _platform_strchr$VARIANT$Generic)
+  STRCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strchr$VARIANT$Generic)
   /* _platform_strchr$VARIANT$Haswell */
-  STRCHR(libsystemZuplatformZddylib, _platform_strchr$VARIANT$Haswell)
+  STRCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strchr$VARIANT$Haswell)
 # endif
- STRCHR(libsystemZuplatformZddylib, _platform_strchr$VARIANT$Base)
+ STRCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strchr$VARIANT$Base)
 
 #elif defined(VGO_solaris)
  STRCHR(VG_Z_LIBC_SONAME,          strchr)
@@ -386,7 +386,8 @@ static inline void my_exit ( int x )
  STRNCAT(VG_Z_LIBC_SONAME, strncat)
 
 #elif defined(VGO_darwin)
- //STRNCAT(VG_Z_LIBC_SONAME, strncat)
+ STRNCAT(VG_Z_LIBSYSTEM_C_SONAME, strncat)
+ STRNCAT(VG_Z_LIBSYSTEM_C_SONAME, __strncat_chk)
  //STRNCAT(VG_Z_DYLD,        strncat)
 
 #elif defined(VGO_solaris)
@@ -475,7 +476,7 @@ static inline void my_exit ( int x )
 
 #elif defined(VGO_darwin)
 # if DARWIN_VERS == DARWIN_10_9
-  STRNLEN(libsystemZucZddylib, strnlen)
+  STRNLEN(VG_Z_LIBSYSTEM_C_SONAME, strnlen)
 # endif
 
 #elif defined(VGO_solaris)
@@ -524,7 +525,7 @@ static inline void my_exit ( int x )
 #elif defined(VGO_darwin)
  STRLEN(VG_Z_LIBC_SONAME, strlen)
 # if DARWIN_VERS >= DARWIN_10_9
-  STRLEN(libsystemZucZddylib, strlen)
+  STRLEN(VG_Z_LIBSYSTEM_C_SONAME, strlen)
 # endif
 
 #elif defined(VGO_solaris)
@@ -572,9 +573,8 @@ static inline void my_exit ( int x )
 
 #elif defined(VGO_darwin)
  STRCPY(VG_Z_LIBC_SONAME, strcpy)
-# if DARWIN_VERS == DARWIN_10_9
-  STRCPY(libsystemZucZddylib, strcpy)
-# endif
+ STRCPY(VG_Z_LIBSYSTEM_C_SONAME, strcpy)
+ STRCPY(VG_Z_LIBSYSTEM_C_SONAME, __strcpy_chk)
 
 #elif defined(VGO_solaris)
  STRCPY(VG_Z_LIBC_SONAME, strcpy)
@@ -620,9 +620,8 @@ static inline void my_exit ( int x )
 
 #elif defined(VGO_darwin)
  STRNCPY(VG_Z_LIBC_SONAME, strncpy)
-# if DARWIN_VERS >= DARWIN_10_9
-  STRNCPY(libsystemZucZddylib, strncpy)
-# endif
+ STRNCPY(VG_Z_LIBSYSTEM_C_SONAME, strncpy)
+ STRNCPY(VG_Z_LIBSYSTEM_C_SONAME, __strncpy_chk)
 
 #elif defined(VGO_solaris)
  STRNCPY(VG_Z_LIBC_SONAME, strncpy)
@@ -730,7 +729,7 @@ static inline void my_exit ( int x )
 #elif defined(VGO_darwin)
  STRNCMP(VG_Z_LIBC_SONAME,        strncmp)
 # if DARWIN_VERS >= DARWIN_10_9
-  STRNCMP(libsystemZuplatformZddylib, _platform_strncmp)
+  STRNCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strncmp)
 # endif
 
 #elif defined(VGO_solaris)
@@ -957,7 +956,7 @@ static inline void my_exit ( int x )
 #elif defined(VGO_darwin)
  STRCMP(VG_Z_LIBC_SONAME, strcmp)
 # if DARWIN_VERS >= DARWIN_10_9
-  STRCMP(libsystemZuplatformZddylib, _platform_strcmp)
+  STRCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strcmp)
 # endif
 
 #elif defined(VGO_solaris)
@@ -993,18 +992,18 @@ static inline void my_exit ( int x )
 #elif defined(VGO_darwin)
 # if DARWIN_VERS == DARWIN_10_9
   MEMCHR(VG_Z_DYLD,                   memchr)
-  MEMCHR(libsystemZuplatformZddylib, _platform_memchr)
+  MEMCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memchr)
 # endif
 # if DARWIN_VERS >= DARWIN_10_10
   MEMCHR(VG_Z_DYLD,                   memchr)
   /* _platform_memchr$VARIANT$Generic */
-  MEMCHR(libsystemZuplatformZddylib, _platform_memchr$VARIANT$Generic)
+  MEMCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memchr$VARIANT$Generic)
   /* _platform_memchr$VARIANT$Haswell */
-  MEMCHR(libsystemZuplatformZddylib, _platform_memchr$VARIANT$Haswell)
+  MEMCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memchr$VARIANT$Haswell)
 # endif
 # if DARWIN_VERS >= DARWIN_10_12
   /* _platform_memchr$VARIANT$Base */
-  MEMCHR(libsystemZuplatformZddylib, _platform_memchr$VARIANT$Base)
+  MEMCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memchr$VARIANT$Base)
 #endif
 
 #elif defined(VGO_solaris)
@@ -1175,6 +1174,7 @@ static inline void my_exit ( int x )
 # endif
  MEMCPY(VG_Z_LIBC_SONAME,  memcpyZDVARIANTZDsse3x) /* memcpy$VARIANT$sse3x */
  MEMCPY(VG_Z_LIBC_SONAME,  memcpyZDVARIANTZDsse42) /* memcpy$VARIANT$sse42 */
+ MEMCPY(VG_Z_LIBSYSTEM_C_SONAME, __memcpy_chk)
 
 #elif defined(VGO_solaris)
  MEMCPY(VG_Z_LIBC_SONAME,  memcpy)
@@ -1242,7 +1242,7 @@ static inline void my_exit ( int x )
 
 #elif defined(VGO_darwin)
 # if DARWIN_VERS >= DARWIN_10_9
-  MEMCMP(libsystemZuplatformZddylib, _platform_memcmp)
+  MEMCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memcmp)
 # endif
 
 #elif defined(VGO_solaris)
@@ -1431,8 +1431,8 @@ static inline void my_exit ( int x )
  MEMMOVE(VG_Z_LIBC_SONAME,  memmoveZDVARIANTZDsse3x) /* memmove$VARIANT$sse3x */
  MEMMOVE(VG_Z_LIBC_SONAME,  memmoveZDVARIANTZDsse42) /* memmove$VARIANT$sse42 */
 # if DARWIN_VERS >= DARWIN_10_9
-  /* _platform_memmove$VARIANT$Ivybridge */
-  MEMMOVE(libsystemZuplatformZddylib, ZuplatformZumemmoveZDVARIANTZDIvybridge)
+  /* _platform_memmove$VARIANT$Ivybridge, Nehelem etc. */
+  MEMMOVE(VG_Z_LIBSYSTEM_PLATFORM_SONAME, ZuplatformZumemmoveZDVARIANTZDZa)
 # endif
 
 #elif defined(VGO_solaris)
@@ -2380,8 +2380,11 @@ static inline void my_exit ( int x )
       return NULL; \
  }
 
-#if defined(VGO_linux) || defined(VGO_freebsd) || defined(VGO_darwin) || defined(VGO_solaris)
+#if defined(VGO_linux) || defined(VGO_freebsd) || defined(VGO_solaris)
  MEMCCPY(VG_Z_LIBC_SONAME, memccpy)
+#elif defined(VGO_darwin)
+ MEMCCPY(VG_Z_LIBSYSTEM_C_SONAME, __memccpy_chk)
+ MEMCCPY(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memccpy)
 #endif
 
  /*---------------------- wcpncpy ----------------------*/
@@ -2425,6 +2428,8 @@ static inline void my_exit ( int x )
 
 #if defined(VGO_linux) || defined(VGO_freebsd) || defined(VGO_solaris)
  WCPNCPY(VG_Z_LIBC_SONAME, wcpncpy)
+#elif defined(VGO_darwin)
+ WCPNCPY(VG_Z_LIBSYSTEM_C_SONAME, wcpncpy)
 #endif
 
 /*----------------------- wcscat ----------------------*/

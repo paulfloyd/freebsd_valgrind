@@ -1,7 +1,7 @@
 
 include $(top_srcdir)/Makefile.tool-tests.am
 
-dist_noinst_SCRIPTS = filter_stderr
+dist_noinst_SCRIPTS = filter_stderr filter_scalar
 
 noinst_HEADERS = scalar.h
 
@@ -40,3 +40,7 @@ AM_CFLAGS    += $(AM_FLAG_M3264_PRI) $(FLAG_MMMX) $(FLAG_MSSE)
 AM_CXXFLAGS  += $(AM_FLAG_M3264_PRI) $(FLAG_MMMX) $(FLAG_MSSE)
 AM_CCASFLAGS += $(AM_FLAG_M3264_PRI)
 
+pth_undocumented_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_DEPRECATED_DECLARATIONS@
+mkfifo_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_DEPRECATED_DECLARATIONS@
+scalar_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_DEPRECATED_DECLARATIONS@
+scalar_nocancel_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_DEPRECATED_DECLARATIONS@

@@ -12,7 +12,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -168,17 +168,11 @@ typedef
 
       /* Used for FreeBSD syscall dispatching. */
       ULong guest_SC_CLASS;
-      /* Used for FreeBSD client syscall when putting the carry flag
-         value into VEX. */
-      UInt guest_SETC;
-      UInt pad_end_0;
       /* Padding to make it have an 16-aligned size */
-      /* UInt  pad_end_1; */
-      /* ULong pad_end_2; */
+      ULong pad_end_1;
 
    }
    VexGuestARM64State;
-
 
 /*---------------------------------------------------------------*/
 /*--- Utility functions for ARM64 guest stuff.                ---*/

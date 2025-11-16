@@ -12,7 +12,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -7447,7 +7447,16 @@ PRE(sys_fcntl)
 #  endif
       *flags |= SfMayBlock;
 
-   if (!ML_(fd_allowed)(ARG1, "fcntl", tid, False)) {
+   /* F_GETFD is used to check if a file descriptor is valid, so only
+      make sure it isn't a valgrind fd, otherwise we might warn, with
+      --track-fds=bad for any bad fd.  */
+   if (ARG2 == VKI_F_GETFD) {
+      if (ARG1 >= VG_(fd_soft_limit) ||
+          ARG1 == VG_(log_output_sink).fd ||
+          ARG1 == VG_(xml_output_sink).fd) {
+         SET_STATUS_Failure (VKI_EBADF);
+      }
+   } else if (!ML_(fd_allowed)(ARG1, "fcntl", tid, False)) {
      SET_STATUS_Failure (VKI_EBADF);
    }
 }
@@ -7563,8 +7572,17 @@ PRE(sys_fcntl64)
 #  endif
       *flags |= SfMayBlock;
 
-   if (!ML_(fd_allowed)(ARG1, "fcntl64", tid, False)) {
-     SET_STATUS_Failure (VKI_EBADF);
+   /* F_GETFD is used to check if a file descriptor is valid, so only
+      make sure it isn't a valgrind fd, otherwise we might warn, with
+      --track-fds=bad for any bad fd.  */
+   if (ARG2 == VKI_F_GETFD) {
+      if (ARG1 >= VG_(fd_soft_limit) ||
+          ARG1 == VG_(log_output_sink).fd ||
+          ARG1 == VG_(xml_output_sink).fd) {
+         SET_STATUS_Failure (VKI_EBADF);
+      }
+   } else if (!ML_(fd_allowed)(ARG1, "fcntl64", tid, False)) {
+      SET_STATUS_Failure (VKI_EBADF);
    }
 }
 
@@ -9559,7 +9577,7 @@ PRE(sys_ioctl)
          break;
 
       VG_(memset)(&harrghs, 0, sizeof(harrghs));
-      harrghs.sysno = args->op;
+      harrghs.canonical_sysno = args->op;
       harrghs.arg1 = args->arg[0];
       harrghs.arg2 = args->arg[1];
       harrghs.arg3 = args->arg[2];
@@ -12298,7 +12316,7 @@ POST(sys_ioctl)
           break;
 
        VG_(memset)(&harrghs, 0, sizeof(harrghs));
-       harrghs.sysno = args->op;
+       harrghs.canonical_sysno = args->op;
        harrghs.arg1 = args->arg[0];
        harrghs.arg2 = args->arg[1];
        harrghs.arg3 = args->arg[2];
@@ -13787,12 +13805,12 @@ PRE(sys_copy_file_range)
         ARG4, ARG5, ARG6);
 
   PRE_REG_READ6(vki_size_t, "copy_file_range",
-                int, "fd_in",
-                vki_loff_t *, "off_in",
-                int, "fd_out",
-                vki_loff_t *, "off_out",
-                vki_size_t, "len",
-                unsigned int, "flags");
+                int, fd_in,
+                vki_loff_t *, off_in,
+                int, fd_out,
+                vki_loff_t *, off_out,
+                vki_size_t, len,
+                unsigned int, flags);
 
   /* File descriptors are "specially" tracked by valgrind.
      valgrind itself uses some, so make sure someone didn't
@@ -13815,8 +13833,8 @@ PRE(sys_pkey_alloc)
   PRINT("pkey_alloc (%lu, %lu)", ARG1, ARG2);
 
   PRE_REG_READ2(long, "pkey_alloc",
-                unsigned long, "flags",
-                unsigned long, "access_rights");
+                unsigned long, flags,
+                unsigned long, access_rights);
 
   /* The kernel says: pkey_alloc() is always safe to call regardless of
      whether or not the operating system supports protection keys.  It can be
@@ -13839,7 +13857,7 @@ PRE(sys_pkey_free)
   PRINT("pkey_free (%" FMT_REGWORD "u )", ARG1);
 
   PRE_REG_READ1(long, "pkey_free",
-                unsigned long, "pkey");
+                unsigned long, pkey);
 
   /* Since pkey_alloc () can never succeed, see above, freeing any pkey is
      always an error.  */

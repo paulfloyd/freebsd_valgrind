@@ -12,7 +12,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -2764,7 +2764,7 @@ PRE(fstat_extended)
    PRE_REG_READ4(int, "fstat_extended", int, fd, struct stat *, buf, 
                  void *, fsacl, vki_size_t *, fsacl_size);
    PRE_MEM_WRITE(   "fstat_extended(buf)",        ARG2, sizeof(struct vki_stat) );
-   if (ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
+   if (ARG4 && ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
       PRE_MEM_WRITE("fstat_extended(fsacl)",      ARG3, *(vki_size_t *)ARG4 );
    PRE_MEM_READ(    "fstat_extended(fsacl_size)", ARG4, sizeof(vki_size_t) );
 }
@@ -2785,7 +2785,7 @@ PRE(stat64_extended)
                  void *, fsacl, vki_size_t *, fsacl_size);
    PRE_MEM_RASCIIZ( "stat64_extended(file_name)",  ARG1 );
    PRE_MEM_WRITE(   "stat64_extended(buf)",        ARG2, sizeof(struct vki_stat64) );
-   if (ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
+   if (ARG4 && ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
       PRE_MEM_WRITE("stat64_extended(fsacl)",      ARG3, *(vki_size_t *)ARG4 );
    PRE_MEM_READ(    "stat64_extended(fsacl_size)", ARG4, sizeof(vki_size_t) );
 }
@@ -2806,7 +2806,7 @@ PRE(lstat64_extended)
                  void *, fsacl, vki_size_t *, fsacl_size);
    PRE_MEM_RASCIIZ( "lstat64_extended(file_name)",  ARG1 );
    PRE_MEM_WRITE(   "lstat64_extended(buf)",        ARG2, sizeof(struct vki_stat64) );
-   if (ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
+   if (ARG4 && ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
       PRE_MEM_WRITE(   "lstat64_extended(fsacl)",   ARG3, *(vki_size_t *)ARG4 );
    PRE_MEM_READ(    "lstat64_extended(fsacl_size)", ARG4, sizeof(vki_size_t) );
 }
@@ -2826,7 +2826,7 @@ PRE(fstat64_extended)
    PRE_REG_READ4(int, "fstat64_extended", int, fd, struct stat64 *, buf, 
                  void *, fsacl, vki_size_t *, fsacl_size);
    PRE_MEM_WRITE(   "fstat64_extended(buf)",        ARG2, sizeof(struct vki_stat64) );
-   if (ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
+   if (ARG4 && ML_(safe_to_deref)( (void*)ARG4, sizeof(vki_size_t) ))
       PRE_MEM_WRITE("fstat64_extended(fsacl)",      ARG3, *(vki_size_t *)ARG4 );
    PRE_MEM_READ(    "fstat64_extended(fsacl_size)", ARG4, sizeof(vki_size_t) );
 }
@@ -10652,8 +10652,8 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_mincore,     sys_mincore), 
    GENXY(__NR_getgroups,   sys_getgroups), 
 // _____(__NR_setgroups),   // 80
-   GENX_(__NR_getpgrp,     sys_getpgrp), 
-   GENX_(__NR_setpgid,     sys_setpgid), 
+   GENX_(__NR_getpgrp,     sys_getpgrp),
+   GENX_(__NR_setpgid,     sys_setpgid),
    GENXY(__NR_setitimer,   sys_setitimer), 
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(84)),    // old wait
 // _____(__NR_swapon), 
@@ -10722,7 +10722,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(148)),   // old setquota
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(149)),   // old qquota
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(150)),   // old getsockname 
-// _____(__NR_getpgid), 
+   GENX_(__NR_getpgid,     sys_getpgid),
 // _____(__NR_setprivexec), 
    GENXY(__NR_pread,       sys_pread64), 
    GENX_(__NR_pwrite,      sys_pwrite64), 
@@ -11368,14 +11368,49 @@ const SyscallTableEntry ML_(mdep_trap_table)[] = {
 #error unknown architecture
 #endif
 
-const UInt ML_(syscall_table_size) = 
-            sizeof(ML_(syscall_table)) / sizeof(ML_(syscall_table)[0]);
+const SyscallTableEntry* ML_(get_darwin_syscall_entry) ( UInt sysno )
+{
+   const UInt syscall_table_size =
+              sizeof(ML_(syscall_table)) / sizeof(ML_(syscall_table)[0]);
 
-const UInt ML_(mach_trap_table_size) = 
-            sizeof(ML_(mach_trap_table)) / sizeof(ML_(mach_trap_table)[0]);
+   const UInt mach_trap_table_size =
+              sizeof(ML_(mach_trap_table)) / sizeof(ML_(mach_trap_table)[0]);
 
-const UInt ML_(mdep_trap_table_size) = 
-            sizeof(ML_(mdep_trap_table)) / sizeof(ML_(mdep_trap_table)[0]);
+   const UInt mdep_trap_table_size =
+              sizeof(ML_(mdep_trap_table)) / sizeof(ML_(mdep_trap_table)[0]);
+
+   const SyscallTableEntry *table;
+   Int size;
+
+   switch (VG_DARWIN_SYSNO_CLASS(sysno)) {
+   case VG_DARWIN_SYSCALL_CLASS_UNIX:
+      table = ML_(syscall_table);
+      size = syscall_table_size;
+      break;
+   case VG_DARWIN_SYSCALL_CLASS_MACH:
+      table = ML_(mach_trap_table);
+      size = mach_trap_table_size;
+      break;
+   case VG_DARWIN_SYSCALL_CLASS_MDEP:
+      table = ML_(mdep_trap_table);
+      size = mdep_trap_table_size;
+      break;
+   default:
+      vg_assert2(0, "invalid syscall class: %d (syscall: %d / %#x)\n", VG_DARWIN_SYSNO_CLASS(sysno), VG_DARWIN_SYSNO_INDEX(sysno), sysno);
+      break;
+   }
+
+   sysno = VG_DARWIN_SYSNO_INDEX(sysno);
+   if (sysno < size) {
+      const SyscallTableEntry *sys = &table[sysno];
+      if (!sys->before)
+         return NULL; /* no entry */
+      return sys;
+   }
+
+   /* Can't find a wrapper. */
+   return NULL;
+}
 
 #endif // defined(VGO_darwin)
 

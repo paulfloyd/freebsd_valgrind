@@ -12,7 +12,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -2519,7 +2519,7 @@ static void bad_before ( ThreadId              tid,
                          /*OUT*/UWord*         flags )
 {
    VG_(dmsg)("WARNING: unhandled hypercall: %s\n",
-      VG_SYSNUM_STRING(args->sysno));
+      VG_SYSNUM_STRING(args->canonical_sysno));
    if (VG_(clo_verbosity) > 1) {
       VG_(get_and_pp_StackTrace)(tid, VG_(clo_backtrace_size));
    }

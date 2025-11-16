@@ -12,7 +12,7 @@
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
+   published by the Free Software Foundation; either version 3 of the
    License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful, but
@@ -826,7 +826,7 @@ extern void pthread_hijack_asm(void);
 extern void pthread_hijack(Addr self, Addr kport, Addr func, Addr func_arg, 
                            Addr stacksize, Addr flags, Addr sp);
 extern void wqthread_hijack_asm(void);
-extern void wqthread_hijack(Addr self, Addr kport, Addr stackaddr, Addr workitem, Int reuse, Addr sp);
+extern void wqthread_hijack(Addr self, Addr kport, Addr stackaddr, Addr workitem, UInt reuse, Int kevent_count, Addr sp);
 
 extern Addr pthread_starter;
 extern Addr wqthread_starter;
