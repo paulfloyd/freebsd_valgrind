@@ -140,8 +140,8 @@ Bool ML_(check_macho_and_get_rw_loads)( Int fd, Int* rw_loads )
       for (unsigned int i = 0U; i < mh->ncmds; ++i) {
          if (lc->cmd == LC_SEGMENT_CMD) {
             const struct SEGMENT_COMMAND* sc = (const struct SEGMENT_COMMAND*)lc;
-            if (sc->initprot == 3) {
-              ++*rw_loads;
+            if (sc->initprot == 3 && sc->filesize) {
+               ++*rw_loads;
             }
          }
          const char* tmp = (const char*)lc + lc->cmdsize;
@@ -780,6 +780,10 @@ Bool ML_(read_macho_debug_info)( struct _DebugInfo* di )
    // Get uuid for later dsym search
 
    di->text_bias = 0;
+
+   if (VG_(clo_verbosity) > 1 || VG_(clo_trace_redir))
+      VG_(message)(Vg_DebugMsg, "Reading syms from %s\n",
+                   di->fsm.filename );
 
    { 
       DiCursor cmd_cur = ML_(cur_from_sli)(msli);

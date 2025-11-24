@@ -11269,7 +11269,7 @@ s390_irgen_SRNM(IRTemp op2addr)
    UInt input_mask, fpc_mask;
 
    input_mask = 3;
-   fpc_mask = s390_host_has_fpext ? 7 : 3;
+   fpc_mask = 7;
 
    put_fpc_w0(binop(Iop_Or32,
                     binop(Iop_And32, get_fpc_w0(), mkU32(~fpc_mask)),
@@ -11284,11 +11284,6 @@ s390_irgen_SRNMB(UChar b2, UShort d2)
    /* Can only check at IR generation time when b2 == 0 */
    if (b2 == 0) {
       s390_insn_assert("srnmb", d2 <= 3 || d2 == 7);  // valid rounding mode
-      /* d2 == 7 requires fpext */
-      if (d2 == 7 && ! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-         return "srnmb";
-      }
    }
    IRTemp op2addr = newTemp(Ity_I64);
 
@@ -11448,11 +11443,7 @@ s390_irgen_ADB(UChar r1, IRTemp op2addr)
 static const HChar *
 s390_irgen_CEFBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext && m3 != S390_BFP_ROUND_PER_FPC) {
-      emulation_warning(EmWarn_S390X_fpext_rounding);
-      m3 = S390_BFP_ROUND_PER_FPC;
-   }
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
    s390_insn_assert("cefbra", is_valid_rounding_mode(m3));
 
@@ -11469,7 +11460,7 @@ static const HChar *
 s390_irgen_CDFBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cdfbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op2 = newTemp(Ity_I32);
@@ -11483,11 +11474,7 @@ s390_irgen_CDFBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CEGBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext && m3 != S390_BFP_ROUND_PER_FPC) {
-      emulation_warning(EmWarn_S390X_fpext_rounding);
-      m3 = S390_BFP_ROUND_PER_FPC;
-   }
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
    s390_insn_assert("cegbra", is_valid_rounding_mode(m3));
 
@@ -11503,11 +11490,7 @@ s390_irgen_CEGBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CDGBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext && m3 != S390_BFP_ROUND_PER_FPC) {
-      emulation_warning(EmWarn_S390X_fpext_rounding);
-      m3 = S390_BFP_ROUND_PER_FPC;
-   }
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
    s390_insn_assert("cdgbra", is_valid_rounding_mode(m3));
 
@@ -11523,168 +11506,133 @@ s390_irgen_CDGBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CELFBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("celfbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("celfbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I32);
+   IRTemp op2 = newTemp(Ity_I32);
 
-      assign(op2, get_gpr_w1(r2));
-      put_fpr_w0(r1, binop(Iop_I32UtoF32, mkexpr(encode_bfp_rounding_mode(m3)),
-                           mkexpr(op2)));
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_fpr_w0(r1, binop(Iop_I32UtoF32, mkexpr(encode_bfp_rounding_mode(m3)),
+                        mkexpr(op2)));
    return "celfbr";
 }
 
 static const HChar *
 s390_irgen_CDLFBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("cdlfbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cdlfbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I32);
+   IRTemp op2 = newTemp(Ity_I32);
 
-      assign(op2, get_gpr_w1(r2));
-      put_fpr_dw0(r1, unop(Iop_I32UtoF64, mkexpr(op2)));
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_fpr_dw0(r1, unop(Iop_I32UtoF64, mkexpr(op2)));
    return "cdlfbr";
 }
 
 static const HChar *
 s390_irgen_CELGBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("celgbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("celgbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_I64);
 
-      assign(op2, get_gpr_dw0(r2));
-      put_fpr_w0(r1, binop(Iop_I64UtoF32, mkexpr(encode_bfp_rounding_mode(m3)),
-                           mkexpr(op2)));
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_fpr_w0(r1, binop(Iop_I64UtoF32, mkexpr(encode_bfp_rounding_mode(m3)),
+                        mkexpr(op2)));
    return "celgbr";
 }
 
 static const HChar *
 s390_irgen_CDLGBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("cdlgbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cdlgbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_I64);
 
-      assign(op2, get_gpr_dw0(r2));
-      put_fpr_dw0(r1, binop(Iop_I64UtoF64,
-                            mkexpr(encode_bfp_rounding_mode(m3)),
-                            mkexpr(op2)));
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_fpr_dw0(r1, binop(Iop_I64UtoF64,
+                         mkexpr(encode_bfp_rounding_mode(m3)),
+                         mkexpr(op2)));
    return "cdlgbr";
 }
 
 static const HChar *
 s390_irgen_CLFEBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("clfebr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clfebr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op = newTemp(Ity_F32);
-      IRTemp result = newTemp(Ity_I32);
-      IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_F32);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
 
-      assign(op, get_fpr_w0(r2));
-      assign(result, binop(Iop_F32toI32U, mkexpr(rounding_mode),
-                           mkexpr(op)));
-      put_gpr_w1(r1, mkexpr(result));
-      s390_cc_thunk_putFZ(S390_CC_OP_BFP_32_TO_UINT_32, op, rounding_mode);
-   }
+   assign(op, get_fpr_w0(r2));
+   assign(result, binop(Iop_F32toI32U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_BFP_32_TO_UINT_32, op, rounding_mode);
    return "clfebr";
 }
 
 static const HChar *
 s390_irgen_CLFDBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("clfdbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clfdbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op = newTemp(Ity_F64);
-      IRTemp result = newTemp(Ity_I32);
-      IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_F64);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
 
-      assign(op, get_fpr_dw0(r2));
-      assign(result, binop(Iop_F64toI32U, mkexpr(rounding_mode),
-                           mkexpr(op)));
-      put_gpr_w1(r1, mkexpr(result));
-      s390_cc_thunk_putFZ(S390_CC_OP_BFP_64_TO_UINT_32, op, rounding_mode);
-   }
+   assign(op, get_fpr_dw0(r2));
+   assign(result, binop(Iop_F64toI32U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_BFP_64_TO_UINT_32, op, rounding_mode);
    return "clfdbr";
 }
 
 static const HChar *
 s390_irgen_CLGEBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("clgebr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clgebr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op = newTemp(Ity_F32);
-      IRTemp result = newTemp(Ity_I64);
-      IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_F32);
+   IRTemp result = newTemp(Ity_I64);
+   IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
 
-      assign(op, get_fpr_w0(r2));
-      assign(result, binop(Iop_F32toI64U, mkexpr(rounding_mode),
-                           mkexpr(op)));
-      put_gpr_dw0(r1, mkexpr(result));
-      s390_cc_thunk_putFZ(S390_CC_OP_BFP_32_TO_UINT_64, op, rounding_mode);
-   }
+   assign(op, get_fpr_w0(r2));
+   assign(result, binop(Iop_F32toI64U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_dw0(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_BFP_32_TO_UINT_64, op, rounding_mode);
    return "clgebr";
 }
 
 static const HChar *
 s390_irgen_CLGDBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("clgdbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clgdbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op = newTemp(Ity_F64);
-      IRTemp result = newTemp(Ity_I64);
-      IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_F64);
+   IRTemp result = newTemp(Ity_I64);
+   IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
 
-      assign(op, get_fpr_dw0(r2));
-      assign(result, binop(Iop_F64toI64U, mkexpr(rounding_mode),
-                           mkexpr(op)));
-      put_gpr_dw0(r1, mkexpr(result));
-      s390_cc_thunk_putFZ(S390_CC_OP_BFP_64_TO_UINT_64, op, rounding_mode);
-   }
+   assign(op, get_fpr_dw0(r2));
+   assign(result, binop(Iop_F64toI64U, mkexpr(rounding_mode),
+                        mkexpr(op)));
+   put_gpr_dw0(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_BFP_64_TO_UINT_64, op, rounding_mode);
    return "clgdbr";
 }
 
@@ -11692,7 +11640,7 @@ static const HChar *
 s390_irgen_CFEBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cfebra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op = newTemp(Ity_F32);
@@ -11712,7 +11660,7 @@ static const HChar *
 s390_irgen_CFDBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cfdbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op = newTemp(Ity_F64);
@@ -11732,7 +11680,7 @@ static const HChar *
 s390_irgen_CGEBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cgebra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op = newTemp(Ity_F32);
@@ -11752,7 +11700,7 @@ static const HChar *
 s390_irgen_CGDBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cgdbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op = newTemp(Ity_F64);
@@ -11909,11 +11857,7 @@ s390_irgen_LDEB(UChar r1, IRTemp op2addr)
 static const HChar *
 s390_irgen_LEDBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext && m3 != S390_BFP_ROUND_PER_FPC) {
-      emulation_warning(EmWarn_S390X_fpext_rounding);
-      m3 = S390_BFP_ROUND_PER_FPC;
-   }
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
    s390_insn_assert("ledbra", is_valid_rounding_mode(m3));
 
@@ -12070,59 +12014,41 @@ s390_irgen_SDB(UChar r1, IRTemp op2addr)
 static const HChar *
 s390_irgen_ADTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_D64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_dw0(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, triop(Iop_AddD64, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      s390_cc_thunk_putF(S390_CC_OP_DFP_RESULT_64, result);
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_dw0(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, triop(Iop_AddD64, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   s390_cc_thunk_putF(S390_CC_OP_DFP_RESULT_64, result);
+   put_dpr_dw0(r1, mkexpr(result));
    return "adtra";
 }
 
 static const HChar *
 s390_irgen_AXTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("axtra", is_valid_fpr_pair(r1));
-      s390_insn_assert("axtra", is_valid_fpr_pair(r2));
-      s390_insn_assert("axtra", is_valid_fpr_pair(r3));
+   s390_insn_assert("axtra", is_valid_fpr_pair(r1));
+   s390_insn_assert("axtra", is_valid_fpr_pair(r2));
+   s390_insn_assert("axtra", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_D128);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D128);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_pair(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, triop(Iop_AddD128, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
 
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_pair(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, triop(Iop_AddD128, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-
-      s390_cc_thunk_put1d128(S390_CC_OP_DFP_RESULT_128, result);
-   }
+   s390_cc_thunk_put1d128(S390_CC_OP_DFP_RESULT_128, result);
    return "axtra";
 }
 
@@ -12169,16 +12095,12 @@ static const HChar *
 s390_irgen_CDFTR(UChar m3 __attribute__((unused)),
                  UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (s390_host_has_fpext && (m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
-      IRTemp op2 = newTemp(Ity_I32);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op2 = newTemp(Ity_I32);
 
-      assign(op2, get_gpr_w1(r2));
-      put_dpr_dw0(r1, unop(Iop_I32StoD64, mkexpr(op2)));
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_dpr_dw0(r1, unop(Iop_I32StoD64, mkexpr(op2)));
    return "cdftr";
 }
 
@@ -12186,40 +12108,28 @@ static const HChar *
 s390_irgen_CXFTR(UChar m3 __attribute__((unused)),
                  UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("cxftr", is_valid_fpr_pair(r1));
-      if (s390_host_has_fpext && (m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cxftr", is_valid_fpr_pair(r1));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I32);
+   IRTemp op2 = newTemp(Ity_I32);
 
-      assign(op2, get_gpr_w1(r2));
-      put_dpr_pair(r1, unop(Iop_I32StoD128, mkexpr(op2)));
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_dpr_pair(r1, unop(Iop_I32StoD128, mkexpr(op2)));
    return "cxftr";
 }
 
 static const HChar *
 s390_irgen_CDGTRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op2 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_I64);
 
-      if (! s390_host_has_fpext && m3 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m3 = S390_DFP_ROUND_PER_FPC_0;
-      }
-      if (s390_host_has_fpext && (m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      assign(op2, get_gpr_dw0(r2));
-      put_dpr_dw0(r1, binop(Iop_I64StoD64, mkexpr(encode_dfp_rounding_mode(m3)),
-                            mkexpr(op2)));
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_dpr_dw0(r1, binop(Iop_I64StoD64, mkexpr(encode_dfp_rounding_mode(m3)),
+                         mkexpr(op2)));
    return "cdgtra";
 }
 
@@ -12227,21 +12137,14 @@ static const HChar *
 s390_irgen_CXGTRA(UChar m3 __attribute__((unused)),
                   UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("cxgtra", is_valid_fpr_pair(r1));
-      if (s390_host_has_fpext && (m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cxgtra", is_valid_fpr_pair(r1));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_I64);
 
-      /* No emulation warning here about an non-zero m3 on hosts without
-         floating point extension facility. No rounding is performed */
-
-      assign(op2, get_gpr_dw0(r2));
-      put_dpr_pair(r1, unop(Iop_I64StoD128, mkexpr(op2)));
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_dpr_pair(r1, unop(Iop_I64StoD128, mkexpr(op2)));
    return "cxgtra";
 }
 
@@ -12249,20 +12152,12 @@ static const HChar *
 s390_irgen_CDLFTR(UChar m3 __attribute__((unused)),
                   UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
-         IRTemp op2 = newTemp(Ity_I32);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op2 = newTemp(Ity_I32);
 
-         assign(op2, get_gpr_w1(r2));
-         put_dpr_dw0(r1, unop(Iop_I32UtoD64, mkexpr(op2)));
-      }
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_dpr_dw0(r1, unop(Iop_I32UtoD64, mkexpr(op2)));
    return "cdlftr";
 }
 
@@ -12270,44 +12165,27 @@ static const HChar *
 s390_irgen_CXLFTR(UChar m3 __attribute__((unused)),
                   UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         s390_insn_assert("cxlftr", is_valid_fpr_pair(r1));
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cxlftr", is_valid_fpr_pair(r1));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-         IRTemp op2 = newTemp(Ity_I32);
+   IRTemp op2 = newTemp(Ity_I32);
 
-         assign(op2, get_gpr_w1(r2));
-         put_dpr_pair(r1, unop(Iop_I32UtoD128, mkexpr(op2)));
-      }
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_dpr_pair(r1, unop(Iop_I32UtoD128, mkexpr(op2)));
    return "cxlftr";
 }
 
 static const HChar *
 s390_irgen_CDLGTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
-         IRTemp op2 = newTemp(Ity_I64);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op2 = newTemp(Ity_I64);
 
-         assign(op2, get_gpr_dw0(r2));
-         put_dpr_dw0(r1, binop(Iop_I64UtoD64,
-                               mkexpr(encode_dfp_rounding_mode(m3)),
-                               mkexpr(op2)));
-      }
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_dpr_dw0(r1, binop(Iop_I64UtoD64,
+                         mkexpr(encode_dfp_rounding_mode(m3)), mkexpr(op2)));
    return "cdlgtr";
 }
 
@@ -12315,933 +12193,645 @@ static const HChar *
 s390_irgen_CXLGTR(UChar m3 __attribute__((unused)),
                   UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         s390_insn_assert("cxlgtr", is_valid_fpr_pair(r1));
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cxlgtr", is_valid_fpr_pair(r1));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-         IRTemp op2 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_I64);
 
-         assign(op2, get_gpr_dw0(r2));
-         put_dpr_pair(r1, unop(Iop_I64UtoD128, mkexpr(op2)));
-      }
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_dpr_pair(r1, unop(Iop_I64UtoD128, mkexpr(op2)));
    return "cxlgtr";
 }
 
 static const HChar *
 s390_irgen_CFDTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
-         IRTemp op = newTemp(Ity_D64);
-         IRTemp result = newTemp(Ity_I32);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_dw0(r2));
-         assign(result, binop(Iop_D64toI32S, mkexpr(rounding_mode),
-                              mkexpr(op)));
-         put_gpr_w1(r1, mkexpr(result));
-         s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_INT_32, op, rounding_mode);
-      }
-   }
+   assign(op, get_dpr_dw0(r2));
+   assign(result, binop(Iop_D64toI32S, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_INT_32, op, rounding_mode);
    return "cfdtr";
 }
 
 static const HChar *
 s390_irgen_CFXTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         s390_insn_assert("cfxtr", is_valid_fpr_pair(r2));
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cfxtr", is_valid_fpr_pair(r2));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-         IRTemp op = newTemp(Ity_D128);
-         IRTemp result = newTemp(Ity_I32);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_pair(r2));
-         assign(result, binop(Iop_D128toI32S, mkexpr(rounding_mode),
-                              mkexpr(op)));
-         put_gpr_w1(r1, mkexpr(result));
-         s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_INT_32, op,
-                                 rounding_mode);
-      }
-   }
+   assign(op, get_dpr_pair(r2));
+   assign(result, binop(Iop_D128toI32S, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_INT_32, op, rounding_mode);
    return "cfxtr";
 }
 
 static const HChar *
 s390_irgen_CGDTRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
-         IRTemp op = newTemp(Ity_D64);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op = newTemp(Ity_D64);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_dw0(r2));
-         put_gpr_dw0(r1, binop(Iop_D64toI64S, mkexpr(rounding_mode), mkexpr(op)));
-         s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_INT_64, op, rounding_mode);
-      }
-   }
+   assign(op, get_dpr_dw0(r2));
+   put_gpr_dw0(r1, binop(Iop_D64toI64S, mkexpr(rounding_mode), mkexpr(op)));
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_INT_64, op, rounding_mode);
    return "cgdtra";
 }
 
 static const HChar *
 s390_irgen_CGXTRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         s390_insn_assert("cgxtra", is_valid_fpr_pair(r2));
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cgxtra", is_valid_fpr_pair(r2));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-         IRTemp op = newTemp(Ity_D128);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_D128);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_pair(r2));
-         put_gpr_dw0(r1, binop(Iop_D128toI64S, mkexpr(rounding_mode), mkexpr(op)));
-         s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_INT_64, op, rounding_mode);
-      }
-   }
+   assign(op, get_dpr_pair(r2));
+   put_gpr_dw0(r1, binop(Iop_D128toI64S, mkexpr(rounding_mode), mkexpr(op)));
+   s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_INT_64, op, rounding_mode);
    return "cgxtra";
 }
 
 static const HChar *
 s390_irgen_CEDTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_D64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp cc_vex  = newTemp(Ity_I32);
-      IRTemp cc_s390 = newTemp(Ity_I32);
+   IRTemp op1 = newTemp(Ity_D64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp cc_vex  = newTemp(Ity_I32);
+   IRTemp cc_s390 = newTemp(Ity_I32);
 
-      assign(op1, get_dpr_dw0(r1));
-      assign(op2, get_dpr_dw0(r2));
-      assign(cc_vex, binop(Iop_CmpExpD64, mkexpr(op1), mkexpr(op2)));
+   assign(op1, get_dpr_dw0(r1));
+   assign(op2, get_dpr_dw0(r2));
+   assign(cc_vex, binop(Iop_CmpExpD64, mkexpr(op1), mkexpr(op2)));
 
-      assign(cc_s390, convert_vex_dfpcc_to_s390(cc_vex));
-      s390_cc_thunk_put1(S390_CC_OP_SET, cc_s390, False);
-   }
+   assign(cc_s390, convert_vex_dfpcc_to_s390(cc_vex));
+   s390_cc_thunk_put1(S390_CC_OP_SET, cc_s390, False);
    return "cedtr";
 }
 
 static const HChar *
 s390_irgen_CEXTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("cextr", is_valid_fpr_pair(r1));
-      s390_insn_assert("cextr", is_valid_fpr_pair(r2));
+   s390_insn_assert("cextr", is_valid_fpr_pair(r1));
+   s390_insn_assert("cextr", is_valid_fpr_pair(r2));
 
-      IRTemp op1 = newTemp(Ity_D128);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp cc_vex  = newTemp(Ity_I32);
-      IRTemp cc_s390 = newTemp(Ity_I32);
+   IRTemp op1 = newTemp(Ity_D128);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp cc_vex  = newTemp(Ity_I32);
+   IRTemp cc_s390 = newTemp(Ity_I32);
 
-      assign(op1, get_dpr_pair(r1));
-      assign(op2, get_dpr_pair(r2));
-      assign(cc_vex, binop(Iop_CmpExpD128, mkexpr(op1), mkexpr(op2)));
+   assign(op1, get_dpr_pair(r1));
+   assign(op2, get_dpr_pair(r2));
+   assign(cc_vex, binop(Iop_CmpExpD128, mkexpr(op1), mkexpr(op2)));
 
-      assign(cc_s390, convert_vex_dfpcc_to_s390(cc_vex));
-      s390_cc_thunk_put1(S390_CC_OP_SET, cc_s390, False);
-   }
+   assign(cc_s390, convert_vex_dfpcc_to_s390(cc_vex));
+   s390_cc_thunk_put1(S390_CC_OP_SET, cc_s390, False);
    return "cextr";
 }
 
 static const HChar *
 s390_irgen_CLFDTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
-         IRTemp op = newTemp(Ity_D64);
-         IRTemp result = newTemp(Ity_I32);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_dw0(r2));
-         assign(result, binop(Iop_D64toI32U, mkexpr(rounding_mode),
-                              mkexpr(op)));
-         put_gpr_w1(r1, mkexpr(result));
-         s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_UINT_32, op, rounding_mode);
-      }
-   }
+   assign(op, get_dpr_dw0(r2));
+   assign(result, binop(Iop_D64toI32U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_UINT_32, op, rounding_mode);
    return "clfdtr";
 }
 
 static const HChar *
 s390_irgen_CLFXTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         s390_insn_assert("clfxtr", is_valid_fpr_pair(r2));
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clfxtr", is_valid_fpr_pair(r2));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-         IRTemp op = newTemp(Ity_D128);
-         IRTemp result = newTemp(Ity_I32);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_pair(r2));
-         assign(result, binop(Iop_D128toI32U, mkexpr(rounding_mode),
-                              mkexpr(op)));
-         put_gpr_w1(r1, mkexpr(result));
-         s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_UINT_32, op,
-                                 rounding_mode);
-      }
-   }
+   assign(op, get_dpr_pair(r2));
+   assign(result, binop(Iop_D128toI32U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_UINT_32, op, rounding_mode);
    return "clfxtr";
 }
 
 static const HChar *
 s390_irgen_CLGDTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
-         IRTemp op = newTemp(Ity_D64);
-         IRTemp result = newTemp(Ity_I64);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_I64);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_dw0(r2));
-         assign(result, binop(Iop_D64toI64U, mkexpr(rounding_mode),
-                              mkexpr(op)));
-         put_gpr_dw0(r1, mkexpr(result));
-         s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_UINT_64, op, rounding_mode);
-      }
-   }
+   assign(op, get_dpr_dw0(r2));
+   assign(result, binop(Iop_D64toI64U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_dw0(r1, mkexpr(result));
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_64_TO_UINT_64, op, rounding_mode);
    return "clgdtr";
 }
 
 static const HChar *
 s390_irgen_CLGXTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if (! s390_host_has_fpext) {
-         emulation_failure(EmFail_S390X_fpext);
-      } else {
-         s390_insn_assert("clgxtr", is_valid_fpr_pair(r2));
-         if ((m4 & 0x4) != 0)
-            emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clgxtr", is_valid_fpr_pair(r2));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-         IRTemp op = newTemp(Ity_D128);
-         IRTemp result = newTemp(Ity_I64);
-         IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_I64);
+   IRTemp rounding_mode = encode_dfp_rounding_mode(m3);
 
-         assign(op, get_dpr_pair(r2));
-         assign(result, binop(Iop_D128toI64U, mkexpr(rounding_mode),
-                              mkexpr(op)));
-         put_gpr_dw0(r1, mkexpr(result));
-         s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_UINT_64, op,
-                                 rounding_mode);
-      }
-   }
+   assign(op, get_dpr_pair(r2));
+   assign(result, binop(Iop_D128toI64U, mkexpr(rounding_mode), mkexpr(op)));
+   put_gpr_dw0(r1, mkexpr(result));
+   s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_128_TO_UINT_64, op, rounding_mode);
    return "clgxtr";
 }
 
 static const HChar *
 s390_irgen_DDTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_D64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_dw0(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, triop(Iop_DivD64, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_dw0(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, triop(Iop_DivD64, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_dw0(r1, mkexpr(result));
    return "ddtra";
 }
 
 static const HChar *
 s390_irgen_DXTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("dxtra", is_valid_fpr_pair(r1));
-      s390_insn_assert("dxtra", is_valid_fpr_pair(r2));
-      s390_insn_assert("dxtra", is_valid_fpr_pair(r3));
+   s390_insn_assert("dxtra", is_valid_fpr_pair(r1));
+   s390_insn_assert("dxtra", is_valid_fpr_pair(r2));
+   s390_insn_assert("dxtra", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_D128);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D128);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_pair(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, triop(Iop_DivD128, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_pair(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, triop(Iop_DivD128, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
    return "dxtra";
 }
 
 static const HChar *
 s390_irgen_EEDTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      put_gpr_dw0(r1, unop(Iop_ExtractExpD64, get_dpr_dw0(r2)));
-   }
+   put_gpr_dw0(r1, unop(Iop_ExtractExpD64, get_dpr_dw0(r2)));
    return "eedtr";
 }
 
 static const HChar *
 s390_irgen_EEXTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("eextr", is_valid_fpr_pair(r2));
+   s390_insn_assert("eextr", is_valid_fpr_pair(r2));
 
-      put_gpr_dw0(r1, unop(Iop_ExtractExpD128, get_dpr_pair(r2)));
-   }
+   put_gpr_dw0(r1, unop(Iop_ExtractExpD128, get_dpr_pair(r2)));
    return "eextr";
 }
 
 static const HChar *
 s390_irgen_ESDTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      put_gpr_dw0(r1, unop(Iop_ExtractSigD64, get_dpr_dw0(r2)));
-   }
+   put_gpr_dw0(r1, unop(Iop_ExtractSigD64, get_dpr_dw0(r2)));
    return "esdtr";
 }
 
 static const HChar *
 s390_irgen_ESXTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("esxtr", is_valid_fpr_pair(r2));
+   s390_insn_assert("esxtr", is_valid_fpr_pair(r2));
 
-      put_gpr_dw0(r1, unop(Iop_ExtractSigD128, get_dpr_pair(r2)));
-   }
+   put_gpr_dw0(r1, unop(Iop_ExtractSigD128, get_dpr_pair(r2)));
    return "esxtr";
 }
 
 static const HChar *
 s390_irgen_IEDTR(UChar r3, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_I64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
+   IRTemp op1 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
 
-      assign(op1, get_gpr_dw0(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, binop(Iop_InsertExpD64, mkexpr(op1), mkexpr(op2)));
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   assign(op1, get_gpr_dw0(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, binop(Iop_InsertExpD64, mkexpr(op1), mkexpr(op2)));
+   put_dpr_dw0(r1, mkexpr(result));
    return "iedtr";
 }
 
 static const HChar *
 s390_irgen_IEXTR(UChar r3, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("iextr", is_valid_fpr_pair(r1));
-      s390_insn_assert("iextr", is_valid_fpr_pair(r3));
+   s390_insn_assert("iextr", is_valid_fpr_pair(r1));
+   s390_insn_assert("iextr", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_I64);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
+   IRTemp op1 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
 
-      assign(op1, get_gpr_dw0(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, binop(Iop_InsertExpD128, mkexpr(op1), mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-   }
+   assign(op1, get_gpr_dw0(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, binop(Iop_InsertExpD128, mkexpr(op1), mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
    return "iextr";
 }
 
 static const HChar *
 s390_irgen_LDETR(UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if ((m4 & 0x8) != 0)
-         emulation_warning(EmWarn_S390X_XiC_not_zero);
-      IRTemp op = newTemp(Ity_D32);
+   if ((m4 & 0x8) != 0)
+      emulation_warning(EmWarn_S390X_XiC_not_zero);
+   IRTemp op = newTemp(Ity_D32);
 
-      assign(op, get_dpr_w0(r2));
-      put_dpr_dw0(r1, unop(Iop_D32toD64, mkexpr(op)));
-   }
+   assign(op, get_dpr_w0(r2));
+   put_dpr_dw0(r1, unop(Iop_D32toD64, mkexpr(op)));
    return "ldetr";
 }
 
 static const HChar *
 s390_irgen_LXDTR(UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      if ((m4 & 0x8) != 0)
-         emulation_warning(EmWarn_S390X_XiC_not_zero);
-      s390_insn_assert("lxdtr", is_valid_fpr_pair(r1));
+   if ((m4 & 0x8) != 0)
+      emulation_warning(EmWarn_S390X_XiC_not_zero);
+   s390_insn_assert("lxdtr", is_valid_fpr_pair(r1));
 
-      IRTemp op = newTemp(Ity_D64);
+   IRTemp op = newTemp(Ity_D64);
 
-      assign(op, get_dpr_dw0(r2));
-      put_dpr_pair(r1, unop(Iop_D64toD128, mkexpr(op)));
-   }
+   assign(op, get_dpr_dw0(r2));
+   put_dpr_pair(r1, unop(Iop_D64toD128, mkexpr(op)));
    return "lxdtr";
 }
 
 static const HChar *
 s390_irgen_LDXTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("ldxtr", is_valid_fpr_pair(r1));
-      s390_insn_assert("ldxtr", is_valid_fpr_pair(r2));
+   s390_insn_assert("ldxtr", is_valid_fpr_pair(r1));
+   s390_insn_assert("ldxtr", is_valid_fpr_pair(r2));
 
-      /* If fpext is not installed and m3 is in 1:7,
-         rounding mode performed is unpredictable */
-      if (! s390_host_has_fpext && m3 > 0 && m3 < 8) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m3 = S390_DFP_ROUND_PER_FPC_0;
-      }
-      if ((m4 & 0x8) != 0)
-         emulation_warning(EmWarn_S390X_XiC_not_zero);
-      if (s390_host_has_fpext && (m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
-      IRTemp result = newTemp(Ity_D64);
+   if ((m4 & 0x8) != 0)
+      emulation_warning(EmWarn_S390X_XiC_not_zero);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp result = newTemp(Ity_D64);
 
-      assign(result, binop(Iop_D128toD64, mkexpr(encode_dfp_rounding_mode(m3)),
-                           get_dpr_pair(r2)));
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   assign(result, binop(Iop_D128toD64, mkexpr(encode_dfp_rounding_mode(m3)),
+                        get_dpr_pair(r2)));
+   put_dpr_dw0(r1, mkexpr(result));
    return "ldxtr";
 }
 
 static const HChar *
 s390_irgen_LEDTR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      /* If fpext is not installed and m3 is in 1:7,
-         rounding mode performed is unpredictable */
-      if (! s390_host_has_fpext && m3 > 0 && m3 < 8) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m3 = S390_DFP_ROUND_PER_FPC_0;
-      }
-      if ((m4 & 0x8) != 0)
-         emulation_warning(EmWarn_S390X_XiC_not_zero);
-      if (s390_host_has_fpext && (m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
-      IRTemp op = newTemp(Ity_D64);
+   if ((m4 & 0x8) != 0)
+      emulation_warning(EmWarn_S390X_XiC_not_zero);
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
+   IRTemp op = newTemp(Ity_D64);
 
-      assign(op, get_dpr_dw0(r2));
-      put_dpr_w0(r1, binop(Iop_D64toD32, mkexpr(encode_dfp_rounding_mode(m3)),
-                           mkexpr(op)));
-   }
+   assign(op, get_dpr_dw0(r2));
+   put_dpr_w0(r1, binop(Iop_D64toD32, mkexpr(encode_dfp_rounding_mode(m3)),
+                        mkexpr(op)));
    return "ledtr";
 }
 
 static const HChar *
 s390_irgen_LTDTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp result = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
 
-      assign(result, get_dpr_dw0(r2));
-      put_dpr_dw0(r1, mkexpr(result));
-      s390_cc_thunk_putF(S390_CC_OP_DFP_RESULT_64, result);
-   }
+   assign(result, get_dpr_dw0(r2));
+   put_dpr_dw0(r1, mkexpr(result));
+   s390_cc_thunk_putF(S390_CC_OP_DFP_RESULT_64, result);
    return "ltdtr";
 }
 
 static const HChar *
 s390_irgen_LTXTR(UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("ltxtr", is_valid_fpr_pair(r1));
-      s390_insn_assert("ltxtr", is_valid_fpr_pair(r2));
+   s390_insn_assert("ltxtr", is_valid_fpr_pair(r1));
+   s390_insn_assert("ltxtr", is_valid_fpr_pair(r2));
 
-      IRTemp result = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
 
-      assign(result, get_dpr_pair(r2));
-      put_dpr_pair(r1, mkexpr(result));
-      s390_cc_thunk_put1d128(S390_CC_OP_DFP_RESULT_128, result);
-   }
+   assign(result, get_dpr_pair(r2));
+   put_dpr_pair(r1, mkexpr(result));
+   s390_cc_thunk_put1d128(S390_CC_OP_DFP_RESULT_128, result);
    return "ltxtr";
 }
 
 static const HChar *
 s390_irgen_MDTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_D64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_dw0(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, triop(Iop_MulD64, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_dw0(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, triop(Iop_MulD64, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_dw0(r1, mkexpr(result));
    return "mdtra";
 }
 
 static const HChar *
 s390_irgen_MXTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("mxtra", is_valid_fpr_pair(r1));
-      s390_insn_assert("mxtra", is_valid_fpr_pair(r2));
-      s390_insn_assert("mxtra", is_valid_fpr_pair(r3));
+   s390_insn_assert("mxtra", is_valid_fpr_pair(r1));
+   s390_insn_assert("mxtra", is_valid_fpr_pair(r2));
+   s390_insn_assert("mxtra", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_D128);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D128);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_pair(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, triop(Iop_MulD128, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_pair(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, triop(Iop_MulD128, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
    return "mxtra";
 }
 
 static const HChar *
 s390_irgen_QADTR(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_D64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
+   IRTemp rounding_mode;
 
-      /* If fpext is not installed and m4 is in 1:7,
-         rounding mode performed is unpredictable */
-      if (! s390_host_has_fpext && m4 > 0 && m4 < 8) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_dw0(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, triop(Iop_QuantizeD64, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_dw0(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, triop(Iop_QuantizeD64, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_dw0(r1, mkexpr(result));
    return "qadtr";
 }
 
 static const HChar *
 s390_irgen_QAXTR(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("qaxtr", is_valid_fpr_pair(r1));
-      s390_insn_assert("qaxtr", is_valid_fpr_pair(r2));
-      s390_insn_assert("qaxtr", is_valid_fpr_pair(r3));
+   s390_insn_assert("qaxtr", is_valid_fpr_pair(r1));
+   s390_insn_assert("qaxtr", is_valid_fpr_pair(r2));
+   s390_insn_assert("qaxtr", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_D128);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D128);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
+   IRTemp rounding_mode;
 
-      /* If fpext is not installed and m4 is in 1:7,
-         rounding mode performed is unpredictable */
-      if (! s390_host_has_fpext && m4 > 0 && m4 < 8) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_pair(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, triop(Iop_QuantizeD128, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_pair(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, triop(Iop_QuantizeD128, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
    return "qaxtr";
 }
 
 static const HChar *
 s390_irgen_RRDTR(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_I8);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_I8);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
+   IRTemp rounding_mode;
 
-      /* If fpext is not installed and m4 is in 1:7,
-         rounding mode performed is unpredictable */
-      if (! s390_host_has_fpext && m4 > 0 && m4 < 8) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_gpr_b7(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, triop(Iop_SignificanceRoundD64, mkexpr(rounding_mode),
-                           mkexpr(op1), mkexpr(op2)));
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_gpr_b7(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, triop(Iop_SignificanceRoundD64, mkexpr(rounding_mode),
+                        mkexpr(op1), mkexpr(op2)));
+   put_dpr_dw0(r1, mkexpr(result));
    return "rrdtr";
 }
 
 static const HChar *
 s390_irgen_RRXTR(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("rrxtr", is_valid_fpr_pair(r1));
-      s390_insn_assert("rrxtr", is_valid_fpr_pair(r3));
+   s390_insn_assert("rrxtr", is_valid_fpr_pair(r1));
+   s390_insn_assert("rrxtr", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_I8);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_I8);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
+   IRTemp rounding_mode;
 
-      /* If fpext is not installed and m4 is in 1:7,
-         rounding mode performed is unpredictable */
-      if (! s390_host_has_fpext && m4 > 0 && m4 < 8) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_gpr_b7(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, triop(Iop_SignificanceRoundD128, mkexpr(rounding_mode),
-                           mkexpr(op1), mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_gpr_b7(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, triop(Iop_SignificanceRoundD128, mkexpr(rounding_mode),
+                        mkexpr(op1), mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
    return "rrxtr";
 }
 
 static const HChar *
 s390_irgen_SDTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op1 = newTemp(Ity_D64);
-      IRTemp op2 = newTemp(Ity_D64);
-      IRTemp result = newTemp(Ity_D64);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D64);
+   IRTemp op2 = newTemp(Ity_D64);
+   IRTemp result = newTemp(Ity_D64);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_dw0(r2));
-      assign(op2, get_dpr_dw0(r3));
-      assign(result, triop(Iop_SubD64, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      s390_cc_thunk_putF(S390_CC_OP_DFP_RESULT_64, result);
-      put_dpr_dw0(r1, mkexpr(result));
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_dw0(r2));
+   assign(op2, get_dpr_dw0(r3));
+   assign(result, triop(Iop_SubD64, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   s390_cc_thunk_putF(S390_CC_OP_DFP_RESULT_64, result);
+   put_dpr_dw0(r1, mkexpr(result));
    return "sdtra";
 }
 
 static const HChar *
 s390_irgen_SXTRA(UChar r3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("sxtra", is_valid_fpr_pair(r1));
-      s390_insn_assert("sxtra", is_valid_fpr_pair(r2));
-      s390_insn_assert("sxtra", is_valid_fpr_pair(r3));
+   s390_insn_assert("sxtra", is_valid_fpr_pair(r1));
+   s390_insn_assert("sxtra", is_valid_fpr_pair(r2));
+   s390_insn_assert("sxtra", is_valid_fpr_pair(r3));
 
-      IRTemp op1 = newTemp(Ity_D128);
-      IRTemp op2 = newTemp(Ity_D128);
-      IRTemp result = newTemp(Ity_D128);
-      IRTemp rounding_mode;
+   IRTemp op1 = newTemp(Ity_D128);
+   IRTemp op2 = newTemp(Ity_D128);
+   IRTemp result = newTemp(Ity_D128);
+   IRTemp rounding_mode;
 
-      if (! s390_host_has_fpext && m4 != S390_DFP_ROUND_PER_FPC_0) {
-         emulation_warning(EmWarn_S390X_fpext_rounding);
-         m4 = S390_DFP_ROUND_PER_FPC_0;
-      }
-
-      rounding_mode = encode_dfp_rounding_mode(m4);
-      assign(op1, get_dpr_pair(r2));
-      assign(op2, get_dpr_pair(r3));
-      assign(result, triop(Iop_SubD128, mkexpr(rounding_mode), mkexpr(op1),
-                           mkexpr(op2)));
-      put_dpr_pair(r1, mkexpr(result));
-
-      s390_cc_thunk_put1d128(S390_CC_OP_DFP_RESULT_128, result);
-   }
+   rounding_mode = encode_dfp_rounding_mode(m4);
+   assign(op1, get_dpr_pair(r2));
+   assign(op2, get_dpr_pair(r3));
+   assign(result, triop(Iop_SubD128, mkexpr(rounding_mode), mkexpr(op1),
+                        mkexpr(op2)));
+   put_dpr_pair(r1, mkexpr(result));
+   s390_cc_thunk_put1d128(S390_CC_OP_DFP_RESULT_128, result);
    return "sxtra";
 }
 
 static const HChar *
 s390_irgen_SLDT(UChar r3, IRTemp op2addr, UChar r1)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op = newTemp(Ity_D64);
+   IRTemp op = newTemp(Ity_D64);
 
-      assign(op, get_dpr_dw0(r3));
-      put_dpr_dw0(r1, binop(Iop_ShlD64, mkexpr(op),
-                            unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
-                                                  mkU64(63)))));
-   }
+   assign(op, get_dpr_dw0(r3));
+   put_dpr_dw0(r1, binop(Iop_ShlD64, mkexpr(op),
+                         unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
+                                               mkU64(63)))));
    return "sldt";
 }
 
 static const HChar *
 s390_irgen_SLXT(UChar r3, IRTemp op2addr, UChar r1)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("slxt", is_valid_fpr_pair(r1));
-      s390_insn_assert("slxt", is_valid_fpr_pair(r3));
+   s390_insn_assert("slxt", is_valid_fpr_pair(r1));
+   s390_insn_assert("slxt", is_valid_fpr_pair(r3));
 
-      IRTemp op = newTemp(Ity_D128);
+   IRTemp op = newTemp(Ity_D128);
 
-      assign(op, get_dpr_pair(r3));
-      put_dpr_pair(r1, binop(Iop_ShlD128, mkexpr(op),
-                             unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
-                                                   mkU64(63)))));
-   }
+   assign(op, get_dpr_pair(r3));
+   put_dpr_pair(r1, binop(Iop_ShlD128, mkexpr(op),
+                          unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
+                                                mkU64(63)))));
    return "slxt";
 }
 
 static const HChar *
 s390_irgen_SRDT(UChar r3, IRTemp op2addr, UChar r1)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp op = newTemp(Ity_D64);
+   IRTemp op = newTemp(Ity_D64);
 
-      assign(op, get_dpr_dw0(r3));
-      put_dpr_dw0(r1, binop(Iop_ShrD64, mkexpr(op),
-                            unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
-                                                  mkU64(63)))));
-   }
+   assign(op, get_dpr_dw0(r3));
+   put_dpr_dw0(r1, binop(Iop_ShrD64, mkexpr(op),
+                         unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
+                                               mkU64(63)))));
    return "srdt";
 }
 
 static const HChar *
 s390_irgen_SRXT(UChar r3, IRTemp op2addr, UChar r1)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("srxt", is_valid_fpr_pair(r1));
-      s390_insn_assert("srxt", is_valid_fpr_pair(r3));
+   s390_insn_assert("srxt", is_valid_fpr_pair(r1));
+   s390_insn_assert("srxt", is_valid_fpr_pair(r3));
 
-      IRTemp op = newTemp(Ity_D128);
+   IRTemp op = newTemp(Ity_D128);
 
-      assign(op, get_dpr_pair(r3));
-      put_dpr_pair(r1, binop(Iop_ShrD128, mkexpr(op),
-                             unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
-                                                   mkU64(63)))));
-   }
+   assign(op, get_dpr_pair(r3));
+   put_dpr_pair(r1, binop(Iop_ShrD128, mkexpr(op),
+                          unop(Iop_64to8, binop(Iop_And64, mkexpr(op2addr),
+                                                mkU64(63)))));
    return "srxt";
 }
 
 static const HChar *
 s390_irgen_TDCET(UChar r1, IRTemp op2addr)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp value = newTemp(Ity_D32);
+   IRTemp value = newTemp(Ity_D32);
 
-      assign(value, get_dpr_w0(r1));
+   assign(value, get_dpr_w0(r1));
 
-      s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDC_32, value, op2addr);
-   }
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDC_32, value, op2addr);
    return "tdcet";
 }
 
 static const HChar *
 s390_irgen_TDCDT(UChar r1, IRTemp op2addr)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp value = newTemp(Ity_D64);
+   IRTemp value = newTemp(Ity_D64);
 
-      assign(value, get_dpr_dw0(r1));
+   assign(value, get_dpr_dw0(r1));
 
-      s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDC_64, value, op2addr);
-   }
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDC_64, value, op2addr);
    return "tdcdt";
 }
 
 static const HChar *
 s390_irgen_TDCXT(UChar r1, IRTemp op2addr)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("tdcxt", is_valid_fpr_pair(r1));
+   s390_insn_assert("tdcxt", is_valid_fpr_pair(r1));
 
-      IRTemp value = newTemp(Ity_D128);
+   IRTemp value = newTemp(Ity_D128);
 
-      assign(value, get_dpr_pair(r1));
+   assign(value, get_dpr_pair(r1));
 
-      s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_TDC_128, value, op2addr);
-   }
+   s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_TDC_128, value, op2addr);
    return "tdcxt";
 }
 
 static const HChar *
 s390_irgen_TDGET(UChar r1, IRTemp op2addr)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp value = newTemp(Ity_D32);
+   IRTemp value = newTemp(Ity_D32);
 
-      assign(value, get_dpr_w0(r1));
+   assign(value, get_dpr_w0(r1));
 
-      s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDG_32, value, op2addr);
-   }
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDG_32, value, op2addr);
    return "tdget";
 }
 
 static const HChar *
 s390_irgen_TDGDT(UChar r1, IRTemp op2addr)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      IRTemp value = newTemp(Ity_D64);
+   IRTemp value = newTemp(Ity_D64);
 
-      assign(value, get_dpr_dw0(r1));
+   assign(value, get_dpr_dw0(r1));
 
-      s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDG_64, value, op2addr);
-   }
+   s390_cc_thunk_putFZ(S390_CC_OP_DFP_TDG_64, value, op2addr);
    return "tdgdt";
 }
 
 static const HChar *
 s390_irgen_TDGXT(UChar r1, IRTemp op2addr)
 {
-   if (! s390_host_has_dfp) {
-      emulation_failure(EmFail_S390X_DFP_insn);
-   } else {
-      s390_insn_assert("tdgxt", is_valid_fpr_pair(r1));
+   s390_insn_assert("tdgxt", is_valid_fpr_pair(r1));
 
-      IRTemp value = newTemp(Ity_D128);
+   IRTemp value = newTemp(Ity_D128);
 
-      assign(value, get_dpr_pair(r1));
+   assign(value, get_dpr_pair(r1));
 
-      s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_TDG_128, value, op2addr);
-   }
+   s390_cc_thunk_put1d128Z(S390_CC_OP_DFP_TDG_128, value, op2addr);
    return "tdgxt";
 }
 
@@ -14896,7 +14486,7 @@ s390_irgen_CXFBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cxfbra", is_valid_fpr_pair(r1));
    s390_insn_assert("cxfbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op2 = newTemp(Ity_I32);
@@ -14910,19 +14500,15 @@ s390_irgen_CXFBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CXLFBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("cxlfbr", is_valid_fpr_pair(r1));
-      s390_insn_assert("cxlfbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cxlfbr", is_valid_fpr_pair(r1));
+   s390_insn_assert("cxlfbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I32);
+   IRTemp op2 = newTemp(Ity_I32);
 
-      assign(op2, get_gpr_w1(r2));
-      put_fpr_pair(r1, unop(Iop_I32UtoF128, mkexpr(op2)));
-   }
+   assign(op2, get_gpr_w1(r2));
+   put_fpr_pair(r1, unop(Iop_I32UtoF128, mkexpr(op2)));
    return "cxlfbr";
 }
 
@@ -14932,7 +14518,7 @@ s390_irgen_CXGBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cxgbra", is_valid_fpr_pair(r1));
    s390_insn_assert("cxgbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op2 = newTemp(Ity_I64);
@@ -14946,19 +14532,15 @@ s390_irgen_CXGBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CXLGBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("cxlgbr", is_valid_fpr_pair(r1));
-      s390_insn_assert("cxlgbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("cxlgbr", is_valid_fpr_pair(r1));
+   s390_insn_assert("cxlgbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op2 = newTemp(Ity_I64);
+   IRTemp op2 = newTemp(Ity_I64);
 
-      assign(op2, get_gpr_dw0(r2));
-      put_fpr_pair(r1, unop(Iop_I64UtoF128, mkexpr(op2)));
-   }
+   assign(op2, get_gpr_dw0(r2));
+   put_fpr_pair(r1, unop(Iop_I64UtoF128, mkexpr(op2)));
    return "cxlgbr";
 }
 
@@ -14967,7 +14549,7 @@ s390_irgen_CFXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cfxbra", is_valid_fpr_pair(r2));
    s390_insn_assert("cfxbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op = newTemp(Ity_F128);
@@ -14986,24 +14568,20 @@ s390_irgen_CFXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CLFXBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("clfxbr", is_valid_fpr_pair(r2));
-      s390_insn_assert("clfxbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clfxbr", is_valid_fpr_pair(r2));
+   s390_insn_assert("clfxbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op = newTemp(Ity_F128);
-      IRTemp result = newTemp(Ity_I32);
-      IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_F128);
+   IRTemp result = newTemp(Ity_I32);
+   IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
 
-      assign(op, get_fpr_pair(r2));
-      assign(result, binop(Iop_F128toI32U, mkexpr(rounding_mode),
-                           mkexpr(op)));
-      put_gpr_w1(r1, mkexpr(result));
-      s390_cc_thunk_put1f128Z(S390_CC_OP_BFP_128_TO_UINT_32, op, rounding_mode);
-   }
+   assign(op, get_fpr_pair(r2));
+   assign(result, binop(Iop_F128toI32U, mkexpr(rounding_mode),
+                        mkexpr(op)));
+   put_gpr_w1(r1, mkexpr(result));
+   s390_cc_thunk_put1f128Z(S390_CC_OP_BFP_128_TO_UINT_32, op, rounding_mode);
    return "clfxbr";
 }
 
@@ -15013,7 +14591,7 @@ s390_irgen_CGXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("cgxbra", is_valid_fpr_pair(r2));
    s390_insn_assert("cgxbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp op = newTemp(Ity_F128);
@@ -15032,25 +14610,21 @@ s390_irgen_CGXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_CLGXBR(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext) {
-      emulation_failure(EmFail_S390X_fpext);
-   } else {
-      s390_insn_assert("clgxbr", is_valid_fpr_pair(r2));
-      s390_insn_assert("clgxbr", is_valid_rounding_mode(m3));
-      if ((m4 & 0x4) != 0)
-         emulation_warning(EmWarn_S390X_XxC_not_zero);
+   s390_insn_assert("clgxbr", is_valid_fpr_pair(r2));
+   s390_insn_assert("clgxbr", is_valid_rounding_mode(m3));
+   if ((m4 & 0x4) != 0)
+      emulation_warning(EmWarn_S390X_XxC_not_zero);
 
-      IRTemp op = newTemp(Ity_F128);
-      IRTemp result = newTemp(Ity_I64);
-      IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
+   IRTemp op = newTemp(Ity_F128);
+   IRTemp result = newTemp(Ity_I64);
+   IRTemp rounding_mode = encode_bfp_rounding_mode(m3);
 
-      assign(op, get_fpr_pair(r2));
-      assign(result, binop(Iop_F128toI64U, mkexpr(rounding_mode),
-                           mkexpr(op)));
-      put_gpr_dw0(r1, mkexpr(result));
-      s390_cc_thunk_put1f128Z(S390_CC_OP_BFP_128_TO_UINT_64, op,
-                              rounding_mode);
-   }
+   assign(op, get_fpr_pair(r2));
+   assign(result, binop(Iop_F128toI64U, mkexpr(rounding_mode),
+                        mkexpr(op)));
+   put_gpr_dw0(r1, mkexpr(result));
+   s390_cc_thunk_put1f128Z(S390_CC_OP_BFP_128_TO_UINT_64, op,
+                           rounding_mode);
    return "clgxbr";
 }
 
@@ -15160,7 +14734,7 @@ static const HChar *
 s390_irgen_FIEBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("fiebra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp result = newTemp(Ity_F32);
@@ -15176,7 +14750,7 @@ static const HChar *
 s390_irgen_FIDBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
    s390_insn_assert("fidbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp result = newTemp(Ity_F64);
@@ -15194,7 +14768,7 @@ s390_irgen_FIXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
    s390_insn_assert("fixbra", is_valid_fpr_pair(r1));
    s390_insn_assert("fixbra", is_valid_fpr_pair(r2));
    s390_insn_assert("fixbra", is_valid_rounding_mode(m3));
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
 
    IRTemp result = newTemp(Ity_F128);
@@ -15287,11 +14861,7 @@ s390_irgen_LPXBR(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_LDXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext && m3 != S390_BFP_ROUND_PER_FPC) {
-      emulation_warning(EmWarn_S390X_fpext_rounding);
-      m3 = S390_BFP_ROUND_PER_FPC;
-   }
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
    s390_insn_assert("ldxbra", is_valid_fpr_pair(r1));
    s390_insn_assert("ldxbra", is_valid_fpr_pair(r2));
@@ -15309,11 +14879,7 @@ s390_irgen_LDXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_LEXBRA(UChar m3, UChar m4, UChar r1, UChar r2)
 {
-   if (! s390_host_has_fpext && m3 != S390_BFP_ROUND_PER_FPC) {
-      emulation_warning(EmWarn_S390X_fpext_rounding);
-      m3 = S390_BFP_ROUND_PER_FPC;
-   }
-   if (s390_host_has_fpext && (m4 & 0x4) != 0)
+   if ((m4 & 0x4) != 0)
       emulation_warning(EmWarn_S390X_XxC_not_zero);
    s390_insn_assert("lexbra", is_valid_fpr_pair(r1));
    s390_insn_assert("lexbra", is_valid_fpr_pair(r2));
@@ -15792,20 +15358,16 @@ s390_irgen_STCK(IRTemp op2addr)
 static const HChar *
 s390_irgen_STCKF(IRTemp op2addr)
 {
-   if (! s390_host_has_stckf) {
-      emulation_failure(EmFail_S390X_stckf);
-   } else {
-      IRTemp cc = newTemp(Ity_I64);
+   IRTemp cc = newTemp(Ity_I64);
 
-      IRDirty *d = unsafeIRDirty_1_N(cc, 0, "s390x_dirtyhelper_STCKF",
-                                     &s390x_dirtyhelper_STCKF,
-                                     mkIRExprVec_1(mkexpr(op2addr)));
-      d->mFx   = Ifx_Write;
-      d->mAddr = mkexpr(op2addr);
-      d->mSize = 8;
-      stmt(IRStmt_Dirty(d));
-      s390_cc_set(cc);
-   }
+   IRDirty *d = unsafeIRDirty_1_N(cc, 0, "s390x_dirtyhelper_STCKF",
+                                  &s390x_dirtyhelper_STCKF,
+                                  mkIRExprVec_1(mkexpr(op2addr)));
+   d->mFx   = Ifx_Write;
+   d->mAddr = mkexpr(op2addr);
+   d->mSize = 8;
+   stmt(IRStmt_Dirty(d));
+   s390_cc_set(cc);
    return "stckf";
 }
 
@@ -15829,10 +15391,6 @@ s390_irgen_STCKE(IRTemp op2addr)
 static const HChar *
 s390_irgen_STFLE(UChar b2, UShort d2)
 {
-   if (! s390_host_has_stfle) {
-      emulation_failure(EmFail_S390X_stfle);
-      return "stfle";
-   }
    extension(S390_EXT_STFLE, b2 | (d2 << 8));
    return "stfle";
 }
@@ -15937,7 +15495,7 @@ s390_irgen_TROO(UChar m3, UChar r1, UChar r2)
                         mkexpr(tab_addr)));
    assign(op1, load(Ity_I8, mkexpr(result)));
 
-   if (! s390_host_has_etf2 || (m3 & 0x1) == 0) {
+   if ((m3 & 0x1) == 0) {
       s390_cc_set_val(1);
       next_insn_if(binop(Iop_CmpEQ8, mkexpr(op1), mkexpr(test_byte)));
    }
@@ -15987,7 +15545,7 @@ s390_irgen_TRTO(UChar m3, UChar r1, UChar r2)
 
    assign(op1, load(Ity_I8, mkexpr(result)));
 
-   if (! s390_host_has_etf2 || (m3 & 0x1) == 0) {
+   if ((m3 & 0x1) == 0) {
       s390_cc_set_val(1);
       next_insn_if(binop(Iop_CmpEQ8, mkexpr(op1), mkexpr(test_byte)));
    }
@@ -16036,7 +15594,7 @@ s390_irgen_TROT(UChar m3, UChar r1, UChar r2)
                         mkexpr(tab_addr)));
    assign(op1, load(Ity_I16, mkexpr(result)));
 
-   if (! s390_host_has_etf2 || (m3 & 0x1) == 0) {
+   if ((m3 & 0x1) == 0) {
       s390_cc_set_val(1);
       next_insn_if(binop(Iop_CmpEQ16, mkexpr(op1), mkexpr(test_byte)));
    }
@@ -16085,7 +15643,7 @@ s390_irgen_TRTT(UChar m3, UChar r1, UChar r2)
                         mkexpr(tab_addr)));
    assign(op1, load(Ity_I16, mkexpr(result)));
 
-   if (! s390_host_has_etf2 || (m3 & 0x1) == 0) {
+   if ((m3 & 0x1) == 0) {
       s390_cc_set_val(1);
       next_insn_if(binop(Iop_CmpEQ16, mkexpr(op1), mkexpr(test_byte)));
    }
@@ -16231,7 +15789,7 @@ s390_irgen_CU21(UChar m3, UChar r1, UChar r2)
 
    /* Before we can test whether the 1st operand is exhausted we need to
       test for an invalid low surrogate. Because cc=2 outranks cc=1. */
-   if (s390_host_has_etf3 && (m3 & 0x1) == 1) {
+   if ((m3 & 0x1) == 1) {
       IRExpr *invalid_low_surrogate =
          binop(Iop_And64, mkexpr(retval), mkU64(0xff));
 
@@ -16362,7 +15920,7 @@ s390_irgen_CU24(UChar m3, UChar r1, UChar r2)
 
    /* Before we can test whether the 1st operand is exhausted we need to
       test for an invalid low surrogate. Because cc=2 outranks cc=1. */
-   if (s390_host_has_etf3 && (m3 & 0x1) == 1) {
+   if ((m3 & 0x1) == 1) {
       IRExpr *invalid_low_surrogate =
          binop(Iop_And64, mkexpr(retval), mkU64(0xff));
 
@@ -16644,7 +16202,7 @@ s390_irgen_cu12_cu14(UChar m3, UChar r1, UChar r2, Bool is_cu12)
    assign(len1, get_gpr_dw0(r1 + 1));
    assign(len2, get_gpr_dw0(r2 + 1));
 
-   UInt extended_checking = s390_host_has_etf3 && (m3 & 0x1) == 1;
+   UInt extended_checking = (m3 & 0x1) == 1;
 
    /* We're processing the 2nd operand 1 byte at a time. Therefore, if
       there is less than 1 byte left, then the 2nd operand is exhausted
@@ -16797,11 +16355,7 @@ s390_call_ecag(IRExpr *op2addr)
 static const HChar *
 s390_irgen_ECAG(UChar r1, UChar r3 __attribute__((unused)), IRTemp op2addr)
 {
-   if (! s390_host_has_gie) {
-      emulation_failure(EmFail_S390X_ecag);
-   } else {
-      put_gpr_dw0(r1, s390_call_ecag(mkexpr(op2addr)));
-   }
+   put_gpr_dw0(r1, s390_call_ecag(mkexpr(op2addr)));
 
    return "ecag";
 }
@@ -19474,10 +19028,6 @@ s390_vector_fp_convert(IROp op, IRType fromType, IRType toType, Bool rounding,
       IRExpr* argument = get_vr(v2, fromType, i * sourceIndexScaleFactor);
       IRExpr* result;
       if (rounding) {
-         if (!s390_host_has_fpext && m5 != S390_BFP_ROUND_PER_FPC) {
-            emulation_warning(EmWarn_S390X_fpext_rounding);
-            m5 = S390_BFP_ROUND_PER_FPC;
-         }
          result = binop(op,
                         mkexpr(encode_bfp_rounding_mode(m5)),
                         argument);
@@ -20529,10 +20079,6 @@ s390_irgen_NNPA(void)
 static const HChar *
 s390_irgen_KM(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa) {
-      emulation_failure(EmFail_S390X_msa);
-      return "km";
-   }
    s390_insn_assert("km", r1 != 0 && r1 % 2 == 0 && r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KM, r1 | (r2 << 4));
    return "km";
@@ -20541,10 +20087,6 @@ s390_irgen_KM(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_KMC(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa) {
-      emulation_failure(EmFail_S390X_msa);
-      return "kmc";
-   }
    s390_insn_assert("kmc", r1 != 0 && r1 % 2 == 0 && r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KMC, r1 | (r2 << 4));
    return "kmc";
@@ -20553,10 +20095,6 @@ s390_irgen_KMC(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_KIMD(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa) {
-      emulation_failure(EmFail_S390X_msa);
-      return "kimd";
-   }
    /* r1 is reserved */
    s390_insn_assert("kimd", r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KIMD, r1 | (r2 << 4));
@@ -20566,10 +20104,6 @@ s390_irgen_KIMD(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_KLMD(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa) {
-      emulation_failure(EmFail_S390X_msa);
-      return "klmd";
-   }
    /* r1 is only used by some functions */
    s390_insn_assert("klmd", r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KLMD, r1 | (r2 << 4));
@@ -20579,10 +20113,6 @@ s390_irgen_KLMD(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_KMAC(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa) {
-      emulation_failure(EmFail_S390X_msa);
-      return "kmac";
-   }
    /* r1 is ignored */
    s390_insn_assert("kmac", r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KMAC, r1 | (r2 << 4));
@@ -20592,10 +20122,6 @@ s390_irgen_KMAC(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_PCC(void)
 {
-   if (! s390_host_has_msa4) {
-      emulation_failure(EmFail_S390X_msa4);
-      return "pcc";
-   }
    extension(S390_EXT_PCC, 0);
    return "pcc";
 }
@@ -20603,10 +20129,6 @@ s390_irgen_PCC(void)
 static const HChar *
 s390_irgen_KMCTR(UChar r3, UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa4) {
-      emulation_failure(EmFail_S390X_msa4);
-      return "kmctr";
-   }
    s390_insn_assert("kmctr", r1 % 2 == 0 && r1 != 0 && r2 % 2 == 0 && r2 != 0 &&
                     r3 % 2 == 0 && r3 != 0);
    extension(S390_EXT_KMCTR, r1 | (r2 << 4) | (r3 << 8));
@@ -20616,10 +20138,6 @@ s390_irgen_KMCTR(UChar r3, UChar r1, UChar r2)
 static const HChar *
 s390_irgen_KMO(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa4) {
-      emulation_failure(EmFail_S390X_msa4);
-      return "kmo";
-   }
    s390_insn_assert("kmo", r1 != 0 && r1 % 2 == 0 && r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KMO, r1 | (r2 << 4));
    return "kmo";
@@ -20628,10 +20146,6 @@ s390_irgen_KMO(UChar r1, UChar r2)
 static const HChar *
 s390_irgen_KMF(UChar r1, UChar r2)
 {
-   if (! s390_host_has_msa4) {
-      emulation_failure(EmFail_S390X_msa4);
-      return "kmf";
-   }
    s390_insn_assert("kmf", r1 != 0 && r1 % 2 == 0 && r2 != 0 && r2 % 2 == 0);
    extension(S390_EXT_KMF, r1 | (r2 << 4));
    return "kmf";

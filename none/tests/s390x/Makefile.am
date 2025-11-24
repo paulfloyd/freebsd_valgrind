@@ -8,7 +8,7 @@ INSN_TESTS = clc clcle cvb cvd icm lpr lam_stam xc mvst add sub mul \
              op_exception stck stckf stcke stfle cksm mvcl clcl troo \
              trto trot trtt tr tre cij cgij clij clgij crj cgrj clrj clgrj \
              cs csg cds cdsg cu21 cu21_1 cu24 cu24_1 cu42 cu12 cu12_1 \
-             ex_sig ex_clone cu14 cu14_1 cu41 ecag fpext_warn fpext_fail \
+             ex_sig ex_clone cu14 cu14_1 cu41 ecag \
              bfp-fpc bfp-306054 \
              bfp-muldiv comp-1 comp-2 exrl tmll tm stmg \
 	     ex clst mvc test_fork test_sig rxsbg popcnt \
@@ -46,7 +46,7 @@ EXTRA_DIST = \
 	bfp-tdc.vgtest bfp-tdc.stdout.exp bfp-tdc.stderr.exp \
 	bfp-emit.vgtest bfp-emit.stderr.exp bfp-emit.post.exp \
 	bfp-XxC.vgtest bfp-XxC.stderr.exp bfp-XxC.post.exp \
-	ecag.stdout.exp-z10ec ecag.stdout.exp-z196 ecag.stdout.exp-zec12 \
+	ecag.stdout.exp-z196 ecag.stdout.exp-zec12 \
 	ecag.stdout.exp-z13 ecag.stdout.exp-z14 ecag.stdout.exp-z15 \
 	ecag.stdout.exp-z16 ecag.stdout.exp-z17 \
 	op00.stderr.exp op00.vgtest \

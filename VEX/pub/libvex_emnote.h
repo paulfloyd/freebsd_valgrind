@@ -84,11 +84,6 @@ typedef
       EmWarn_PPC64_redir_overflow,
       EmWarn_PPC64_redir_underflow,
 
-      /* insn specifies a rounding mode other than "according to FPC"
-         which requires the floating point extension facility. But that
-         facility is not available on this host */
-      EmWarn_S390X_fpext_rounding,
-
       /* Various BFP insns have an M4 field containing the
          IEEE-inexact-exception (XxC) control bit. That bit cannot me modelled
          in VEX and is expected to be zero. */
@@ -99,24 +94,8 @@ typedef
          in VEX and is expected to be zero. */
       EmWarn_S390X_XiC_not_zero,
 
-      /* stfle insn is not supported on this host */
-      EmFail_S390X_stfle,
-
-      /* stckf insn is not supported on this host */
-      EmFail_S390X_stckf,
-
-      /* ecag insn is not supported on this host */
-      EmFail_S390X_ecag,
-
       /* pfpo insn is not supported on this host */
       EmFail_S390X_pfpo,
-
-      /* DFP insns are not supported on this host */
-      EmFail_S390X_DFP_insn,
-
-      /* insn needs floating point extension facility which is not
-         available on this host */
-      EmFail_S390X_fpext,
 
       /* GPR 0 contains invalid rounding mode for PFPO instruction */
       EmFail_S390X_invalid_PFPO_rounding_mode,
@@ -150,14 +129,6 @@ typedef
       /* insn needs vector-packed-decimal facility which is not available on
          this host */
       EmFail_S390X_vxd,
-
-      /* insn needs message-security assist which is not available on
-         this host */
-      EmFail_S390X_msa,
-
-      /* insn needs message-security-assist extension 4 which is not available
-         on this host */
-      EmFail_S390X_msa4,
 
       /* insn needs message-security-assist extension 8 which is not available
          on this host */

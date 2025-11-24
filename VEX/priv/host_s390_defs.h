@@ -918,26 +918,12 @@ VexInvalRange patchProfInc_S390(VexEndness endness_host,
 extern UInt s390_host_hwcaps;
 
 /* Convenience macros to test installed facilities */
-#define s390_host_has_ldisp \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_LDISP))
 #define s390_host_has_eimm \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_EIMM))
 #define s390_host_has_gie \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_GIE))
-#define s390_host_has_dfp \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_DFP))
 #define s390_host_has_fgx \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_FGX))
-#define s390_host_has_etf2 \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_ETF2))
-#define s390_host_has_stfle \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_STFLE))
-#define s390_host_has_etf3 \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_ETF3))
-#define s390_host_has_stckf \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_STCKF))
-#define s390_host_has_fpext \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_FPEXT))
 #define s390_host_has_lsc \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_LSC))
 #define s390_host_has_pfpo \
@@ -960,10 +946,6 @@ extern UInt s390_host_hwcaps;
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_VXE2))
 #define s390_host_has_vxd \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_VXD))
-#define s390_host_has_msa \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA))
-#define s390_host_has_msa4 \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA4))
 #define s390_host_has_msa8 \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA8))
 #define s390_host_has_msa9 \

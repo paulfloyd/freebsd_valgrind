@@ -1536,11 +1536,6 @@ const HChar* LibVEX_EmNote_string ( VexEmNote ew )
         return "PPC64 function redirection stack overflow";
      case EmWarn_PPC64_redir_underflow:
         return "PPC64 function redirection stack underflow";
-     case EmWarn_S390X_fpext_rounding:
-        return "The specified rounding mode cannot be supported. That\n"
-               "  feature requires the floating point extension facility\n"
-               "  which is not available on this host. Continuing using\n"
-               "  the rounding mode from FPC. Results may differ!";
      case EmWarn_S390X_XxC_not_zero:
         return "Encountered an insn with the IEEE-inexact-exception control\n"
                "  (XxC) bit set to 1. This is not supported. Continuing anyway.\n"
@@ -1549,20 +1544,8 @@ const HChar* LibVEX_EmNote_string ( VexEmNote ew )
         return "Encountered an insn with the IEEE-invalid-operation-exception\n"
                "  control (XiC) bit set to 1. This is not supported. Continuing anyway.\n"
                "  IEEE-invalid-operation exceptions will not be suppressed.";
-     case EmFail_S390X_stfle:
-        return "Instruction stfle is not supported on this host";
-     case EmFail_S390X_stckf:
-        return "Instruction stckf is not supported on this host";
-     case EmFail_S390X_ecag:
-        return "Instruction ecag is not supported on this host";
      case EmFail_S390X_pfpo:
         return "Instruction pfpo is not supported on this host";
-     case EmFail_S390X_DFP_insn:
-        return "DFP instructions are not supported on this host";
-     case EmFail_S390X_fpext:
-        return "Encountered an instruction that requires the floating "
-               "point extension facility.\n"
-               "  That facility is not available on this host";
      case EmFail_S390X_invalid_PFPO_rounding_mode:
         return "The rounding mode in GPR 0 for the PFPO instruction"
                " is invalid";
@@ -1594,14 +1577,6 @@ const HChar* LibVEX_EmNote_string ( VexEmNote ew )
         return "Encountered an instruction that requires the vector-packed-decimal\n"
                " facility.\n"
                "  That facility is not available on this host";
-     case EmFail_S390X_msa:
-        return "Encountered an instruction that requires the message-security"
-               " assist.\n"
-               "  That assist is not available on this host";
-     case EmFail_S390X_msa4:
-        return "Encountered an instruction that requires the"
-               " message-security-assist extension 4.\n"
-               "  That extension is not available on this host";
      case EmFail_S390X_msa8:
         return "Encountered an instruction that requires the"
                " message-security-assist extension 8.\n"
@@ -1927,16 +1902,9 @@ static const HChar* show_hwcaps_s390x ( UInt hwcaps )
       UInt  hwcaps_bit;
       HChar name[6];
    } hwcaps_list[] = {
-      { VEX_HWCAPS_S390X_LDISP, "ldisp" },
       { VEX_HWCAPS_S390X_EIMM,  "eimm" },
       { VEX_HWCAPS_S390X_GIE,   "gie" },
-      { VEX_HWCAPS_S390X_DFP,   "dfp" },
       { VEX_HWCAPS_S390X_FGX,   "fgx" },
-      { VEX_HWCAPS_S390X_STFLE, "stfle" },
-      { VEX_HWCAPS_S390X_ETF2,  "etf2" },
-      { VEX_HWCAPS_S390X_ETF3,  "etf3" },
-      { VEX_HWCAPS_S390X_STCKF, "stckf" },
-      { VEX_HWCAPS_S390X_FPEXT, "fpext" },
       { VEX_HWCAPS_S390X_LSC,   "lsc" },
       { VEX_HWCAPS_S390X_PFPO,  "pfpo" },
       { VEX_HWCAPS_S390X_VX,    "vx" },
@@ -1948,8 +1916,6 @@ static const HChar* show_hwcaps_s390x ( UInt hwcaps )
       { VEX_HWCAPS_S390X_DFLT,  "dflt" },
       { VEX_HWCAPS_S390X_VXE2,  "vxe2" },
       { VEX_HWCAPS_S390X_VXD,   "vxd" },
-      { VEX_HWCAPS_S390X_MSA,   "msa" },
-      { VEX_HWCAPS_S390X_MSA4,  "msa4" },
       { VEX_HWCAPS_S390X_MSA8,  "msa8" },
       { VEX_HWCAPS_S390X_MSA9,  "msa9" },
    };
@@ -2303,9 +2269,6 @@ static void check_hwcaps ( VexArch arch, UInt hwcaps )
       }
 
       case VexArchS390X:
-         if (! s390_host_has_ldisp)
-            invalid_hwcaps(arch, hwcaps,
-                           "Host does not have long displacement facility.\n");
          return;
 
       case VexArchMIPS32:
