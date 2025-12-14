@@ -79,6 +79,7 @@
 
 # /cachegrind/
 /cachegrind/*.so
+/cachegrind/*.dSYM
 /cachegrind/.deps
 /cachegrind/cachegrind-*-darwin
 /cachegrind/cachegrind-*-linux
@@ -129,6 +130,7 @@
 
 # /callgrind/
 /callgrind/*.so
+/callgrind/*.dSYM
 /callgrind/.deps
 /callgrind/callgrind-*-darwin
 /callgrind/callgrind-*-linux
@@ -746,6 +748,7 @@
 
 # /lackey/
 /lackey/*.so
+/lackey/*.dSYM
 /lackey/.deps
 /lackey/lackey-*-darwin
 /lackey/lackey-*-linux
@@ -1193,6 +1196,7 @@
 /memcheck/tests/linux/dlclose_leak_so.so
 /memcheck/tests/linux/getregset
 /memcheck/tests/linux/ioctl-tiocsig
+/memcheck/tests/linux/ioctl_procmap_query
 /memcheck/tests/linux/lsframe1
 /memcheck/tests/linux/lsframe2
 /memcheck/tests/linux/Makefile
@@ -1540,6 +1544,7 @@
 /nightly/valgrind-old
 
 # /none/
+/none/*.dSYM
 /none/*.so
 /none/.deps
 /none/Makefile

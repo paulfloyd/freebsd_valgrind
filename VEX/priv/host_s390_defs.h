@@ -885,13 +885,13 @@ UInt ppHRegS390(HReg);
 void  getRegUsage_S390Instr( HRegUsage *, const s390_insn *, Bool );
 void  mapRegs_S390Instr    ( HRegRemap *, s390_insn *, Bool );
 Int   emit_S390Instr       ( Bool *, UChar *, Int, const s390_insn *, Bool,
-                             VexEndness, const void *, const void *,
+                             const VexArchInfo *, const void *, const void *,
                              const void *, const void *);
 const RRegUniverse *getRRegUniverse_S390( void );
 void  genSpill_S390        ( HInstr **, HInstr **, HReg , Int , Bool );
 void  genReload_S390       ( HInstr **, HInstr **, HReg , Int , Bool );
-HInstr* directReload_S390  ( HInstr *, HReg, Short );
-extern s390_insn* genMove_S390(HReg from, HReg to, Bool mode64);
+HInstr *directReload_S390  ( HInstr *, HReg, Short );
+s390_insn *genMove_S390    ( HReg from, HReg to, Bool mode64);
 HInstrArray *iselSB_S390   ( const IRSB *, VexArch, const VexArchInfo *,
                              const VexAbiInfo *, Int, Int, Bool, Bool, Addr);
 
@@ -918,16 +918,6 @@ VexInvalRange patchProfInc_S390(VexEndness endness_host,
 extern UInt s390_host_hwcaps;
 
 /* Convenience macros to test installed facilities */
-#define s390_host_has_eimm \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_EIMM))
-#define s390_host_has_gie \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_GIE))
-#define s390_host_has_fgx \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_FGX))
-#define s390_host_has_lsc \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_LSC))
-#define s390_host_has_pfpo \
-                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_PFPO))
 #define s390_host_has_vx \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_VX))
 #define s390_host_has_msa5 \

@@ -4,14 +4,17 @@ Release 3.27.0 (?? Apr 2025)
 This release supports X86/Linux, AMD64/Linux, ARM32/Linux, ARM64/Linux,
 PPC32/Linux, PPC64BE/Linux, PPC64LE/Linux, S390X/Linux, MIPS32/Linux,
 MIPS64/Linux, RISCV64/Linux, ARM/Android, ARM64/Android, MIPS32/Android,
-X86/Android, X86/Solaris, AMD64/Solaris, AMD64/MacOSX 10.12, X86/FreeBSD,
-AMD64/FreeBSD and ARM64/FreeBSD There is also preliminary support for
-X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
+X86/Android, X86/Solaris, AMD64/Solaris, X86/macOS, AMD64/macOS. 
+X86/FreeBSD, AMD64/FreeBSD and ARM64/FreeBSD. There is preliminary support
+for nanoMIPS/Linux. macOS is supported up to version 10.14 Mojave.
 
 * ==================== CORE CHANGES ===================
 
 * ================== PLATFORM CHANGES =================
 
+s390x: Machine models older than z196 are no longer supported.
+
+Initial support for macOS 10.14 Mojave has been added.
 
 * ==================== TOOL CHANGES ===================
 
@@ -25,8 +28,14 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+228343  none/tests/darwin/bug228343 fails on OS X
 413369  unhandled amd64-darwin syscall: unix:151 (getpgid)
 487055  memcheck/tests/x86-linux/scalar fails running in Docker
+509562  s390x: Define minimum required machine model
+510416  Missing syswraps for file_getattr and file_setattr
+510563  Add missing syswraps for lsm_get_self_attr and lsm_set_self_attr
+510864  Add SSE4.1 PMAXSD and PMINSD instructions support for 32-bit x86
+512873  Add SSE4.1 min/max instructions for x86 32 bit
 511329  Darwin and FreeBSD: Move setting of carry flag out of
         ML_(do_syscall_for_client_WRK)
 511713  Refactor syscall argument handling
@@ -35,6 +44,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         '-Wno-alloc-size-larger-than=18446744073709551615'
 512030  s390x: bfp-convert testcase fails
 512037  malloc trace does not print free size or alignment
+512571  regtest problems with darwin dsymuti
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
@@ -232,6 +242,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 508030  Add several missing syscall hooks to ppc64-linux
 508093  VALGRIND_CLO_CHANGE does not update vex_control
 508145  ppc64le needs ld.so hardwire for strcmp
+508328  Memory allegedly uninitialized after ioctl(PROCMAP_QUERY)
 508154  PRE(sys_fchownat) not handling VKI_AT_FDCWD
 508638  Self-hosting not working on FreeBSD
 508777  amd64-linux: add minimal scalar test
@@ -249,6 +260,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 509572  s390x: Overhaul BFP testsuite
 509590  Run the LTP tests with LTP_QUIET
 509567  unhandled amd64-linux syscall: 443 (quotactl_fd)
+509634  Add ARG4 checks for quotactl and quotactl_fd syswraps
 509642  Add missing ppc64-linux syswraps
 509643  Add missing s390x-linux syswraps
 510169  Update the LTP version in valgrind testsuite to 20250930

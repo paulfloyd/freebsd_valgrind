@@ -780,9 +780,9 @@ static void libvex_BackEnd ( const VexTranslateArgs *vta,
                                   const VexAbiInfo*, Int, Int, Bool, Bool,
                                   Addr );
    Int          (*emit)         ( /*MB_MOD*/Bool*,
-                                  UChar*, Int, const HInstr*, Bool, VexEndness,
-                                  const void*, const void*, const void*,
-                                  const void* );
+                                  UChar*, Int, const HInstr*, Bool,
+                                  const VexArchInfo*, const void*,
+                                  const void*, const void*, const void* );
    Bool (*preciseMemExnsFn) ( Int, Int, VexRegisterUpdates );
 
    const RRegUniverse* rRegUniv = NULL;
@@ -1232,7 +1232,7 @@ static void libvex_BackEnd ( const VexTranslateArgs *vta,
       }
       j = emit( &hi_isProfInc,
                 insn_bytes, sizeof insn_bytes, hi,
-                mode64, vta->archinfo_host.endness,
+                mode64, &vta->archinfo_host,
                 vta->disp_cp_chain_me_to_slowEP,
                 vta->disp_cp_chain_me_to_fastEP,
                 vta->disp_cp_xindir,
@@ -1544,8 +1544,6 @@ const HChar* LibVEX_EmNote_string ( VexEmNote ew )
         return "Encountered an insn with the IEEE-invalid-operation-exception\n"
                "  control (XiC) bit set to 1. This is not supported. Continuing anyway.\n"
                "  IEEE-invalid-operation exceptions will not be suppressed.";
-     case EmFail_S390X_pfpo:
-        return "Instruction pfpo is not supported on this host";
      case EmFail_S390X_invalid_PFPO_rounding_mode:
         return "The rounding mode in GPR 0 for the PFPO instruction"
                " is invalid";
@@ -1902,11 +1900,6 @@ static const HChar* show_hwcaps_s390x ( UInt hwcaps )
       UInt  hwcaps_bit;
       HChar name[6];
    } hwcaps_list[] = {
-      { VEX_HWCAPS_S390X_EIMM,  "eimm" },
-      { VEX_HWCAPS_S390X_GIE,   "gie" },
-      { VEX_HWCAPS_S390X_FGX,   "fgx" },
-      { VEX_HWCAPS_S390X_LSC,   "lsc" },
-      { VEX_HWCAPS_S390X_PFPO,  "pfpo" },
       { VEX_HWCAPS_S390X_VX,    "vx" },
       { VEX_HWCAPS_S390X_MSA5,  "msa5" },
       { VEX_HWCAPS_S390X_MI2,   "mi2" },

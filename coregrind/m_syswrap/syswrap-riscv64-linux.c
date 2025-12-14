@@ -368,7 +368,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENX_(__NR_close, sys_close),                                   /* 57 */
    LINX_(__NR_vhangup, sys_vhangup),                               /* 58 */
    LINXY(__NR_pipe2, sys_pipe2),                                   /* 59 */
-   LINX_(__NR_quotactl, sys_quotactl),                             /* 60 */
+   LINXY(__NR_quotactl, sys_quotactl),                             /* 60 */
    GENXY(__NR_getdents64, sys_getdents64),                         /* 61 */
    LINX_(__NR_lseek, sys_lseek),                                   /* 62 */
    GENXY(__NR_read, sys_read),                                     /* 63 */
@@ -598,7 +598,7 @@ static SyscallTableEntry syscall_main_table[] = {
    LINX_(__NR_faccessat2, sys_faccessat2),                         /* 439 */
    LINXY(__NR_epoll_pwait2, sys_epoll_pwait2),                     /* 441 */
    LINX_(__NR_mount_setattr, sys_mount_setattr),                   /* 442 */
-   LINX_(__NR_quotactl_fd, sys_quotactl_fd),                       /* 443 */
+   LINXY(__NR_quotactl_fd, sys_quotactl_fd),                       /* 443 */
    LINXY(__NR_landlock_create_ruleset, sys_landlock_create_ruleset), /* 444 */
    LINX_(__NR_landlock_add_rule, sys_landlock_add_rule),           /* 445 */
    LINX_(__NR_landlock_restrict_self, sys_landlock_restrict_self), /* 446 */
@@ -608,7 +608,11 @@ static SyscallTableEntry syscall_main_table[] = {
    LINX_(__NR_fchmodat2, sys_fchmodat2),                           /* 452 */
    LINXY(__NR_statmount, sys_statmount),                           /* 457 */
    LINXY(__NR_listmount, sys_listmount),                           /* 458 */
+   LINXY(__NR_lsm_get_self_attr, sys_lsm_get_self_attr),           /* 459 */
+   LINX_(__NR_lsm_set_self_attr, sys_lsm_set_self_attr),           /* 460 */
    LINX_(__NR_mseal, sys_mseal),                                   /* 462 */
+   LINXY(__NR_file_getattr, sys_file_getattr),                     /* 468 */
+   LINX_(__NR_file_setattr, sys_file_setattr),                     /* 469 */
 };
 
 SyscallTableEntry* ML_(get_linux_syscall_entry)(UInt sysno)

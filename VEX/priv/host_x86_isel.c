@@ -3867,6 +3867,30 @@ static HReg iselVecExpr_wrk ( ISelEnv* env, const IRExpr* e )
       case Iop_NarrowBin16to8x16:
          fn = (HWord)h_generic_calc_NarrowBin16to8x16;
          goto do_SseAssistedBinary;
+      case Iop_Max8Sx16:
+         fn = (HWord)h_generic_calc_Max8Sx16;
+         goto do_SseAssistedBinary;
+      case Iop_Min8Sx16:
+         fn = (HWord)h_generic_calc_Min8Sx16;
+         goto do_SseAssistedBinary;
+      case Iop_Max16Ux8:
+         fn = (HWord)h_generic_calc_Max16Ux8;
+         goto do_SseAssistedBinary;
+      case Iop_Min16Ux8:
+         fn = (HWord)h_generic_calc_Min16Ux8;
+         goto do_SseAssistedBinary;
+      case Iop_Max32Sx4:
+         fn = (HWord)h_generic_calc_Max32Sx4;
+         goto do_SseAssistedBinary;
+      case Iop_Min32Sx4:
+         fn = (HWord)h_generic_calc_Min32Sx4;
+         goto do_SseAssistedBinary;
+      case Iop_Max32Ux4:
+         fn = (HWord)h_generic_calc_Max32Ux4;
+         goto do_SseAssistedBinary;
+      case Iop_Min32Ux4:
+         fn = (HWord)h_generic_calc_Min32Ux4;
+         goto do_SseAssistedBinary;
       do_SseAssistedBinary: {
          /* As with the amd64 case (where this is copied from) we
             generate pretty bad code. */
@@ -4562,7 +4586,7 @@ HInstrArray* iselSB_X86 ( const IRSB* bb,
 {
    Int      i, j;
    HReg     hreg, hregHI;
-   ISelEnv* env;
+   ISelEnv  *env, envmem;
    UInt     hwcaps_host = archinfo_host->hwcaps;
    X86AMode *amCounter, *amFailAddr;
 
@@ -4579,7 +4603,7 @@ HInstrArray* iselSB_X86 ( const IRSB* bb,
    vassert(archinfo_host->endness == VexEndnessLE);
 
    /* Make up an initial environment to use. */
-   env = LibVEX_Alloc_inline(sizeof(ISelEnv));
+   env = &envmem;
    env->vreg_ctr = 0;
 
    /* Set up output code array. */

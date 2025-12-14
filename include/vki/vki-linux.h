@@ -3900,6 +3900,30 @@ struct vki_ion_custom_data {
 #define VKI_ION_IOC_CUSTOM \
    _VKI_IOWR(VKI_ION_IOC_MAGIC, 6, struct vki_ion_custom_data)
 
+struct vki_procmap_query {
+    __vki_u64 size;
+    __vki_u64 query_flags;              /* in */
+    __vki_u64 query_addr;               /* in */
+    __vki_u64 vma_start;                /* out */
+    __vki_u64 vma_end;                  /* out */
+    __vki_u64 vma_flags;                /* out */
+    __vki_u64 vma_page_size;            /* out */
+    __vki_u64 vma_offset;               /* out */
+    __vki_u64 inode;                    /* out */
+    __vki_u32 dev_major;                /* out */
+    __vki_u32 dev_minor;                /* out */
+    __vki_u32 vma_name_size;            /* in/out */
+    __vki_u32 build_id_size;            /* in/out */
+    __vki_u64 vma_name_addr;            /* in */
+    __vki_u64 build_id_addr;            /* in */
+};
+
+// linux/fs.h
+#define VKI_PROCFS_IOCTL_MAGIC 'f'
+
+#define VKI_PROCMAP_QUERY \
+   _VKI_IOWR(VKI_PROCFS_IOCTL_MAGIC, 17, struct vki_procmap_query)
+
 //----------------------------------------------------------------------
 // From include/uapi/linux/sync_file.h 6.10.3
 //----------------------------------------------------------------------
@@ -5572,6 +5596,81 @@ struct vki_statmount {
 	__vki_u64 mnt_ns_id;	/* ID of the mount namespace */
 	__vki_u64 __spare2[49];
 	char str[];		/* Variable size part containing strings */
+};
+
+//----------------------------------------------------------------------
+// From uapi/linux/fs.h
+//----------------------------------------------------------------------
+
+struct vki_file_attr {
+	__vki_u64 fa_xflags;	/* xflags field value (get/set) */
+	__vki_u32 fa_extsize;	/* extsize field value (get/set)*/
+	__vki_u32 fa_nextents;	/* nextents field value (get)   */
+	__vki_u32 fa_projid;	/* project identifier (get/set) */
+	__vki_u32 fa_cowextsize;	/* CoW extsize field value (get/set) */
+};
+
+//----------------------------------------------------------------------
+// From uapi/linux/mount.h
+//----------------------------------------------------------------------
+
+#define VKI_SUBCMDMASK  0x00ff
+#define VKI_SUBCMDSHIFT 8
+
+#define VKI_Q_SYNC     0x800001	/* sync disk copy of a filesystems quotas */
+#define VKI_Q_QUOTAON  0x800002	/* turn quotas on */
+#define VKI_Q_QUOTAOFF 0x800003	/* turn quotas off */
+#define VKI_Q_GETFMT   0x800004	/* get quota format used on given filesystem */
+#define VKI_Q_GETINFO  0x800005	/* get information about quota files */
+#define VKI_Q_SETINFO  0x800006	/* set information about quota files */
+#define VKI_Q_GETQUOTA 0x800007	/* get user quota structure */
+#define VKI_Q_SETQUOTA 0x800008	/* set user quota structure */
+#define VKI_Q_GETNEXTQUOTA 0x800009	/* get disk limits and usage >= ID */
+
+struct vki_dqblk
+  {
+    __vki_u64 dqb_bhardlimit;	/* absolute limit on disk quota blocks alloc */
+    __vki_u64 dqb_bsoftlimit;	/* preferred limit on disk quota blocks */
+    __vki_u64 dqb_curspace;	/* current quota block count */
+    __vki_u64 dqb_ihardlimit;	/* maximum # allocated inodes */
+    __vki_u64 dqb_isoftlimit;	/* preferred inode limit */
+    __vki_u64 dqb_curinodes;	/* current # allocated inodes */
+    __vki_u64 dqb_btime;	/* time limit for excessive disk use */
+    __vki_u64 dqb_itime;	/* time limit for excessive files */
+    __vki_u32 dqb_valid;	/* bitmask of QIF_* constants */
+  };
+
+
+struct vki_nextdqblk {
+	__vki_u64 dqb_bhardlimit;
+	__vki_u64 dqb_bsoftlimit;
+	__vki_u64 dqb_curspace;
+	__vki_u64 dqb_ihardlimit;
+	__vki_u64 dqb_isoftlimit;
+	__vki_u64 dqb_curinodes;
+	__vki_u64 dqb_btime;
+	__vki_u64 dqb_itime;
+	__vki_u32 dqb_valid;
+	__vki_u32 dqb_id;
+};
+
+struct vki_dqinfo {
+	__vki_u64 dqi_bgrace;
+	__vki_u64 dqi_igrace;
+	__vki_u32 dqi_flags;	/* DFQ_* */
+	__vki_u32 dqi_valid;
+};
+
+//----------------------------------------------------------------------
+// From uapi/linux/lsm.h
+//----------------------------------------------------------------------
+
+struct vki_lsm_ctx {
+	__vki_u64 id;
+	__vki_u64 flags;
+	__vki_u64 len;
+	__vki_u64 ctx_len;
+	__vki_u8 ctx[]; /* __counted_by(ctx_len); */
 };
 
 /*--------------------------------------------------------------------*/

@@ -162,30 +162,20 @@ typedef
 #define VEX_S390X_MODEL_UNKNOWN  19     /* always last in list */
 #define VEX_S390X_MODEL_MASK     0x3F
 
-#define VEX_HWCAPS_S390X_EIMM  (1<<7)   /* Extended-immediate facility */
-#define VEX_HWCAPS_S390X_GIE   (1<<8)   /* General-instruction-extension facility */
-#define VEX_HWCAPS_S390X_FGX   (1<<10)  /* FPR-GR transfer facility */
-#define VEX_HWCAPS_S390X_LSC   (1<<16)  /* Conditional load/store facility */
-#define VEX_HWCAPS_S390X_PFPO  (1<<17)  /* Perform floating point ops facility */
-#define VEX_HWCAPS_S390X_VX    (1<<18)  /* Vector facility */
-#define VEX_HWCAPS_S390X_MSA5  (1<<19)  /* Message-security-assistance facility 5 */
-#define VEX_HWCAPS_S390X_MI2   (1<<20)  /* Miscellaneous-instruction-extensions facility 2 */
-#define VEX_HWCAPS_S390X_LSC2  (1<<21)  /* Conditional load/store facility2 */
-#define VEX_HWCAPS_S390X_VXE   (1<<22)  /* Vector-enhancements facility */
-#define VEX_HWCAPS_S390X_NNPA  (1<<23)  /* NNPA facility */
-#define VEX_HWCAPS_S390X_DFLT  (1<<24)  /* Deflate-conversion facility */
-#define VEX_HWCAPS_S390X_VXE2  (1<<25)  /* Vector-enhancements facility 2 */
-#define VEX_HWCAPS_S390X_VXD   (1<<26)  /* Vector packed-decimal facility */
-#define VEX_HWCAPS_S390X_MSA8  (1<<29)  /* Message-security-assist extension 8 */
-#define VEX_HWCAPS_S390X_MSA9  (1<<30)  /* Message-security-assist extension 9 */
+#define VEX_HWCAPS_S390X_VX    (1 << 6)  /* Vector facility */
+#define VEX_HWCAPS_S390X_MSA5  (1 << 7)  /* Message-security-assistance facility 5 */
+#define VEX_HWCAPS_S390X_MI2   (1 << 8)  /* Miscellaneous-instruction-extensions facility 2 */
+#define VEX_HWCAPS_S390X_LSC2  (1 << 9)  /* Conditional load/store facility2 */
+#define VEX_HWCAPS_S390X_VXE   (1 << 10) /* Vector-enhancements facility */
+#define VEX_HWCAPS_S390X_NNPA  (1 << 11) /* NNPA facility */
+#define VEX_HWCAPS_S390X_DFLT  (1 << 12) /* Deflate-conversion facility */
+#define VEX_HWCAPS_S390X_VXE2  (1 << 13) /* Vector-enhancements facility 2 */
+#define VEX_HWCAPS_S390X_VXD   (1 << 14) /* Vector packed-decimal facility */
+#define VEX_HWCAPS_S390X_MSA8  (1 << 15) /* Message-security-assist extension 8 */
+#define VEX_HWCAPS_S390X_MSA9  (1 << 16) /* Message-security-assist extension 9 */
 
 /* Special value representing all available s390x hwcaps */
-#define VEX_HWCAPS_S390X_ALL   (VEX_HWCAPS_S390X_EIMM  | \
-                                VEX_HWCAPS_S390X_GIE   | \
-                                VEX_HWCAPS_S390X_FGX   | \
-                                VEX_HWCAPS_S390X_LSC   | \
-                                VEX_HWCAPS_S390X_PFPO  | \
-                                VEX_HWCAPS_S390X_VX    | \
+#define VEX_HWCAPS_S390X_ALL   (VEX_HWCAPS_S390X_VX    | \
                                 VEX_HWCAPS_S390X_MSA5  | \
                                 VEX_HWCAPS_S390X_MI2   | \
                                 VEX_HWCAPS_S390X_LSC2  | \

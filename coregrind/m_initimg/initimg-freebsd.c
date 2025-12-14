@@ -410,7 +410,6 @@ static Addr setup_client_stack(const void*  init_sp,
    Addr client_SP;           /* client stack base (initial SP) */
    Addr clstack_start;       /* client_SP rounded down to nearest page */
    Int i;
-   Bool have_exename;
    Word client_argv;
 
    vg_assert(VG_IS_PAGE_ALIGNED(clstack_end+1));
@@ -431,7 +430,6 @@ static Addr setup_client_stack(const void*  init_sp,
 
    /* first of all, work out how big the client stack will be */
    stringsize   = 0;
-   have_exename = VG_(args_the_exename) != NULL;
 
    /* paste on the extra args if the loader needs them (ie, the #!
       interpreter and its argument) */
@@ -446,9 +444,7 @@ static Addr setup_client_stack(const void*  init_sp,
    }
 
    /* now scan the args we're given... */
-   if (have_exename) {
-      stringsize += VG_(strlen)( VG_(args_the_exename) ) + 1;
-   }
+   stringsize += VG_(strlen)( VG_(args_the_exename) ) + 1;
 
    for (i = 0; i < VG_(sizeXA)( VG_(args_for_client) ); i++) {
       argc++;
@@ -477,17 +473,14 @@ static Addr setup_client_stack(const void*  init_sp,
          break;
       case VKI_AT_CANARYLEN:
          canarylen = cauxv->u.a_val;
-         /*VG_ROUNDUP(stringsize, sizeof(Word));*/
          stringsize += canarylen;
          break;
       case VKI_AT_PAGESIZESLEN:
          pagesizeslen = cauxv->u.a_val;
-         /*VG_ROUNDUP(stringsize, sizeof(Word));*/
          stringsize += pagesizeslen;
          break;
 #if 0
       case VKI_AT_TIMEKEEP:
-         /*VG_ROUNDUP(stringsize, sizeof(Word));*/
          stringsize += sizeof(struct vki_vdso_timehands);
          break;
 #endif
@@ -506,7 +499,7 @@ static Addr setup_client_stack(const void*  init_sp,
    /* OK, now we know how big the client stack is */
    used_stacksize =
       sizeof(Word) +                          /* argc */
-      (have_exename ? sizeof(HChar **) : 0) +  /* argc[0] == exename */
+      sizeof(HChar **) +                      /* argc[0] == exename */
       sizeof(HChar **)*argc +                 /* argv */
       sizeof(HChar **) +                      /* terminal NULL */
       sizeof(HChar **)*envc +                 /* envp */
@@ -523,7 +516,7 @@ static Addr setup_client_stack(const void*  init_sp,
    client_SP = VG_ROUNDDN(client_SP, 16); /* make stack 16 byte aligned */
 
    /* base of the string table (aligned) */
-   stringbase = strtab = (HChar *)clstack_end
+   stringbase = strtab = (HChar *)clstack_end + 1
                          - VG_ROUNDUP(stringsize, sizeof(int));
 
    clstack_start = VG_PGROUNDDN(client_SP);
@@ -641,7 +634,7 @@ static Addr setup_client_stack(const void*  init_sp,
    ptr = (Addr*)client_SP;
 
    /* --- client argc --- */
-   *ptr++ = argc + (have_exename ? 1 : 0);
+   *ptr++ = argc + 1;
 
    /* --- client argv --- */
    client_argv = (Word)ptr;
@@ -652,9 +645,7 @@ static Addr setup_client_stack(const void*  init_sp,
       *ptr++ = (Addr)copy_str(&strtab, info->interp_args);
    }
 
-   if (have_exename) {
-      *ptr++ = (Addr)copy_str(&strtab, VG_(args_the_exename));
-   }
+   *ptr++ = (Addr)copy_str(&strtab, VG_(args_the_exename));
 
    for (i = 0; i < VG_(sizeXA)( VG_(args_for_client) ); i++) {
       *ptr++ = (Addr)copy_str(
@@ -849,6 +840,8 @@ static Addr setup_client_stack(const void*  init_sp,
    vg_assert(auxv->a_type == VKI_AT_NULL);
 
    vg_assert((strtab-stringbase) == stringsize);
+
+   vg_assert((HChar*)auxv < stringbase);
 
    /* client_SP is pointing at client's argc/argv */
 

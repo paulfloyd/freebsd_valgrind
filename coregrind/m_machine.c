@@ -602,7 +602,7 @@ static UInt VG_(get_machine_model)(void)
 {
    static struct model_map {
       const HChar name[5];
-      UInt  id;
+      const UInt  id;
    } model_map[] = {
       { "2064", VEX_S390X_MODEL_Z900 },
       { "2066", VEX_S390X_MODEL_Z800 },
@@ -1541,15 +1541,24 @@ Bool VG_(machine_get_hwcaps)( void )
         VG_(exit)(1);
      }
 
-     ULong hoststfle[S390_NUM_FACILITY_DW];
+     /* Get number of double words to store all facilities */
+     unsigned long long dummy[1];
 
-     for (i = 0; i < S390_NUM_FACILITY_DW; ++i)
+     register ULong r0 asm("0") = 0;
+     asm volatile(".insn s,0xb2b00000,%0\n" /* stfle */
+                  : "=Q" (dummy), "+d"(r0)
+                  :
+                  : "cc", "memory");
+     UInt num_dw = r0 + 1;
+
+     /* Get the facility bits */
+     ULong hoststfle[num_dw];
+
+     for (i = 0; i < num_dw; ++i)
         hoststfle[i] = 0;
 
-     register ULong reg0 asm("0") = S390_NUM_FACILITY_DW - 1;
-
      __asm__(".insn s,0xb2b00000,%0" /* stfle */
-                 : "=Q"(hoststfle), "+d"(reg0)
+                 : "=Q"(hoststfle), "+d"(r0)
                  :
                  : "cc");
 
@@ -1561,15 +1570,10 @@ Bool VG_(machine_get_hwcaps)( void )
      /* Detect presence of certain facilities using the STFLE insn. */
      struct fac_hwcaps_map {
         UInt installed;
-        UInt facility_bit;
-        UInt hwcaps_bit;
-        const HChar name[6];   // may need adjustment for new facility names
+        const UInt facility_bit;
+        const UInt hwcaps_bit;
+        const HChar name[5];   // may need adjustment for new facility names
      } fac_hwcaps[] = {
-        { False,  21,  VEX_HWCAPS_S390X_EIMM,  "EIMM"  },
-        { False,  34,  VEX_HWCAPS_S390X_GIE,   "GIE"   },
-        { False,  41,  VEX_HWCAPS_S390X_FGX,   "FGX"   },
-        { False,  45,  VEX_HWCAPS_S390X_LSC,   "LSC"   },
-        { False,  44,  VEX_HWCAPS_S390X_PFPO,  "PFPO"  },
         { False, 129,  VEX_HWCAPS_S390X_VX,    "VX"    },
         { False,  57,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
         { False,  58,  VEX_HWCAPS_S390X_MI2,   "MI2"   },
@@ -1587,7 +1591,6 @@ Bool VG_(machine_get_hwcaps)( void )
      UChar dw_number = 0;
      UChar fac_bit = 0;
      for (i=0; i < sizeof fac_hwcaps / sizeof fac_hwcaps[0]; ++i) {
-        vg_assert(fac_hwcaps[i].facility_bit <= 191);  // for now
         dw_number = fac_hwcaps[i].facility_bit / 64;
         fac_bit = fac_hwcaps[i].facility_bit % 64;
         if (hoststfle[dw_number] & (1ULL << (63 - fac_bit))) {

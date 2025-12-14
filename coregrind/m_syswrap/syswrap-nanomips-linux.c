@@ -592,7 +592,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENX_ (__NR_close,                  sys_close),
    LINX_ (__NR_vhangup,                sys_vhangup),
    LINXY (__NR_pipe2,                  sys_pipe2),
-   LINX_ (__NR_quotactl,               sys_quotactl),
+   LINXY (__NR_quotactl,               sys_quotactl),
    GENXY (__NR_getdents64,             sys_getdents64),
    LINXY (__NR__llseek,                sys_llseek),
    GENXY (__NR_read,                   sys_read),
@@ -823,8 +823,12 @@ static SyscallTableEntry syscall_main_table[] = {
    LINX_ (__NR_fchmodat2,              sys_fchmodat2),
    LINXY (__NR_statmount,              sys_statmount),
    LINXY (__NR_listmount,              sys_listmount),
+   LINXY(__NR_lsm_get_self_attr,       sys_lsm_get_self_attr),
+   LINX_(__NR_lsm_set_self_attr,       sys_lsm_set_self_attr),
    LINX_ (__NR_mseal,                  sys_mseal),
    LINX_ (__NR_futex_waitv,            sys_futex_waitv),
+   LINXY (__NR_file_getattr,           sys_file_getattr),
+   LINX_ (__NR_file_setattr,           sys_file_setattr),
 };
 
 SyscallTableEntry* ML_(get_linux_syscall_entry) (UInt sysno)

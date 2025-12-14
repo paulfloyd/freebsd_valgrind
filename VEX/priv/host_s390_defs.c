@@ -322,7 +322,8 @@ is_virtual_gpr(HReg reg)
 
 /* Helper function for all vector operations */
 static UChar
-s390_getM_from_size(const UChar size) {
+s390_getM_from_size(const UChar size)
+{
    switch(size) {
    case 1:
       return 0;
@@ -342,7 +343,8 @@ s390_getM_from_size(const UChar size) {
 
 /* Helper for generating RXB field in vector instructions */
 static UChar
-s390_update_rxb(const UChar rxb, const UChar index, UChar* vr) {
+s390_update_rxb(const UChar rxb, const UChar index, UChar* vr)
+{
    vassert((index >= 1) && (index <= 4));
    UChar result = rxb;
    if(vr != NULL) {
@@ -684,7 +686,8 @@ no_match:
    return NULL;
 }
 
-s390_insn* genMove_S390(HReg from, HReg to, Bool mode64)
+s390_insn *
+genMove_S390(HReg from, HReg to, Bool mode64)
 {
    switch (hregClass(from)) {
    case HRcInt64:
@@ -2048,8 +2051,6 @@ s390_emit_AG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_AFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("afi"), GPR(r1), INT(i2));
 
@@ -2060,8 +2061,6 @@ s390_emit_AFI(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_AGFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("agfi"), GPR(r1), INT(i2));
 
@@ -2112,8 +2111,6 @@ s390_emit_AGHI(UChar *p, UChar r1, UShort i2)
 static UChar *
 s390_emit_AGSI(UChar *p, UChar i2, UChar b1, UShort dl1, UChar dh1)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("agsi"), SDXB(dh1, dl1, 0, b1), INT((Int)(Char)i2));
 
@@ -2124,8 +2121,6 @@ s390_emit_AGSI(UChar *p, UChar i2, UChar b1, UShort dl1, UChar dh1)
 static UChar *
 s390_emit_ASI(UChar *p, UChar i2, UChar b1, UShort dl1, UChar dh1)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("asi"), SDXB(dh1, dl1, 0, b1), INT((Int)(Char)i2));
 
@@ -2186,8 +2181,6 @@ s390_emit_NG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_NIHF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("nihf"), GPR(r1), UINT(i2));
 
@@ -2198,8 +2191,6 @@ s390_emit_NIHF(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_NILF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("nilf"), GPR(r1), UINT(i2));
 
@@ -2340,8 +2331,6 @@ s390_emit_CG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_CFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("cfi"), GPR(r1), INT(i2));
 
@@ -2352,8 +2341,6 @@ s390_emit_CFI(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_CGFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("cgfi"), GPR(r1), INT(i2));
 
@@ -2474,8 +2461,6 @@ s390_emit_CLG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_CLFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("clfi"), GPR(r1), UINT(i2));
 
@@ -2486,8 +2471,6 @@ s390_emit_CLFI(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_CLGFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("clgfi"), GPR(r1), UINT(i2));
 
@@ -2628,8 +2611,6 @@ s390_emit_XG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_XIHF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("xihf"), GPR(r1), UINT(i2));
 
@@ -2640,8 +2621,6 @@ s390_emit_XIHF(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_XILF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("xilf"), GPR(r1), UINT(i2));
 
@@ -2662,8 +2641,6 @@ s390_emit_XC(UChar *p, UInt l, UChar b1, UShort d1, UChar b2, UShort d2)
 static UChar *
 s390_emit_FLOGR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("flogr"), GPR(r1), GPR(r2));
 
@@ -2694,8 +2671,6 @@ s390_emit_ICY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_IIHF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("iihf"), GPR(r1), UINT(i2));
 
@@ -2704,54 +2679,12 @@ s390_emit_IIHF(UChar *p, UChar r1, UInt i2)
 
 
 static UChar *
-s390_emit_IIHH(UChar *p, UChar r1, UShort i2)
-{
-   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
-      S390_DISASM(MNM("iihh"), GPR(r1), UINT(i2));
-
-   return emit_RI(p, 0xa5000000, r1, i2);
-}
-
-
-static UChar *
-s390_emit_IIHL(UChar *p, UChar r1, UShort i2)
-{
-   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
-      S390_DISASM(MNM("iihl"), GPR(r1), UINT(i2));
-
-   return emit_RI(p, 0xa5010000, r1, i2);
-}
-
-
-static UChar *
 s390_emit_IILF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("iilf"), GPR(r1), UINT(i2));
 
    return emit_RIL(p, 0xc00900000000ULL, r1, i2);
-}
-
-
-static UChar *
-s390_emit_IILH(UChar *p, UChar r1, UShort i2)
-{
-   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
-      S390_DISASM(MNM("iilh"), GPR(r1), UINT(i2));
-
-   return emit_RI(p, 0xa5020000, r1, i2);
-}
-
-
-static UChar *
-s390_emit_IILL(UChar *p, UChar r1, UShort i2)
-{
-   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
-      S390_DISASM(MNM("iill"), GPR(r1), UINT(i2));
-
-   return emit_RI(p, 0xa5030000, r1, i2);
 }
 
 
@@ -2838,8 +2771,6 @@ s390_emit_LGF(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LGFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lgfi"), GPR(r1), INT(i2));
 
@@ -2870,8 +2801,6 @@ s390_emit_LTGR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LT(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lt"), GPR(r1), SDXB(dh2, dl2, x2, b2));
 
@@ -2882,8 +2811,6 @@ s390_emit_LT(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LTG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("ltg"), GPR(r1), SDXB(dh2, dl2, x2, b2));
 
@@ -2894,8 +2821,6 @@ s390_emit_LTG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LBR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lbr"), GPR(r1), GPR(r2));
 
@@ -2906,8 +2831,6 @@ s390_emit_LBR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LGBR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lgbr"), GPR(r1), GPR(r2));
 
@@ -2958,8 +2881,6 @@ s390_emit_LCGR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LHR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lhr"), GPR(r1), GPR(r2));
 
@@ -2970,8 +2891,6 @@ s390_emit_LHR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LGHR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lghr"), GPR(r1), GPR(r2));
 
@@ -3052,8 +2971,6 @@ s390_emit_LLGF(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LLCR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llcr"), GPR(r1), GPR(r2));
 
@@ -3064,8 +2981,6 @@ s390_emit_LLCR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LLGCR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llgcr"), GPR(r1), GPR(r2));
 
@@ -3076,8 +2991,6 @@ s390_emit_LLGCR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LLC(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llc"), GPR(r1), SDXB(dh2, dl2, x2, b2));
 
@@ -3098,8 +3011,6 @@ s390_emit_LLGC(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LLHR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llhr"), GPR(r1), GPR(r2));
 
@@ -3110,8 +3021,6 @@ s390_emit_LLHR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LLGHR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llghr"), GPR(r1), GPR(r2));
 
@@ -3122,8 +3031,6 @@ s390_emit_LLGHR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LLH(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llh"), GPR(r1), SDXB(dh2, dl2, x2, b2));
 
@@ -3144,22 +3051,10 @@ s390_emit_LLGH(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LLILF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("llilf"), GPR(r1), UINT(i2));
 
    return emit_RIL(p, 0xc00f00000000ULL, r1, i2);
-}
-
-
-static UChar *
-s390_emit_LLILH(UChar *p, UChar r1, UShort i2)
-{
-   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
-      S390_DISASM(MNM("llilh"), GPR(r1), UINT(i2));
-
-   return emit_RI(p, 0xa50e0000, r1, i2);
 }
 
 
@@ -3196,8 +3091,6 @@ s390_emit_M(UChar *p, UChar r1, UChar x2, UChar b2, UShort d2)
 static UChar *
 s390_emit_MFY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("mfy"), GPR(r1), SDXB(dh2, dl2, x2, b2));
 
@@ -3238,8 +3131,6 @@ s390_emit_MH(UChar *p, UChar r1, UChar x2, UChar b2, UShort d2)
 static UChar *
 s390_emit_MHY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("mhy"), GPR(r1), SDXB(dh2, dl2, x2, b2));
 
@@ -3350,8 +3241,6 @@ s390_emit_MSG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_MSFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("msfi"), GPR(r1), INT(i2));
 
@@ -3362,8 +3251,6 @@ s390_emit_MSFI(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_MSGFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("msgfi"), GPR(r1), INT(i2));
 
@@ -3394,8 +3281,6 @@ s390_emit_MVI(UChar *p, UChar i2, UChar b1, UShort d1)
 static UChar *
 s390_emit_MVHHI(UChar *p, UChar b1, UShort d1, UShort i2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("mvhhi"), UDXB(d1, 0, b1), INT((Int)(Short)i2));
 
@@ -3406,8 +3291,6 @@ s390_emit_MVHHI(UChar *p, UChar b1, UShort d1, UShort i2)
 static UChar *
 s390_emit_MVHI(UChar *p, UChar b1, UShort d1, UShort i2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("mvhi"), UDXB(d1, 0, b1), INT((Int)(Short)i2));
 
@@ -3418,8 +3301,6 @@ s390_emit_MVHI(UChar *p, UChar b1, UShort d1, UShort i2)
 static UChar *
 s390_emit_MVGHI(UChar *p, UChar b1, UShort d1, UShort i2)
 {
-   vassert(s390_host_has_gie);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("mvghi"), UDXB(d1, 0, b1), INT((Int)(Short)i2));
 
@@ -3480,8 +3361,6 @@ s390_emit_OG(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_OIHF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("oihf"), GPR(r1), UINT(i2));
 
@@ -3492,8 +3371,6 @@ s390_emit_OIHF(UChar *p, UChar r1, UInt i2)
 static UChar *
 s390_emit_OILF(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("oilf"), GPR(r1), UINT(i2));
 
@@ -3714,8 +3591,6 @@ s390_emit_SHY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_SLFI(UChar *p, UChar r1, UInt i2)
 {
-   vassert(s390_host_has_eimm);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("slfi"), GPR(r1), UINT(i2));
 
@@ -3786,8 +3661,6 @@ s390_emit_LDY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 static UChar *
 s390_emit_LDGR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_fgx);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("ldgr"), FPR(r1), GPR(r2));
 
@@ -3798,8 +3671,6 @@ s390_emit_LDGR(UChar *p, UChar r1, UChar r2)
 static UChar *
 s390_emit_LGDR(UChar *p, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_fgx);
-
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(MNM("lgdr"), GPR(r1), FPR(r2));
 
@@ -4970,7 +4841,6 @@ emit_E(UChar *p, UInt op)
 static UChar *
 s390_emit_PFPO(UChar *p)
 {
-   vassert(s390_host_has_pfpo);
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM)) {
       S390_DISASM(MNM("pfpo"));
    }
@@ -5082,7 +4952,6 @@ s390_emit_SRXT(UChar *p, UChar r3, UChar r1, UChar r2)
 static UChar *
 s390_emit_LOCGR(UChar *p, UChar m3, UChar r1, UChar r2)
 {
-   vassert(s390_host_has_lsc);
    if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
       S390_DISASM(XMNM("locgr", cls_disasm), GPR(r1), GPR(r2), MASK(m3));
 
@@ -5142,43 +5011,28 @@ s390_emit_RISBG(UChar *p, UChar r1, UChar r2, UChar i3, Char i4, UChar i5)
 static __inline__ Bool
 uint_fits_signed_16bit(UInt val)
 {
-   UInt v = val & 0xFFFFu;
-
-   /* sign extend */
-   v = (Int)(v << 16) >> 16;
-
-   return val == v;
+   return val <= 0x7FFFu;
 }
 
 
 static __inline__ Bool
 ulong_fits_signed_16bit(ULong val)
 {
-   ULong v = val & 0xFFFFu;
-
-   /* sign extend */
-   v = (Long)(v << 48) >> 48;
-
-   return val == v;
+   return val <= 0x7FFFu;
 }
 
 
 static __inline__ Bool
 ulong_fits_signed_32bit(ULong val)
 {
-   ULong v = val & 0xFFFFFFFFu;
-
-   /* sign extend */
-   v = (Long)(v << 32) >> 32;
-
-   return val == v;
+   return val <= 0x7FFFFFFFu;
 }
 
 
 static __inline__ Bool
 ulong_fits_unsigned_32bit(ULong val)
 {
-   return (val & 0xFFFFFFFFu) == val;
+   return val <= 0xFFFFFFFFu;
 }
 
 
@@ -5190,33 +5044,16 @@ s390_emit_load_64imm(UChar *p, UChar reg, ULong val)
       return s390_emit_LGHI(p, reg, val);
    }
 
-   if (s390_host_has_eimm) {
-      if (ulong_fits_unsigned_32bit(val)) {
-         return s390_emit_LLILF(p, reg, val);
-      }
-      if (ulong_fits_signed_32bit(val)) {
-         /* LGFI's sign extension will recreate the correct 64-bit value */
-         return s390_emit_LGFI(p, reg, val);
-      }
-      /* Do it in two steps: upper half [0:31] and lower half [32:63] */
-      p =  s390_emit_IIHF(p, reg, val >> 32);
-      return s390_emit_IILF(p, reg, val & 0xFFFFFFFF);
-   }
-
-   /* Fall back */
    if (ulong_fits_unsigned_32bit(val)) {
-      p = s390_emit_LLILH(p, reg, (val >> 16) & 0xFFFF); /* sets val[32:47]
-                                                            val[0:31] = 0 */
-      p = s390_emit_IILL(p, reg, val & 0xFFFF);          /* sets val[48:63] */
-      return p;
+      return s390_emit_LLILF(p, reg, val);
    }
-
-   p = s390_emit_IIHH(p, reg, (val >> 48) & 0xFFFF);
-   p = s390_emit_IIHL(p, reg, (val >> 32) & 0xFFFF);
-   p = s390_emit_IILH(p, reg, (val >> 16) & 0xFFFF);
-   p = s390_emit_IILL(p, reg, val & 0xFFFF);
-
-   return p;
+   if (ulong_fits_signed_32bit(val)) {
+      /* LGFI's sign extension will recreate the correct 64-bit value */
+      return s390_emit_LGFI(p, reg, val);
+   }
+   /* Do it in two steps: upper half [0:31] and lower half [32:63] */
+   p = s390_emit_IIHF(p, reg, val >> 32);
+   return s390_emit_IILF(p, reg, val & 0xFFFFFFFF);
 }
 
 /* Load a 32-bit immediate VAL into register REG. */
@@ -5227,393 +5064,12 @@ s390_emit_load_32imm(UChar *p, UChar reg, UInt val)
       /* LHI's sign extension will recreate the correct 32-bit value */
       return s390_emit_LHI(p, reg, val);
    }
-   if (s390_host_has_eimm) {
-      return s390_emit_IILF(p, reg, val);
-   }
-   /* val[0:15]  --> (val >> 16) & 0xFFFF
-      val[16:31] --> val & 0xFFFF */
-   p = s390_emit_IILH(p, reg, (val >> 16) & 0xFFFF);
-   return s390_emit_IILL(p, reg, val & 0xFFFF);
+   return s390_emit_IILF(p, reg, val);
 }
 
 /*------------------------------------------------------------*/
-/*--- Wrapper functions                                    ---*/
+/*--- Emit functions for vector insns                      ---*/
 /*------------------------------------------------------------*/
-
-/* r1[32:63],r1+1[32:63] = r1+1[32:63] * memory[op2addr][0:31] */
-static UChar *
-s390_emit_MFYw(UChar *p, UChar r1, UChar x, UChar b,  UShort dl, UChar dh)
-{
-   if (s390_host_has_gie) {
-      return s390_emit_MFY(p, r1, x, b, dl, dh);
-   }
-
-   /* Load from memory into R0, then MULTIPLY with R1 */
-   p = s390_emit_LY(p, R0, x, b, dl, dh);
-   return s390_emit_MR(p, r1, R0);
-}
-
-/* r1[32:63] = r1[32:63] * memory[op2addr][0:15] */
-static UChar *
-s390_emit_MHYw(UChar *p, UChar r1, UChar x, UChar b,  UShort dl, UChar dh)
-{
-   if (s390_host_has_gie) {
-      return s390_emit_MHY(p, r1, x, b, dl, dh);
-   }
-
-   /* Load from memory into R0, then MULTIPLY with R1 */
-   p = s390_emit_LHY(p, R0, x, b, dl, dh);
-   return s390_emit_MSR(p, r1, R0);
-}
-
-/* r1[32:63] = r1[32:63] * i2 */
-static UChar *
-s390_emit_MSFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_gie) {
-      return s390_emit_MSFI(p, r1, i2);
-   }
-
-   /* Load I2 into R0; then MULTIPLY R0 with R1 */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_MSR(p, r1, R0);
-}
-
-
-/* r1[32:63] = r1[32:63] & i2 */
-static UChar *
-s390_emit_NILFw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_NILF(p, r1, i2);
-   }
-
-   /* Load I2 into R0; then AND R0 with R1 */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_NR(p, r1, R0);
-}
-
-
-/* r1[32:63] = r1[32:63] | i2 */
-static UChar *
-s390_emit_OILFw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_OILF(p, r1, i2);
-   }
-
-   /* Load I2 into R0; then AND R0 with R1 */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_OR(p, r1, R0);
-}
-
-
-/* r1[32:63] = r1[32:63] ^ i2 */
-static UChar *
-s390_emit_XILFw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_XILF(p, r1, i2);
-   }
-
-   /* Load I2 into R0; then AND R0 with R1 */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_XR(p, r1, R0);
-}
-
-
-/*  r1[32:63] = sign_extend(r2[56:63]) */
-static UChar *
-s390_emit_LBRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LBR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);               /* r1 = r2 */
-   p = s390_emit_SLL(p, r1, R0, 24);          /* r1 = r1 << 24  */
-   return s390_emit_SRA(p, r1, R0, 24);       /* r1 = r1 >>a 24 */
-}
-
-
-/*  r1[0:63] = sign_extend(r2[56:63]) */
-static UChar *
-s390_emit_LGBRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LGBR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);                       /* r1 = r2 */
-   p = s390_emit_SLLG(p, r1, r1, R0, DISP20(56));     /* r1 = r1 << 56  */
-   return s390_emit_SRAG(p, r1, r1, R0, DISP20(56));  /* r1 = r1 >>a 56 */
-}
-
-
-/* r1[32:63] = sign_extend(r2[48:63]) */
-static UChar *
-s390_emit_LHRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LHR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);               /* r1 = r2 */
-   p = s390_emit_SLL(p, r1, R0, 16);          /* r1 = r1 << 16  */
-   return s390_emit_SRA(p, r1, R0, 16);       /* r1 = r1 >>a 16 */
-}
-
-
-/* r1[0:63] = sign_extend(r2[48:63]) */
-static UChar *
-s390_emit_LGHRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LGHR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);               /* r1 = r2 */
-   p = s390_emit_SLLG(p, r1, r1, R0, DISP20(48));     /* r1 = r1 << 48  */
-   return s390_emit_SRAG(p, r1, r1, R0, DISP20(48));  /* r1 = r1 >>a 48 */
-}
-
-
-/* r1[0:63] = sign_extend(i2) */
-static UChar *
-s390_emit_LGFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LGFI(p, r1, i2);
-   }
-
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_LGFR(p, r1, R0);
-}
-
-
-/* r1[32:63] = zero_extend($r2[56:63]) */
-static UChar *
-s390_emit_LLCRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLCR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);
-   p = s390_emit_LHI(p, R0, 0xFF);
-   return s390_emit_NR(p, r1, R0);
-}
-
-
-/* r1[0:63] = zero_extend($r2[56:63]) */
-static UChar *
-s390_emit_LLGCRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLGCR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);
-   p = s390_emit_LLILL(p, R0, 0xFF);
-   return s390_emit_NGR(p, r1, R0);
-}
-
-
-/* r1[32:63] = zero_extend(r2[48:63]) */
-static UChar *
-s390_emit_LLHRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLHR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);
-   p = s390_emit_LLILL(p, R0, 0xFFFF);
-   return s390_emit_NR(p, r1, R0);
-}
-
-
-/* r1[0:63] = zero_extend(r2[48:63]) */
-static UChar *
-s390_emit_LLGHRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLGHR(p, r1, r2);
-   }
-
-   p = s390_emit_LR(p, r1, r2);
-   p = s390_emit_LLILL(p, R0, 0xFFFF);
-   return s390_emit_NGR(p, r1, R0);
-}
-
-
-/* r1[32:63] = zero_extend(mem[op2addr][0:7]) */
-static UChar *
-s390_emit_LLCw(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl, UChar dh)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLC(p, r1, x2, b2, dl, dh);
-   }
-
-   if (dh == 0) {
-      p = s390_emit_IC(p, r1, x2, b2, dl);
-   } else {
-      p = s390_emit_ICY(p, r1, x2, b2, dl, dh);
-   }
-   p = s390_emit_LLILL(p, R0, 0xFF);
-   return s390_emit_NR(p, r1, R0);
-}
-
-
-/* r1[32:63] = zero_extend(mem[op2addr][0:15]) */
-static UChar *
-s390_emit_LLHw(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl, UChar dh)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLH(p, r1, x2, b2, dl, dh);
-   }
-
-   p = s390_emit_LLGH(p, r1, x2, b2, dl, dh);
-   p = s390_emit_LLILL(p, R0, 0xFFFF);
-   return s390_emit_NR(p, r1, R0);
-}
-
-
-/* r1[0:63] = zero_extend(i2) */
-static UChar *
-s390_emit_LLILFw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LLILF(p, r1, i2);
-   }
-
-   p = s390_emit_LLILH(p, r1, (i2 >> 16) & 0xFFFF);  /* i2[0:15] */
-   return s390_emit_OILL(p, r1, i2 & 0xFFFF);
-}
-
-
-/* r1[32:63] = r1[32:63] + i2 */
-static UChar *
-s390_emit_AFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_AFI(p, r1, i2);
-   }
-   /* Load 32 bit immediate to R0 then add */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_AR(p, r1, R0);
-}
-
-
-/* r1[32:63] = r1[32:63] - i2 */
-static UChar *
-s390_emit_SLFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_SLFI(p, r1, i2);
-   }
-
-   /* Load 32 bit immediate to R0 then subtract */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_SR(p, r1, R0);
-}
-
-
-/* r1[0:63] = r1[0:63] - zero_extend(i2) */
-static UChar *
-s390_emit_SLGFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_SLGFI(p, r1, i2);
-   }
-
-   /* Load zero-extended 32 bit immediate to R0 then subtract */
-   p = s390_emit_load_64imm(p, R0, i2);
-   return s390_emit_SGR(p, r1, R0);
-}
-
-
-static UChar *
-s390_emit_LTw(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl, UChar dh)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LT(p, r1, x2, b2, dl, dh);
-   }
-   /* Load 32 bit from memory to R0 then compare */
-   if (dh == 0) {
-      p = s390_emit_L(p, R0, x2, b2, dl);
-   } else {
-      p = s390_emit_LY(p, R0, x2, b2, dl, dh);
-   }
-   return s390_emit_LTR(p, r1, R0);
-}
-
-
-static UChar *
-s390_emit_LTGw(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl, UChar dh)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_LTG(p, r1, x2, b2, dl, dh);
-   }
-   /* Load 64 bit from memory to R0 then compare */
-   p = s390_emit_LG(p, R0, x2, b2, dl, dh);
-   return s390_emit_LTGR(p, r1, R0);
-}
-
-
-static UChar *
-s390_emit_CFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_CFI(p, r1, i2);
-   }
-   /* Load 32 bit immediate to R0 then compare */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_CR(p, r1, R0);
-}
-
-
-static UChar *
-s390_emit_CLFIw(UChar *p, UChar r1, UInt i2)
-{
-   if (s390_host_has_eimm) {
-      return s390_emit_CLFI(p, r1, i2);
-   }
-   /* Load 32 bit immediate to R0 then compare */
-   p = s390_emit_load_32imm(p, R0, i2);
-   return s390_emit_CLR(p, r1, R0);
-}
-
-
-static UChar *
-s390_emit_LGDRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_fgx) {
-      return s390_emit_LGDR(p, r1, r2);
-   }
-
-   /* Store the FPR at memory[sp - 8]. This is safe because SP grows towards
-      smaller addresses and is 8-byte aligned. Then load the GPR from that
-      memory location/ */
-   p = s390_emit_STDY(p, r2, R0, S390_REGNO_STACK_POINTER, DISP20(-8));
-   return s390_emit_LG(p, r1, R0, S390_REGNO_STACK_POINTER, DISP20(-8));
-}
-
-
-static UChar *
-s390_emit_LDGRw(UChar *p, UChar r1, UChar r2)
-{
-   if (s390_host_has_fgx) {
-      return s390_emit_LDGR(p, r1, r2);
-   }
-
-   /* Store the GPR at memory[sp - 8]. This is safe because SP grows towards
-      smaller addresses and is 8-byte aligned. Then load the FPR from that
-      memory location/ */
-   p = s390_emit_STG(p, r2, R0, S390_REGNO_STACK_POINTER, DISP20(-8));
-   return s390_emit_LDY(p, r1, R0, S390_REGNO_STACK_POINTER, DISP20(-8));
-}
-
 
 static UChar *
 s390_emit_VL(UChar *p, UChar v1, UChar x2, UChar b2, UShort d2)
@@ -7223,8 +6679,6 @@ s390_insn_madd(UChar size, s390_amode *dst, UChar delta, ULong value)
    /* This insn will be mapped to an ASI or AGSI so we can only allow base
       register plus 12-bit / 20-bit displacement. */
    vassert(dst->tag == S390_AMODE_B12 || dst->tag == S390_AMODE_B20);
-   /* ASI and AGSI require the GIE facility */
-   vassert(s390_host_has_gie);
 
    insn->tag  = S390_INSN_MADD;
    insn->size = size;
@@ -7356,7 +6810,7 @@ s390_insn_profinc(void)
 
 s390_insn *
 s390_insn_vec_amodeop(UChar size, s390_vec_amodeop_t tag, HReg dst, HReg op1,
-                    s390_amode *op2)
+                      s390_amode *op2)
 {
    s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
 
@@ -7372,8 +6826,9 @@ s390_insn_vec_amodeop(UChar size, s390_vec_amodeop_t tag, HReg dst, HReg op1,
    return insn;
 }
 
-s390_insn *s390_insn_vec_amodeintop(UChar size, s390_vec_amodeintop_t tag, HReg dst,
-                                    s390_amode* op2, HReg op3)
+s390_insn *
+s390_insn_vec_amodeintop(UChar size, s390_vec_amodeintop_t tag, HReg dst,
+                         s390_amode* op2, HReg op3)
 {
    s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
 
@@ -7389,8 +6844,9 @@ s390_insn *s390_insn_vec_amodeintop(UChar size, s390_vec_amodeintop_t tag, HReg 
    return insn;
 }
 
-s390_insn *s390_insn_vec_binop(UChar size, s390_vec_binop_t tag, HReg dst,
-                               HReg op1, HReg op2)
+s390_insn *
+s390_insn_vec_binop(UChar size, s390_vec_binop_t tag, HReg dst,
+                    HReg op1, HReg op2)
 {
    s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
 
@@ -7406,8 +6862,9 @@ s390_insn *s390_insn_vec_binop(UChar size, s390_vec_binop_t tag, HReg dst,
    return insn;
 }
 
-s390_insn *s390_insn_vec_triop(UChar size, s390_vec_triop_t tag, HReg dst,
-                               HReg op1, HReg op2, HReg op3)
+s390_insn *
+s390_insn_vec_triop(UChar size, s390_vec_triop_t tag, HReg dst,
+                    HReg op1, HReg op2, HReg op3)
 {
    s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
 
@@ -7423,8 +6880,8 @@ s390_insn *s390_insn_vec_triop(UChar size, s390_vec_triop_t tag, HReg dst,
    return insn;
 }
 
-s390_insn *s390_insn_vec_replicate(UChar size, HReg dst, HReg op1,
-                                   UChar idx)
+s390_insn *
+s390_insn_vec_replicate(UChar size, HReg dst, HReg op1, UChar idx)
 {
    s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
 
@@ -8538,17 +7995,17 @@ s390_insn_move_emit(UChar *buf, const s390_insn *insn)
       if (dst_class == HRcFlt64 && src_class == HRcInt64) {
          if (insn->size == 4) {
             buf = s390_emit_SLLG(buf, R0, src, 0, DISP20(32)); /* r0 = src << 32 */
-            return s390_emit_LDGRw(buf, dst, R0);
+            return s390_emit_LDGR(buf, dst, R0);
          } else {
-            return s390_emit_LDGRw(buf, dst, src);
+            return s390_emit_LDGR(buf, dst, src);
          }
       }
       if (dst_class == HRcInt64 && src_class == HRcFlt64) {
          if (insn->size == 4) {
-            buf = s390_emit_LGDRw(buf, dst, src);
+            buf = s390_emit_LGDR(buf, dst, src);
             return s390_emit_SRLG(buf, dst, dst, 0, DISP20(32)); /* dst >>= 32 */
          } else {
-            return s390_emit_LGDRw(buf, dst, src);
+            return s390_emit_LGDR(buf, dst, src);
          }
       }
       if (dst_class == HRcFlt64 && src_class == HRcVec128) {
@@ -8611,17 +8068,8 @@ s390_insn_load_immediate_emit(UChar *buf, const s390_insn *insn)
 static UChar *
 s390_emit_ilih(UChar *buf, UChar size, UChar dst, UChar r2)
 {
-   if (s390_host_has_gie)
-      return s390_emit_RISBG(buf, dst, r2, 64 - 8 * size, 63 - 4 * size,
-                             4 * size);
-
-   /* Clear dst's upper half. */
-   buf = s390_emit_SLLG(buf, dst, dst, 0, DISP20(64 - 4 * size));
-   buf = s390_emit_SRLG(buf, dst, dst, 0, DISP20(64 - 4 * size));
-
-   /* Shift r2 by appropriate amount and OR it into dst. */
-   buf = s390_emit_SLLG(buf, R0, r2, 0, DISP20(4 * size));
-   return s390_emit_OGR(buf, dst, R0);
+   return s390_emit_RISBG(buf, dst, r2, 64 - 8 * size, 63 - 4 * size,
+                          4 * size);
 }
 
 
@@ -8804,7 +8252,7 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
                return s390_emit_SHY(buf, dst, x, b, DISP20(d));
 
             case S390_ALU_MUL:
-               return s390_emit_MHYw(buf, dst, x, b, DISP20(d));
+               return s390_emit_MHY(buf, dst, x, b, DISP20(d));
 
                /* For bitwise operations: Move two bytes from memory into scratch
                   register r0; then perform operation */
@@ -8900,7 +8348,7 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
             return s390_emit_AHI(buf, dst, value);
 
          case S390_ALU_SUB:
-            return s390_emit_SLFIw(buf, dst, value);
+            return s390_emit_SLFI(buf, dst, value);
 
          case S390_ALU_MUL:
             return s390_emit_MHI(buf, dst, value);
@@ -8932,13 +8380,13 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
             if (uint_fits_signed_16bit(value)) {
                return s390_emit_AHI(buf, dst, value);
             }
-            return s390_emit_AFIw(buf, dst, value);
+            return s390_emit_AFI(buf, dst, value);
 
-         case S390_ALU_SUB:  return s390_emit_SLFIw(buf, dst, value);
-         case S390_ALU_MUL:  return s390_emit_MSFIw(buf, dst, value);
-         case S390_ALU_AND:  return s390_emit_NILFw(buf, dst, value);
-         case S390_ALU_OR:   return s390_emit_OILFw(buf, dst, value);
-         case S390_ALU_XOR:  return s390_emit_XILFw(buf, dst, value);
+         case S390_ALU_SUB:  return s390_emit_SLFI(buf, dst, value);
+         case S390_ALU_MUL:  return s390_emit_MSFI(buf, dst, value);
+         case S390_ALU_AND:  return s390_emit_NILF(buf, dst, value);
+         case S390_ALU_OR:   return s390_emit_OILF(buf, dst, value);
+         case S390_ALU_XOR:  return s390_emit_XILF(buf, dst, value);
          case S390_ALU_LSH:  return s390_emit_SLL(buf, dst, 0, value);
          case S390_ALU_RSH:  return s390_emit_SRL(buf, dst, 0, value);
          case S390_ALU_RSHA: return s390_emit_SRA(buf, dst, 0, value);
@@ -8952,7 +8400,7 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
             if (ulong_fits_signed_16bit(value)) {
                return s390_emit_AGHI(buf, dst, value);
             }
-            if (ulong_fits_signed_32bit(value) && s390_host_has_eimm) {
+            if (ulong_fits_signed_32bit(value)) {
                return s390_emit_AGFI(buf, dst, value);
             }
             /* Load constant into R0 then add */
@@ -8961,14 +8409,14 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
 
          case S390_ALU_SUB:
             if (ulong_fits_unsigned_32bit(value)) {
-               return s390_emit_SLGFIw(buf, dst, value);
+               return s390_emit_SLGFI(buf, dst, value);
             }
             /* Load value into R0; then subtract from destination reg */
             buf = s390_emit_load_64imm(buf, R0, value);
             return s390_emit_SGR(buf, dst, R0);
 
          case S390_ALU_MUL:
-            if (ulong_fits_signed_32bit(value) && s390_host_has_gie) {
+            if (ulong_fits_signed_32bit(value)) {
                return s390_emit_MSGFI(buf, dst, value);
             }
             /* Load constant into R0 then add */
@@ -8977,31 +8425,16 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
 
             /* Do it in two steps: upper half [0:31] and lower half [32:63] */
          case S390_ALU_AND:
-            if (s390_host_has_eimm) {
-               buf  = s390_emit_NIHF(buf, dst, value >> 32);
-               return s390_emit_NILF(buf, dst, value & 0xFFFFFFFF);
-            }
-            /* Load value into R0; then combine with destination reg */
-            buf = s390_emit_load_64imm(buf, R0, value);
-            return s390_emit_NGR(buf, dst, R0);
+            buf  = s390_emit_NIHF(buf, dst, value >> 32);
+            return s390_emit_NILF(buf, dst, value & 0xFFFFFFFF);
 
          case S390_ALU_OR:
-            if (s390_host_has_eimm) {
-               buf  = s390_emit_OIHF(buf, dst, value >> 32);
-               return s390_emit_OILF(buf, dst, value & 0xFFFFFFFF);
-            }
-            /* Load value into R0; then combine with destination reg */
-            buf = s390_emit_load_64imm(buf, R0, value);
-            return s390_emit_OGR(buf, dst, R0);
+            buf  = s390_emit_OIHF(buf, dst, value >> 32);
+            return s390_emit_OILF(buf, dst, value & 0xFFFFFFFF);
 
          case S390_ALU_XOR:
-            if (s390_host_has_eimm) {
-               buf  = s390_emit_XIHF(buf, dst, value >> 32);
-               return s390_emit_XILF(buf, dst, value & 0xFFFFFFFF);
-            }
-            /* Load value into R0; then combine with destination reg */
-            buf = s390_emit_load_64imm(buf, R0, value);
-            return s390_emit_XGR(buf, dst, R0);
+            buf  = s390_emit_XIHF(buf, dst, value >> 32);
+            return s390_emit_XILF(buf, dst, value & 0xFFFFFFFF);
 
             /* No special considerations for long displacement here. Only the six
                least significant bits of VALUE will be taken; all other bits are
@@ -9040,30 +8473,30 @@ s390_widen_emit(UChar *buf, const s390_insn *insn, UInt from_size,
             because the upper half-word will not be looked at. */
          if (insn->size == 4 || insn->size == 2) {  /* 8 --> 32    8 --> 16 */
             if (sign_extend)
-               return s390_emit_LBRw(buf, r1, r2);
+               return s390_emit_LBR(buf, r1, r2);
             else
-               return s390_emit_LLCRw(buf, r1, r2);
+               return s390_emit_LLCR(buf, r1, r2);
          }
          if (insn->size == 8) {  /* 8 --> 64 */
             if (sign_extend)
-               return s390_emit_LGBRw(buf, r1, r2);
+               return s390_emit_LGBR(buf, r1, r2);
             else
-               return s390_emit_LLGCRw(buf, r1, r2);
+               return s390_emit_LLGCR(buf, r1, r2);
          }
          goto fail;
 
       case 2:
          if (insn->size == 4) {  /* 16 --> 32 */
             if (sign_extend)
-               return s390_emit_LHRw(buf, r1, r2);
+               return s390_emit_LHR(buf, r1, r2);
             else
-               return s390_emit_LLHRw(buf, r1, r2);
+               return s390_emit_LLHR(buf, r1, r2);
          }
          if (insn->size == 8) {  /* 16 --> 64 */
             if (sign_extend)
-               return s390_emit_LGHRw(buf, r1, r2);
+               return s390_emit_LGHR(buf, r1, r2);
             else
-               return s390_emit_LLGHRw(buf, r1, r2);
+               return s390_emit_LLGHR(buf, r1, r2);
          }
          goto fail;
 
@@ -9094,7 +8527,7 @@ s390_widen_emit(UChar *buf, const s390_insn *insn, UInt from_size,
             if (sign_extend)
                return s390_emit_LB(buf, r1, x, b, DISP20(d));
             else
-               return s390_emit_LLCw(buf, r1, x, b, DISP20(d));
+               return s390_emit_LLC(buf, r1, x, b, DISP20(d));
          }
          if (insn->size == 8) {
             if (sign_extend)
@@ -9107,7 +8540,7 @@ s390_widen_emit(UChar *buf, const s390_insn *insn, UInt from_size,
       case 2:
          if (insn->size == 4) {  /* 16 --> 32 */
             if (sign_extend == 0)
-               return s390_emit_LLHw(buf, r1, x, b, DISP20(d));
+               return s390_emit_LLH(buf, r1, x, b, DISP20(d));
 
             switch (src->tag) {
             case S390_AMODE_B12:
@@ -9184,9 +8617,9 @@ s390_widen_emit(UChar *buf, const s390_insn *insn, UInt from_size,
       case 4:
          if (insn->size == 8) {  /* 32 --> 64 */
             if (sign_extend)
-               return s390_emit_LGFIw(buf, r1, value);
+               return s390_emit_LGFI(buf, r1, value);
             else
-               return s390_emit_LLILFw(buf, r1, value);
+               return s390_emit_LLILF(buf, r1, value);
          }
          goto fail;
 
@@ -9481,10 +8914,10 @@ s390_insn_test_emit(UChar *buf, const s390_insn *insn)
          }
 
       case 4:
-         return s390_emit_LTw(buf, R0, x, b, DISP20(d));
+         return s390_emit_LT(buf, R0, x, b, DISP20(d));
 
       case 8:
-         return s390_emit_LTGw(buf, R0, x, b, DISP20(d));
+         return s390_emit_LTG(buf, R0, x, b, DISP20(d));
 
       default:
          goto fail;
@@ -9723,19 +9156,17 @@ s390_insn_compare_emit(UChar *buf, const s390_insn *insn)
       switch (insn->size) {
       case 4:
          if (signed_comparison)
-            return s390_emit_CFIw(buf, r1, value);
+            return s390_emit_CFI(buf, r1, value);
          else
-            return s390_emit_CLFIw(buf, r1, value);
+            return s390_emit_CLFI(buf, r1, value);
 
       case 8:
-         if (s390_host_has_eimm) {
-            if (signed_comparison) {
-               if (ulong_fits_signed_32bit(value))
-                  return s390_emit_CGFI(buf, r1, value);
-            } else {
-               if (ulong_fits_unsigned_32bit(value))
-                  return s390_emit_CLGFI(buf, r1, value);
-            }
+         if (signed_comparison) {
+            if (ulong_fits_signed_32bit(value))
+               return s390_emit_CGFI(buf, r1, value);
+         } else {
+            if (ulong_fits_unsigned_32bit(value))
+               return s390_emit_CLGFI(buf, r1, value);
          }
          buf = s390_emit_load_64imm(buf, R0, value);
          if (signed_comparison)
@@ -9822,7 +9253,7 @@ s390_insn_mul_emit(UChar *buf, const s390_insn *insn)
          case S390_AMODE_B20:
          case S390_AMODE_BX20:
             if (signed_multiply)
-               return s390_emit_MFYw(buf, r1, x, b, DISP20(d));
+               return s390_emit_MFY(buf, r1, x, b, DISP20(d));
             else
                return s390_emit_ML(buf, r1, x, b, DISP20(d));
          }
@@ -10057,35 +9488,10 @@ s390_insn_clz_emit(UChar *buf, const s390_insn *insn)
    }
 
    default:
-      goto fail;
+      vpanic("s390_insn_clz_emit");
    }
 
-   /* Use FLOGR if you can */
-   if (s390_host_has_eimm) {
-      return s390_emit_FLOGR(p, r1, r2);
-   }
-
-   /*
-      r0 = r2;
-      r1 = 64;
-      while (r0 != 0) {
-        r1 -= 1;
-        r0 >>= 1;
-      }
-   */
-   p = s390_emit_LTGR(p, R0, r2);
-   p = s390_emit_LLILL(p, r1,  64);
-
-   p = s390_emit_BRC(p, S390_CC_E, (4 + 4 + 6 + 4 + 4)/ 2);  /* 4 bytes */
-   p = s390_emit_AGHI(p, r1, (UShort)-1);         /* r1  -= 1;  4 bytes */
-   p = s390_emit_SRLG(p, R0, R0, R0, DISP20(1));  /* r0 >>= 1;  6 bytes */
-   p = s390_emit_LTGR(p, R0, R0);                 /* set cc     4 bytes */
-   p = s390_emit_BRC(p, S390_CC_NE,               /*            4 bytes */
-                     (UShort)(-(4 + 6 + 4) / 2));
-   return p;
-
- fail:
-   vpanic("s390_insn_clz_emit");
+   return s390_emit_FLOGR(p, r1, r2);
 }
 
 
@@ -10197,7 +9603,7 @@ s390_insn_cond_move_emit(UChar *buf, const s390_insn *insn)
 
    p = buf;
 
-   if (s390_host_has_lsc && hregClass(dst) == HRcInt64) {
+   if (hregClass(dst) == HRcInt64) {
       /* LOCx is not the preferred way to implement an unconditional load. */
       if (cond == S390_CC_ALWAYS) goto use_branch_insn;
 
@@ -10809,7 +10215,7 @@ s390_insn_mimm_emit(UChar *buf, const s390_insn *insn)
       return s390_emit_MVI(buf, value & 0xFF, b, d);
    }
 
-   if (s390_host_has_gie && ulong_fits_signed_16bit(value)) {
+   if (ulong_fits_signed_16bit(value)) {
       value &= 0xFFFF;
       switch (insn->size) {
       case 2: return s390_emit_MVHHI(buf, b, d, value);
@@ -10914,19 +10320,9 @@ s390_tchain_load64(UChar *buf, UChar regno, ULong value)
 {
    UChar *begin = buf;
 
-   if (s390_host_has_eimm) {
-      /* Do it in two steps: upper half [0:31] and lower half [32:63] */
-      buf = s390_emit_IIHF(buf, regno, value >> 32);
-      buf = s390_emit_IILF(buf, regno, value & 0xFFFFFFFF);
-   } else {
-      buf = s390_emit_IILL(buf, regno, value & 0xFFFF);
-      value >>= 16;
-      buf = s390_emit_IILH(buf, regno, value & 0xFFFF);
-      value >>= 16;
-      buf = s390_emit_IIHL(buf, regno, value & 0xFFFF);
-      value >>= 16;
-      buf = s390_emit_IIHH(buf, regno, value & 0xFFFF);
-   }
+   /* Do it in two steps: upper half [0:31] and lower half [32:63] */
+   buf = s390_emit_IIHF(buf, regno, value >> 32);
+   buf = s390_emit_IILF(buf, regno, value & 0xFFFFFFFF);
 
    vassert(buf - begin == s390_tchain_load64_len());
 
@@ -10937,10 +10333,7 @@ s390_tchain_load64(UChar *buf, UChar regno, ULong value)
 static UInt
 s390_tchain_load64_len(void)
 {
-   if (s390_host_has_eimm) {
-      return 6 + 6;      /* IIHF + IILF */
-   }
-   return 4 + 4 + 4 + 4; /* IIHH + IIHL + IILH + IILL */
+   return 6 + 6;      /* IIHF + IILF */
 }
 
 /* Verify that CODE is the code sequence generated by s390_tchain_load64
@@ -10950,46 +10343,15 @@ static const UChar *
 s390_tchain_verify_load64(const UChar *code, UChar regno, ULong value)
 {
    UInt regmask = regno << 4;
-   UInt hw;
 
-   if (s390_host_has_eimm) {
-      /* Check for IIHF */
-      vassert(code[0]  ==  0xC0);
-      vassert(code[1]  == (0x08 | regmask));
-      vassert(*(const UInt *)&code[2] == (value >> 32));
-      /* Check for IILF */
-      vassert(code[6]  ==  0xC0);
-      vassert(code[7]  == (0x09 | regmask));
-      vassert(*(const UInt *)&code[8] == (value & 0xFFFFFFFF));
-   } else {
-      /* Check for IILL */
-      hw = value & 0xFFFF;
-      vassert(code[0]  ==  0xA5);
-      vassert(code[1]  == (0x03 | regmask));
-      vassert(code[2]  == (hw >> 8));
-      vassert(code[3]  == (hw & 0xFF));
-
-      /* Check for IILH */
-      hw = (value >> 16) & 0xFFFF;
-      vassert(code[4]  ==  0xA5);
-      vassert(code[5]  == (0x02 | regmask));
-      vassert(code[6]  == (hw >> 8));
-      vassert(code[7]  == (hw & 0xFF));
-
-      /* Check for IIHL */
-      hw = (value >> 32) & 0xFFFF;
-      vassert(code[8]  ==  0xA5);
-      vassert(code[9]  == (0x01 | regmask));
-      vassert(code[10] == (hw >> 8));
-      vassert(code[11] == (hw & 0xFF));
-
-      /* Check for IIHH */
-      hw = (value >> 48) & 0xFFFF;
-      vassert(code[12] ==  0xA5);
-      vassert(code[13] == (0x00 | regmask));
-      vassert(code[14] == (hw >> 8));
-      vassert(code[15] == (hw & 0xFF));
-   }
+   /* Check for IIHF */
+   vassert(code[0]  ==  0xC0);
+   vassert(code[1]  == (0x08 | regmask));
+   vassert(*(const UInt *)&code[2] == (value >> 32));
+   /* Check for IILF */
+   vassert(code[6]  ==  0xC0);
+   vassert(code[7]  == (0x09 | regmask));
+   vassert(*(const UInt *)&code[8] == (value & 0xFFFFFFFF));
 
    return code + s390_tchain_load64_len();
 }
@@ -11000,21 +10362,10 @@ s390_tchain_verify_load64(const UChar *code, UChar regno, ULong value)
 static UChar *
 s390_tchain_patch_load64(UChar *code, ULong imm64)
 {
-   if (s390_host_has_eimm) {
-      /* Patch IIHF */
-      *(UInt *)&code[2] = imm64 >> 32;
-      /* Patch IILF */
-      *(UInt *)&code[8] = imm64 & 0xFFFFFFFF;
-   } else {
-      code[3]  = imm64 & 0xFF; imm64 >>= 8;
-      code[2]  = imm64 & 0xFF; imm64 >>= 8;
-      code[7]  = imm64 & 0xFF; imm64 >>= 8;
-      code[6]  = imm64 & 0xFF; imm64 >>= 8;
-      code[11] = imm64 & 0xFF; imm64 >>= 8;
-      code[10] = imm64 & 0xFF; imm64 >>= 8;
-      code[15] = imm64 & 0xFF; imm64 >>= 8;
-      code[14] = imm64 & 0xFF; imm64 >>= 8;
-   }
+   /* Patch IIHF */
+   *(UInt *)&code[2] = imm64 >> 32;
+   /* Patch IILF */
+   *(UInt *)&code[8] = imm64 & 0xFFFFFFFF;
 
    return code + s390_tchain_load64_len();
 }
@@ -11254,8 +10605,7 @@ s390_insn_xassisted_emit(UChar *buf, const s390_insn *insn,
 
    The dispatch counter is a 32-bit value. */
 static UChar *
-s390_insn_evcheck_emit(UChar *buf, const s390_insn *insn,
-                       VexEndness endness_host)
+s390_insn_evcheck_emit(UChar *buf, const s390_insn *insn)
 {
    s390_amode *amode;
    UInt b, d;
@@ -11269,13 +10619,7 @@ s390_insn_evcheck_emit(UChar *buf, const s390_insn *insn,
    d = amode->d;
 
    /* Decrement the dispatch counter in the guest state */
-   if (s390_host_has_gie) {
-      buf = s390_emit_ASI(buf, -1, b, DISP20(d));   /* 6 bytes */
-   } else {
-      buf = s390_emit_LHI(buf, R0, -1);             /* 4 bytes */
-      buf = s390_emit_A(buf, R0, 0, b, d);          /* 4 bytes */
-      buf = s390_emit_ST(buf, R0, 0, b, d);         /* 4 bytes */
-   }
+   buf = s390_emit_ASI(buf, -1, b, DISP20(d));   /* 6 bytes */
 
    /* Jump over the next insn if >= 0 */
    buf = s390_emit_BRC(buf, S390_CC_HE, (4 + 6 + 2) / 2);  /* 4 bytes */
@@ -11306,13 +10650,7 @@ s390_insn_profinc_emit(UChar *buf,
       template will be patched once the memory location is known.
       For now we do this with address == 0. */
    buf = s390_tchain_load64(buf, S390_REGNO_TCHAIN_SCRATCH, 0);
-   if (s390_host_has_gie) {
-      buf = s390_emit_AGSI(buf, 1, S390_REGNO_TCHAIN_SCRATCH, DISP20(0));
-   } else {
-      buf = s390_emit_LGHI(buf, R0, 1);
-      buf = s390_emit_AG( buf, R0, 0, S390_REGNO_TCHAIN_SCRATCH, DISP20(0));
-      buf = s390_emit_STG(buf, R0, 0, S390_REGNO_TCHAIN_SCRATCH, DISP20(0));
-   }
+   buf = s390_emit_AGSI(buf, 1, S390_REGNO_TCHAIN_SCRATCH, DISP20(0));
 
    return buf;
 }
@@ -11543,7 +10881,7 @@ s390_insn_vec_replicate_emit(UChar *buf, const s390_insn *insn)
 
 Int
 emit_S390Instr(Bool *is_profinc, UChar *buf, Int nbuf, const s390_insn *insn,
-               Bool mode64, VexEndness endness_host,
+               Bool mode64, const VexArchInfo *archinfo,
                const void *disp_cp_chain_me_to_slowEP,
                const void *disp_cp_chain_me_to_fastEP,
                const void *disp_cp_xindir,
@@ -11706,7 +11044,7 @@ emit_S390Instr(Bool *is_profinc, UChar *buf, Int nbuf, const s390_insn *insn,
       break;
 
    case S390_INSN_EVCHECK:
-      end = s390_insn_evcheck_emit(buf, insn, endness_host);
+      end = s390_insn_evcheck_emit(buf, insn);
       break;
 
    case S390_INSN_XDIRECT:
@@ -11758,7 +11096,7 @@ emit_S390Instr(Bool *is_profinc, UChar *buf, Int nbuf, const s390_insn *insn,
 Int
 evCheckSzB_S390(void)
 {
-   return s390_host_has_gie ? 18 : 24;
+   return 18;
 }
 
 

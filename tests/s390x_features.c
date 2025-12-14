@@ -51,23 +51,33 @@
 #define GET_HWCAP() 0UL
 #endif
 
-/* Number of double words needed to store all facility bits. */
-#define S390_NUM_FACILITY_DW 3
+/* Return the number of double words needed to store all facility bits */
+static unsigned get_num_facility_dw(void)
+{
+   unsigned long long facilities[1];
 
-static void clear_facilities(unsigned long long *ret)
+   register unsigned long long r0 asm("0") = 0;
+   asm volatile(".insn s,0xb2b00000,%0\n" /* stfle */
+                : "=Q" (facilities), "+d"(r0)
+                :
+                : "cc", "memory");
+   return r0 + 1;
+}
+
+static void clear_facilities(unsigned long long *ret, unsigned num_dw)
 {
    unsigned int index;
-   for(index = 0; index < S390_NUM_FACILITY_DW; index++)
+   for(index = 0; index < num_dw; index++)
    {
       ret[index] = 0ULL;
    }
 }
 
-void stfle(unsigned long long *ret)
+void stfle(unsigned long long *ret, unsigned num_dw)
 {
-   register unsigned long long r0 asm("0") = S390_NUM_FACILITY_DW - 1;
+   register unsigned long long r0 asm("0") = num_dw - 1;
    asm volatile(".insn s,0xb2b00000,%0\n" /* stfle */
-                : "=m" (*ret), "+d"(r0) :: "cc", "memory");
+                : "=Q" (*ret), "+d"(r0) :: "cc", "memory");
 }
 
 
@@ -217,38 +227,24 @@ static model_info *get_host(void)
 
 static int go(char *feature, char *cpu)
 {
-   unsigned long long facilities[S390_NUM_FACILITY_DW];
    unsigned long long match;
    model_info *host, *from, *to, *p;
    char *colon;
 
-   clear_facilities(facilities);
-   stfle(facilities);
+   unsigned num_dw = get_num_facility_dw();
+   unsigned long long facilities[num_dw];
 
-   if        (strcmp(feature, "s390x-zarch") == 0 ) {
-      match = (facilities[0] & FAC_BIT(1)) && (facilities[0] & FAC_BIT(2));
-   } else if (strcmp(feature, "s390x-n3") == 0 ) {
-      match = facilities[0] & FAC_BIT(0);
-   } else if (strcmp(feature, "s390x-eimm") == 0 ) {
-      match = facilities[0] & FAC_BIT(21);
-   } else if (strcmp(feature, "s390x-genins") == 0 ) {
-      match = facilities[0] & FAC_BIT(34);
-   } else if (strcmp(feature, "s390x-exrl") == 0 ) {
-      match = facilities[0] & FAC_BIT(35);
-   } else if (strcmp(feature, "s390x-pfpo") == 0 ) {
-      match = facilities[0] & FAC_BIT(44);
-   } else if (strcmp(feature, "s390x-highw") == 0 ) {
-      match = facilities[0] & FAC_BIT(45);
-   } else if (strcmp(feature, "s390x-vx") == 0 ) {
+   clear_facilities(facilities, num_dw);
+   stfle(facilities, num_dw);
+
+   if (strcmp(feature, "s390x-vx") == 0 ) {
       /* VX needs kernel support; thus check the appropriate HWCAP bit. */
-      match = GET_HWCAP() & 0x800;
+      match = (GET_HWCAP() & 0x800) && (facilities[2] & FAC_BIT(1));
    } else if (strcmp(feature, "s390x-msa5") == 0 ) {
       match = facilities[0] & FAC_BIT(57); /* message security assist 5 facility */
    } else if (strcmp(feature, "s390x-mi2") == 0 ) {
       match = facilities[0] & FAC_BIT(58);
-   } else if (strcmp(feature, "s390x-mi3") == 0 ) {
-      match = facilities[0] & FAC_BIT(61);
-   } else if (strcmp(feature, "s390x-vx2") == 0 ) {
+   } else if (strcmp(feature, "s390x-vxe2") == 0 ) {
       match = (GET_HWCAP() & 0x800) && (facilities[2] & FAC_BIT(20));
    } else {
       return 2;          // Unrecognised feature.
