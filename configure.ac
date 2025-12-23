@@ -546,9 +546,17 @@ case "${host_os}" in
 		  AC_MSG_RESULT([Darwin 18.x (${kernel}) / macOS 10.14 Mojave])
 		  DARWIN_VERS=$DARWIN_10_14
 		  ;;
+	     19.*)
+		  AC_MSG_RESULT([Darwin 19.x (${kernel}) / macOS 10.15 Catalina])
+		  DARWIN_VERS=$DARWIN_10_15
+		  ;;
+	     20.*)
+		  AC_MSG_RESULT([Darwin 20.x (${kernel}) / macOS 11 Big Sur])
+		  DARWIN_VERS=$DARWIN_11_00
+		  ;;
 	     *)
 		  AC_MSG_RESULT([unsupported (${darwin_platform} ${kernel})])
-		  AC_MSG_ERROR([Valgrind works on Darwin 10.x-25.x (Mac OS X 10.8-10.11, macOS 10.12-10.13)])
+		  AC_MSG_ERROR([Valgrind works on Darwin 12.x-19.x (Mac OS X 10.8-10.11, macOS 10.12-10.15)])
 		  ;;
 	esac
 
@@ -678,7 +686,7 @@ esac
 # does not support building 32 bit programs
 
 case "$ARCH_MAX-$VGCONF_OS" in
-     amd64-linux|ppc64be-linux|arm64-linux|amd64-solaris)
+     amd64-linux|ppc64be-linux|arm64-linux|amd64-solaris|amd64-darwin|amd64-freebsd)
         AC_MSG_CHECKING([for 32 bit build support])
         safe_CFLAGS=$CFLAGS
         CFLAGS="-m32"
@@ -761,83 +769,83 @@ case "$ARCH_MAX-$VGCONF_OS" in
      x86-linux)
         VGCONF_ARCH_PRI="x86"
         VGCONF_ARCH_SEC=""
-	VGCONF_PLATFORM_PRI_CAPS="X86_LINUX"
-	VGCONF_PLATFORM_SEC_CAPS=""
+        VGCONF_PLATFORM_PRI_CAPS="X86_LINUX"
+        VGCONF_PLATFORM_SEC_CAPS=""
         valt_load_address_pri_norml="0x58000000"
         valt_load_address_pri_inner="0x38000000"
         valt_load_address_sec_norml="0xUNSET"
         valt_load_address_sec_inner="0xUNSET"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
-	;;
+        ;;
      amd64-linux)
         valt_load_address_sec_norml="0xUNSET"
         valt_load_address_sec_inner="0xUNSET"
-	if test x$vg_cv_only64bit = xyes; then
+        if test x$vg_cv_only64bit = xyes; then
            VGCONF_ARCH_PRI="amd64"
            VGCONF_ARCH_SEC=""
-	   VGCONF_PLATFORM_PRI_CAPS="AMD64_LINUX"
-	   VGCONF_PLATFORM_SEC_CAPS=""
+           VGCONF_PLATFORM_PRI_CAPS="AMD64_LINUX"
+           VGCONF_PLATFORM_SEC_CAPS=""
            valt_load_address_pri_norml="0x58000000"
            valt_load_address_pri_inner="0x38000000"
-	elif test x$vg_cv_only32bit = xyes; then
-	   VGCONF_ARCH_PRI="x86"
+       elif test x$vg_cv_only32bit = xyes; then
+           VGCONF_ARCH_PRI="x86"
            VGCONF_ARCH_SEC=""
-	   VGCONF_PLATFORM_PRI_CAPS="X86_LINUX"
-	   VGCONF_PLATFORM_SEC_CAPS=""
+           VGCONF_PLATFORM_PRI_CAPS="X86_LINUX"
+           VGCONF_PLATFORM_SEC_CAPS=""
            valt_load_address_pri_norml="0x58000000"
            valt_load_address_pri_inner="0x38000000"
-	else
+       else
            VGCONF_ARCH_PRI="amd64"
            VGCONF_ARCH_SEC="x86"
-	   VGCONF_PLATFORM_PRI_CAPS="AMD64_LINUX"
-	   VGCONF_PLATFORM_SEC_CAPS="X86_LINUX"
+           VGCONF_PLATFORM_PRI_CAPS="AMD64_LINUX"
+           VGCONF_PLATFORM_SEC_CAPS="X86_LINUX"
            valt_load_address_pri_norml="0x58000000"
            valt_load_address_pri_inner="0x38000000"
            valt_load_address_sec_norml="0x58000000"
            valt_load_address_sec_inner="0x38000000"
-	fi
+        fi
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
-	;;
+        ;;
      ppc32-linux)
         VGCONF_ARCH_PRI="ppc32"
         VGCONF_ARCH_SEC=""
-	VGCONF_PLATFORM_PRI_CAPS="PPC32_LINUX"
-	VGCONF_PLATFORM_SEC_CAPS=""
+        VGCONF_PLATFORM_PRI_CAPS="PPC32_LINUX"
+        VGCONF_PLATFORM_SEC_CAPS=""
         valt_load_address_pri_norml="0x58000000"
         valt_load_address_pri_inner="0x38000000"
         valt_load_address_sec_norml="0xUNSET"
         valt_load_address_sec_inner="0xUNSET"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
-	;;
+        ;;
      ppc64be-linux)
         valt_load_address_sec_norml="0xUNSET"
         valt_load_address_sec_inner="0xUNSET"
-	if test x$vg_cv_only64bit = xyes; then
-	   VGCONF_ARCH_PRI="ppc64be"
+        if test x$vg_cv_only64bit = xyes; then
+           VGCONF_ARCH_PRI="ppc64be"
            VGCONF_ARCH_SEC=""
-	   VGCONF_PLATFORM_PRI_CAPS="PPC64BE_LINUX"
-	   VGCONF_PLATFORM_SEC_CAPS=""
+           VGCONF_PLATFORM_PRI_CAPS="PPC64BE_LINUX"
+           VGCONF_PLATFORM_SEC_CAPS=""
            valt_load_address_pri_norml="0x58000000"
            valt_load_address_pri_inner="0x38000000"
-	elif test x$vg_cv_only32bit = xyes; then
-	   VGCONF_ARCH_PRI="ppc32"
+        elif test x$vg_cv_only32bit = xyes; then
+           VGCONF_ARCH_PRI="ppc32"
            VGCONF_ARCH_SEC=""
-	   VGCONF_PLATFORM_PRI_CAPS="PPC32_LINUX"
-	   VGCONF_PLATFORM_SEC_CAPS=""
+           VGCONF_PLATFORM_PRI_CAPS="PPC32_LINUX"
+           VGCONF_PLATFORM_SEC_CAPS=""
            valt_load_address_pri_norml="0x58000000"
            valt_load_address_pri_inner="0x38000000"
-	else
-	   VGCONF_ARCH_PRI="ppc64be"
+        else
+           VGCONF_ARCH_PRI="ppc64be"
            VGCONF_ARCH_SEC="ppc32"
-	   VGCONF_PLATFORM_PRI_CAPS="PPC64BE_LINUX"
-	   VGCONF_PLATFORM_SEC_CAPS="PPC32_LINUX"
+           VGCONF_PLATFORM_PRI_CAPS="PPC64BE_LINUX"
+           VGCONF_PLATFORM_SEC_CAPS="PPC32_LINUX"
            valt_load_address_pri_norml="0x58000000"
            valt_load_address_pri_inner="0x38000000"
            valt_load_address_sec_norml="0x58000000"
            valt_load_address_sec_inner="0x38000000"
-	fi
+        fi
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
-	;;
+        ;;
      ppc64le-linux)
         # Little Endian is only supported on PPC64
         valt_load_address_sec_norml="0xUNSET"

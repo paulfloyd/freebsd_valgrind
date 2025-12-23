@@ -326,6 +326,10 @@ DebugInfo* alloc_DebugInfo( const HChar* filename )
       di->ddump_frames = VG_(clo_debug_dump_frames);
    }
 
+#if DARWIN_VERS >= DARWIN_11_00
+   di->from_memory = False;
+#endif
+
    return di;
 }
 
@@ -555,9 +559,26 @@ static Bool ranges_overlap (Addr s1, SizeT len1, Addr s2, SizeT len2 )
 /* Do the basic mappings of the two DebugInfos overlap in any way? */
 static Bool do_DebugInfos_overlap ( const DebugInfo* di1, const DebugInfo* di2 )
 {
-   Word i, j;
    vg_assert(di1);
    vg_assert(di2);
+#if defined(VGO_darwin) && DARWIN_VERS >= DARWIN_10_15
+   // FIXME: This is probably wrong but the other methods returns too many false positives
+   // as it doesn't account for munmap being called on one of these maps.
+   // dyld will mmap and then munmap every library ro_map at the same address thus every library shows
+   // an overlap and only the last is retained, making most debug UNKNOW_FUNCTION UNKNOWN_OBJECT.
+   // Seeing how discard_syms_in_range relies exclusively on text_* to check conflicts, let's do the same here
+
+   // Sanity check needed by discard_DebugInfos_which_overlap_with
+   if (di1 == di2) {
+     return True;
+   }
+   if (!di1->text_present || !di2->text_present) {
+     return False;
+   }
+   return ranges_overlap(di1->text_avma, di1->text_size, di2->text_avma, di2->text_size);
+#else
+   Word i, j;
+
    for (i = 0; i < VG_(sizeXA)(di1->fsm.maps); i++) {
       const DebugInfoMapping* map1 = VG_(indexXA)(di1->fsm.maps, i);
       for (j = 0; j < VG_(sizeXA)(di2->fsm.maps); j++) {
@@ -569,6 +590,7 @@ static Bool do_DebugInfos_overlap ( const DebugInfo* di1, const DebugInfo* di2 )
    }
 
    return False;
+#endif
 }
 
 
@@ -1862,6 +1884,62 @@ void VG_(di_notify_pdb_debuginfo)( Int fd_obj, Addr avma_obj,
 
 #endif /* defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris) || defined(VGO_freebsd) */
 
+#if defined(VGO_darwin) && DARWIN_VERS >= DARWIN_11_00
+// Special version of VG_(di_notify_mmap) specifically to read debug info from the DYLD Shared Cache (DSC)
+// We only use this on macOS 11.0 and later, because Apple stopped shipping dylib on-disk then.
+
+ULong VG_(di_notify_dsc)( const HChar* filename, Addr header, SizeT len )
+{
+   DebugInfo* di;
+   Int rw_load_count;
+   const Bool       debug = VG_(debugLog_getLevel)() >= 3;
+
+   if (debug)
+      VG_(dmsg)("di_notify_dsc-1: %s at %#lx-%#lx\n", filename, header, header+len);
+
+   if (!ML_(check_macho_and_get_rw_loads_from_memory)( (const void*) header, len, &rw_load_count ))
+      return 0;
+
+   /* See if we have a DebugInfo for this filename.  If not,
+      create one. */
+   di = find_or_create_DebugInfo_for( filename );
+   vg_assert(di);
+
+   di->from_memory = True;
+
+   if (di->have_dinfo) {
+      if (debug)
+         VG_(dmsg)("di_notify_dsc-2x: "
+                   "ignoring mapping because we already read debuginfo "
+                   "for DebugInfo* %p\n", di);
+      return 0;
+   }
+
+   if (debug)
+      VG_(dmsg)("di_notify_dsc-2: "
+                "noting details in DebugInfo* at %p\n", di);
+
+   /* Note the details about the mapping. */
+   DebugInfoMapping map;
+   map.avma = header;
+   map.size = len;
+   map.foff = 0;
+   map.rx   = True;
+   map.rw   = False;
+   map.ro   = False;
+   VG_(addToXA)(di->fsm.maps, &map);
+
+   /* Update flags about what kind of mappings we've already seen. */
+   di->fsm.have_rx_map |= True;
+
+   vg_assert(!di->have_dinfo);
+
+   if (debug)
+      VG_(dmsg)("di_notify_dsc-3: "
+                "achieved accept state for %s\n", filename);
+   return di_notify_ACHIEVE_ACCEPT_STATE ( di );
+}
+#endif
 
 /*------------------------------------------------------------*/
 /*---                                                      ---*/

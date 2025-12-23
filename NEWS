@@ -6,7 +6,7 @@ PPC32/Linux, PPC64BE/Linux, PPC64LE/Linux, S390X/Linux, MIPS32/Linux,
 MIPS64/Linux, RISCV64/Linux, ARM/Android, ARM64/Android, MIPS32/Android,
 X86/Android, X86/Solaris, AMD64/Solaris, X86/macOS, AMD64/macOS. 
 X86/FreeBSD, AMD64/FreeBSD and ARM64/FreeBSD. There is preliminary support
-for nanoMIPS/Linux. macOS is supported up to version 10.14 Mojave.
+for nanoMIPS/Linux. macOS is supported up to version 11 Big Sur (amd64 only).
 
 * ==================== CORE CHANGES ===================
 
@@ -14,7 +14,11 @@ for nanoMIPS/Linux. macOS is supported up to version 10.14 Mojave.
 
 s390x: Machine models older than z196 are no longer supported.
 
-Initial support for macOS 10.14 Mojave has been added.
+Support for the following macOS versions has been added
+10,13 High Sierra (bug fixes)
+10.14 Mojave
+10.15 Calalina
+11.0  Big Sur
 
 * ==================== TOOL CHANGES ===================
 
@@ -29,6 +33,7 @@ than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
 228343  none/tests/darwin/bug228343 fails on OS X
+258140  Valgrind on OS X always reports some memory "still reachable"
 413369  unhandled amd64-darwin syscall: unix:151 (getpgid)
 487055  memcheck/tests/x86-linux/scalar fails running in Docker
 509562  s390x: Define minimum required machine model
@@ -45,6 +50,9 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 512030  s390x: bfp-convert testcase fails
 512037  malloc trace does not print free size or alignment
 512571  regtest problems with darwin dsymuti
+513257  Add missing syswraps for lsm_list_modules
+513522  m_libcassert.c: 'ordered comparison of pointer with integer zero'
+        compiler warning
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

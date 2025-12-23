@@ -218,6 +218,11 @@
 #define __NR_host_create_mach_voucher_trap    VG_DARWIN_SYSCALL_CONSTRUCT_MACH(70)
 #endif
 
+#if DARWIN_VERS >= DARWIN_10_15
+#define __NR_kernelrpc_mach_port_type_trap VG_DARWIN_SYSCALL_CONSTRUCT_MACH(76)
+#define __NR_kernelrpc_mach_port_request_notification_trap VG_DARWIN_SYSCALL_CONSTRUCT_MACH(77)
+#endif
+
 #define __NR_mach_voucher_extract_attr_recipe_trap VG_DARWIN_SYSCALL_CONSTRUCT_MACH(72)
 
 #define __NR_mach_timebase_info               VG_DARWIN_SYSCALL_CONSTRUCT_MACH(89)
@@ -858,6 +863,26 @@
 #define	__NR_kqueue_workloop_ctl    VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(530)
 #define	__NR___mach_bridge_remote_time VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(531)
 #endif /* DARWIN_VERS >= DARWIN_10_14 */
+
+#if DARWIN_VERS >= DARWIN_10_15
+#define __NR_coalition_ledger               VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(532)
+#define __NR_log_data                       VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(533)
+#define __NR_memorystatus_available_memory  VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(534)
+#endif
+
+#if DARWIN_VERS >= DARWIN_11_00
+#define __NR_objc_bp_assist_cfg_np              VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(535)
+#define __NR_shared_region_map_and_slide_2_np   VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(536)
+#define __NR_pivot_root                         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(537)
+#define __NR_task_inspect_for_pid               VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(538)
+#define __NR_task_read_for_pid                  VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(539)
+#define __NR_sys_preadv                         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(540)
+#define __NR_sys_pwritev                        VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(541)
+#define __NR_sys_preadv_nocancel                VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(542)
+#define __NR_sys_pwritev_nocancel               VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(543)
+#define __NR_ulock_wait2                        VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(544)
+#define __NR_proc_info_extended_id              VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(545)
+#endif
 
 #define __NR_darwin_fake_sigreturn  VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(1000)
 

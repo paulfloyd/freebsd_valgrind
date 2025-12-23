@@ -864,7 +864,7 @@ static SyscallTableEntry syscall_table[] = {
    GENX_(__NR_madvise,           sys_madvise),           // 205
    GENXY(__NR_mincore,           sys_mincore),           // 206
    LINX_(__NR_gettid,            sys_gettid),            // 207
-//..    LINX_(__NR_tkill,             sys_tkill),             // 208 */Linux
+   LINX_(__NR_tkill,             sys_tkill),             // 208 */Linux
    LINX_(__NR_setxattr,          sys_setxattr),          // 209
    LINX_(__NR_lsetxattr,         sys_lsetxattr),         // 210
    LINX_(__NR_fsetxattr,         sys_fsetxattr),         // 211
@@ -954,6 +954,8 @@ static SyscallTableEntry syscall_table[] = {
    LINXY(__NR_pselect6,          sys_pselect6),          // 280
    LINXY(__NR_ppoll,             sys_ppoll),             // 281
 
+   LINX_(__NR_splice,            sys_splice),            // 283
+
    LINXY(__NR_openat,            sys_openat),            // 286
    LINX_(__NR_mkdirat,           sys_mkdirat),           // 287
    LINX_(__NR_mknodat,           sys_mknodat),           // 288
@@ -992,6 +994,7 @@ static SyscallTableEntry syscall_table[] = {
    LINX_(__NR_pwritev,           sys_pwritev),          // 321
    LINXY(__NR_rt_tgsigqueueinfo, sys_rt_tgsigqueueinfo),// 322
 
+   LINXY(__NR_prlimit64,         sys_prlimit64),        // 325
    LINXY(__NR_socket,            sys_socket),           // 326
    LINX_(__NR_bind,              sys_bind),             // 327
    LINX_(__NR_connect,           sys_connect),          // 328
@@ -1027,6 +1030,8 @@ static SyscallTableEntry syscall_table[] = {
    LINX_ (__NR_execveat,         sys_execveat),         // 362
 
    LINXY(__NR_userfaultfd,       sys_userfaultfd),      // 364
+   LINX_(__NR_membarrier,        sys_membarrier),       // 365
+
    GENX_(__NR_mlock2,            sys_mlock2),           // 378
    LINX_(__NR_copy_file_range,   sys_copy_file_range),  // 379
    LINX_(__NR_preadv2,           sys_preadv2),          // 380
@@ -1087,8 +1092,9 @@ static SyscallTableEntry syscall_table[] = {
    LINX_ (__NR_fchmodat2,        sys_fchmodat2),         // 452
    LINXY (__NR_statmount,        sys_statmount),         // 457
    LINXY (__NR_listmount,        sys_listmount),         // 458
-   LINXY(__NR_lsm_get_self_attr, sys_lsm_get_self_attr), // 459
-   LINX_(__NR_lsm_set_self_attr, sys_lsm_set_self_attr), // 460
+   LINXY (__NR_lsm_get_self_attr,sys_lsm_get_self_attr), // 459
+   LINX_ (__NR_lsm_set_self_attr,sys_lsm_set_self_attr), // 460
+   LINXY (__NR_lsm_list_modules, sys_lsm_list_modules),  // 461
    LINX_ (__NR_mseal,            sys_mseal),             // 462
    LINXY (__NR_file_getattr,     sys_file_getattr),      // 468
    LINX_ (__NR_file_setattr,     sys_file_setattr),      // 469

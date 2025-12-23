@@ -2656,7 +2656,19 @@ static int pthread_rwlock_trywrlock_WRK(pthread_rwlock_t* rwlock)
                  pthread_rwlock_t*,rwlock, long,1/*isW*/,
                  long, (ret == 0) ? True : False);
    if (ret != 0) {
+      Bool api_error = False;
+#if defined(VGO_darwin)
+      // When rwlock is locked and there is an attempt to trylock it on the
+      // same thread POSIX says that it may return EADADLK. Darwin is the
+      // only one to do this, Linux, FreeBSD and Solaris all return EBUSY.
+      if (ret != EBUSY && ret != EDEADLK)
+         api_error = True;
+#else
       if (ret != EBUSY)
+         api_error = True;
+#endif
+
+      if (api_error)
          DO_PthAPIerror( "pthread_rwlock_trywrlock", ret );
    }
 
@@ -3118,6 +3130,7 @@ static int sem_init_WRK(sem_t* sem, int pshared, unsigned long value)
       return sem_init_WRK(sem, pshared, value);
    }
 #elif defined(VGO_darwin)
+// exists but fails with ENOSYS function not implemented
    LIBC_FUNC(int, semZuinit, // sem_init
                  sem_t* sem, int pshared, unsigned long value) {
       return sem_init_WRK(sem, pshared, value);
@@ -3206,6 +3219,7 @@ static int sem_destroy_WRK(sem_t* sem)
       return sem_destroy_WRK(sem);
    }
 #elif defined(VGO_darwin)
+// exists but fails with ENOSYS function not implemented
    LIBC_FUNC(int, semZudestroy,  // sem_destroy
                  sem_t* sem) {
       return sem_destroy_WRK(sem);
@@ -3274,6 +3288,7 @@ static int sem_wait_WRK(sem_t* sem)
       return sem_wait_WRK(sem);
    }
 #elif defined(VGO_darwin)
+// exists but fails with EBADF bad file number
    LIBC_FUNC(int, semZuwait, sem_t* sem) { /* sem_wait */
       return sem_wait_WRK(sem);
    }

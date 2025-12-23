@@ -362,7 +362,9 @@ DECL_TEMPLATE(darwin, gettid);                  // 286
 // NYI mkfifo_extended 291
 // NYI mkdir_extended 292
 // NYI identitysvc 293
-// NYI shared_region_check_np 294
+#if DARWIN_VERS >= DARWIN_11_00
+DECL_TEMPLATE(darwin, shared_region_check_np); // 294
+#endif
 // NYI shared_region_map_np 295
 #if DARWIN_VERS >= DARWIN_10_6
 // NYI vm_pressure_monitor 296
@@ -540,7 +542,9 @@ DECL_TEMPLATE(darwin, fileport_makeport);        // 430
 // NYI pid_shutdown_sockets 436
 #endif /* DARWIN_VERS >= DARWIN_10_10 */
 // old old shared_region_slide_np 437
-// NYI shared_region_map_and_slide_np            // 438
+#if DARWIN_VERS >= DARWIN_11_00
+DECL_TEMPLATE(darwin, shared_region_map_and_slide_np); // 438
+#endif
 // NYI kas_info                                  // 439
 // NYI memorystatus_control                      // 440
 DECL_TEMPLATE(darwin, guarded_open_np);          // 441
@@ -650,6 +654,24 @@ DECL_TEMPLATE(darwin, abort_with_payload);          // 521
 // NYI kqueue_workloop_ctl                          // 530
 // NYI __mach_bridge_remote_time                    // 531
 #endif /* DARWIN_VERS >= DARWIN_10_14 */
+#if DARWIN_VERS >= DARWIN_10_15
+// NYI coalition_ledger               // 532
+// NYI log_data                       // 533
+// NYI memorystatus_available_memory  // 534
+#endif
+#if DARWIN_VERS >= DARWIN_11_00
+DECL_TEMPLATE(darwin, objc_bp_assist_cfg_np); // 535
+// NYI shared_region_map_and_slide_2_np   // 536
+// NYI pivot_root                         // 537
+// NYI task_inspect_for_pid               // 538
+DECL_TEMPLATE(darwin, task_read_for_pid); // 539
+// NYI sys_preadv                         // 540
+// NYI sys_pwritev                        // 541
+// NYI sys_preadv_nocancel                // 542
+// NYI sys_pwritev_nocancel               // 543
+DECL_TEMPLATE(darwin, ulock_wait2);       // 544
+// NYI proc_info_extended_id              // 545
+#endif
 
 // Mach message helpers
 DECL_TEMPLATE(darwin, mach_port_set_context);
@@ -793,6 +815,12 @@ DECL_TEMPLATE(darwin, swtch_pri);
 #if DARWIN_VERS >= DARWIN_10_14
 DECL_TEMPLATE(darwin, kernelrpc_mach_port_get_attributes_trap);
 #endif /* DARWIN_VERS >= DARWIN_10_14 */
+
+#if DARWIN_VERS >= DARWIN_10_15
+DECL_TEMPLATE(darwin, task_restartable_ranges_register);
+DECL_TEMPLATE(darwin, kernelrpc_mach_port_type_trap);
+DECL_TEMPLATE(darwin, kernelrpc_mach_port_request_notification_trap);
+#endif /* DARWIN_VERS >= DARWIN_10_15 */
 
 // Machine-dependent traps
 DECL_TEMPLATE(darwin, thread_fast_set_cthread_self);
