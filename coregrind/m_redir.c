@@ -539,7 +539,7 @@ void VG_(redir_notify_new_DebugInfo)( DebugInfo* newdi )
           * set a global flag.
           *
           * https://bugs.kde.org/show_bug.cgi?id=497723 but not for
-          * callgrind because demangled overloaded manes get
+          * callgrind because demangled overloaded names get
           * incorrectly counted together.
           */
          if (!isText && VG_(strcmp)(*names, "__gnat_ada_main_program_name") == 0 &&
