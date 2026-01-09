@@ -6,9 +6,19 @@ PPC32/Linux, PPC64BE/Linux, PPC64LE/Linux, S390X/Linux, MIPS32/Linux,
 MIPS64/Linux, RISCV64/Linux, ARM/Android, ARM64/Android, MIPS32/Android,
 X86/Android, X86/Solaris, AMD64/Solaris, X86/macOS, AMD64/macOS. 
 X86/FreeBSD, AMD64/FreeBSD and ARM64/FreeBSD. There is preliminary support
-for nanoMIPS/Linux. macOS is supported up to version 11 Big Sur (amd64 only).
+for nanoMIPS/Linux. macOS is supported up to version 12 Monterey (amd64 only).
 
 * ==================== CORE CHANGES ===================
+
+* linux madvise MADV_GUARD_INSTALL unsupported
+
+  glibc 2.42+ (with linux 6.13+) uses MADV_GUARD_INSTALL to setup
+  stack guard pages. valgrind currently isn't able to track this and
+  such guard pages also don't show up in /proc maps (only in /proc
+  pagemap since linux 6.14). For now valgrind fails a madvise
+  MADV_GUARD_INSTALL syscall with EINVAL. This causes glibc to fall
+  back to mprotect PROT_NONE which valgrind is able to track.
+  See also https://bugs.kde.org/show_bug.cgi?id=514297
 
 * ================== PLATFORM CHANGES =================
 
@@ -18,7 +28,8 @@ Support for the following macOS versions has been added
 10,13 High Sierra (bug fixes)
 10.14 Mojave
 10.15 Calalina
-11.0  Big Sur
+11.0  Big Sur (Intel only)
+12.0  Monterey (intel only)
 
 * ==================== TOOL CHANGES ===================
 
@@ -44,6 +55,8 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 511329  Darwin and FreeBSD: Move setting of carry flag out of
         ML_(do_syscall_for_client_WRK)
 511713  Refactor syscall argument handling
+511717  gdbserver (valgrind_read_memory) the 'impossible' happened:
+        Killed by fatal signal (SIGSEGV)
 511972  valgrind-3.26.0 tests fail to build on upcomig gcc-16:
         unrecognized command-line option
         '-Wno-alloc-size-larger-than=18446744073709551615'
@@ -53,6 +66,8 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 513257  Add missing syswraps for lsm_list_modules
 513522  m_libcassert.c: 'ordered comparison of pointer with integer zero'
         compiler warning
+513475  Add SSE4.1 PMULLD instruction for x86 32 bit
+514094  readlink("/proc/self/exe") overwrites buffer beyond its return value 
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
@@ -1119,6 +1134,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 506211  Constant folding improvements
 506453  Unexpected behaviour with IR injection and vex-guest-chase=yes
 509157  riscv64: Shift instructions can behave wrong
+510840  Use objdump for disassembly in VEX (s390x only)
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

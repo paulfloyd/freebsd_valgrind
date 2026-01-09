@@ -884,6 +884,11 @@
 #define __NR_proc_info_extended_id              VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(545)
 #endif
 
+#if DARWIN_VERS >= DARWIN_12_00
+#define __NR_tracker_action         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(546)
+#define __NR_debug_syscall_reject   VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(547)
+#endif
+
 #define __NR_darwin_fake_sigreturn  VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(1000)
 
 #endif

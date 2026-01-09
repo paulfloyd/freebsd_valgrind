@@ -84,7 +84,7 @@ static int summary = 0;
 int
 main(int argc, char *argv[])
 {
-   int all = 0, verify = 0, generate = 0, unit_test = 0;
+   int all = 0, verify = 0, generate = 0, unit_test = 0, all_except_exrl = 0;
    int num_clargs = 0;
    int run = 0, check_prereq = 0;
    const char *clargs[argc];
@@ -105,6 +105,9 @@ main(int argc, char *argv[])
          verify = 1;
       } else if (CHECK_CLO(clo, "--generate")) {
          generate = 1;
+      } else if (CHECK_CLO(clo, "--all-except-exrl")) {
+         all = 1;
+         all_except_exrl = 1;
       } else if (CHECK_CLO(clo, "--all")) {
          all = 1;
       } else if (CHECK_CLO(clo, "--verbose")) {
@@ -229,6 +232,9 @@ main(int argc, char *argv[])
 
       for (int i = 0; i < num_opcodes; ++i) {
          opcode *opc = get_opcode_by_index(i); // never NULL
+
+         if (all_except_exrl && strcmp(opc->name, "exrl") == 0)
+            continue;
 
          if (opcode_has_errors(opc)) {
             error("Opcode '%s' ignored due to syntax errors\n",

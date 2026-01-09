@@ -13069,6 +13069,38 @@ DisResult disInstr_X86_WRK (
      goto decode_success;
    }
 
+   /* 66 0F 38 40 /r  - PMULLD xmm1, xmm2/m128
+      32x4 integer multiply from xmm2/m128 to xmm1 */
+   if (sz == 2
+       && insn[0] == 0x0F && insn[1] == 0x38 && insn[2] == 0x40) {
+
+      modrm = insn[3];
+
+      IRTemp argL = newTemp(Ity_V128);
+      IRTemp argR = newTemp(Ity_V128);
+
+      if (epartIsReg(modrm)) {
+         assign( argL, getXMMReg( eregOfRM(modrm) ) );
+         delta += 3+1;
+         DIP( "pmulld %s,%s\n",
+              nameXMMReg( eregOfRM(modrm) ),
+              nameXMMReg( gregOfRM(modrm) ) );
+      } else {
+         addr = disAMode( &alen, sorb, delta+3, dis_buf );
+         assign( argL, loadLE( Ity_V128, mkexpr(addr) ));
+         delta += 3+alen;
+         DIP( "pmulld %s,%s\n",
+              dis_buf, nameXMMReg( gregOfRM(modrm) ) );
+      }
+
+      assign(argR, getXMMReg( gregOfRM(modrm) ));
+
+      putXMMReg( gregOfRM(modrm),
+                 binop( Iop_Mul32x4, mkexpr(argL), mkexpr(argR)) );
+
+      goto decode_success;
+   }
+
    /* 66 0F 3A 0B /r ib = ROUNDSD imm8, xmm2/m64, xmm1
       (Partial implementation only -- only deal with cases where
       the rounding mode is specified directly by the immediate byte.)

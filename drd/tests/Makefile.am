@@ -361,8 +361,8 @@ EXTRA_DIST =                                        \
 	tc21_pthonce.stderr.exp                     \
 	tc21_pthonce.stdout.exp                     \
 	tc21_pthonce.vgtest                         \
-	tc22_exit_w_lock.stderr.exp-32bit	    \
-	tc22_exit_w_lock.stderr.exp-64bit           \
+	tc22_exit_w_lock.stderr.exp                 \
+	tc22_exit_w_lock.stderr.exp-solaris         \
 	tc22_exit_w_lock.vgtest                     \
 	tc23_bogus_condwait.stderr.exp-linux-x86    \
 	tc23_bogus_condwait.stderr.exp-linux-ppc    \

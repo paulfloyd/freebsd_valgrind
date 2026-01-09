@@ -1182,7 +1182,6 @@ static inline void my_exit ( int x )
 
 #endif
 
-
 /*---------------------- memcmp ----------------------*/
 
 #define MEMCMP(soname, fnname) \
@@ -1240,9 +1239,15 @@ static inline void my_exit ( int x )
  MEMCMP(VG_Z_LIBC_SONAME,  timingsafe_bcmp)
 
 #elif defined(VGO_darwin)
-# if DARWIN_VERS >= DARWIN_10_9
+# if DARWIN_VERS < DARWIN_12_00
   MEMCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memcmp)
-# endif
+# else
+  // PJF I'm not sure what is going on with macOS 12 Intel
+  // I was getting crashes here in Valgrind. This was in the
+  // return from the _platform_memcmp redir where there's a
+  // rip-relative jump but the dest address is NULL
+  MEMCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memcmp$VARIANT$Base)
+#endif
 
 #elif defined(VGO_solaris)
  MEMCMP(VG_Z_LIBC_SONAME, memcmp)
@@ -1856,8 +1861,42 @@ static inline void my_exit ( int x )
       return NULL; \
    }
 
+#define MEMMEM_DARWIN(soname, fnname) \
+   void* VG_REPLACE_FUNCTION_EZU(20460,soname,fnname) \
+         (const void* big, SizeT big_len, const void* little, SizeT little_len); \
+   void* VG_REPLACE_FUNCTION_EZU(20460,soname,fnname) \
+         (const void* big, SizeT big_len, const void* little, SizeT little_len) \
+   { \
+      const HChar* h = big; \
+      const HChar* n = little; \
+      \
+      if (big_len < little_len) return NULL; \
+      if (little_len == 0) return NULL; \
+      \
+      HChar n0 = n[0]; \
+      \
+      for (; big_len >= little_len; big_len--, h++) { \
+         if (h[0] != n0) continue; \
+         \
+         UWord i; \
+         for (i = 1; i < little_len; i++) { \
+            if (n[i] != h[i]) \
+               break; \
+         } \
+         if (i == little_len) \
+           return CONST_CAST(HChar *,h); \
+         \
+      } \
+      return NULL; \
+   }
+
+
 #if defined(VGP_s390x_linux)
  MEMMEM(VG_Z_LIBC_SONAME,          memmem)
+#endif
+
+#if defined(VGO_darwin)
+ MEMMEM_DARWIN(VG_Z_LIBSYSTEM_C_SONAME,          memmem)
 #endif
 
 

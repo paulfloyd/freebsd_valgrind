@@ -24,7 +24,10 @@ See disasm-test --help for the most up-to-date instructions.
 
 disasm-test --all
   For all opcodes known to disasm-test, generate testcases and
-  verify the disassembly. This is how disasm-test is invoked
+  verify the disassembly.
+
+disasm-test --all-except-exrl
+  As the option name suggests. This is how disasm-test is invoked
   during regression testing.
 
 disasm-test --generate OPCODE_NAMEs
@@ -147,8 +150,8 @@ Status
 All opcodes which are implemented in valgrind are considered.
 
 
-TODO
-----
+NOTES
+-----
 (1) Testcase generation for the "Rotate and ..." family of opcodes needs
     to be improved. Several interesting cases involving the T- and Z-bit
     are not considered.
@@ -179,3 +182,7 @@ TODO
 
 (5) For D20XB and D12XB operands add a test with B == X and B != 0
     Not exactly easy to do.
+
+(6) For objdump-based disassembly the offset in the EXRL insn is expected
+    to denote a decodable insn. This is obviously not the case here and
+    therefore causing a miscompare.

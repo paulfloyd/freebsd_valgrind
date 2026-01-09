@@ -32,3 +32,24 @@
    fun:_ZN4dyldL10loadPhase1EPKcS1_RKNS_11LoadContextERjPNSt3__16vectorIS1_NS6_9allocatorIS1_EEEE
 }
 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr8
+   fun:_ZNK15DyldSharedCache5slideEv
+   fun:_ZN5dyld3L18reuseExistingCacheERKNS_18SharedCacheOptionsEPNS_19SharedCacheLoadInfoE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   fun:_ZNK15DyldSharedCache5slideEv
+   fun:_ZN5dyld3L18reuseExistingCacheERKNS_18SharedCacheOptionsEPNS_19SharedCacheLoadInfoE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr1
+   ...
+   fun:_ZN5dyld3L18reuseExistingCacheERKNS_18SharedCacheOptionsEPNS_19SharedCacheLoadInfoE
+}
+

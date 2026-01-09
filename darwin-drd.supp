@@ -443,6 +443,13 @@
 }
 
 {
+   macOS1015:_xpc_bundle_resolve
+   drd:ConflictingAccess
+   ...
+   fun:_xpc_bundle_resolve
+}
+
+{
    macOS1100:_os_semaphore_wait.cold.1
    drd:ConflictingAccess
    fun:_os_semaphore_wait.cold.1

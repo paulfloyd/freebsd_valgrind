@@ -1579,6 +1579,7 @@
 /none/tests/bug290061
 /none/tests/bug491394
 /none/tests/bug492678
+/none/tests/bug514094
 /none/tests/closeall
 /none/tests/coolo_sigaction
 /none/tests/coolo_strlen
@@ -1920,6 +1921,7 @@
 /none/tests/linux/mremap6
 /none/tests/linux/open_client
 /none/tests/linux/pthread-stack
+/none/tests/linux/readlinkat_self
 /none/tests/linux/stack-overflow
 /none/tests/linux/getdents_filter
 
@@ -2320,6 +2322,7 @@
 /none/tests/solaris/proc_auxv_multiple
 /none/tests/solaris/proc_psinfo
 /none/tests/solaris/pthread-stack
+/none/tests/solaris/readlinkat_self
 /none/tests/solaris/reserve_sysstat_addr
 /none/tests/solaris/reserve_sysstat_zone_addr
 /none/tests/solaris/resolv
@@ -2537,6 +2540,10 @@ none/tests/freebsd/bug499212
 # /VEX/priv/
 /VEX/priv/.deps
 /VEX/priv/.dirstamp
+
+# /VEX/priv/objdump
+/VEX/priv/objdump/.deps
+/VEX/priv/objdump/.dirstamp
 
 # /VEX/pub/
 /VEX/pub/libvex_guest_offsets.h

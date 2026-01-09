@@ -51,7 +51,8 @@ $SED \
 -e "s/\( name [^ ]*\)-[0-9]*\( oflag \)/\1\2/" \
 -e "s/??? (in \/[A-Za-z0-9_/-]*)/???/" \
 -e '/^   by 0x[0-9a-fA-F]*: process_dl_debug (in \/lib[0-9]*\/ld-[0-9.]*\.so)$/d' \
--e "/^For lists of detected and suppressed errors, rerun with: -s$/d" |
+-e "/^For lists of detected and suppressed errors, rerun with: -s$/d" \
+-e "s/__kill/kill/" |
 
 # Remove the message that more than hundred errors have been detected
 # (consists of two lines) and also the empty line above it.

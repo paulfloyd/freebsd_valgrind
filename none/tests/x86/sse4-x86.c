@@ -112,6 +112,7 @@ int main(void)
    test_PMINSD();
    test_PMINUD();
    test_PMINUW();
+   test_PMULLD();
 
    return 0;
 }

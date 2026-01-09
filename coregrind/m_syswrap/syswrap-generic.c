@@ -3112,6 +3112,16 @@ PRE(sys_madvise)
                         ARG1, ARG2, SARG3);
    PRE_REG_READ3(long, "madvise",
                  unsigned long, start, vki_size_t, length, int, advice);
+   /* Ugly hack to try to bypass the problem of guard pages not being
+      understood by valgrind aspace manager.
+      By making the syscall fail, we expect glibc to fallback
+      on implementing guard pages with mprotect PROT_NONE to ensure
+      the valgrind address space manager is not confused wrongly
+      believing the guard page is rw. */
+#ifdef VKI_MADV_GUARD_INSTALL
+   if (ARG3 == VKI_MADV_GUARD_INSTALL)
+      SET_STATUS_Failure( VKI_EINVAL );
+#endif
 }
 
 #if HAVE_MREMAP
@@ -5065,20 +5075,16 @@ POST(sys_poll)
 
 PRE(sys_readlink)
 {
-   FUSE_COMPATIBLE_MAY_BLOCK();
    PRINT("sys_readlink ( %#" FMT_REGWORD "x(%s), %#" FMT_REGWORD "x, %llu )",
          ARG1, (char*)(Addr)ARG1, ARG2, (ULong)ARG3);
    PRE_REG_READ3(long, "readlink",
                  const char *, path, char *, buf, int, bufsiz);
    PRE_MEM_RASCIIZ( "readlink(path)", ARG1 );
    PRE_MEM_WRITE( "readlink(buf)", ARG2,ARG3 );
-}
 
-POST(sys_readlink)
-{
+   Bool fuse_may_block = True;
 #if defined(VGO_linux) || defined(VGO_solaris)
    {
-      Word saved = SYSNO;
 #if defined(VGO_linux)
 #define PID_EXEPATH  "/proc/%d/exe"
 #define SELF_EXEPATH "/proc/self/exe"
@@ -5097,14 +5103,27 @@ POST(sys_readlink)
       VG_(sprintf)(name, PID_EXEPATH, VG_(getpid)());
       if (ML_(safe_to_deref)(arg1s, 1)
           && (VG_STREQ(arg1s, name) || VG_STREQ(arg1s, SELF_EXEPATH))) {
-         VG_(sprintf)(name, SELF_EXEFD, VG_(cl_exec_fd));
-         SET_STATUS_from_SysRes( VG_(do_syscall3)(saved, (UWord)name, 
-                                                  ARG2, ARG3));
+         HChar* out_name = (HChar*)ARG2;
+         SizeT res = VG_(strlen)(VG_(resolved_exename));
+         res = VG_MIN(res, ARG3);
+         if (ML_(safe_to_deref)(out_name, res)) {
+            VG_(strncpy)(out_name, VG_(resolved_exename), res);
+            SET_STATUS_Success(res);
+         } else {
+            SET_STATUS_Failure(VKI_EFAULT);
+         }
+         fuse_may_block = False;
       }
    }
 #endif
-   if (SUCCESS && RES > 0)
-      POST_MEM_WRITE( ARG2, RES );
+
+   if (fuse_may_block)
+       FUSE_COMPATIBLE_MAY_BLOCK();
+}
+
+POST(sys_readlink)
+{
+   POST_MEM_WRITE( ARG2, RES );
 }
 
 PRE(sys_readv)

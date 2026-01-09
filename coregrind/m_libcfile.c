@@ -711,11 +711,15 @@ struct vki_stat buf;
    res = VG_(do_syscall4)(__NR_fstatat, VKI_AT_FDCWD, (UWord)file_name, (UWord)&buf, VKI_AT_SYMLINK_NOFOLLOW);
 #endif
 
-#else
+#elif defined(VGO_darwin)
 
    /* check this on Darwin */
    struct vki_stat buf;
    res = VG_(do_syscall2)(__NR_lstat, (UWord)file_name, (UWord)&buf);
+
+#else
+
+#error Unknown OS
 
 #endif
 

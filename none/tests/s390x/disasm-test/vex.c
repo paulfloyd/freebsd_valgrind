@@ -119,8 +119,9 @@ vex_reset(void)
       dis_irsb = emptyIRSB();
    }
 
-   /* Otherwise we won't make it through s390_irgen_EXRL. */
-   last_execute_target = 42;
+   /* Otherwise we won't make it through s390_irgen_EX. */
+#define Invalid_execute_target 1
+   last_execute_target = Invalid_execute_target;
 }
 
 

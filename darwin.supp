@@ -796,6 +796,8 @@
    fun:_mh_execute_header
 }
 
+# FIXME PJF all these Addr* issues looks like problems with memory mapping
+
 {
    macOS1100:_dyld_start
    Memcheck:Addr8
@@ -821,5 +823,26 @@
    Memcheck:Addr1
    ...
    fun:_dyld_start
+}
+
+{
+   macOS1200:#dyld4::ProcessConfig::ProcessConfig(dyld4::KernelArgs const*, dyld4::SyscallDelegate&)
+   Memcheck:Addr1
+   ...
+   fun:_ZN5dyld413ProcessConfigC2EPKNS_10KernelArgsERNS_15SyscallDelegateE
+}
+
+{
+   macOS1200:#dyld4::ProcessConfig::ProcessConfig(dyld4::KernelArgs const*, dyld4::SyscallDelegate&)
+   Memcheck:Addr8
+   ...
+   fun:_ZN5dyld413ProcessConfigC2EPKNS_10KernelArgsERNS_15SyscallDelegateE
+}
+
+{
+   macOS1200:#dyld4::ProcessConfig::ProcessConfig(dyld4::KernelArgs const*, dyld4::SyscallDelegate&)
+   Memcheck:Addr4
+   ...
+   fun:_ZN5dyld413ProcessConfigC2EPKNS_10KernelArgsERNS_15SyscallDelegateE
 }
 

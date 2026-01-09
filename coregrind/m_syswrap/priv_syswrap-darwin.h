@@ -672,6 +672,10 @@ DECL_TEMPLATE(darwin, task_read_for_pid); // 539
 DECL_TEMPLATE(darwin, ulock_wait2);       // 544
 // NYI proc_info_extended_id              // 545
 #endif
+#if DARWIN_VERS >= DARWIN_12_00
+// NYI tracker_action         // 546
+// NYI debug_syscall_reject   // 547
+#endif
 
 // Mach message helpers
 DECL_TEMPLATE(darwin, mach_port_set_context);

@@ -2295,7 +2295,6 @@ PRE(sys_readlinkat)
    /* ssize_t readlinkat(int dfd, const char *path, char *buf,
                          size_t bufsiz); */
    HChar name[30];    // large enough
-   Word saved = SYSNO;
 
    /* Interpret the first argument as 32-bit value even on 64-bit architecture.
       This is different from Linux, for example, where glibc sign-extends it. */
@@ -2317,9 +2316,15 @@ PRE(sys_readlinkat)
    if (ML_(safe_to_deref)((void*)ARG2, 1) &&
        (!VG_(strcmp)((HChar*)ARG2, name) ||
         !VG_(strcmp)((HChar*)ARG2, "/proc/self/path/a.out"))) {
-      VG_(sprintf)(name, "/proc/self/path/%d", VG_(cl_exec_fd));
-      SET_STATUS_from_SysRes(VG_(do_syscall4)(saved, dfd, (UWord)name, ARG3,
-                                              ARG4));
+       HChar* out_name = (HChar*)ARG3;
+       SizeT res = VG_(strlen)(VG_(resolved_exename));
+       res = VG_MIN(res, ARG4);
+       if (ML_(safe_to_deref)(out_name, res)) {
+          VG_(strncpy)(out_name, VG_(resolved_exename), res);
+          SET_STATUS_Success(res);
+       } else {
+          SET_STATUS_Failure(VKI_EFAULT);
+       }
    }
 }
 

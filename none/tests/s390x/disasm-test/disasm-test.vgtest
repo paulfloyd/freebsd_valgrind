@@ -4,4 +4,4 @@
 #
 prereq: ./disasm-test --check-prereq
 prog: /bin/true
-post: ./disasm-test --all --summary
+post: ./disasm-test --all-except-exrl --summary

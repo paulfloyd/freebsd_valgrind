@@ -111,6 +111,7 @@ EXTRA_DIST = \
 	bug290061.vgtest bug290061.stderr.exp \
 	bug491394.vgtest bug491394.stderr.exp \
 	bug492678.vgtest bug492678.stderr.exp \
+	bug514094.vgtest bug514094.stderr.exp \
 	closeall.stderr.exp closeall.vgtest \
 	cmdline0.stderr.exp cmdline0.stdout.exp cmdline0.vgtest \
 	cmdline1.stderr.exp cmdline1.stdout.exp cmdline1.vgtest \
@@ -285,6 +286,7 @@ check_PROGRAMS = \
 	bug129866 bug234814 \
 	bug290061 \
 	bug492678 \
+	bug514094 \
 	closeall coolo_strlen \
 	discard exec-sigmask execve faultstatus fcntl_setown \
 	fdleak_cmsg fdleak_creat fdleak_doubleclose0 fdleak_dup fdleak_dup2 \
@@ -390,6 +392,7 @@ bug290061_LDFLAGS	= @FLAG_PIE@
 bug491394_LDADD		= -lc
 bug491394_LDFLAGS	= -nostdlib -static
 bug491394_CFLAGS	= ${AM_CFLAGS} -Os
+bug514094_CFLAGS	= ${AM_CFLAGS} @FLAG_W_NO_STRINGOP_OVERFLOW@
 execve_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_NONNULL@
 if VGCONF_OS_IS_SOLARIS
 fcntl_setown_LDADD	= -lsocket -lnsl

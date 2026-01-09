@@ -14,6 +14,9 @@ while (<>)
     s/\(in \/.*(libc|libSystem|libsystem|libsocket|libsys).*\)$/(in \/...libc...)/;
     s/\(within \/.*(libc|libSystem|libsystem|libsocket).*\)$/(within \/...libc...)/;
 
+    # From assembler functions
+    s/\(syscall-template.S:.*\)$/(in \/...libc...)/;
+
     # Filter out dynamic loader
     s/ \(in \/.*ld-.*so\)$//;
 

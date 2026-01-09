@@ -6684,14 +6684,10 @@ PRE(sys_readlinkat)
    ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "readlinkat", tid, status);
    PRE_MEM_RASCIIZ( "readlinkat(path)", ARG2 );
    PRE_MEM_WRITE( "readlinkat(buf)", ARG3,ARG4 );
-}
 
-POST(sys_readlinkat)
-{
+   Bool fuse_may_block = True;
    HChar name[30];       // large enough
-   Word  saved = SYSNO;
 
-   // @todo PJF why is this done in POST and not in PRE?
    /*
     * Handle the case where readlinkat is looking at /proc/self/exe or
     * /proc/<pid>/exe.
@@ -6700,13 +6696,25 @@ POST(sys_readlinkat)
    if (ML_(safe_to_deref)((void*)(Addr)ARG2, 1)
        && (VG_(strcmp)((HChar *)(Addr)ARG2, name) == 0
            || VG_(strcmp)((HChar *)(Addr)ARG2, "/proc/self/exe") == 0)) {
-      VG_(sprintf)(name, "/proc/self/fd/%d", VG_(cl_exec_fd));
-      SET_STATUS_from_SysRes( VG_(do_syscall4)(saved, ARG1, (UWord)name, 
-                                               ARG3, ARG4));
+       HChar* out_name = (HChar*)ARG3;
+       SizeT res = VG_(strlen)(VG_(resolved_exename));
+       res = VG_MIN(res, ARG4);
+       if (ML_(safe_to_deref)(out_name, res)) {
+          VG_(strncpy)(out_name, VG_(resolved_exename), res);
+          SET_STATUS_Success(res);
+       } else {
+          SET_STATUS_Failure(VKI_EFAULT);
+       }
+       fuse_may_block = False;
    }
 
-   if (SUCCESS && RES > 0)
-      POST_MEM_WRITE( ARG3, RES );
+   if (fuse_may_block)
+      FUSE_COMPATIBLE_MAY_BLOCK();
+}
+
+POST(sys_readlinkat)
+{
+   POST_MEM_WRITE( ARG3, RES );
 }
 
 PRE(sys_fchmodat)

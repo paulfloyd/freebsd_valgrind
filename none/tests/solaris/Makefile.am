@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	proc_psinfo.stderr.exp proc_psinfo.stdout.exp proc_psinfo.vgtest \
 	posix_spawn.stderr.exp  posix_spawn.vgtest \
 	pthread-stack.stderr.exp pthread-stack.vgtest \
+	readlinkat_self.stderr.exp readlinkat_self.vgtest \
 	reserve_sysstat_addr.map reserve_sysstat_addr.stderr.exp reserve_sysstat_addr.vgtest \
 	reserve_sysstat_zone_addr.map reserve_sysstat_zone_addr.stderr.exp reserve_sysstat_zone_addr.vgtest \
 	resolv.stdout.exp resolv.stderr.exp resolv.vgtest \
@@ -47,6 +48,7 @@ check_PROGRAMS = \
 	proc_psinfo \
 	posix_spawn \
 	pthread-stack \
+	readlinkat_self \
 	resolv \
 	sigresend \
 	stack_overflow \
@@ -57,6 +59,7 @@ AM_CFLAGS   += $(AM_FLAG_M3264_PRI)
 AM_CXXFLAGS += $(AM_FLAG_M3264_PRI)
 
 pthread_stack_LDADD = -lpthread
+readlinkat_self_CFLAGS = ${AM_CFLAGS} @FLAG_W_NO_STRINGOP_OVERFLOW@
 resolv_LDADD = -lresolv
 stack_overflow_CFLAGS = ${AM_CFLAGS} @FLAG_W_NO_INFINITE_RECURSION@
 stack_prot_LDFLAGS = -Wl,-M,/usr/lib/ld/map.noexstk
