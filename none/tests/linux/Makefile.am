@@ -7,18 +7,18 @@ EXTRA_DIST = \
 	blockfault.stderr.exp blockfault.vgtest \
 	brk-overflow1.stderr.exp brk-overflow1.vgtest \
 	brk-overflow2.stderr.exp brk-overflow2.vgtest \
-	bug498317.stderr.exp bug498317.supp bug498317.vgtest \
+	bug498317.supp bug498317.vgtest \
 	bug506910.stderr.exp bug506910.vgtest \
-	clonev.stdout.exp clonev.stderr.exp clonev.vgtest \
-	getdents_filter.stderr.exp getdents_filter.stdout.exp getdents_filter.vgtest \
+	clonev.stdout.exp clonev.vgtest \
+	getdents_filter.stdout.exp getdents_filter.vgtest \
         membarrier.stderr.exp membarrier.vgtest \
 	mremap.stderr.exp mremap.stderr.exp-glibc27 mremap.vgtest \
 	mremap2.stderr.exp mremap2.stdout.exp mremap2.vgtest \
 	mremap3.stderr.exp mremap3.stdout.exp mremap3.vgtest \
-	mremap4.stderr.exp mremap4.vgtest \
-	mremap5.stderr.exp mremap5.vgtest \
-	mremap6.stderr.exp mremap6.vgtest \
-	open_client.stderr.exp open_client.vgtest \
+	mremap4.vgtest \
+	mremap5.vgtest \
+	mremap6.vgtest \
+	open_client.vgtest \
 	pthread-stack.stderr.exp pthread-stack.vgtest \
 	readlinkat_self.stderr.exp readlinkat_self.vgtest \
 	stack-overflow.stderr.exp stack-overflow.vgtest

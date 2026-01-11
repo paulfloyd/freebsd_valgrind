@@ -4,10 +4,8 @@ include $(top_srcdir)/Makefile.tool-tests.am
 dist_noinst_SCRIPTS = filter_stderr
 
 EXTRA_DIST = \
-	bug129390-ppc32.stdout.exp bug129390-ppc32.stderr.exp \
-	bug129390-ppc32.vgtest \
-	bug139050-ppc32.stdout.exp bug139050-ppc32.stderr.exp \
-	bug139050-ppc32.vgtest \
+	bug129390-ppc32.stdout.exp bug129390-ppc32.vgtest \
+	bug139050-ppc32.stdout.exp bug139050-ppc32.vgtest \
 	ldstrev.stderr.exp ldstrev.stdout.exp ldstrev.vgtest \
 	jm-int-sh_algebraic.stderr.exp jm-int-sh_algebraic.stdout.exp \
 	jm-int-sh_algebraic.vgtest \

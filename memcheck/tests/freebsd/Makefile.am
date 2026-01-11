@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	access.stderr.exp \
 	aio.vgtest aio.stderr.exp \
 	aiov.vgtest aiov.stderr.exp \
-	aio_read.vgtest aio_read.stderr.exp aio_read.stdout.exp \
+	aio_read.vgtest aio_read.stdout.exp \
 	aio_read.in \
 	aligned_alloc.vgtest aligned_alloc.stderr.exp \
 	aligned_alloc_xml.vgtest aligned_alloc_xml.stderr.exp \
@@ -19,16 +19,12 @@ EXTRA_DIST = \
 	aligned_allocs_supp.stderr.exp \
 	aligned_allocs_supp.supp \
 	bug464476.vgtest \
-	bug464476.stderr.exp \
 	bug464476.stdout.exp \
 	bug464476_abs_symlink.vgtest \
-	bug464476_abs_symlink.stderr.exp \
 	bug464476_abs_symlink.stdout.exp \
 	bug464476_rel_symlink.vgtest \
-	bug464476_rel_symlink.stderr.exp \
 	bug464476_rel_symlink.stdout.exp \
-	bug470713.vgtest bug470713.stderr.exp \
-		bug470713.stdout.exp \
+	bug470713.vgtest bug470713.stdout.exp \
 	bug483786.vgtest bug483786.stderr.exp \
 	capsicum.vgtest \
 	capsicum.stderr.exp \
@@ -46,7 +42,7 @@ EXTRA_DIST = \
 	errno_aligned_allocs.vgtest \
 	errno_aligned_allocs.stderr.exp \
 	eventfd1.vgtest \
-	eventfd1.stderr.exp eventfd1.stdout.exp \
+	eventfd1.stdout.exp \
 	eventfd2.vgtest \
 	eventfd2.stderr.exp \
 	extattr.vgtest \
@@ -54,7 +50,6 @@ EXTRA_DIST = \
 	exterrctl.vgtest \
 	exterrctl.stderr.exp \
 	fbsd278566.vgtest \
-	fbsd278566.stderr.exp \
 	fchroot.vgtest \
 	fchroot.stderr.exp \
 	fexecve.vgtest \
@@ -75,10 +70,8 @@ EXTRA_DIST = \
 	kenv.vgtest \
 	kenv.stderr.exp \
 	kqueue.vgtest \
-	kqueue.stderr.exp \
 	kqueue.stdout.exp \
 	kqueuex.vgtest \
-	kqueuex.stderr.exp \
 	kqueuex.stdout.exp \
 	linkat.vgtest \
 	linkat.stderr.exp \
@@ -88,7 +81,6 @@ EXTRA_DIST = \
 	misc.vgtest \
 	misc.stderr.exp \
 	openpty.vgtest \
-	openpty.stderr.exp \
 	pdfork_pdkill.vgtest \
 	pdfork_pdkill.stderr.exp \
 	pdfork_pdkill.supp \
@@ -111,14 +103,12 @@ EXTRA_DIST = \
 	scalar_vfork.vgtest \
 	scalar_vfork.stderr.exp \
 	sctp.vgtest \
-	sctp.stderr.exp \
 	sctp.stdout.exp \
 	sctp2.vgtest \
 	sctp2.stderr.exp \
 	setcred.vgtest \
 	setcred.stderr.exp \
 	setproctitle.vgtest \
-	setproctitle.stderr.exp \
 	setproctitle.stdout.exp \
 	sigwait.vgtest \
 	sigwait.stdout.exp \
@@ -147,8 +137,7 @@ EXTRA_DIST = \
 	utimes.vgtest \
 	utimes.stderr.exp-x86 \
 	utimes.stderr.exp \
-	utrace.vgtest \
-	utrace.stderr.exp
+	utrace.vgtest
 
 
 check_PROGRAMS = \

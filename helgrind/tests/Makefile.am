@@ -15,15 +15,15 @@ noinst_SCRIPTS = \
 	filter_stderr
 
 EXTRA_DIST = \
-	annotate_hbefore.vgtest annotate_hbefore.stderr.exp \
+	annotate_hbefore.vgtest \
 	annotate_rwlock.vgtest annotate_rwlock.stderr.exp \
 	annotate_smart_pointer.vgtest annotate_smart_pointer.stderr.exp \
 	bug322621.vgtest bug322621.stderr.exp \
-	bug327548.vgtest bug327548.stderr.exp \
+	bug327548.vgtest \
 	bug392331.vgtest bug392331.stdout.exp bug392331.stderr.exp \
-	bug392331_supp.vgtest bug392331_supp.stdout.exp bug392331_supp.stderr.exp \
+	bug392331_supp.vgtest bug392331_supp.stdout.exp \
 	bug392331.supp \
-	bug484480.vgtest bug484480.stderr.exp bug484480.stdout.exp \
+	bug484480.vgtest bug484480.stdout.exp \
 	cond_init_destroy.vgtest cond_init_destroy.stderr.exp \
 	cond_timedwait_invalid.vgtest cond_timedwait_invalid.stderr.exp \
 	cond_timedwait_test.vgtest cond_timedwait_test.stderr.exp \
@@ -31,9 +31,9 @@ EXTRA_DIST = \
 		bar_bad.stderr.exp-destroy-hang \
 		bar_bad.stderr.exp-freebsd \
 		bar_bad.stderr.exp-illumos \
-	bar_trivial.vgtest bar_trivial.stdout.exp bar_trivial.stderr.exp \
+	bar_trivial.vgtest bar_trivial.stdout.exp \
 	free_is_write.vgtest free_is_write.stderr.exp \
-	getaddrinfo.vgtest getaddrinfo.stderr.exp \
+	getaddrinfo.vgtest \
 	hg01_all_ok.vgtest hg01_all_ok.stderr.exp \
 	hg02_deadlock.vgtest hg02_deadlock.stderr.exp \
 	hg03_inherit.vgtest hg03_inherit.stderr.exp \
@@ -60,13 +60,12 @@ EXTRA_DIST = \
 		pth_cond_destroy_busy.stderr.exp-ppc64 \
 		pth_cond_destroy_busy.stderr.exp-solaris \
 		pth_cond_destroy_busy.stderr.exp-freebsd \
-	pth_mempcpy_false_races.vgtest pth_mempcpy_false_races.stderr.exp \
+	pth_mempcpy_false_races.vgtest \
 	pth_spinlock.vgtest pth_spinlock.stderr.exp \
 	rwlock_race.vgtest rwlock_race.stderr.exp \
 	rwlock_test.vgtest rwlock_test.stderr.exp \
 	sem_clockwait_np.vgtest sem_clockwait_np.stdout.exp \
-		sem_clockwait_np.stderr.exp \
-	sem_timedwait.vgtest sem_timedwait.stdout.exp sem_timedwait.stderr.exp \
+	sem_timedwait.vgtest sem_timedwait.stdout.exp \
 	shared_timed_mutex.vgtest shared_timed_mutex.stderr.exp \
 	shmem_abits.vgtest shmem_abits.stderr.exp \
 	stackteardown.vgtest stackteardown.stderr.exp \

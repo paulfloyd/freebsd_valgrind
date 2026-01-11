@@ -5,11 +5,11 @@ dist_noinst_SCRIPTS = filter_stderr
 
 EXTRA_DIST = \
 	access_extended.stderr.exp access_extended.vgtest \
-	apple-main-arg.stderr.exp apple-main-arg.vgtest \
-	bug228343.stderr.exp bug228343.stdout.exp bug228343.vgtest \
-	bug254164.stderr.exp bug254164.vgtest \
-	bug390269.stderr.exp bug390269.vgtest \
-	bug411369.stderr.exp bug411369.vgtest \
+	apple-main-arg.vgtest \
+	bug228343.stdout.exp bug228343.vgtest \
+	bug254164.vgtest \
+	bug390269.vgtest \
+	bug411369.vgtest \
 	rlimit.stderr.exp rlimit.vgtest
 
 check_PROGRAMS = \

@@ -16,17 +16,17 @@ EXTRA_DIST = \
 	aligned_alloc.stderr.exp-solaris \
 	brk.stderr.exp brk.vgtest \
 	context_stack_die.stderr.exp context_stack_die.vgtest \
-	door_data.stderr.exp door_data.stdout.exp door_data.vgtest \
-	door_kill.stderr.exp door_kill.stdout.exp door_kill.vgtest \
+	door_data.stdout.exp door_data.vgtest \
+	door_kill.stdout.exp door_kill.vgtest \
 	execx.stderr.exp execx.stdout.exp execx.vgtest \
-	getzoneoffset.stderr.exp getzoneoffset.vgtest \
-	gethrtime.stderr.exp gethrtime.stdout.exp gethrtime.vgtest \
-	gethrusec.stderr.exp gethrusec.stdout.exp gethrusec.vgtest \
+	getzoneoffset.vgtest \
+	gethrtime.stdout.exp gethrtime.vgtest \
+	gethrusec.stdout.exp gethrusec.vgtest \
 	ioctl.stderr.exp ioctl.vgtest \
 	ldynsym.stderr.exp ldynsym.vgtest \
-	lsframe1.stderr.exp lsframe1.stdout.exp lsframe1.vgtest \
-	lsframe2.stderr.exp lsframe2.stdout.exp lsframe2.vgtest \
-	mmapobj_bssonly.stderr.exp mmapobj_bssonly.stdout.exp mmapobj_bssonly.vgtest \
+	lsframe1.stdout.exp lsframe1.vgtest \
+	lsframe2.stdout.exp lsframe2.vgtest \
+	mmapobj_bssonly.stdout.exp mmapobj_bssonly.vgtest \
 	name_service_door.stderr.exp-amd64 name_service_door.stderr.exp-x86 \
 	name_service_door.stdout.exp name_service_door.vgtest \
 	pkcs11.stderr.exp-illumos pkcs11.stderr.exp-solaris pkcs11.vgtest \
@@ -51,13 +51,13 @@ EXTRA_DIST = \
 	scalar_uuidsys.stderr.exp scalar_uuidsys.vgtest \
 	scalar_zone_defunct.stderr.exp scalar_zone_defunct.vgtest \
 	sendfilev.stderr.exp sendfilev.stdout.exp sendfilev.vgtest \
-	shmat.stderr.exp shmat.stdout.exp shmat.vgtest \
-	spawn.stderr.exp spawn.stdout.exp spawn.vgtest \
+	shmat.stdout.exp shmat.vgtest \
+	spawn.stdout.exp spawn.vgtest \
 	strlcpy.stderr.exp strlcpy.vgtest \
 	supponlyobj.stderr.exp supponlyobj.supp supponlyobj.vgtest \
 	syscall_at.stderr.exp syscall_at.vgtest \
-	thr_daemon_exit_libc.stderr.exp thr_daemon_exit_libc.stdout.exp thr_daemon_exit_libc.vgtest \
-	thr_daemon_exit_standalone.stderr.exp thr_daemon_exit_standalone.vgtest \
+	thr_daemon_exit_libc.stdout.exp thr_daemon_exit_libc.vgtest \
+	thr_daemon_exit_standalone.vgtest \
 	memalign.vgtest memalign.stderr.exp
 
 check_PROGRAMS = \

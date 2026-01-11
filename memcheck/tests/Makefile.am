@@ -110,7 +110,7 @@ noinst_HEADERS = leak.h
 EXTRA_DIST = \
 	accounting.stderr.exp accounting.vgtest \
 	addressable.stderr.exp addressable.stdout.exp addressable.vgtest \
-	atomic_incs.stderr.exp atomic_incs.vgtest \
+	atomic_incs.vgtest \
 	atomic_incs.stdout.exp-32bit atomic_incs.stdout.exp-64bit \
 	atomic_incs.stdout.exp-64bit-and-128bit \
 	badaddrvalue.stderr.exp \
@@ -131,13 +131,13 @@ EXTRA_DIST = \
 		buflen_check.stderr.exp-kfail \
 	bug155125.stderr.exp bug155125.vgtest \
 	bug287260.stderr.exp bug287260.vgtest \
-	bug340392.stderr.exp bug340392.vgtest \
+	bug340392.vgtest \
 	bug445235_ada_demangle.stderr.exp bug445235_ada_demangle.vgtest \
-	bug401284.stderr.exp bug401284.stdout.exp bug401284.vgtest \
+	bug401284.stdout.exp bug401284.vgtest \
 	bug464969_d_demangle.stderr.exp bug464969_d_demangle.vgtest \
 		bug464969_d_demangle.stdout.exp \
-	bug472219.stderr.exp bug472219.vgtest \
-	bug484002.stderr.exp bug484002.stdout.exp bug484002.vgtest \
+	bug472219.vgtest \
+	bug484002.stdout.exp bug484002.vgtest \
 	calloc-overflow.stderr.exp calloc-overflow.vgtest\
 	cdebug_zstd.vgtest cdebug_zstd.stderr.exp \
 	cdebug_zlib.stderr.exp cdebug_zlib.vgtest \
@@ -163,7 +163,7 @@ EXTRA_DIST = \
 		leak_cpp_interior.stderr.exp-arm \
 	custom_alloc.stderr.exp custom_alloc.vgtest \
 		custom_alloc.stderr.exp-s390x-mvc \
-	custom-overlap.stderr.exp custom-overlap.vgtest \
+	custom-overlap.vgtest \
 	cxx17_aligned_new.stderr.exp cxx17_aligned_new.vgtest \
 		cxx17_aligned_new.stderr.exp_32 \
 	darwin.supp \
@@ -208,7 +208,7 @@ EXTRA_DIST = \
 		new_delete_mismatch_size_supp.supp \
 	deep-backtrace.vgtest deep-backtrace.stderr.exp \
 	demangle.stderr.exp demangle.vgtest \
-	big_debuginfo_symbol.stderr.exp big_debuginfo_symbol.vgtest \
+	big_debuginfo_symbol.vgtest \
 	describe-block.stderr.exp describe-block.vgtest \
 	descr_belowsp.vgtest descr_belowsp.stderr.exp \
 	doublefree.stderr.exp doublefree.vgtest \
@@ -239,7 +239,7 @@ EXTRA_DIST = \
 	inits.stderr.exp inits.vgtest \
 	inline.stderr.exp inline.stdout.exp inline.vgtest \
 	inlinfo.stderr.exp inlinfo.vgtest \
-	inlinfosupp.stderr.exp inlinfosupp.supp inlinfosupp.vgtest \
+	inlinfosupp.supp inlinfosupp.vgtest \
 	inlinfosuppobj.stderr.exp inlinfosuppobj.supp inlinfosuppobj.vgtest \
 	inltemplate.vgtest inltemplate.stderr.exp inltemplate.stderr.exp-old-gcc \
 	leak-0.vgtest leak-0.stderr.exp \
@@ -267,12 +267,12 @@ EXTRA_DIST = \
 	lks.vgtest lks.supp lks.stderr.exp \
 	long_namespace_xml.vgtest long_namespace_xml.stdout.exp \
 	long_namespace_xml.stderr.exp long_namespace_xml.stderr.exp-freebsd \
-	long-supps.vgtest long-supps.stderr.exp long-supps.supp \
+	long-supps.vgtest long-supps.supp \
 	mallinfo.stderr.exp mallinfo.vgtest \
 	mallinfo2.stderr.exp mallinfo2.vgtest \
 	malloc_free_fill.vgtest \
 	malloc_free_fill.stderr.exp \
-	malloc_usable.stderr.exp malloc_usable.vgtest \
+	malloc_usable.vgtest \
 	malloc1.stderr.exp malloc1.vgtest \
 	malloc1_ks_none.stderr.exp malloc1_ks_none.vgtest \
 	malloc1_ks_alloc.stderr.exp malloc1_ks_alloc.vgtest \
@@ -284,7 +284,7 @@ EXTRA_DIST = \
 	manuel2.stderr.exp manuel2.stderr.exp64 manuel2.stdout.exp \
 		manuel2.vgtest \
 	manuel3.stderr.exp manuel3.vgtest \
-	match-overrun.stderr.exp match-overrun.vgtest match-overrun.supp \
+	match-overrun.vgtest match-overrun.supp \
 	memalign_test.stderr.exp memalign_test.vgtest \
 	memalign_args.vgtest memalign_args.stderr.exp \
 		memalign_args.stderr.exp-glibc \
@@ -292,11 +292,11 @@ EXTRA_DIST = \
 		memalign_args.stderr.exp-darwin2 \
 		memalign_args.stderr.exp-darwin3 \
 		memalign_args.stderr.exp-solaris \
-	memccpy1.stderr.exp memccpy1.stdout.exp memccpy1.vgtest \
+	memccpy1.stdout.exp memccpy1.vgtest \
 	memccpy2.stderr.exp memccpy2.vgtest \
 	memcmptest.stderr.exp \
 	memcmptest.stdout.exp memcmptest.vgtest \
-	memmem.stderr.exp memmem.vgtest \
+	memmem.vgtest \
 	mempool.stderr.exp mempool.vgtest \
 	mempool2.stderr.exp mempool2.vgtest \
 	metadata.stderr.exp metadata.stdout.exp metadata.vgtest \
@@ -304,14 +304,14 @@ EXTRA_DIST = \
 		mismatches.stderr.exp2 \
 	mismatches_xml.stderr.exp mismatches_xml.vgtest \
 		mismatches_xml.stderr.exp2 \
-	mmaptest.stderr.exp mmaptest.vgtest \
-	nanoleak_supp.stderr.exp nanoleak_supp.vgtest nanoleak.supp \
-	nanoleak_dynsupp.stderr.exp nanoleak_dynsupp.vgtest \
-	nanoleak2.stderr.exp nanoleak2.vgtest \
-	new_nothrow.stderr.exp new_nothrow.vgtest \
+	mmaptest.vgtest \
+	nanoleak_supp.vgtest nanoleak.supp \
+	nanoleak_dynsupp.vgtest \
+	nanoleak2.vgtest \
+	new_nothrow.vgtest \
 	new_override.stderr.exp new_override.stdout.exp new_override.vgtest \
 	noisy_child.vgtest noisy_child.stderr.exp \
-	null_socket.stderr.exp null_socket.vgtest \
+	null_socket.vgtest \
 	origin1-yes.vgtest origin1-yes.stderr.exp \
 		origin1-yes.stderr.exp-freebsd \
 	origin2-not-quite.vgtest origin2-not-quite.stderr.exp \
@@ -346,9 +346,9 @@ EXTRA_DIST = \
 		partial_load_dflt.stderr.exp64 \
 		partial_load_dflt.stderr.exp-ppc64 \
 	partial_load_dflt.stderr.expr-s390x-mvc \
-	pdb-realloc.stderr.exp pdb-realloc.vgtest \
-	pdb-realloc2.stderr.exp pdb-realloc2.stdout.exp pdb-realloc2.vgtest \
-	pipe.stderr.exp pipe.vgtest \
+	pdb-realloc.vgtest \
+	pdb-realloc2.stdout.exp pdb-realloc2.vgtest \
+	pipe.vgtest \
 	pointer-trace.vgtest \
 	pointer-trace.stderr.exp \
 	posix_memalign.stderr.exp posix_memalign.vgtest \
@@ -375,26 +375,26 @@ EXTRA_DIST = \
 		realloc_size_zero_no.vgtest \
 	realloc_size_zero_again_no.stderr.exp \
 		realloc_size_zero_again_no.vgtest \
-	realloc_size_zero_off.stderr.exp realloc_size_zero_off.stdout.exp \
+	realloc_size_zero_off.stdout.exp \
 		realloc_size_zero_off.vgtest \
 	realloc_size_zero_mismatch.stderr.exp \
 		realloc_size_zero_mismatch.stdout.exp \
 		realloc_size_zero_mismatch.vgtest \
-	realloc_size_zero_supp.stderr.exp realloc_size_zero_supp.stdout.exp \
+	realloc_size_zero_supp.stdout.exp \
 		realloc_size_zero_supp.vgtest \
 		realloc_size_zero.supp \
-	realloc1.stderr.exp realloc1.vgtest \
-	realloc2.stderr.exp realloc2.vgtest \
+	realloc1.vgtest \
+	realloc2.vgtest \
 	realloc3.stderr.exp realloc3.vgtest \
 	recursive-merge.stderr.exp recursive-merge.vgtest \
 	resvn_stack.stderr.exp resvn_stack.vgtest \
 	demangle-rust.vgtest demangle-rust.stderr.exp \
 	sbfragment.stdout.exp sbfragment.stderr.exp sbfragment.vgtest \
-	sem.stderr.exp sem.vgtest \
+	sem.vgtest \
 	sendmsg.stderr.exp sendmsg.stderr.exp-solaris sendmsg.vgtest \
 	    sendmsg.stderr.exp-freebsd \
 	sh-mem.stderr.exp sh-mem.vgtest \
-	sh-mem-random.stderr.exp sh-mem-random.stdout.exp64 \
+	sh-mem-random.stdout.exp64 \
 	sh-mem-random.stdout.exp sh-mem-random.vgtest \
 	sigaltstack.stderr.exp sigaltstack.vgtest \
 	sigkill.stderr.exp sigkill.stderr.exp-darwin sigkill.stderr.exp-freebsd sigkill.stderr.exp-mips32 \
@@ -406,19 +406,19 @@ EXTRA_DIST = \
 	static_malloc.stderr.exp static_malloc.vgtest \
 	stpncpy.vgtest stpncpy.stderr.exp \
 	strchr.stderr.exp strchr.stderr.exp2 strchr.stderr.exp3 strchr.vgtest \
-	str_tester.stderr.exp str_tester.vgtest \
+	str_tester.vgtest \
 	supp-dir.vgtest supp-dir.stderr.exp \
 	supp_unknown.stderr.exp supp_unknown.vgtest supp_unknown.supp \
 	supp_unknown.stderr.exp-kfail \
-	supp1.stderr.exp supp1.vgtest \
-	supp2.stderr.exp supp2.vgtest \
+	supp1.vgtest \
+	supp2.vgtest \
 	supp.supp \
 	suppfree.stderr.exp suppfree.supp suppfree.vgtest \
-	suppfreecollision.stderr.exp suppfreecollision.supp suppfreecollision.vgtest \
+	suppfreecollision.supp suppfreecollision.vgtest \
 	supponlyobj.stderr.exp supponlyobj.supp supponlyobj.vgtest \
 	suppsrc_lineno.stderr.exp suppsrc_lineno.vgtest \
 	suppsrc_lineno.supp \
-	suppsrc_sanlineno.stderr.exp suppsrc_sanlineno.vgtest \
+	suppsrc_sanlineno.vgtest \
 	suppsrc_sanlineno.supp \
 	suppvarinfo5.stderr.exp suppvarinfo5.supp suppvarinfo5.vgtest \
 	test-plo-no.vgtest \
@@ -427,13 +427,13 @@ EXTRA_DIST = \
 	test-plo-yes.vgtest \
 	    test-plo-yes.stderr.exp-le64 test-plo-yes.stderr.exp-le32 \
 	    test-plo-no.stderr.exp-s390x-mvc \
-	thread_alloca.stderr.exp thread_alloca.vgtest \
+	thread_alloca.vgtest \
 	threadname.vgtest threadname.stderr.exp \
 	threadname_xml.vgtest threadname_xml.stderr.exp \
 	trivialleak.stderr.exp trivialleak.vgtest trivialleak.stderr.exp2 \
 	undef_malloc_args.stderr.exp undef_malloc_args.vgtest \
-	unit_libcbase.stderr.exp unit_libcbase.vgtest \
-	unit_oset.stderr.exp unit_oset.stdout.exp unit_oset.vgtest \
+	unit_libcbase.vgtest \
+	unit_oset.stdout.exp unit_oset.vgtest \
 	varinfo1.vgtest varinfo1.stderr.exp \
 		varinfo1.stderr.exp-ppc64 \
 		varinfo1.stderr.exp-freebsd \
@@ -452,29 +452,28 @@ EXTRA_DIST = \
 	varinfo6.vgtest varinfo6.stdout.exp varinfo6.stderr.exp \
 		varinfo6.stderr.exp-ppc64 \
 	varinforestrict.vgtest varinforestrict.stderr.exp \
-	vcpu_bz2.stdout.exp vcpu_bz2.stderr.exp vcpu_bz2.vgtest \
-	vcpu_fbench.stdout.exp vcpu_fbench.stderr.exp vcpu_fbench.vgtest \
+	vcpu_bz2.stdout.exp vcpu_bz2.vgtest \
+	vcpu_fbench.stdout.exp vcpu_fbench.vgtest \
 	vcpu_fnfns.stdout.exp vcpu_fnfns.stdout.exp-glibc28-amd64 \
 	vcpu_fnfns.stdout.exp-darwin vcpu_fnfns.stdout.exp-solaris \
 	vcpu_fnfns.stdout.exp-illumos \
-	vcpu_fnfns.stderr.exp vcpu_fnfns.vgtest \
+	vcpu_fnfns.vgtest \
 	wcpncpy1.stderr.exp wcpncpy1.vgtest \
 	wcs.vgtest wcs.stderr.exp \
-	wcscat.vgtest wcscat.stderr.exp wcscat.stdout.exp \
-	wcsncpy.vgtest wcsncpy.stderr.exp \
-	wmemcmp.vgtest wmemcmp.stderr.exp \
-	wrap1.vgtest wrap1.stdout.exp wrap1.stderr.exp \
-	wrap2.vgtest wrap2.stdout.exp wrap2.stderr.exp \
-	wrap3.vgtest wrap3.stdout.exp wrap3.stderr.exp \
-	wrap4.vgtest wrap4.stdout.exp wrap4.stderr.exp \
-	wrap5.vgtest wrap5.stdout.exp wrap5.stderr.exp \
-	wrap6.vgtest wrap6.stdout.exp wrap6.stderr.exp \
-	wrap7.vgtest wrap7.stdout.exp wrap7.stderr.exp \
+	wcscat.vgtest wcscat.stdout.exp \
+	wcsncpy.vgtest \
+	wmemcmp.vgtest \
+	wrap1.vgtest wrap1.stdout.exp \
+	wrap2.vgtest wrap2.stdout.exp \
+	wrap3.vgtest wrap3.stdout.exp \
+	wrap4.vgtest wrap4.stdout.exp \
+	wrap5.vgtest wrap5.stdout.exp \
+	wrap6.vgtest wrap6.stdout.exp \
+	wrap7.vgtest wrap7.stdout.exp \
 	wrap8.vgtest wrap8.stdout.exp wrap8.stderr.exp \
 	wrap8.stdout.exp-ppc64 wrap8.stderr.exp-ppc64 \
-	wrapmalloc.vgtest wrapmalloc.stdout.exp wrapmalloc.stderr.exp \
+	wrapmalloc.vgtest wrapmalloc.stdout.exp \
 	wrapmallocstatic.vgtest wrapmallocstatic.stdout.exp \
-	wrapmallocstatic.stderr.exp \
 	writev1.stderr.exp writev1.stderr.exp-solaris writev1.vgtest \
 	xml1.stderr.exp xml1.stdout.exp xml1.vgtest xml1.stderr.exp-s390x-mvc
 

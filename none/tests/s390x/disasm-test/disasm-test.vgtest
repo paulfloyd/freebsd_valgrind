@@ -5,3 +5,6 @@
 prereq: ./disasm-test --check-prereq
 prog: /bin/true
 post: ./disasm-test --all-except-exrl --summary
+vgopts: -q
+stderr_filter:
+stderrB_filter:

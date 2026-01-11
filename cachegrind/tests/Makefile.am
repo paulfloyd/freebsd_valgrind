@@ -36,7 +36,7 @@ EXTRA_DIST = \
 		ann2-basic.rs ann2-more-recent-than-cgout.rs \
 		ann2-negatives.rs ann2-past-the-end.rs \
 	chdir.vgtest chdir.stderr.exp \
-	clreq.vgtest clreq.stderr.exp \
+	clreq.vgtest \
 	clreq2a.vgtest clreq2a.stderr.exp \
 	clreq2b.vgtest clreq2b.stderr.exp \
 	clreq3.vgtest clreq3.stderr.exp \

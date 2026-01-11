@@ -7,13 +7,13 @@ dist_noinst_SCRIPTS = \
 	filter_stderr
 
 EXTRA_DIST = \
-	cet_nops_fs.stderr.exp cet_nops_fs.stdout.exp cet_nops_fs.vgtest \
+	cet_nops_fs.stdout.exp cet_nops_fs.vgtest \
 	coredump_single_thread.post.exp coredump_single_thread.stderr.exp \
 	coredump_single_thread.vgtest \
 	coredump_single_thread_sse.post.exp coredump_single_thread_sse.stderr.exp \
 	coredump_single_thread_sse.vgtest \
 	coredump_single_thread_sse.post.exp-illumos \
-	syscalls.stderr.exp syscalls.vgtest
+	syscalls.vgtest
 
 check_PROGRAMS = \
 	cet_nops_fs \

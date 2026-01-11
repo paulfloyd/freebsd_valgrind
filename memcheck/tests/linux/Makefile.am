@@ -9,8 +9,8 @@ EXTRA_DIST = \
 		aligned_alloc.stderr.exp-musl \
 		aligned_alloc.stderr.exp-glibc238 \
 	brk.stderr.exp brk.vgtest \
-	bug480706.stderr.exp bug480706.vgtest \
-	bug420682_1.stderr.exp bug420682_1.vgtest \
+	bug480706.vgtest \
+	bug420682_1.vgtest \
 	bug420682_2.stderr.exp bug420682_2.vgtest \
 	capget.vgtest capget.stderr.exp capget.stderr.exp2 capget.stderr.exp3 \
 	capget.stderr.exp4 \
@@ -18,19 +18,17 @@ EXTRA_DIST = \
 	debuginfod-check.pl \
 	dlclose_leak-no-keep.stderr.exp dlclose_leak-no-keep.vgtest \
 	dlclose_leak.stderr.exp dlclose_leak.vgtest \
-	ioctl_procmap_query.stderr.exp \
-		ioctl_procmap_query.stdout.exp \
-		ioctl_procmap_query.vgtest \
-	ioctl-tiocsig.vgtest ioctl-tiocsig.stderr.exp \
+	ioctl_procmap_query.stdout.exp ioctl_procmap_query.vgtest \
+	ioctl-tiocsig.vgtest \
 	lsframe1.vgtest lsframe1.stderr.exp \
 	lsframe2.vgtest lsframe2.stderr.exp \
 	memfd_create.vgtest memfd_create.stderr.exp \
 		memfd_create.stderr.exp-fcntl64 \
 	rfcomm.vgtest rfcomm.stderr.exp \
 	sigqueue.vgtest sigqueue.stderr.exp \
-	stack_changes.stderr.exp stack_changes.stdout.exp \
+	stack_changes.stdout.exp \
 	    stack_changes.stdout.exp2 stack_changes.vgtest \
-	stack_switch.stderr.exp stack_switch.vgtest \
+	stack_switch.vgtest \
 	syscalls-2007.vgtest syscalls-2007.stderr.exp \
 	syslog-syscall.vgtest syslog-syscall.stderr.exp \
 	sys-copy_file_range.vgtest sys-copy_file_range.stderr.exp \
@@ -39,12 +37,12 @@ EXTRA_DIST = \
 	timerfd-syscall.vgtest timerfd-syscall.stderr.exp \
 	with-space.stderr.exp with-space.stdout.exp with-space.vgtest \
 	proc-auxv.vgtest proc-auxv.stderr.exp getregset.vgtest \
-	getregset.stderr.exp getregset.stdout.exp \
+	getregset.stdout.exp \
 	strlcat_strlcpy.vgtest strlcat_strlcpy.stderr.exp \
 	sys-preadv_pwritev.vgtest sys-preadv_pwritev.stderr.exp \
 	sys-preadv2_pwritev2.vgtest sys-preadv2_pwritev2.stderr.exp \
 	sys-execveat.vgtest sys-execveat.stderr.exp sys-execveat.stdout.exp \
-	enomem.vgtest enomem.stderr.exp enomem.stdout.exp \
+	enomem.vgtest enomem.stdout.exp \
 	memalign.vgtest memalign.stderr.exp \
 		memalign.stderr.exp-musl
 

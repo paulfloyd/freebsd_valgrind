@@ -158,14 +158,12 @@ EXTRA_DIST =                                        \
 	hold_lock_1.vgtest                          \
 	hold_lock_2.stderr.exp                      \
 	hold_lock_2.vgtest                          \
-	getaddrinfo.stderr.exp                      \
 	getaddrinfo.vgtest                          \
 	linuxthreads_det.stderr.exp                 \
 	linuxthreads_det.stderr.exp-linuxthreads    \
 	linuxthreads_det.stdout.exp                 \
 	linuxthreads_det.stdout.exp-linuxthreads    \
 	linuxthreads_det.vgtest                     \
-	local_static.stderr.exp                     \
 	local_static.vgtest                         \
 	matinv.stderr.exp                           \
 	matinv.stdout.exp                           \
@@ -268,7 +266,6 @@ EXTRA_DIST =                                        \
 	sem_as_mutex3.stderr.exp-mips32-be          \
 	sem_as_mutex3.stderr.exp-mips32-le          \
 	sem_as_mutex3.vgtest                        \
-	sem_clockwait_np.stderr.exp                 \
 	sem_clockwait_np.stdout.exp                 \
 	sem_clockwait_np.vgtest                     \
 	sem_open.stderr.exp                         \

@@ -6,12 +6,12 @@ dist_noinst_SCRIPTS = filter_stderr
 EXTRA_DIST = \
 	scalar.stderr.exp scalar.vgtest \
 	scalar_obsolete.stderr.exp scalar_obsolete.vgtest \
-	context_eflags.stderr.exp context_eflags.stdout.exp context_eflags.vgtest \
+	context_eflags.stdout.exp context_eflags.vgtest \
 	context_eflags2.stderr.exp context_eflags2.vgtest \
 	context_fpu.stderr.exp context_fpu.stdout.exp context_fpu.vgtest \
 	context_gpr.stderr.exp context_gpr.stdout.exp context_gpr.vgtest \
 	context_sse.stderr.exp context_sse.stdout.exp context_sse.vgtest \
-	ldsoexec.stderr.exp ldsoexec.vgtest
+	ldsoexec.vgtest
 
 check_PROGRAMS = \
 	scalar \
