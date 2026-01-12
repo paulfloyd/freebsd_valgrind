@@ -118,7 +118,7 @@
 */
 
 /* List of all supported opcodes in the order as defined in
-   Principles of Operations. */
+   Principles of Operations -- Fourteenth Edition (May, 2022). */
 
 static const char *opcodes[] = {
    // Chapter 7:  General Instructions
