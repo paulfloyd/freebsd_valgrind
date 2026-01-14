@@ -292,6 +292,13 @@ static IRExpr* mkU ( IRType ty, ULong i )
    }
 }
 
+static IRExpr* mkV128 ( UShort mask )
+{
+   return IRExpr_Const(IRConst_V128(mask));
+}
+
+#include "guest_generic_sse.h"
+
 static void storeLE ( IRExpr* addr, IRExpr* data )
 {
    stmt( IRStmt_Store(Iend_LE, addr, data) );
@@ -1666,11 +1673,6 @@ static void putYMMRegLane32 ( UInt ymmreg, Int laneno, IRExpr* e )
 {
    vassert(typeOfIRExpr(irsb->tyenv,e) == Ity_I32);
    stmt( IRStmt_Put( ymmGuestRegLane32offset(ymmreg,laneno), e ) );
-}
-
-static IRExpr* mkV128 ( UShort mask )
-{
-   return IRExpr_Const(IRConst_V128(mask));
 }
 
 /* Write the low half of a YMM reg and zero out the upper half. */
@@ -11230,30 +11232,6 @@ static IRTemp math_SHUFPD_256 ( IRTemp sV, IRTemp dV, UInt imm8 )
    IRTemp rV   = newTemp(Ity_V256);
    assign(rV, binop(Iop_V128HLtoV256, mkexpr(rVhi), mkexpr(rVlo)));
    return rV;
-}
-
-
-static IRTemp math_BLENDPD_128 ( IRTemp sV, IRTemp dV, UInt imm8 )
-{
-   UShort imm8_mask_16;
-   IRTemp imm8_mask = newTemp(Ity_V128);
-
-   switch( imm8 & 3 ) {
-      case 0:  imm8_mask_16 = 0x0000; break;
-      case 1:  imm8_mask_16 = 0x00FF; break;
-      case 2:  imm8_mask_16 = 0xFF00; break;
-      case 3:  imm8_mask_16 = 0xFFFF; break;
-      default: vassert(0);            break;
-   }
-   assign( imm8_mask, mkV128( imm8_mask_16 ) );
-
-   IRTemp res = newTemp(Ity_V128);
-   assign ( res, binop( Iop_OrV128, 
-                        binop( Iop_AndV128, mkexpr(sV),
-                                            mkexpr(imm8_mask) ), 
-                        binop( Iop_AndV128, mkexpr(dV), 
-                               unop( Iop_NotV128, mkexpr(imm8_mask) ) ) ) );
-   return res;
 }
 
 

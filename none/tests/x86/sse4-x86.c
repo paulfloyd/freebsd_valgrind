@@ -113,6 +113,7 @@ int main(void)
    test_PMINUD();
    test_PMINUW();
    test_PMULLD();
+   test_BLENDPD();
 
    return 0;
 }

@@ -695,6 +695,8 @@ static IRExpr* mkV128 ( UShort mask )
    return IRExpr_Const(IRConst_V128(mask));
 }
 
+#include "guest_generic_sse.h"
+
 static IRExpr* loadLE ( IRType ty, IRExpr* addr )
 {
    return IRExpr_Load(Iend_LE, ty, addr);
@@ -12997,6 +12999,57 @@ DisResult disInstr_X86_WRK (
                                mkV128(mask) ) ) );
 
       goto decode_success;
+   }
+
+   /* 66 0F 3A 0D /r ib = BLENDPD xmm1, xmm2/m128, imm8
+         Blend Packed Double Precision Floating-Point Values (XMM)
+         - 66 = mandatory prefix (this is what makes sz == 2)
+         - 0F 3A 0D = three opcode bytes
+         - /r = ModR/M byte follows (specifies registers or memory addressing)
+         - ib = immediate byte follows (1 byte immediate value)
+         insn[] array layout:
+
+         insn[0] = 0x0F     (first opcode byte)
+         insn[1] = 0x3A     (second opcode byte)
+         insn[2] = 0x0D     (third opcode byte)
+         insn[3] = ModR/M   (specifies source/dest registers or memory mode)
+
+         Register-to-register form:
+         insn[3] = ModR/M byte (tells us which registers)
+         insn[4] = immediate byte
+         alen var tells us how many bytes the addressing mode consumed after the ModR/M byte
+*/
+   if (sz == 2 && insn[0] == 0x0F && insn[1] == 0x3A && insn[2] == 0x0D) {
+     Int imm8;
+     IRTemp dst_vec = newTemp(Ity_V128);
+     IRTemp src_vec = newTemp(Ity_V128);
+
+     modrm = insn[3];
+     //no REX prefix on 32bit
+     assign( dst_vec, getXMMReg( gregOfRM(modrm) ) );
+
+     if ( epartIsReg( modrm ) ) {
+       imm8 = insn[4];
+       assign( src_vec, getXMMReg( eregOfRM(modrm) ) );
+       //skip 0F 3A 0D opcode bytes: +3
+       delta += 1+1 + 3;
+       DIP( "blendpd $%d, %s,%s\n", imm8,
+           nameXMMReg( eregOfRM(modrm) ),
+           nameXMMReg( gregOfRM(modrm) ) );
+     } else {
+       //delta+3 skips the 0F 3A 0D bytes
+       addr = disAMode( &alen, sorb, delta + 3, dis_buf);
+       assign( src_vec, loadLE( Ity_V128, mkexpr(addr) ) );
+       imm8 = insn[3+alen];
+       //skip 0F 3A 0D opcode bytes: +3
+       delta += alen+1 + 3;
+       DIP( "blendpd $%d, %s,%s\n",
+           imm8, dis_buf, nameXMMReg( gregOfRM(modrm) ) );
+     }
+
+     putXMMReg( gregOfRM(modrm),
+         mkexpr( math_BLENDPD_128( src_vec, dst_vec, imm8) ) );
+     goto decode_success;
    }
 
    /* 66 0F 38 38 /r  - PMINSB xmm1, xmm2/m128

@@ -41,6 +41,7 @@ noinst_HEADERS = \
 	priv/ir_opt.h \
 	priv/guest_generic_bb_to_IR.h \
 	priv/guest_generic_x87.h \
+	priv/guest_generic_sse.h \
 	priv/guest_x86_defs.h \
 	priv/guest_amd64_defs.h \
 	priv/guest_ppc_defs.h \

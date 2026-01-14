@@ -152,20 +152,6 @@ void set_sse_roundingmode ( UInt m )
 
 
 
-void test_BLENDPD ( void )
-{
-   V128 src, dst;
-   Int i;
-   for (i = 0; i < 10; i++) {
-      randV128(&src);
-      randV128(&dst);
-      DO_imm_mandr_r("blendpd", 0, src, dst);
-      DO_imm_mandr_r("blendpd", 1, src, dst);
-      DO_imm_mandr_r("blendpd", 2, src, dst);
-      DO_imm_mandr_r("blendpd", 3, src, dst);
-   }
-}
-
 void test_BLENDPS ( void )
 {
    V128 src, dst;
