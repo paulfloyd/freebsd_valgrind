@@ -6281,7 +6281,8 @@ PRE(sys_utimensat)
                  int, flag);
    ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "utimensat", tid, status);
    PRE_MEM_RASCIIZ("utimensat(path)", ARG2);
-   PRE_MEM_READ("utimensat(times)", ARG3, 2*sizeof(struct vki_timespec));
+   if (ARG3)
+      PRE_MEM_READ("utimensat(times)", ARG3, 2*sizeof(struct vki_timespec));
 }
 
 // SYS_fdatasync  550
