@@ -4129,12 +4129,15 @@ Syscall param cpuset_setaffinity points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
-489:           SYS_faccessat 3s 1m
+489:           SYS_faccessat 4s 1m
 ---------------------------------------------------------
 Syscall param faccessat(fd) contains uninitialised byte(s)
    ...
 
 Syscall param faccessat(path) contains uninitialised byte(s)
+   ...
+
+Syscall param faccessat(mode) contains uninitialised byte(s)
    ...
 
 Syscall param faccessat(flag) contains uninitialised byte(s)

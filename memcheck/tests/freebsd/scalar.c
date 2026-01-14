@@ -1826,8 +1826,8 @@ int main(void)
    SY(SYS_cpuset_setaffinity, x0+100, x0+100, x0+200, x0+500, x0+1); FAIL;
 
    /* SYS_faccessat               489 */
-   GO(SYS_faccessat, "3s 1m");
-   SY(SYS_faccessat, x0+1, x0, x0); FAIL;
+   GO(SYS_faccessat, "4s 1m");
+   SY(SYS_faccessat, x0+1, x0, x0, x0); FAIL;
 
    /* SYS_fchmodat                490 */
    GO(SYS_fchmodat, "4s 1m");

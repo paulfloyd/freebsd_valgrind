@@ -5111,9 +5111,9 @@ PRE(sys_shm_open)
    PRE_REG_READ3(int, "shm_open",
                  const char *, path, int, flags, vki_mode_t, mode);
    if (ARG1 == VKI_SHM_ANON) {
-      PRINT("sys_shm_open(%#" FMT_REGWORD "x(SHM_ANON), %" FMT_REGWORD "u, %hu)", ARG1, ARG2, (vki_mode_t)ARG3);
+      PRINT("sys_shm_open(%#" FMT_REGWORD "x(SHM_ANON), %" FMT_REGWORD "d, %hu)", ARG1, SARG2, (vki_mode_t)ARG3);
    } else {
-      PRINT("sys_shm_open(%#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %hu)", ARG1, (HChar *)ARG1, ARG2, (vki_mode_t)ARG3);
+      PRINT("sys_shm_open(%#" FMT_REGWORD "x(%s), %" FMT_REGWORD "d, %hu)", ARG1, (HChar *)ARG1, SARG2, (vki_mode_t)ARG3);
       PRE_MEM_RASCIIZ( "shm_open(path)", ARG1 );
    }
    *flags |= SfMayBlock;
@@ -5176,9 +5176,10 @@ POST(sys_cpuset)
 // int faccessat(int fd, const char *path, int mode, int flag);
 PRE(sys_faccessat)
 {
-   PRINT("sys_faccessat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u )", ARG1,ARG2,(char*)ARG2,ARG3);
-   PRE_REG_READ3(int, "faccessat",
-                 int, fd, const char *, path, int, flag);
+   PRINT("sys_faccessat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "d, %" FMT_REGWORD "d )",
+         ARG1, ARG2,(char*)ARG2, SARG3, SARG4);
+   PRE_REG_READ4(int, "faccessat",
+                 int, fd, const char *, path, int, mode, int, flag);
    ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "faccessat", tid, status);
    PRE_MEM_RASCIIZ( "faccessat(path)", ARG2 );
 }
