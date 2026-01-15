@@ -141,9 +141,12 @@ typedef enum {
 #define SMI_b3(insn) (((insn) >> 44) & 0xf)
 #define SMI_d3(insn) (((insn) >> 32) & 0xfff)
 #define SMI_i2(insn) (((insn) >> 16) & 0xffff)
-#define RIE_r1(insn) (((insn) >> 52) & 0xf)
-#define RIE_r3(insn) (((insn) >> 48) & 0xf)
-#define RIE_i2(insn) (((insn) >> 32) & 0xffff)
+#define RIEd_r1(insn) (((insn) >> 52) & 0xf)
+#define RIEd_r3(insn) (((insn) >> 48) & 0xf)
+#define RIEd_i2(insn) (((insn) >> 32) & 0xffff)
+#define RIEe_r1(insn) (((insn) >> 52) & 0xf)
+#define RIEe_r3(insn) (((insn) >> 48) & 0xf)
+#define RIEe_i2(insn) (((insn) >> 32) & 0xffff)
 #define RIEf_r1(insn) (((insn) >> 52) & 0xf)
 #define RIEf_r2(insn) (((insn) >> 48) & 0xf)
 #define RIEf_i3(insn) (((insn) >> 40) & 0xff)
@@ -2729,20 +2732,6 @@ s390_format_MII_UPP(void (*irgen)(UChar m1, UShort i2, UInt i3),
                     UChar m1, UShort i2, UInt i3)
 {
    irgen(m1, i2, i3);
-}
-
-static void
-s390_format_RIE_RRP(void (*irgen)(UChar r1, UChar r3, UShort i2),
-                    UChar r1, UChar r3, UShort i2)
-{
-   irgen(r1, r3, i2);
-}
-
-static void
-s390_format_RIE_RRI0(void (*irgen)(UChar r1, UChar r3, UShort i2),
-                     UChar r1, UChar r3, UShort i2)
-{
-   irgen(r1, r3, i2);
 }
 
 static void
@@ -20494,12 +20483,12 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                                  RIEv3_r1(ovl),
                                                  RIEv3_m3(ovl),
                                                  RIEv3_i4(ovl));  goto ok;
-   case 0xec0000000044ULL: s390_format_RIE_RRP(s390_irgen_BRXHG, RIE_r1(ovl),
-                                               RIE_r3(ovl), RIE_i2(ovl));
-                                               goto ok;
-   case 0xec0000000045ULL: s390_format_RIE_RRP(s390_irgen_BRXLG, RIE_r1(ovl),
-                                               RIE_r3(ovl), RIE_i2(ovl));
-                                               goto ok;
+   case 0xec0000000044ULL: s390_irgen_BRXHG(RIEe_r1(ovl), RIEe_r3(ovl),
+                                            RIEe_i2(ovl));
+                           goto ok;
+   case 0xec0000000045ULL: s390_irgen_BRXLG(RIEe_r1(ovl), RIEe_r3(ovl),
+                                            RIEe_i2(ovl));
+                           goto ok;
    case 0xec0000000046ULL: s390_format_RIE_RUPIX(s390_irgen_LOCGHI,
                                                  RIEv3_r1(ovl),
                                                  RIEv3_m3(ovl),
@@ -20580,18 +20569,18 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                                 RIEv3_m3(ovl),
                                                 RIEv3_i4(ovl),
                                                 RIEv3_i2(ovl));  goto ok;
-   case 0xec00000000d8ULL: s390_format_RIE_RRI0(s390_irgen_AHIK, RIE_r1(ovl),
-                                                RIE_r3(ovl), RIE_i2(ovl));
-                                                goto ok;
-   case 0xec00000000d9ULL: s390_format_RIE_RRI0(s390_irgen_AGHIK,
-                                                RIE_r1(ovl), RIE_r3(ovl),
-                                                RIE_i2(ovl));  goto ok;
-   case 0xec00000000daULL: s390_format_RIE_RRI0(s390_irgen_ALHSIK,
-                                                RIE_r1(ovl), RIE_r3(ovl),
-                                                RIE_i2(ovl));  goto ok;
-   case 0xec00000000dbULL: s390_format_RIE_RRI0(s390_irgen_ALGHSIK,
-                                                RIE_r1(ovl), RIE_r3(ovl),
-                                                RIE_i2(ovl));  goto ok;
+   case 0xec00000000d8ULL: s390_irgen_AHIK(RIEd_r1(ovl), RIEd_r3(ovl),
+                                           RIEd_i2(ovl));
+                           goto ok;
+   case 0xec00000000d9ULL: s390_irgen_AGHIK(RIEd_r1(ovl), RIEd_r3(ovl),
+                                            RIEd_i2(ovl));
+                           goto ok;
+   case 0xec00000000daULL: s390_irgen_ALHSIK(RIEd_r1(ovl), RIEd_r3(ovl),
+                                             RIEd_i2(ovl));
+                           goto ok;
+   case 0xec00000000dbULL: s390_irgen_ALGHSIK(RIEd_r1(ovl), RIEd_r3(ovl),
+                                              RIEd_i2(ovl));
+                           goto ok;
    case 0xec00000000e4ULL: s390_format_RRS(s390_irgen_CGRB, RRS_r1(ovl),
                                            RRS_r2(ovl), RRS_b4(ovl),
                                            RRS_d4(ovl), RRS_m3(ovl));
