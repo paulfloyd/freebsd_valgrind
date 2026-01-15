@@ -152,10 +152,10 @@ typedef enum {
 #define RIEa_r1(insn) (((insn) >> 52) & 0xf)
 #define RIEa_i2(insn) (((insn) >> 32) & 0xffff)
 #define RIEa_m3(insn) (((insn) >> 28) & 0xf)
-#define RIE_RRPU_r1(insn) (((insn) >> 52) & 0xf)
-#define RIE_RRPU_r2(insn) (((insn) >> 48) & 0xf)
-#define RIE_RRPU_i4(insn) (((insn) >> 32) & 0xffff)
-#define RIE_RRPU_m3(insn) (((insn) >> 28) & 0xf)
+#define RIEb_r1(insn) (((insn) >> 52) & 0xf)
+#define RIEb_r2(insn) (((insn) >> 48) & 0xf)
+#define RIEb_i4(insn) (((insn) >> 32) & 0xffff)
+#define RIEb_m3(insn) (((insn) >> 28) & 0xf)
 #define RIEv3_r1(insn) (((insn) >> 52) & 0xf)
 #define RIEv3_m3(insn) (((insn) >> 48) & 0xf)
 #define RIEv3_i4(insn) (((insn) >> 32) & 0xffff)
@@ -2743,13 +2743,6 @@ s390_format_RIE_RRI0(void (*irgen)(UChar r1, UChar r3, UShort i2),
                      UChar r1, UChar r3, UShort i2)
 {
    irgen(r1, r3, i2);
-}
-
-static void
-s390_format_RIE_RRPU(void (*irgen)(UChar r1, UChar r2, UShort i4, UChar m3),
-                     UChar r1, UChar r2, UShort i4, UChar m3)
-{
-   irgen(r1, r2, i4, m3);
 }
 
 static void
@@ -20543,16 +20536,12 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                              RIEf_i3(ovl), RIEf_i4(ovl),
                                              RIEf_i5(ovl));
                            goto ok;
-   case 0xec0000000064ULL: s390_format_RIE_RRPU(s390_irgen_CGRJ,
-                                                RIE_RRPU_r1(ovl),
-                                                RIE_RRPU_r2(ovl),
-                                                RIE_RRPU_i4(ovl),
-                                                RIE_RRPU_m3(ovl));  goto ok;
-   case 0xec0000000065ULL: s390_format_RIE_RRPU(s390_irgen_CLGRJ,
-                                                RIE_RRPU_r1(ovl),
-                                                RIE_RRPU_r2(ovl),
-                                                RIE_RRPU_i4(ovl),
-                                                RIE_RRPU_m3(ovl));  goto ok;
+   case 0xec0000000064ULL: s390_irgen_CGRJ(RIEb_r1(ovl), RIEb_r2(ovl),
+                                           RIEb_i4(ovl), RIEb_m3(ovl));
+                           goto ok;
+   case 0xec0000000065ULL: s390_irgen_CLGRJ(RIEb_r1(ovl), RIEb_r2(ovl),
+                                            RIEb_i4(ovl), RIEb_m3(ovl));
+                           goto ok;
    case 0xec0000000070ULL: s390_irgen_CGIT(RIEa_r1(ovl), RIEa_i2(ovl),
                                            RIEa_m3(ovl));
                            goto ok;
@@ -20565,16 +20554,12 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xec0000000073ULL: s390_irgen_CLFIT(RIEa_r1(ovl), RIEa_i2(ovl),
                                             RIEa_m3(ovl));
                            goto ok;
-   case 0xec0000000076ULL: s390_format_RIE_RRPU(s390_irgen_CRJ,
-                                                RIE_RRPU_r1(ovl),
-                                                RIE_RRPU_r2(ovl),
-                                                RIE_RRPU_i4(ovl),
-                                                RIE_RRPU_m3(ovl));  goto ok;
-   case 0xec0000000077ULL: s390_format_RIE_RRPU(s390_irgen_CLRJ,
-                                                RIE_RRPU_r1(ovl),
-                                                RIE_RRPU_r2(ovl),
-                                                RIE_RRPU_i4(ovl),
-                                                RIE_RRPU_m3(ovl));  goto ok;
+   case 0xec0000000076ULL: s390_irgen_CRJ(RIEb_r1(ovl), RIEb_r2(ovl),
+                                          RIEb_i4(ovl), RIEb_m3(ovl));
+                           goto ok;
+   case 0xec0000000077ULL: s390_irgen_CLRJ(RIEb_r1(ovl), RIEb_r2(ovl),
+                                           RIEb_i4(ovl), RIEb_m3(ovl));
+                           goto ok;
    case 0xec000000007cULL: s390_format_RIE_RUPI(s390_irgen_CGIJ,
                                                 RIEv3_r1(ovl),
                                                 RIEv3_m3(ovl),
