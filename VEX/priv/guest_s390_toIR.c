@@ -2796,42 +2796,6 @@ s390_format_RIE_RUPIX(void (*irgen)(UChar r1, UChar m3, UShort i2),
 }
 
 static void
-s390_format_RIL(void (*irgen)(UChar r1, UInt i2),
-                UChar r1, UInt i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RIL_RU(void (*irgen)(UChar r1, UInt i2),
-                   UChar r1, UInt i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RIL_RI(void (*irgen)(UChar r1, UInt i2),
-                   UChar r1, UInt i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RIL_RP(void (*irgen)(UChar r1, UInt i2),
-                   UChar r1, UInt i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RIL_UP(void (*irgen)(void),
-                   UChar r1 __attribute__((unused)),
-                   UInt  i2 __attribute__((unused)))
-{
-   irgen();
-}
-
-static void
 s390_format_RIS_RURDI(void (*irgen)(UChar r1, UChar m3, UChar i2,
                                     IRTemp op4addr),
                       UChar r1, UChar m3, UChar b4, UShort d4, UChar i2)
@@ -20920,104 +20884,104 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    }
 
    switch (((ovl >> 16) & 0xff0f00000000ULL) >> 32) {
-   case 0xc000ULL: s390_format_RIL_RP(s390_irgen_LARL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc001ULL: s390_format_RIL_RI(s390_irgen_LGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc004ULL: s390_format_RIL(s390_irgen_BRCL, RIL_r1(ovl),
-                                   RIL_i2(ovl));  goto ok;
-   case 0xc005ULL: s390_format_RIL_RP(s390_irgen_BRASL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc006ULL: s390_format_RIL_RU(s390_irgen_XIHF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc007ULL: s390_format_RIL_RU(s390_irgen_XILF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc008ULL: s390_format_RIL_RU(s390_irgen_IIHF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc009ULL: s390_format_RIL_RU(s390_irgen_IILF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc00aULL: s390_format_RIL_RU(s390_irgen_NIHF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc00bULL: s390_format_RIL_RU(s390_irgen_NILF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc00cULL: s390_format_RIL_RU(s390_irgen_OIHF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc00dULL: s390_format_RIL_RU(s390_irgen_OILF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc00eULL: s390_format_RIL_RU(s390_irgen_LLIHF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc00fULL: s390_format_RIL_RU(s390_irgen_LLILF, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc200ULL: s390_format_RIL_RI(s390_irgen_MSGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc201ULL: s390_format_RIL_RI(s390_irgen_MSFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc204ULL: s390_format_RIL_RU(s390_irgen_SLGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc205ULL: s390_format_RIL_RU(s390_irgen_SLFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc208ULL: s390_format_RIL_RI(s390_irgen_AGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc209ULL: s390_format_RIL_RI(s390_irgen_AFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc20aULL: s390_format_RIL_RU(s390_irgen_ALGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc20bULL: s390_format_RIL_RU(s390_irgen_ALFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc20cULL: s390_format_RIL_RI(s390_irgen_CGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc20dULL: s390_format_RIL_RI(s390_irgen_CFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc20eULL: s390_format_RIL_RU(s390_irgen_CLGFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc20fULL: s390_format_RIL_RU(s390_irgen_CLFI, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc402ULL: s390_format_RIL_RP(s390_irgen_LLHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc404ULL: s390_format_RIL_RP(s390_irgen_LGHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc405ULL: s390_format_RIL_RP(s390_irgen_LHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc406ULL: s390_format_RIL_RP(s390_irgen_LLGHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc407ULL: s390_format_RIL_RP(s390_irgen_STHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc408ULL: s390_format_RIL_RP(s390_irgen_LGRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc40bULL: s390_format_RIL_RP(s390_irgen_STGRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc40cULL: s390_format_RIL_RP(s390_irgen_LGFRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc40dULL: s390_format_RIL_RP(s390_irgen_LRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc40eULL: s390_format_RIL_RP(s390_irgen_LLGFRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc40fULL: s390_format_RIL_RP(s390_irgen_STRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc600ULL: s390_format_RIL_RP(s390_irgen_EXRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc602ULL: s390_format_RIL_UP(s390_irgen_PFDRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc604ULL: s390_format_RIL_RP(s390_irgen_CGHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc605ULL: s390_format_RIL_RP(s390_irgen_CHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc606ULL: s390_format_RIL_RP(s390_irgen_CLGHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc607ULL: s390_format_RIL_RP(s390_irgen_CLHRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc608ULL: s390_format_RIL_RP(s390_irgen_CGRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc60aULL: s390_format_RIL_RP(s390_irgen_CLGRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc60cULL: s390_format_RIL_RP(s390_irgen_CGFRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc60dULL: s390_format_RIL_RP(s390_irgen_CRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc60eULL: s390_format_RIL_RP(s390_irgen_CLGFRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xc60fULL: s390_format_RIL_RP(s390_irgen_CLRL, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
+   case 0xc000ULL: s390_irgen_LARL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc001ULL: s390_irgen_LGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc004ULL: s390_irgen_BRCL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc005ULL: s390_irgen_BRASL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc006ULL: s390_irgen_XIHF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc007ULL: s390_irgen_XILF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc008ULL: s390_irgen_IIHF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc009ULL: s390_irgen_IILF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc00aULL: s390_irgen_NIHF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc00bULL: s390_irgen_NILF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc00cULL: s390_irgen_OIHF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc00dULL: s390_irgen_OILF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc00eULL: s390_irgen_LLIHF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc00fULL: s390_irgen_LLILF(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc200ULL: s390_irgen_MSGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc201ULL: s390_irgen_MSFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc204ULL: s390_irgen_SLGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc205ULL: s390_irgen_SLFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc208ULL: s390_irgen_AGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc209ULL: s390_irgen_AFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc20aULL: s390_irgen_ALGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc20bULL: s390_irgen_ALFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc20cULL: s390_irgen_CGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc20dULL: s390_irgen_CFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc20eULL: s390_irgen_CLGFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc20fULL: s390_irgen_CLFI(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc402ULL: s390_irgen_LLHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc404ULL: s390_irgen_LGHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc405ULL: s390_irgen_LHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc406ULL: s390_irgen_LLGHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc407ULL: s390_irgen_STHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc408ULL: s390_irgen_LGRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc40bULL: s390_irgen_STGRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc40cULL: s390_irgen_LGFRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc40dULL: s390_irgen_LRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc40eULL: s390_irgen_LLGFRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc40fULL: s390_irgen_STRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc600ULL: s390_irgen_EXRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc602ULL: s390_irgen_PFDRL();
+                   goto ok;
+   case 0xc604ULL: s390_irgen_CGHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc605ULL: s390_irgen_CHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc606ULL: s390_irgen_CLGHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc607ULL: s390_irgen_CLHRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc608ULL: s390_irgen_CGRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc60aULL: s390_irgen_CLGRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc60cULL: s390_irgen_CGFRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc60dULL: s390_irgen_CRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc60eULL: s390_irgen_CLGFRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xc60fULL: s390_irgen_CLRL(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
    case 0xc800ULL: /* MVCOS */ goto unimplemented;
    case 0xc801ULL: /* ECTG */ goto unimplemented;
    case 0xc802ULL: /* CSST */ goto unimplemented;
@@ -21026,18 +20990,18 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xc806ULL: /* CAL */ goto unimplemented;
    case 0xc807ULL: /* CALG */ goto unimplemented;
    case 0xc80fULL: /* CALGF */ goto unimplemented;
-   case 0xcc06ULL:  s390_format_RIL_RP(s390_irgen_BRCTH, RIL_r1(ovl),
-                                       RIL_i2(ovl));  goto ok;
-   case 0xcc08ULL: s390_format_RIL_RI(s390_irgen_AIH, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xcc0aULL: s390_format_RIL_RI(s390_irgen_ALSIH, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xcc0bULL: s390_format_RIL_RI(s390_irgen_ALSIHN, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xcc0dULL: s390_format_RIL_RI(s390_irgen_CIH, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
-   case 0xcc0fULL: s390_format_RIL_RU(s390_irgen_CLIH, RIL_r1(ovl),
-                                      RIL_i2(ovl));  goto ok;
+   case 0xcc06ULL: s390_irgen_BRCTH(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xcc08ULL: s390_irgen_AIH(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xcc0aULL: s390_irgen_ALSIH(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xcc0bULL: s390_irgen_ALSIHN(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xcc0dULL: s390_irgen_CIH(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
+   case 0xcc0fULL: s390_irgen_CLIH(RIL_r1(ovl), RIL_i2(ovl));
+                   goto ok;
    }
 
    switch (((ovl >> 16) & 0xff0000000000ULL) >> 40) {
