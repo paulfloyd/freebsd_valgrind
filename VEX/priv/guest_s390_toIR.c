@@ -2796,22 +2796,9 @@ s390_format_RIE_RUPIX(void (*irgen)(UChar r1, UChar m3, UShort i2),
 }
 
 static void
-s390_format_RIS_RURDI(void (*irgen)(UChar r1, UChar m3, UChar i2,
-                                    IRTemp op4addr),
-                      UChar r1, UChar m3, UChar b4, UShort d4, UChar i2)
-{
-   IRTemp op4addr = newTemp(Ity_I64);
-
-   assign(op4addr, binop(Iop_Add64, mkU64(d4), b4 != 0 ? get_gpr_dw0(b4) :
-          mkU64(0)));
-
-   irgen(r1, m3, i2, op4addr);
-}
-
-static void
-s390_format_RIS_RURDU(void (*irgen)(UChar r1, UChar m3, UChar i2,
-                                    IRTemp op4addr),
-                      UChar r1, UChar m3, UChar b4, UShort d4, UChar i2)
+s390_format_RIS(void (*irgen)(UChar r1, UChar m3, UChar i2,
+                              IRTemp op4addr),
+                UChar r1, UChar m3, UChar b4, UShort d4, UChar i2)
 {
    IRTemp op4addr = newTemp(Ity_I64);
 
@@ -20710,22 +20697,22 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                            RRS_r2(ovl), RRS_b4(ovl),
                                            RRS_d4(ovl), RRS_m3(ovl));
                                            goto ok;
-   case 0xec00000000fcULL: s390_format_RIS_RURDI(s390_irgen_CGIB,
-                                                 RIS_r1(ovl), RIS_m3(ovl),
-                                                 RIS_b4(ovl), RIS_d4(ovl),
-                                                 RIS_i2(ovl));  goto ok;
-   case 0xec00000000fdULL: s390_format_RIS_RURDU(s390_irgen_CLGIB,
-                                                 RIS_r1(ovl), RIS_m3(ovl),
-                                                 RIS_b4(ovl), RIS_d4(ovl),
-                                                 RIS_i2(ovl));  goto ok;
-   case 0xec00000000feULL: s390_format_RIS_RURDI(s390_irgen_CIB, RIS_r1(ovl),
-                                                 RIS_m3(ovl), RIS_b4(ovl),
-                                                 RIS_d4(ovl),
-                                                 RIS_i2(ovl));  goto ok;
-   case 0xec00000000ffULL: s390_format_RIS_RURDU(s390_irgen_CLIB,
-                                                 RIS_r1(ovl), RIS_m3(ovl),
-                                                 RIS_b4(ovl), RIS_d4(ovl),
-                                                 RIS_i2(ovl));  goto ok;
+   case 0xec00000000fcULL: s390_format_RIS(s390_irgen_CGIB,
+                                           RIS_r1(ovl), RIS_m3(ovl),
+                                           RIS_b4(ovl), RIS_d4(ovl),
+                                           RIS_i2(ovl));  goto ok;
+   case 0xec00000000fdULL: s390_format_RIS(s390_irgen_CLGIB,
+                                           RIS_r1(ovl), RIS_m3(ovl),
+                                           RIS_b4(ovl), RIS_d4(ovl),
+                                           RIS_i2(ovl));  goto ok;
+   case 0xec00000000feULL: s390_format_RIS(s390_irgen_CIB, RIS_r1(ovl),
+                                           RIS_m3(ovl), RIS_b4(ovl),
+                                           RIS_d4(ovl),
+                                           RIS_i2(ovl));  goto ok;
+   case 0xec00000000ffULL: s390_format_RIS(s390_irgen_CLIB,
+                                           RIS_r1(ovl), RIS_m3(ovl),
+                                           RIS_b4(ovl), RIS_d4(ovl),
+                                           RIS_i2(ovl));  goto ok;
    case 0xed0000000004ULL: s390_format_RXE_FRRD(s390_irgen_LDEB, RXE_r1(ovl),
                                                 RXE_x2(ovl), RXE_b2(ovl),
                                                 RXE_d2(ovl));  goto ok;
