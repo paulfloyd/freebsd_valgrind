@@ -1768,7 +1768,8 @@ static void print_results(ThreadId tid, LeakCheckParams* lcp)
       umsg_or_xml(VG_(clo_xml) ?
                   "  <still_reachable>\n"
                   "    <bytes>%'lu%s</bytes>\n"
-                  "    <blocks>%'lu%s</blocks>\n" :
+                  "    <blocks>%'lu%s</blocks>\n"
+                  "  </still_reachable>\n" :
                   "   still reachable: %'lu%s bytes in %'lu%s blocks\n",
                 MC_(bytes_reachable), 
                 DBY (MC_(bytes_reachable), old_bytes_reachable), 
