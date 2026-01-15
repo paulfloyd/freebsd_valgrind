@@ -1,0 +1,88 @@
+From 262221320c6ddd094ee8059c327748dde1644936 Mon Sep 17 00:00:00 2001
+From: Po-Hsu Lin via ltp <ltp@lists.linux.it>
+Date: Fri, 9 Jan 2026 00:21:52 +0800
+Subject: [PATCH] listmount04.c: update struct mnt_id_req support to kernel >=
+ 6.17.9
+
+The kernel change 78f0e33cd6c93 ("fs/namespace: correctly handle errors
+returned by grab_requested_mnt_ns") from 6.18 has been ported to upstream
+6.17.9 [1][2].
+
+Therefore change the expectation from >= 6.18 to >= 6.17 accodingly.
+
+[1] https://lwn.net/Articles/1047684/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v6.17.9&id=8ff97ade
+
+v2: add comments for this change into the code.
+v3: correct the RST syntax and move comment as suggested by Petr Vorel.
+v4: correct the patch title.
+
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+Reviewed-by: Petr Vorel <pvorel@suse.cz>
+Acked-by: Andrea Cervesato <andrea.cervesato@suse.com>
+---
+ .../kernel/syscalls/listmount/listmount04.c   | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/testcases/kernel/syscalls/listmount/listmount04.c b/testcases/kernel/syscalls/listmount/listmount04.c
+index 2b8b49101ccb..919f4c85421c 100644
+--- a/testcases/kernel/syscalls/listmount/listmount04.c
++++ b/testcases/kernel/syscalls/listmount/listmount04.c
+@@ -7,6 +7,7 @@
+  * Verify that listmount() raises the correct errors according with
+  * invalid data:
+  *
++ * - EBADF: invalid mnt_ns_fd
+  * - EFAULT: req or mnt_id are unaccessible memories
+  * - EINVAL: invalid flags or mnt_id request
+  * - ENOENT: non-existent mount point
+@@ -20,8 +21,12 @@
+ #include "lapi/syscalls.h"
+ 
+ #define MNT_SIZE 32
+-#define BEFORE_6_18 1
+-#define AFTER_6_18 2
++/*
++ * For commit 78f0e33cd6c9 ("fs/namespace: correctly handle errors returned
++ * by grab_requested_mnt_ns") from v6.18-rc7 backported to v6.17.9.
++ */
++#define BEFORE_6_17_9 1
++#define AFTER_6_17_9 2
+ 
+ static mnt_id_req *request;
+ static uint64_t mnt_ids[MNT_SIZE];
+@@ -84,7 +89,7 @@ static struct tcase {
+ 		.nr_mnt_ids = MNT_SIZE,
+ 		.exp_errno = EINVAL,
+ 		.msg = "invalid mnt_id_req.spare",
+-		.kver = BEFORE_6_18,
++		.kver = BEFORE_6_17_9,
+ 	},
+ 	{
+ 		.req_usage = 1,
+@@ -95,7 +100,7 @@ static struct tcase {
+ 		.nr_mnt_ids = MNT_SIZE,
+ 		.exp_errno = EBADF,
+ 		.msg = "invalid mnt_id_req.mnt_ns_fd",
+-		.kver = AFTER_6_18,
++		.kver = AFTER_6_17_9,
+ 	},
+ 	{
+ 		.req_usage = 1,
+@@ -154,10 +159,10 @@ static void run(unsigned int n)
+ 
+ static void setup(void)
+ {
+-	if (tst_kvercmp(6, 18, 0) >= 0)
+-		kver = AFTER_6_18;
++	if (tst_kvercmp(6, 17, 9) >= 0)
++		kver = AFTER_6_17_9;
+ 	else
+-		kver = BEFORE_6_18;
++		kver = BEFORE_6_17_9;
+ }
+ 
+ static struct tst_test test = {
+-- 
+2.52.0
+
