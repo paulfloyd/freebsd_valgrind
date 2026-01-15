@@ -3076,32 +3076,6 @@ s390_format_RX(void (*irgen)(UChar r1, IRTemp op2addr),
 }
 
 static void
-s390_format_RX_RRRD(void (*irgen)(UChar r1, IRTemp op2addr),
-                    UChar r1, UChar x2, UChar b2, UShort d2)
-{
-   IRTemp op2addr = newTemp(Ity_I64);
-
-   assign(op2addr, binop(Iop_Add64, binop(Iop_Add64, mkU64(d2),
-          b2 != 0 ? get_gpr_dw0(b2) : mkU64(0)), x2 != 0 ? get_gpr_dw0(x2) :
-          mkU64(0)));
-
-   irgen(r1, op2addr);
-}
-
-static void
-s390_format_RX_FRRD(void (*irgen)(UChar r1, IRTemp op2addr),
-                    UChar r1, UChar x2, UChar b2, UShort d2)
-{
-   IRTemp op2addr = newTemp(Ity_I64);
-
-   assign(op2addr, binop(Iop_Add64, binop(Iop_Add64, mkU64(d2),
-          b2 != 0 ? get_gpr_dw0(b2) : mkU64(0)), x2 != 0 ? get_gpr_dw0(x2) :
-          mkU64(0)));
-
-   irgen(r1, op2addr);
-}
-
-static void
 s390_format_RXE_FRRD(void (*irgen)(UChar r1, IRTemp op2addr),
                      UChar r1, UChar x2, UChar b2, UShort d2)
 {
@@ -19047,70 +19021,70 @@ s390_decode_4byte_and_irgen(const UChar *bytes)
    }
 
    switch ((ovl & 0xff000000) >> 24) {
-   case 0x40: s390_format_RX_RRRD(s390_irgen_STH, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x41: s390_format_RX_RRRD(s390_irgen_LA, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x42: s390_format_RX_RRRD(s390_irgen_STC, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x43: s390_format_RX_RRRD(s390_irgen_IC, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x44: s390_format_RX_RRRD(s390_irgen_EX, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x40: s390_format_RX(s390_irgen_STH, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x41: s390_format_RX(s390_irgen_LA, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x42: s390_format_RX(s390_irgen_STC, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x43: s390_format_RX(s390_irgen_IC, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x44: s390_format_RX(s390_irgen_EX, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
    case 0x45: /* BAL */ goto unimplemented;
-   case 0x46: s390_format_RX_RRRD(s390_irgen_BCT, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x46: s390_format_RX(s390_irgen_BCT, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
    case 0x47: s390_format_RX(s390_irgen_BC, RX_r1(ovl), RX_x2(ovl),
                              RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x48: s390_format_RX_RRRD(s390_irgen_LH, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x49: s390_format_RX_RRRD(s390_irgen_CH, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x4a: s390_format_RX_RRRD(s390_irgen_AH, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x4b: s390_format_RX_RRRD(s390_irgen_SH, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x4c: s390_format_RX_RRRD(s390_irgen_MH, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x4d: s390_format_RX_RRRD(s390_irgen_BAS, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x4e: s390_format_RX_RRRD(s390_irgen_CVD, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x4f: s390_format_RX_RRRD(s390_irgen_CVB, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x50: s390_format_RX_RRRD(s390_irgen_ST, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x51: s390_format_RX_RRRD(s390_irgen_LAE, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x54: s390_format_RX_RRRD(s390_irgen_N, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x55: s390_format_RX_RRRD(s390_irgen_CL, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x56: s390_format_RX_RRRD(s390_irgen_O, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x57: s390_format_RX_RRRD(s390_irgen_X, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x58: s390_format_RX_RRRD(s390_irgen_L, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x59: s390_format_RX_RRRD(s390_irgen_C, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x5a: s390_format_RX_RRRD(s390_irgen_A, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x5b: s390_format_RX_RRRD(s390_irgen_S, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x5c: s390_format_RX_RRRD(s390_irgen_M, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x5d: s390_format_RX_RRRD(s390_irgen_D, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x5e: s390_format_RX_RRRD(s390_irgen_AL, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x5f: s390_format_RX_RRRD(s390_irgen_SL, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x60: s390_format_RX_FRRD(s390_irgen_STD, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x48: s390_format_RX(s390_irgen_LH, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x49: s390_format_RX(s390_irgen_CH, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x4a: s390_format_RX(s390_irgen_AH, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x4b: s390_format_RX(s390_irgen_SH, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x4c: s390_format_RX(s390_irgen_MH, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x4d: s390_format_RX(s390_irgen_BAS, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x4e: s390_format_RX(s390_irgen_CVD, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x4f: s390_format_RX(s390_irgen_CVB, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x50: s390_format_RX(s390_irgen_ST, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x51: s390_format_RX(s390_irgen_LAE, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x54: s390_format_RX(s390_irgen_N, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x55: s390_format_RX(s390_irgen_CL, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x56: s390_format_RX(s390_irgen_O, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x57: s390_format_RX(s390_irgen_X, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x58: s390_format_RX(s390_irgen_L, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x59: s390_format_RX(s390_irgen_C, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x5a: s390_format_RX(s390_irgen_A, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x5b: s390_format_RX(s390_irgen_S, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x5c: s390_format_RX(s390_irgen_M, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x5d: s390_format_RX(s390_irgen_D, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x5e: s390_format_RX(s390_irgen_AL, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x5f: s390_format_RX(s390_irgen_SL, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x60: s390_format_RX(s390_irgen_STD, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
    case 0x67: /* MXD */ goto unimplemented;
-   case 0x68: s390_format_RX_FRRD(s390_irgen_LD, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x68: s390_format_RX(s390_irgen_LD, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
    case 0x69: /* CD */ goto unimplemented;
    case 0x6a: /* AD */ goto unimplemented;
    case 0x6b: /* SD */ goto unimplemented;
@@ -19118,12 +19092,12 @@ s390_decode_4byte_and_irgen(const UChar *bytes)
    case 0x6d: /* DD */ goto unimplemented;
    case 0x6e: /* AW */ goto unimplemented;
    case 0x6f: /* SW */ goto unimplemented;
-   case 0x70: s390_format_RX_FRRD(s390_irgen_STE, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x71: s390_format_RX_RRRD(s390_irgen_MS, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
-   case 0x78: s390_format_RX_FRRD(s390_irgen_LE, RX_r1(ovl), RX_x2(ovl),
-                                  RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x70: s390_format_RX(s390_irgen_STE, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x71: s390_format_RX(s390_irgen_MS, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
+   case 0x78: s390_format_RX(s390_irgen_LE, RX_r1(ovl), RX_x2(ovl),
+                             RX_b2(ovl), RX_d2(ovl));  goto ok;
    case 0x79: /* CE */ goto unimplemented;
    case 0x7a: /* AE */ goto unimplemented;
    case 0x7b: /* SE */ goto unimplemented;
