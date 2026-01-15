@@ -3063,8 +3063,7 @@ s390_format_RSY_RDRM(void (*irgen)(UChar r1, IRTemp op2addr),
 }
 
 static void
-s390_format_RX(void (*irgen)(UChar r1, UChar x2, UChar b2, UShort d2,
-                             IRTemp op2addr),
+s390_format_RX(void (*irgen)(UChar r1, IRTemp op2addr),
                UChar r1, UChar x2, UChar b2, UShort d2)
 {
    IRTemp op2addr = newTemp(Ity_I64);
@@ -3073,7 +3072,7 @@ s390_format_RX(void (*irgen)(UChar r1, UChar x2, UChar b2, UShort d2,
           b2 != 0 ? get_gpr_dw0(b2) : mkU64(0)), x2 != 0 ? get_gpr_dw0(x2) :
           mkU64(0)));
 
-   irgen(r1, x2, b2, d2, op2addr);
+   irgen(r1, op2addr);
 }
 
 static void
@@ -4866,7 +4865,7 @@ s390_irgen_BCR(UChar m1, UChar r2)
 }
 
 static void
-s390_irgen_BC(UChar m1, UChar x2, UChar b2, UShort d2, IRTemp op2addr)
+s390_irgen_BC(UChar m1, IRTemp op2addr)
 {
    IRTemp cond = newTemp(Ity_I32);
 
