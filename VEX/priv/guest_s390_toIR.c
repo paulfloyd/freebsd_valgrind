@@ -2732,34 +2732,6 @@ s390_format_MII_UPP(void (*irgen)(UChar m1, UShort i2, UInt i3),
 }
 
 static void
-s390_format_RI(void (*irgen)(UChar r1, UShort i2),
-               UChar r1, UShort i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RI_RU(void (*irgen)(UChar r1, UShort i2),
-                  UChar r1, UShort i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RI_RI(void (*irgen)(UChar r1, UShort i2),
-                  UChar r1, UShort i2)
-{
-   irgen(r1, i2);
-}
-
-static void
-s390_format_RI_RP(void (*irgen)(UChar r1, UShort i2),
-                  UChar r1, UShort i2)
-{
-   irgen(r1, i2);
-}
-
-static void
 s390_format_RIE_RRP(void (*irgen)(UChar r1, UChar r3, UShort i2),
                     UChar r1, UChar r3, UShort i2)
 {
@@ -18243,70 +18215,70 @@ s390_decode_4byte_and_irgen(const UChar *bytes)
               ((UInt)bytes[2] << 8) | (UInt)bytes[3];
 
    switch ((ovl & 0xff0f0000) >> 16) {
-   case 0xa500: s390_format_RI_RU(s390_irgen_IIHH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa501: s390_format_RI_RU(s390_irgen_IIHL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa502: s390_format_RI_RU(s390_irgen_IILH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa503: s390_format_RI_RU(s390_irgen_IILL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa504: s390_format_RI_RU(s390_irgen_NIHH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa505: s390_format_RI_RU(s390_irgen_NIHL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa506: s390_format_RI_RU(s390_irgen_NILH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa507: s390_format_RI_RU(s390_irgen_NILL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa508: s390_format_RI_RU(s390_irgen_OIHH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa509: s390_format_RI_RU(s390_irgen_OIHL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa50a: s390_format_RI_RU(s390_irgen_OILH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa50b: s390_format_RI_RU(s390_irgen_OILL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa50c: s390_format_RI_RU(s390_irgen_LLIHH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa50d: s390_format_RI_RU(s390_irgen_LLIHL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa50e: s390_format_RI_RU(s390_irgen_LLILH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa50f: s390_format_RI_RU(s390_irgen_LLILL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa700: s390_format_RI_RU(s390_irgen_TMLH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa701: s390_format_RI_RU(s390_irgen_TMLL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa702: s390_format_RI_RU(s390_irgen_TMHH, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa703: s390_format_RI_RU(s390_irgen_TMHL, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa704: s390_format_RI(s390_irgen_BRC, RI_r1(ovl), RI_i2(ovl));
-                               goto ok;
-   case 0xa705: s390_format_RI_RP(s390_irgen_BRAS, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa706: s390_format_RI_RP(s390_irgen_BRCT, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa707: s390_format_RI_RP(s390_irgen_BRCTG, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa708: s390_format_RI_RI(s390_irgen_LHI, RI_r1(ovl), RI_i2(ovl));
-                                  goto ok;
-   case 0xa709: s390_format_RI_RI(s390_irgen_LGHI, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa70a: s390_format_RI_RI(s390_irgen_AHI, RI_r1(ovl), RI_i2(ovl));
-                                  goto ok;
-   case 0xa70b: s390_format_RI_RI(s390_irgen_AGHI, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa70c: s390_format_RI_RI(s390_irgen_MHI, RI_r1(ovl), RI_i2(ovl));
-                                  goto ok;
-   case 0xa70d: s390_format_RI_RI(s390_irgen_MGHI, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
-   case 0xa70e: s390_format_RI_RI(s390_irgen_CHI, RI_r1(ovl), RI_i2(ovl));
-                                  goto ok;
-   case 0xa70f: s390_format_RI_RI(s390_irgen_CGHI, RI_r1(ovl),
-                                  RI_i2(ovl));  goto ok;
+   case 0xa500: s390_irgen_IIHH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa501: s390_irgen_IIHL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa502: s390_irgen_IILH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa503: s390_irgen_IILL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa504: s390_irgen_NIHH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa505: s390_irgen_NIHL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa506: s390_irgen_NILH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa507: s390_irgen_NILL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa508: s390_irgen_OIHH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa509: s390_irgen_OIHL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa50a: s390_irgen_OILH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa50b: s390_irgen_OILL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa50c: s390_irgen_LLIHH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa50d: s390_irgen_LLIHL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa50e: s390_irgen_LLILH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa50f: s390_irgen_LLILL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa700: s390_irgen_TMLH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa701: s390_irgen_TMLL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa702: s390_irgen_TMHH(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa703: s390_irgen_TMHL(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa704: s390_irgen_BRC(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa705: s390_irgen_BRAS(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa706: s390_irgen_BRCT(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa707: s390_irgen_BRCTG(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa708: s390_irgen_LHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa709: s390_irgen_LGHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa70a: s390_irgen_AHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa70b: s390_irgen_AGHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa70c: s390_irgen_MHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa70d: s390_irgen_MGHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa70e: s390_irgen_CHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
+   case 0xa70f: s390_irgen_CGHI(RI_r1(ovl), RI_i2(ovl));
+                goto ok;
    }
 
    switch ((ovl & 0xffff0000) >> 16) {
