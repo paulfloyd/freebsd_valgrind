@@ -144,11 +144,11 @@ typedef enum {
 #define RIE_r1(insn) (((insn) >> 52) & 0xf)
 #define RIE_r3(insn) (((insn) >> 48) & 0xf)
 #define RIE_i2(insn) (((insn) >> 32) & 0xffff)
-#define RIE_RRUUU_r1(insn) (((insn) >> 52) & 0xf)
-#define RIE_RRUUU_r2(insn) (((insn) >> 48) & 0xf)
-#define RIE_RRUUU_i3(insn) (((insn) >> 40) & 0xff)
-#define RIE_RRUUU_i4(insn) (((insn) >> 32) & 0xff)
-#define RIE_RRUUU_i5(insn) (((insn) >> 24) & 0xff)
+#define RIEf_r1(insn) (((insn) >> 52) & 0xf)
+#define RIEf_r2(insn) (((insn) >> 48) & 0xf)
+#define RIEf_i3(insn) (((insn) >> 40) & 0xff)
+#define RIEf_i4(insn) (((insn) >> 32) & 0xff)
+#define RIEf_i5(insn) (((insn) >> 24) & 0xff)
 #define RIE_R0xU_r1(insn) (((insn) >> 52) & 0xf)
 #define RIE_R0xU_i2(insn) (((insn) >> 32) & 0xffff)
 #define RIE_R0xU_m3(insn) (((insn) >> 28) & 0xf)
@@ -20537,55 +20537,34 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                                  RIEv3_r1(ovl),
                                                  RIEv3_m3(ovl),
                                                  RIEv3_i4(ovl));  goto ok;
-   case 0xec0000000051ULL: s390_format_RIE_RRUUU(s390_irgen_RISBLG,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
-   case 0xec0000000054ULL: s390_format_RIE_RRUUU(s390_irgen_RNSBG,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
-   case 0xec0000000055ULL: s390_format_RIE_RRUUU(s390_irgen_RISBG,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
-   case 0xec0000000056ULL: s390_format_RIE_RRUUU(s390_irgen_ROSBG,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
-   case 0xec0000000057ULL: s390_format_RIE_RRUUU(s390_irgen_RXSBG,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
-   case 0xec0000000059ULL: s390_format_RIE_RRUUU(s390_irgen_RISBGN,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
-   case 0xec000000005dULL: s390_format_RIE_RRUUU(s390_irgen_RISBHG,
-                                                 RIE_RRUUU_r1(ovl),
-                                                 RIE_RRUUU_r2(ovl),
-                                                 RIE_RRUUU_i3(ovl),
-                                                 RIE_RRUUU_i4(ovl),
-                                                 RIE_RRUUU_i5(ovl));
-                                                 goto ok;
+   case 0xec0000000051ULL: s390_irgen_RISBLG(RIEf_r1(ovl), RIEf_r2(ovl),
+                                             RIEf_i3(ovl), RIEf_i4(ovl),
+                                             RIEf_i5(ovl));
+                           goto ok;
+   case 0xec0000000054ULL: s390_irgen_RNSBG(RIEf_r1(ovl), RIEf_r2(ovl),
+                                            RIEf_i3(ovl), RIEf_i4(ovl),
+                                            RIEf_i5(ovl));
+                           goto ok;
+   case 0xec0000000055ULL: s390_irgen_RISBG(RIEf_r1(ovl), RIEf_r2(ovl),
+                                            RIEf_i3(ovl), RIEf_i4(ovl),
+                                            RIEf_i5(ovl));
+                           goto ok;
+   case 0xec0000000056ULL: s390_irgen_ROSBG(RIEf_r1(ovl), RIEf_r2(ovl),
+                                            RIEf_i3(ovl), RIEf_i4(ovl),
+                                            RIEf_i5(ovl));
+                           goto ok;
+   case 0xec0000000057ULL: s390_irgen_RXSBG(RIEf_r1(ovl), RIEf_r2(ovl),
+                                            RIEf_i3(ovl), RIEf_i4(ovl),
+                                            RIEf_i5(ovl));
+                           goto ok;
+   case 0xec0000000059ULL: s390_irgen_RISBGN(RIEf_r1(ovl), RIEf_r2(ovl),
+                                             RIEf_i3(ovl), RIEf_i4(ovl),
+                                             RIEf_i5(ovl));
+                           goto ok;
+   case 0xec000000005dULL: s390_irgen_RISBHG(RIEf_r1(ovl), RIEf_r2(ovl),
+                                             RIEf_i3(ovl), RIEf_i4(ovl),
+                                             RIEf_i5(ovl));
+                           goto ok;
    case 0xec0000000064ULL: s390_format_RIE_RRPU(s390_irgen_CGRJ,
                                                 RIE_RRPU_r1(ovl),
                                                 RIE_RRPU_r2(ovl),
