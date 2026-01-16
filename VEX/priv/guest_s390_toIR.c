@@ -159,10 +159,13 @@ typedef enum {
 #define RIEb_r2(insn) (((insn) >> 48) & 0xf)
 #define RIEb_i4(insn) (((insn) >> 32) & 0xffff)
 #define RIEb_m3(insn) (((insn) >> 28) & 0xf)
-#define RIEv3_r1(insn) (((insn) >> 52) & 0xf)
-#define RIEv3_m3(insn) (((insn) >> 48) & 0xf)
-#define RIEv3_i4(insn) (((insn) >> 32) & 0xffff)
-#define RIEv3_i2(insn) (((insn) >> 24) & 0xff)
+#define RIEc_r1(insn) (((insn) >> 52) & 0xf)
+#define RIEc_m3(insn) (((insn) >> 48) & 0xf)
+#define RIEc_i4(insn) (((insn) >> 32) & 0xffff)
+#define RIEc_i2(insn) (((insn) >> 24) & 0xff)
+#define RIEg_r1(insn) (((insn) >> 52) & 0xf)
+#define RIEg_m3(insn) (((insn) >> 48) & 0xf)
+#define RIEg_i2(insn) (((insn) >> 32) & 0xffff)
 #define RIL_r1(insn) (((insn) >> 52) & 0xf)
 #define RIL_i2(insn) (((insn) >> 16) & 0xffffffff)
 #define RIS_r1(insn) (((insn) >> 52) & 0xf)
@@ -2732,27 +2735,6 @@ s390_format_MII_UPP(void (*irgen)(UChar m1, UShort i2, UInt i3),
                     UChar m1, UShort i2, UInt i3)
 {
    irgen(m1, i2, i3);
-}
-
-static void
-s390_format_RIE_RUPU(void (*irgen)(UChar r1, UChar m3, UShort i4, UChar i2),
-                     UChar r1, UChar m3, UShort i4, UChar i2)
-{
-   irgen(r1, m3, i4, i2);
-}
-
-static void
-s390_format_RIE_RUPI(void (*irgen)(UChar r1, UChar m3, UShort i4, UChar i2),
-                     UChar r1, UChar m3, UShort i4, UChar i2)
-{
-   irgen(r1, m3, i4, i2);
-}
-
-static void
-s390_format_RIE_RUPIX(void (*irgen)(UChar r1, UChar m3, UShort i2),
-                      UChar r1, UChar m3, UShort i2)
-{
-   irgen(r1, m3, i2);
 }
 
 static void
@@ -20479,24 +20461,21 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                                 RSY_r3(ovl), RSY_b2(ovl),
                                                 RSY_dl2(ovl),
                                                 RSY_dh2(ovl));  goto ok;
-   case 0xec0000000042ULL: s390_format_RIE_RUPIX(s390_irgen_LOCHI,
-                                                 RIEv3_r1(ovl),
-                                                 RIEv3_m3(ovl),
-                                                 RIEv3_i4(ovl));  goto ok;
+   case 0xec0000000042ULL: s390_irgen_LOCHI(RIEg_r1(ovl), RIEg_m3(ovl),
+                                            RIEg_i2(ovl));
+                           goto ok;
    case 0xec0000000044ULL: s390_irgen_BRXHG(RIEe_r1(ovl), RIEe_r3(ovl),
                                             RIEe_i2(ovl));
                            goto ok;
    case 0xec0000000045ULL: s390_irgen_BRXLG(RIEe_r1(ovl), RIEe_r3(ovl),
                                             RIEe_i2(ovl));
                            goto ok;
-   case 0xec0000000046ULL: s390_format_RIE_RUPIX(s390_irgen_LOCGHI,
-                                                 RIEv3_r1(ovl),
-                                                 RIEv3_m3(ovl),
-                                                 RIEv3_i4(ovl));  goto ok;
-   case 0xec000000004eULL: s390_format_RIE_RUPIX(s390_irgen_LOCHHI,
-                                                 RIEv3_r1(ovl),
-                                                 RIEv3_m3(ovl),
-                                                 RIEv3_i4(ovl));  goto ok;
+   case 0xec0000000046ULL: s390_irgen_LOCGHI(RIEg_r1(ovl), RIEg_m3(ovl),
+                                             RIEg_i2(ovl));
+                           goto ok;
+   case 0xec000000004eULL: s390_irgen_LOCHHI(RIEg_r1(ovl), RIEg_m3(ovl),
+                                             RIEg_i2(ovl));
+                           goto ok;
    case 0xec0000000051ULL: s390_irgen_RISBLG(RIEf_r1(ovl), RIEf_r2(ovl),
                                              RIEf_i3(ovl), RIEf_i4(ovl),
                                              RIEf_i5(ovl));
@@ -20549,26 +20528,18 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xec0000000077ULL: s390_irgen_CLRJ(RIEb_r1(ovl), RIEb_r2(ovl),
                                            RIEb_i4(ovl), RIEb_m3(ovl));
                            goto ok;
-   case 0xec000000007cULL: s390_format_RIE_RUPI(s390_irgen_CGIJ,
-                                                RIEv3_r1(ovl),
-                                                RIEv3_m3(ovl),
-                                                RIEv3_i4(ovl),
-                                                RIEv3_i2(ovl));  goto ok;
-   case 0xec000000007dULL: s390_format_RIE_RUPU(s390_irgen_CLGIJ,
-                                                RIEv3_r1(ovl),
-                                                RIEv3_m3(ovl),
-                                                RIEv3_i4(ovl),
-                                                RIEv3_i2(ovl));  goto ok;
-   case 0xec000000007eULL: s390_format_RIE_RUPI(s390_irgen_CIJ,
-                                                RIEv3_r1(ovl),
-                                                RIEv3_m3(ovl),
-                                                RIEv3_i4(ovl),
-                                                RIEv3_i2(ovl));  goto ok;
-   case 0xec000000007fULL: s390_format_RIE_RUPU(s390_irgen_CLIJ,
-                                                RIEv3_r1(ovl),
-                                                RIEv3_m3(ovl),
-                                                RIEv3_i4(ovl),
-                                                RIEv3_i2(ovl));  goto ok;
+   case 0xec000000007cULL: s390_irgen_CGIJ(RIEc_r1(ovl), RIEc_m3(ovl),
+                                           RIEc_i4(ovl), RIEc_i2(ovl));
+                           goto ok;
+   case 0xec000000007dULL: s390_irgen_CLGIJ(RIEc_r1(ovl), RIEc_m3(ovl),
+                                            RIEc_i4(ovl), RIEc_i2(ovl));
+                           goto ok;
+   case 0xec000000007eULL: s390_irgen_CIJ(RIEc_r1(ovl), RIEc_m3(ovl),
+                                          RIEc_i4(ovl), RIEc_i2(ovl));
+                           goto ok;
+   case 0xec000000007fULL: s390_irgen_CLIJ(RIEc_r1(ovl), RIEc_m3(ovl),
+                                           RIEc_i4(ovl), RIEc_i2(ovl));
+                           goto ok;
    case 0xec00000000d8ULL: s390_irgen_AHIK(RIEd_r1(ovl), RIEd_r3(ovl),
                                            RIEd_i2(ovl));
                            goto ok;
