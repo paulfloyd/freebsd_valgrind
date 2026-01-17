@@ -43,6 +43,7 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+126256  (fnop) vex x86->IR: unhandled instruction bytes: 0xD9 0xD0 0x31 0xC0
 228343  none/tests/darwin/bug228343 fails on OS X
 258140  Valgrind on OS X always reports some memory "still reachable"
 413369  unhandled amd64-darwin syscall: unix:151 (getpgid)
