@@ -71,6 +71,8 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 514094  readlink("/proc/self/exe") overwrites buffer beyond its return value
 514613  Unclosed leak_summary/still_reachable tag in xml output
 514659  ltp 20250930 vs linux 6.18.3 doesn't build
+514762  Many "Bad file descriptor" messages when using --track-fds=yes and
+        -d on systems without /proc
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

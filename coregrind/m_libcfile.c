@@ -808,7 +808,6 @@ Int VG_(fcntl) ( Int fd, Int cmd, Addr arg )
 #    error "Unknown OS"
 #  endif
    if (sr_isError(res)) {
-      VG_(debugLog)(1, "VG_(fcntl)", "fcntl cmd %d error %lu %s\n", cmd, sr_Err(res), VG_(strerror)(sr_Err(res)));
       return -1;
    }
    return (Int)sr_Res(res);
