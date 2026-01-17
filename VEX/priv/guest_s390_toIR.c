@@ -3062,22 +3062,8 @@ s390_format_SI(void (*irgen)(UChar i2, IRTemp op1addr),
 }
 
 static void
-s390_format_SIY_URD(void (*irgen)(UChar i2, IRTemp op1addr),
-                    UChar i2, UChar b1, UShort dl1, UChar dh1)
-{
-   IRTemp op1addr = newTemp(Ity_I64);
-   IRTemp d1 = newTemp(Ity_I64);
-
-   assign(d1, mkU64(((ULong)(Long)(Char)dh1 << 12) | ((ULong)dl1)));
-   assign(op1addr, binop(Iop_Add64, mkexpr(d1), b1 != 0 ? get_gpr_dw0(b1) :
-          mkU64(0)));
-
-   irgen(i2, op1addr);
-}
-
-static void
-s390_format_SIY_IRD(void (*irgen)(UChar i2, IRTemp op1addr),
-                    UChar i2, UChar b1, UShort dl1, UChar dh1)
+s390_format_SIY(void (*irgen)(UChar i2, IRTemp op1addr),
+                UChar i2, UChar b1, UShort dl1, UChar dh1)
 {
    IRTemp op1addr = newTemp(Ity_I64);
    IRTemp d1 = newTemp(Ity_I64);
@@ -3132,20 +3118,8 @@ s390_format_SSE(void (*irgen)(IRTemp, IRTemp),
 }
 
 static void
-s390_format_SIL_RDI(void (*irgen)(UShort i2, IRTemp op1addr),
-                    UChar b1, UShort d1, UShort i2)
-{
-   IRTemp op1addr = newTemp(Ity_I64);
-
-   assign(op1addr, binop(Iop_Add64, mkU64(d1), b1 != 0 ? get_gpr_dw0(b1) :
-          mkU64(0)));
-
-   irgen(i2, op1addr);
-}
-
-static void
-s390_format_SIL_RDU(void (*irgen)(UShort i2, IRTemp op1addr),
-                    UChar b1, UShort d1, UShort i2)
+s390_format_SIL(void (*irgen)(UShort i2, IRTemp op1addr),
+                UChar b1, UShort d1, UShort i2)
 {
    IRTemp op1addr = newTemp(Ity_I64);
 
@@ -20262,37 +20236,47 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                                 RSY_r3(ovl), RSY_b2(ovl),
                                                 RSY_dl2(ovl),
                                                 RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000051ULL: s390_format_SIY_URD(s390_irgen_TMY, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb0000000052ULL: s390_format_SIY_URD(s390_irgen_MVIY, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb0000000054ULL: s390_format_SIY_URD(s390_irgen_NIY, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb0000000055ULL: s390_format_SIY_URD(s390_irgen_CLIY, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb0000000056ULL: s390_format_SIY_URD(s390_irgen_OIY, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb0000000057ULL: s390_format_SIY_URD(s390_irgen_XIY, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb000000006aULL: s390_format_SIY_IRD(s390_irgen_ASI, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb000000006eULL: s390_format_SIY_IRD(s390_irgen_ALSI, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
+   case 0xeb0000000051ULL: s390_format_SIY(s390_irgen_TMY, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb0000000052ULL: s390_format_SIY(s390_irgen_MVIY, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb0000000054ULL: s390_format_SIY(s390_irgen_NIY, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb0000000055ULL: s390_format_SIY(s390_irgen_CLIY, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb0000000056ULL: s390_format_SIY(s390_irgen_OIY, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb0000000057ULL: s390_format_SIY(s390_irgen_XIY, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb000000006aULL: s390_format_SIY(s390_irgen_ASI, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb000000006eULL: s390_format_SIY(s390_irgen_ALSI, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
    case 0xeb0000000071ULL: /* LPSWEY */ goto unimplemented;
-   case 0xeb000000007aULL: s390_format_SIY_IRD(s390_irgen_AGSI, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
-   case 0xeb000000007eULL: s390_format_SIY_IRD(s390_irgen_ALGSI, SIY_i2(ovl),
-                                               SIY_b1(ovl), SIY_dl1(ovl),
-                                               SIY_dh1(ovl));  goto ok;
+   case 0xeb000000007aULL: s390_format_SIY(s390_irgen_AGSI, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
+   case 0xeb000000007eULL: s390_format_SIY(s390_irgen_ALGSI, SIY_i2(ovl),
+                                           SIY_b1(ovl), SIY_dl1(ovl),
+                                           SIY_dh1(ovl));
+                           goto ok;
    case 0xeb0000000080ULL: s390_format_RSY_RURD(s390_irgen_ICMH, RSY_r1(ovl),
                                                 RSY_r3(ovl), RSY_b2(ovl),
                                                 RSY_dl2(ovl),
@@ -20872,33 +20856,33 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                    goto ok;
    case 0xe50eULL: /* MVCSK */ goto unimplemented;
    case 0xe50fULL: /* MVCDK */ goto unimplemented;
-   case 0xe544ULL: s390_format_SIL_RDI(s390_irgen_MVHHI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe548ULL: s390_format_SIL_RDI(s390_irgen_MVGHI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe54cULL: s390_format_SIL_RDI(s390_irgen_MVHI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe554ULL: s390_format_SIL_RDI(s390_irgen_CHHSI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe555ULL: s390_format_SIL_RDU(s390_irgen_CLHHSI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe558ULL: s390_format_SIL_RDI(s390_irgen_CGHSI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe559ULL: s390_format_SIL_RDU(s390_irgen_CLGHSI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe55cULL: s390_format_SIL_RDI(s390_irgen_CHSI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
-   case 0xe55dULL: s390_format_SIL_RDU(s390_irgen_CLFHSI, SIL_b1(ovl),
-                                       SIL_d1(ovl), SIL_i2(ovl));
-                                       goto ok;
+   case 0xe544ULL: s390_format_SIL(s390_irgen_MVHHI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe548ULL: s390_format_SIL(s390_irgen_MVGHI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe54cULL: s390_format_SIL(s390_irgen_MVHI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe554ULL: s390_format_SIL(s390_irgen_CHHSI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe555ULL: s390_format_SIL(s390_irgen_CLHHSI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe558ULL: s390_format_SIL(s390_irgen_CGHSI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe559ULL: s390_format_SIL(s390_irgen_CLGHSI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe55cULL: s390_format_SIL(s390_irgen_CHSI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
+   case 0xe55dULL: s390_format_SIL(s390_irgen_CLFHSI, SIL_b1(ovl),
+                                   SIL_d1(ovl), SIL_i2(ovl));
+                   goto ok;
    case 0xe560ULL: /* TBEGIN */ goto unimplemented;
    case 0xe561ULL: /* TBEGINC */ goto unimplemented;
    }
