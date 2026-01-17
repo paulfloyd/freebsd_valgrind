@@ -1190,6 +1190,13 @@ ULong VG_(di_notify_mmap)( Addr a, Bool allow_SkFileV, Int use_fd )
       return 0;
 
    /* If the file doesn't have a name, we're hosed.  Give up. */
+  /*
+    * Maybe not.  Since bug 280965 we may have the fd, and if we
+    * do have the fd we use that rather than the filename to
+    * get ELF info. The filename is used in several places but I think
+    * that it is not obligatory and when we have just the fd we could
+   * get by.
+    */
    filename = VG_(am_get_filename)( seg );
    if (!filename)
       return 0;

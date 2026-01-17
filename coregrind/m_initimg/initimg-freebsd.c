@@ -850,7 +850,7 @@ static Addr setup_client_stack(const void*  init_sp,
    }
 
    if (VG_(resolved_exename) == NULL) {
-      VG_(resolved_exename) = VG_(strdup)("initimg-freebsd.sre.1", resolved_name);
+      VG_(resolved_exename) = VG_(strdup)("initimg-freebsd.scs.1", resolved_name);
    }
 
    return client_SP;

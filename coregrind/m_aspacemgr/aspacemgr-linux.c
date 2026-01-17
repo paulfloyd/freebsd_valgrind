@@ -4443,8 +4443,8 @@ static char* maybe_merge_procmap_stack(char* p,  struct vki_kinfo_vmentry *kve, 
  * The other use is at startup in order to get the mapping for the
  * tool itself. In this case we have a fairly big problem. There is
  * a difference in the mapping used when the kernel loads an exe
- * and when the link loader ldrt (or Valgrind which does the same
- * job for the guest exe. In the case of ldrt, all ELF PT_LOAD
+ * and when the link loader rtld (or Valgrind which does the same
+ * job for the guest exe). In the case of rtld, all ELF PT_LOAD
  * sections get mmap'd. The kernel, however, does _not_ mmap
  * the RW PT_LOAD.
  *
