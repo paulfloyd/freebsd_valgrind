@@ -864,7 +864,7 @@ Int VG_(load_macho)(Int fd, const HChar *name, ExeInfo *info)
       return VKI_ENOEXEC;
    }
 
-   info->executable_path = VG_(strdup)("ume.macho.executable_path", name);
+   info->executable_path = VG_(strdup)("ume.macho.load_macho", name);
 
    SysRes res = VG_(dup)(fd);
    if (!sr_isError(res))

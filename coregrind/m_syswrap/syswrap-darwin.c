@@ -410,7 +410,7 @@ static void log_decaying ( const HChar* format, ... )
    // Now see if it already exists in the table of strings that we have.
    if (!decaying_string_table) {
       decaying_string_table
-         = VG_(newFM)( VG_(malloc), "syswrap-darwin.pd.1",
+         = VG_(newFM)( VG_(malloc), "syswrap-darwin.ld.1",
                        VG_(free), decaying_string_table_cmp );
    }
 
@@ -421,7 +421,7 @@ static void log_decaying ( const HChar* format, ... )
       // We haven't seen this string before, so strdup it and add
       // it to the table.
       vg_assert(key == NULL && val == 0);
-      key = VG_(strdup)("syswrap-darwin.pd.2", buf);
+      key = VG_(strdup)("syswrap-darwin.ld.2", buf);
       VG_(addToFM)(decaying_string_table, (UWord)key, (UWord)0);
    }
 

@@ -961,7 +961,7 @@ Addr setup_client_stack( void*  init_sp,
       }
       HChar resolved_name[VKI_PATH_MAX];
       VG_(realpath)(exe_name, resolved_name);
-      VG_(resolved_exename) = VG_(strdup)("initimg-linux.sre.1", resolved_name);
+      VG_(resolved_exename) = VG_(strdup)("initimg-linux.scs.1", resolved_name);
    }
 
    /* client_SP is pointing at client's argc/argv */
