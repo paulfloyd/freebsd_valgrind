@@ -588,30 +588,30 @@ static void set_CEnt ( const DiImage* img, UInt entNo, DiOffT off )
    if (img->source.is_local) {
       // Simple: just read it
       if (img->source.fd == -1) {
-        VG_(memcpy)(&ce->data[0], ((const char *)img->source.session_id) + off, len);
+         VG_(memcpy)(&ce->data[0], ((const char *)img->source.session_id) + off, len);
       } else {
-      // PJF not quite so simple - see
-      // https://bugs.kde.org/show_bug.cgi?id=480405
-      // if img->source.fd was opened with O_DIRECT the memory needs
-      // to be aligned and also the length
-      // that's a lot of hassle just to take a quick peek to see if
-      // is an ELF binary so just twiddle the flag before and after
-      // peeking.
-      // This doesn't seem to be a problem on FreeBSD. I haven't tested
-      // on macOS or Solaris, hence the conditional compilation
+         // PJF not quite so simple - see
+         // https://bugs.kde.org/show_bug.cgi?id=480405
+         // if img->source.fd was opened with O_DIRECT the memory needs
+         // to be aligned and also the length
+         // that's a lot of hassle just to take a quick peek to see if
+         // is an ELF binary so just twiddle the flag before and after
+         // peeking.
+         // This doesn't seem to be a problem on FreeBSD. I haven't tested
+         // on macOS or Solaris, hence the conditional compilation
 #if defined(VKI_O_DIRECT)
-      Int flags = VG_(fcntl)(img->source.fd, VKI_F_GETFL, 0);
-      if (flags & VKI_O_DIRECT) {
-          VG_(fcntl)(img->source.fd, VKI_F_SETFL, flags & ~VKI_O_DIRECT);
-      }
+         Int flags = VG_(fcntl)(img->source.fd, VKI_F_GETFL, 0);
+         if (flags & VKI_O_DIRECT) {
+            VG_(fcntl)(img->source.fd, VKI_F_SETFL, flags & ~VKI_O_DIRECT);
+         }
 #endif
-      SysRes sr = VG_(pread)(img->source.fd, &ce->data[0], (Int)len, off);
+         SysRes sr = VG_(pread)(img->source.fd, &ce->data[0], (Int)len, off);
 #if defined(VKI_O_DIRECT)
-      if (flags & VKI_O_DIRECT) {
-         VG_(fcntl)(img->source.fd, VKI_F_SETFL, flags);
-      }
+         if (flags & VKI_O_DIRECT) {
+            VG_(fcntl)(img->source.fd, VKI_F_SETFL, flags);
+         }
 #endif
-      vg_assert(!sr_isError(sr));
+         vg_assert(!sr_isError(sr));
       }
    } else {
       // Not so simple: poke the server

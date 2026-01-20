@@ -1206,8 +1206,11 @@ ULong VG_(di_notify_mmap)( Addr a, Bool allow_SkFileV, Int use_fd )
     * --20208-- WARNING: Serious error when reading debug info
     * --20208-- When reading debug info from /proc/xen/privcmd:
     * --20208-- can't read file to inspect ELF header
+    *
+    * Also PCI devices, see bug 514206
     */
-   if (VG_(strncmp)(filename, "/proc/xen/", 10) == 0)
+   if (VG_(strncmp)(filename, "/proc/xen/", 10) == 0 ||
+       VG_(strncmp)(filename, "/sys/devices/pci", 16) == 0)
       return 0;
 
    if (debug)

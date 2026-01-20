@@ -69,6 +69,8 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         compiler warning
 513475  Add SSE4.1 PMULLD instruction for x86 32 bit
 514094  readlink("/proc/self/exe") overwrites buffer beyond its return value
+514206  Assertion '!sr_isError(sr)' failed - mmap fd points to an open
+        descriptor to a PCI device
 514613  Unclosed leak_summary/still_reachable tag in xml output
 514659  ltp 20250930 vs linux 6.18.3 doesn't build
 514762  Many "Bad file descriptor" messages when using --track-fds=yes and
