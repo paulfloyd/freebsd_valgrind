@@ -184,6 +184,7 @@ typedef enum {
 #define RRS_m3(insn) (((insn) >> 28) & 0xf)
 #define RSY_r1(insn) (((insn) >> 52) & 0xf)
 #define RSY_r3(insn) (((insn) >> 48) & 0xf)
+#define RSY_m3(insn) (((insn) >> 48) & 0xf)
 #define RSY_b2(insn) (((insn) >> 44) & 0xf)
 #define RSY_dl2(insn) (((insn) >> 32) & 0xfff)
 #define RSY_dh2(insn) (((insn) >> 24) & 0xff)
@@ -2764,8 +2765,8 @@ s390_format_RS(void (*irgen)(UChar r1, UChar r3, IRTemp op2addr),
 }
 
 static void
-s390_format_RSY_RRRD(void (*irgen)(UChar r1, UChar r3, IRTemp op2addr),
-                     UChar r1, UChar r3, UChar b2, UShort dl2, UChar dh2)
+s390_format_RSY(void (*irgen)(UChar r1, UChar r3, IRTemp op2addr),
+                UChar r1, UChar r3, UChar b2, UShort dl2, UChar dh2)
 {
    IRTemp op2addr = newTemp(Ity_I64);
    IRTemp d2 = newTemp(Ity_I64);
@@ -2778,22 +2779,8 @@ s390_format_RSY_RRRD(void (*irgen)(UChar r1, UChar r3, IRTemp op2addr),
 }
 
 static void
-s390_format_RSY_AARD(void (*irgen)(UChar, UChar, IRTemp),
-                     UChar r1, UChar r3, UChar b2, UShort dl2, UChar dh2)
-{
-   IRTemp op2addr = newTemp(Ity_I64);
-   IRTemp d2 = newTemp(Ity_I64);
-
-   assign(d2, mkU64(((ULong)(Long)(Char)dh2 << 12) | ((ULong)dl2)));
-   assign(op2addr, binop(Iop_Add64, mkexpr(d2), b2 != 0 ? get_gpr_dw0(b2) :
-          mkU64(0)));
-
-   irgen(r1, r3, op2addr);
-}
-
-static void
-s390_format_RSY_RURD(void (*irgen)(UChar r1, UChar m3, IRTemp op2addr),
-                     UChar r1, UChar m3, UChar b2, UShort dl2, UChar dh2)
+s390_format_RSYb(void (*irgen)(UChar r1, UChar m3, IRTemp op2addr),
+                 UChar r1, UChar m3, UChar b2, UShort dl2, UChar dh2)
 {
    IRTemp op2addr = newTemp(Ity_I64);
    IRTemp d2 = newTemp(Ity_I64);
@@ -2806,22 +2793,8 @@ s390_format_RSY_RURD(void (*irgen)(UChar r1, UChar m3, IRTemp op2addr),
 }
 
 static void
-s390_format_RSY_R0RD(void (*irgen)(UChar r1, UChar m3, IRTemp op2addr),
-                     UChar r1, UChar m3, UChar b2, UShort dl2, UChar dh2)
-{
-   IRTemp op2addr = newTemp(Ity_I64);
-   IRTemp d2 = newTemp(Ity_I64);
-
-   assign(d2, mkU64(((ULong)(Long)(Char)dh2 << 12) | ((ULong)dl2)));
-   assign(op2addr, binop(Iop_Add64, mkexpr(d2), b2 != 0 ? get_gpr_dw0(b2) :
-          mkU64(0)));
-
-   irgen(r1, m3, op2addr);
-}
-
-static void
-s390_format_RSY_RDRM(void (*irgen)(UChar r1, IRTemp op2addr),
-                     UChar r1, UChar m3, UChar b2, UShort dl2, UChar dh2)
+s390_format_RSYcond(void (*irgen)(UChar r1, IRTemp op2addr),
+                    UChar r1, UChar m3, UChar b2, UShort dl2, UChar dh2)
 {
    IRTemp op2addr = newTemp(Ity_I64);
    IRTemp d2 = newTemp(Ity_I64);
@@ -5900,7 +5873,7 @@ s390_irgen_CLM(UChar r1, UChar r3, IRTemp op2addr)
 }
 
 static void
-s390_irgen_CLMY(UChar r1, UChar r3, IRTemp op2addr)
+s390_irgen_CLMY(UChar r1, UChar m3, IRTemp op2addr)
 {
    IRTemp op1 = newTemp(Ity_I32);
    IRTemp op2 = newTemp(Ity_I32);
@@ -5915,7 +5888,7 @@ s390_irgen_CLMY(UChar r1, UChar r3, IRTemp op2addr)
    UChar n;
 
    n = 0;
-   if ((r3 & 8) != 0) {
+   if ((m3 & 8) != 0) {
       assign(b0, unop(Iop_8Uto32, get_gpr_b4(r1)));
       assign(c0, unop(Iop_8Uto32, load(Ity_I8, mkexpr(op2addr))));
       n = n + 1;
@@ -5923,7 +5896,7 @@ s390_irgen_CLMY(UChar r1, UChar r3, IRTemp op2addr)
       assign(b0, mkU32(0));
       assign(c0, mkU32(0));
    }
-   if ((r3 & 4) != 0) {
+   if ((m3 & 4) != 0) {
       assign(b1, unop(Iop_8Uto32, get_gpr_b5(r1)));
       assign(c1, unop(Iop_8Uto32, load(Ity_I8, binop(Iop_Add64, mkexpr(op2addr),
              mkU64(n)))));
@@ -5932,7 +5905,7 @@ s390_irgen_CLMY(UChar r1, UChar r3, IRTemp op2addr)
       assign(b1, mkU32(0));
       assign(c1, mkU32(0));
    }
-   if ((r3 & 2) != 0) {
+   if ((m3 & 2) != 0) {
       assign(b2, unop(Iop_8Uto32, get_gpr_b6(r1)));
       assign(c2, unop(Iop_8Uto32, load(Ity_I8, binop(Iop_Add64, mkexpr(op2addr),
              mkU64(n)))));
@@ -5941,7 +5914,7 @@ s390_irgen_CLMY(UChar r1, UChar r3, IRTemp op2addr)
       assign(b2, mkU32(0));
       assign(c2, mkU32(0));
    }
-   if ((r3 & 1) != 0) {
+   if ((m3 & 1) != 0) {
       assign(b3, unop(Iop_8Uto32, get_gpr_b7(r1)));
       assign(c3, unop(Iop_8Uto32, load(Ity_I8, binop(Iop_Add64, mkexpr(op2addr),
              mkU64(n)))));
@@ -5960,7 +5933,7 @@ s390_irgen_CLMY(UChar r1, UChar r3, IRTemp op2addr)
 }
 
 static void
-s390_irgen_CLMH(UChar r1, UChar r3, IRTemp op2addr)
+s390_irgen_CLMH(UChar r1, UChar m3, IRTemp op2addr)
 {
    IRTemp op1 = newTemp(Ity_I32);
    IRTemp op2 = newTemp(Ity_I32);
@@ -5975,7 +5948,7 @@ s390_irgen_CLMH(UChar r1, UChar r3, IRTemp op2addr)
    UChar n;
 
    n = 0;
-   if ((r3 & 8) != 0) {
+   if ((m3 & 8) != 0) {
       assign(b0, unop(Iop_8Uto32, get_gpr_b0(r1)));
       assign(c0, unop(Iop_8Uto32, load(Ity_I8, mkexpr(op2addr))));
       n = n + 1;
@@ -5983,7 +5956,7 @@ s390_irgen_CLMH(UChar r1, UChar r3, IRTemp op2addr)
       assign(b0, mkU32(0));
       assign(c0, mkU32(0));
    }
-   if ((r3 & 4) != 0) {
+   if ((m3 & 4) != 0) {
       assign(b1, unop(Iop_8Uto32, get_gpr_b1(r1)));
       assign(c1, unop(Iop_8Uto32, load(Ity_I8, binop(Iop_Add64, mkexpr(op2addr),
              mkU64(n)))));
@@ -5992,7 +5965,7 @@ s390_irgen_CLMH(UChar r1, UChar r3, IRTemp op2addr)
       assign(b1, mkU32(0));
       assign(c1, mkU32(0));
    }
-   if ((r3 & 2) != 0) {
+   if ((m3 & 2) != 0) {
       assign(b2, unop(Iop_8Uto32, get_gpr_b2(r1)));
       assign(c2, unop(Iop_8Uto32, load(Ity_I8, binop(Iop_Add64, mkexpr(op2addr),
              mkU64(n)))));
@@ -6001,7 +5974,7 @@ s390_irgen_CLMH(UChar r1, UChar r3, IRTemp op2addr)
       assign(b2, mkU32(0));
       assign(c2, mkU32(0));
    }
-   if ((r3 & 1) != 0) {
+   if ((m3 & 1) != 0) {
       assign(b3, unop(Iop_8Uto32, get_gpr_b3(r1)));
       assign(c3, unop(Iop_8Uto32, load(Ity_I8, binop(Iop_Add64, mkexpr(op2addr),
              mkU64(n)))));
@@ -6280,14 +6253,14 @@ s390_irgen_ICM(UChar r1, UChar r3, IRTemp op2addr)
 }
 
 static void
-s390_irgen_ICMY(UChar r1, UChar r3, IRTemp op2addr)
+s390_irgen_ICMY(UChar r1, UChar m3, IRTemp op2addr)
 {
    UChar n;
    IRTemp result = newTemp(Ity_I32);
    UInt mask;
 
    n = 0;
-   mask = (UInt)r3;
+   mask = (UInt)m3;
    if ((mask & 8) != 0) {
       put_gpr_b4(r1, load(Ity_I8, mkexpr(op2addr)));
       n = n + 1;
@@ -6313,14 +6286,14 @@ s390_irgen_ICMY(UChar r1, UChar r3, IRTemp op2addr)
 }
 
 static void
-s390_irgen_ICMH(UChar r1, UChar r3, IRTemp op2addr)
+s390_irgen_ICMH(UChar r1, UChar m3, IRTemp op2addr)
 {
    UChar n;
    IRTemp result = newTemp(Ity_I32);
    UInt mask;
 
    n = 0;
-   mask = (UInt)r3;
+   mask = (UInt)m3;
    if ((mask & 8) != 0) {
       put_gpr_b0(r1, load(Ity_I8, mkexpr(op2addr)));
       n = n + 1;
@@ -8641,12 +8614,12 @@ s390_irgen_STCM(UChar r1, UChar r3, IRTemp op2addr)
 }
 
 static void
-s390_irgen_STCMY(UChar r1, UChar r3, IRTemp op2addr)
+s390_irgen_STCMY(UChar r1, UChar m3, IRTemp op2addr)
 {
    UChar mask;
    UChar n;
 
-   mask = (UChar)r3;
+   mask = (UChar)m3;
    n = 0;
    if ((mask & 8) != 0) {
       store(mkexpr(op2addr), get_gpr_b4(r1));
@@ -8666,12 +8639,12 @@ s390_irgen_STCMY(UChar r1, UChar r3, IRTemp op2addr)
 }
 
 static void
-s390_irgen_STCMH(UChar r1, UChar r3, IRTemp op2addr)
+s390_irgen_STCMH(UChar r1, UChar m3, IRTemp op2addr)
 {
    UChar mask;
    UChar n;
 
-   mask = (UChar)r3;
+   mask = (UChar)m3;
    n = 0;
    if ((mask & 8) != 0) {
       store(mkexpr(op2addr), get_gpr_b0(r1));
@@ -19998,98 +19971,98 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xe700000000ffULL: s390_format_VRR_VVVM(s390_irgen_VMX, VRR_v1(ovl),
                                                 VRR_v2(ovl), VRR_v3(ovl),
                                                 VRR_m4(ovl), VRR_rxb(ovl));  goto ok;
-   case 0xeb0000000004ULL: s390_format_RSY_RRRD(s390_irgen_LMG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000000aULL: s390_format_RSY_RRRD(s390_irgen_SRAG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000000bULL: s390_format_RSY_RRRD(s390_irgen_SLAG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000000cULL: s390_format_RSY_RRRD(s390_irgen_SRLG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000000dULL: s390_format_RSY_RRRD(s390_irgen_SLLG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb0000000004ULL: s390_format_RSY(s390_irgen_LMG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000000aULL: s390_format_RSY(s390_irgen_SRAG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000000bULL: s390_format_RSY(s390_irgen_SLAG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000000cULL: s390_format_RSY(s390_irgen_SRLG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000000dULL: s390_format_RSY(s390_irgen_SLLG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb000000000fULL: /* TRACG */ goto unimplemented;
-   case 0xeb0000000014ULL: s390_format_RSY_RRRD(s390_irgen_CSY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb0000000014ULL: s390_format_RSY(s390_irgen_CSY, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb0000000016ULL: /* PFCR */ goto unimplemented;
-   case 0xeb000000001cULL: s390_format_RSY_RRRD(s390_irgen_RLLG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000001dULL: s390_format_RSY_RRRD(s390_irgen_RLL, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000020ULL: s390_format_RSY_RURD(s390_irgen_CLMH, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000021ULL: s390_format_RSY_RURD(s390_irgen_CLMY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000023ULL: s390_format_RSY_R0RD(s390_irgen_CLT, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000024ULL: s390_format_RSY_RRRD(s390_irgen_STMG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb000000001cULL: s390_format_RSY(s390_irgen_RLLG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000001dULL: s390_format_RSY(s390_irgen_RLL, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000020ULL: s390_format_RSYb(s390_irgen_CLMH, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000021ULL: s390_format_RSYb(s390_irgen_CLMY, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000023ULL: s390_format_RSYb(s390_irgen_CLT, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000024ULL: s390_format_RSY(s390_irgen_STMG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb0000000025ULL: /* STCTG */ goto unimplemented;
-   case 0xeb0000000026ULL: s390_format_RSY_RRRD(s390_irgen_STMH, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000002bULL: s390_format_RSY_R0RD(s390_irgen_CLGT, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000002cULL: s390_format_RSY_RURD(s390_irgen_STCMH,
-                                                RSY_r1(ovl), RSY_r3(ovl),
-                                                RSY_b2(ovl), RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000002dULL: s390_format_RSY_RURD(s390_irgen_STCMY,
-                                                RSY_r1(ovl), RSY_r3(ovl),
-                                                RSY_b2(ovl), RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb0000000026ULL: s390_format_RSY(s390_irgen_STMH, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000002bULL: s390_format_RSYb(s390_irgen_CLGT, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000002cULL: s390_format_RSYb(s390_irgen_STCMH, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000002dULL: s390_format_RSYb(s390_irgen_STCMY, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb000000002fULL: /* LCTLG */ goto unimplemented;
-   case 0xeb0000000030ULL: s390_format_RSY_RRRD(s390_irgen_CSG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000031ULL: s390_format_RSY_RRRD(s390_irgen_CDSY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000003eULL: s390_format_RSY_RRRD(s390_irgen_CDSG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000044ULL: s390_format_RSY_RRRD(s390_irgen_BXHG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000045ULL: s390_format_RSY_RRRD(s390_irgen_BXLEG,
-                                                RSY_r1(ovl), RSY_r3(ovl),
-                                                RSY_b2(ovl), RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000004cULL: s390_format_RSY_RRRD(s390_irgen_ECAG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb0000000030ULL: s390_format_RSY(s390_irgen_CSG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000031ULL: s390_format_RSY(s390_irgen_CDSY, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000003eULL: s390_format_RSY(s390_irgen_CDSG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000044ULL: s390_format_RSY(s390_irgen_BXHG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000045ULL: s390_format_RSY(s390_irgen_BXLEG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000004cULL: s390_format_RSY(s390_irgen_ECAG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb0000000051ULL: s390_format_SIY(s390_irgen_TMY, SIY_i2(ovl),
                                            SIY_b1(ovl), SIY_dl1(ovl),
                                            SIY_dh1(ovl));
@@ -20131,117 +20104,117 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                            SIY_b1(ovl), SIY_dl1(ovl),
                                            SIY_dh1(ovl));
                            goto ok;
-   case 0xeb0000000080ULL: s390_format_RSY_RURD(s390_irgen_ICMH, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000081ULL: s390_format_RSY_RURD(s390_irgen_ICMY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb0000000080ULL: s390_format_RSYb(s390_irgen_ICMH, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000081ULL: s390_format_RSYb(s390_irgen_ICMY, RSY_r1(ovl),
+                                            RSY_m3(ovl), RSY_b2(ovl),
+                                            RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb000000008eULL: /* MVCLU */ goto unimplemented;
    case 0xeb000000008fULL: /* CLCLU */ goto unimplemented;
-   case 0xeb0000000090ULL: s390_format_RSY_RRRD(s390_irgen_STMY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000096ULL: s390_format_RSY_RRRD(s390_irgen_LMH, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb0000000098ULL: s390_format_RSY_RRRD(s390_irgen_LMY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000009aULL: s390_format_RSY_AARD(s390_irgen_LAMY, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb000000009bULL: s390_format_RSY_AARD(s390_irgen_STAMY,
-                                                RSY_r1(ovl), RSY_r3(ovl),
-                                                RSY_b2(ovl), RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb0000000090ULL: s390_format_RSY(s390_irgen_STMY, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000096ULL: s390_format_RSY(s390_irgen_LMH, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb0000000098ULL: s390_format_RSY(s390_irgen_LMY, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000009aULL: s390_format_RSY(s390_irgen_LAMY, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb000000009bULL: s390_format_RSY(s390_irgen_STAMY, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xeb00000000c0ULL: /* TP */ goto unimplemented;
-   case 0xeb00000000dcULL: s390_format_RSY_RRRD(s390_irgen_SRAK, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000ddULL: s390_format_RSY_RRRD(s390_irgen_SLAK, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000deULL: s390_format_RSY_RRRD(s390_irgen_SRLK, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000dfULL: s390_format_RSY_RRRD(s390_irgen_SLLK, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e0ULL: s390_format_RSY_RDRM(s390_irgen_LOCFH, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e1ULL: s390_format_RSY_RDRM(s390_irgen_STOCFH, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e2ULL: s390_format_RSY_RDRM(s390_irgen_LOCG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e3ULL: s390_format_RSY_RDRM(s390_irgen_STOCG,
-                                                RSY_r1(ovl), RSY_r3(ovl),
-                                                RSY_b2(ovl), RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e4ULL: s390_format_RSY_RRRD(s390_irgen_LANG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e6ULL: s390_format_RSY_RRRD(s390_irgen_LAOG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e7ULL: s390_format_RSY_RRRD(s390_irgen_LAXG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000e8ULL: s390_format_RSY_RRRD(s390_irgen_LAAG, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000eaULL: s390_format_RSY_RRRD(s390_irgen_LAALG,
-                                                RSY_r1(ovl), RSY_r3(ovl),
-                                                RSY_b2(ovl), RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000f2ULL: s390_format_RSY_RDRM(s390_irgen_LOC, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl)); goto ok;
-   case 0xeb00000000f3ULL: s390_format_RSY_RDRM(s390_irgen_STOC, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000f4ULL: s390_format_RSY_RRRD(s390_irgen_LAN, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000f6ULL: s390_format_RSY_RRRD(s390_irgen_LAO, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000f7ULL: s390_format_RSY_RRRD(s390_irgen_LAX, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000f8ULL: s390_format_RSY_RRRD(s390_irgen_LAA, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
-   case 0xeb00000000faULL: s390_format_RSY_RRRD(s390_irgen_LAAL, RSY_r1(ovl),
-                                                RSY_r3(ovl), RSY_b2(ovl),
-                                                RSY_dl2(ovl),
-                                                RSY_dh2(ovl));  goto ok;
+   case 0xeb00000000dcULL: s390_format_RSY(s390_irgen_SRAK, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000ddULL: s390_format_RSY(s390_irgen_SLAK, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000deULL: s390_format_RSY(s390_irgen_SRLK, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000dfULL: s390_format_RSY(s390_irgen_SLLK, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e0ULL: s390_format_RSYcond(s390_irgen_LOCFH, RSY_r1(ovl),
+                                               RSY_m3(ovl), RSY_b2(ovl),
+                                               RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e1ULL: s390_format_RSYcond(s390_irgen_STOCFH, RSY_r1(ovl),
+                                               RSY_m3(ovl), RSY_b2(ovl),
+                                               RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e2ULL: s390_format_RSYcond(s390_irgen_LOCG, RSY_r1(ovl),
+                                               RSY_m3(ovl), RSY_b2(ovl),
+                                               RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e3ULL: s390_format_RSYcond(s390_irgen_STOCG, RSY_r1(ovl),
+                                               RSY_m3(ovl), RSY_b2(ovl),
+                                               RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e4ULL: s390_format_RSY(s390_irgen_LANG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e6ULL: s390_format_RSY(s390_irgen_LAOG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e7ULL: s390_format_RSY(s390_irgen_LAXG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000e8ULL: s390_format_RSY(s390_irgen_LAAG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000eaULL: s390_format_RSY(s390_irgen_LAALG, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000f2ULL: s390_format_RSYcond(s390_irgen_LOC, RSY_r1(ovl),
+                                               RSY_m3(ovl), RSY_b2(ovl),
+                                               RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000f3ULL: s390_format_RSYcond(s390_irgen_STOC, RSY_r1(ovl),
+                                               RSY_m3(ovl), RSY_b2(ovl),
+                                               RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000f4ULL: s390_format_RSY(s390_irgen_LAN, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000f6ULL: s390_format_RSY(s390_irgen_LAO, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000f7ULL: s390_format_RSY(s390_irgen_LAX, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000f8ULL: s390_format_RSY(s390_irgen_LAA, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
+   case 0xeb00000000faULL: s390_format_RSY(s390_irgen_LAAL, RSY_r1(ovl),
+                                           RSY_r3(ovl), RSY_b2(ovl),
+                                           RSY_dl2(ovl), RSY_dh2(ovl));
+                           goto ok;
    case 0xec0000000042ULL: s390_irgen_LOCHI(RIEg_r1(ovl), RIEg_m3(ovl),
                                             RIEg_i2(ovl));
                            goto ok;
