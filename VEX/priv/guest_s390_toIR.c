@@ -3505,8 +3505,8 @@ s390_format_VRRa_VVVMMM2(void (*irgen)(UChar v1, UChar v2, UChar v3,
 }
 
 static void
-s390_format_VSI_URDV(void (*irgen)(UChar v1, IRTemp op2addr, UChar i3),
-                     UChar v1, UChar b2, UShort d2, UChar i3, UChar rxb)
+s390_format_VSI(void (*irgen)(UChar v1, IRTemp op2addr, UChar i3),
+                UChar i3, UChar b2, UShort d2, UChar v1, UChar rxb)
 {
    IRTemp op2addr = newTemp(Ity_I64);
 
@@ -19352,19 +19352,19 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                            VRX_rxb(ovl));
                            goto ok;
    case 0xe60000000034ULL: /* VPKZ */ goto unimplemented;
-   case 0xe60000000035ULL: s390_format_VSI_URDV(s390_irgen_VLRL, VSI_v1(ovl),
-                                                VSI_b2(ovl), VSI_d2(ovl),
-                                                VSI_i3(ovl),
-                                                VSI_rxb(ovl)); goto ok;
+   case 0xe60000000035ULL: s390_format_VSI(s390_irgen_VLRL, VSI_i3(ovl),
+                                           VSI_b2(ovl), VSI_d2(ovl),
+                                           VSI_v1(ovl), VSI_rxb(ovl));
+                           goto ok;
    case 0xe60000000037ULL: s390_format_VRS_RRDV(s390_irgen_VLRLR, VRSd_v1(ovl),
                                                 VRSd_r3(ovl), VRS_b2(ovl),
                                                 VRS_d2(ovl),
                                                 VRS_rxb(ovl));  goto ok;
    case 0xe6000000003cULL: /* VUPKZ */ goto unimplemented;
-   case 0xe6000000003dULL:  s390_format_VSI_URDV(s390_irgen_VSTRL, VSI_v1(ovl),
-                                                 VSI_b2(ovl), VSI_d2(ovl),
-                                                 VSI_i3(ovl),
-                                                 VSI_rxb(ovl)); goto ok;
+   case 0xe6000000003dULL: s390_format_VSI(s390_irgen_VSTRL, VSI_i3(ovl),
+                                           VSI_b2(ovl), VSI_d2(ovl),
+                                           VSI_v1(ovl), VSI_rxb(ovl));
+                           goto ok;
    case 0xe6000000003fULL: s390_format_VRS_RRDV(s390_irgen_VSTRLR, VRSd_v1(ovl),
                                                 VRSd_r3(ovl), VRS_b2(ovl),
                                                 VRS_d2(ovl),
