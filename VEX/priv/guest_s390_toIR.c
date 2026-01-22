@@ -251,11 +251,11 @@ typedef enum {
 #define VRRe_m5(insn) (((insn) >> 32) & 0xf)
 #define VRRe_v4(insn) (((insn) >> 28) & 0xf)
 #define VRRe_rxb(insn) (((insn) >> 24) & 0xf)
-#define VRI_v1(insn) (((insn) >> 52) & 0xf)
-#define VRI_v3(insn) (((insn) >> 48) & 0xf)
-#define VRI_i2(insn) (((insn) >> 32) & 0xffff)
-#define VRI_m3(insn) (((insn) >> 28) & 0xf)
-#define VRI_rxb(insn) (((insn) >> 24) & 0xf)
+#define VRIa_v1(insn) (((insn) >> 52) & 0xf)
+#define VRIa_v3(insn) (((insn) >> 48) & 0xf)
+#define VRIa_i2(insn) (((insn) >> 32) & 0xffff)
+#define VRIa_m3(insn) (((insn) >> 28) & 0xf)
+#define VRIa_rxb(insn) (((insn) >> 24) & 0xf)
 #define VRIb_v1(insn) (((insn) >> 52) & 0xf)
 #define VRIb_i2(insn) (((insn) >> 40) & 0xff)
 #define VRIb_i3(insn) (((insn) >> 32) & 0xff)
@@ -3107,8 +3107,8 @@ s390_format_VRR_VVM(void (*irgen)(UChar v1, UChar v2, UChar m3),
 
 
 static void
-s390_format_VRI_V0U(void (*irgen)(UChar v1, UShort i2),
-                    UChar v1, UShort i2, UChar rxb)
+s390_format_VRIa0(void (*irgen)(UChar v1, UShort i2),
+                  UChar v1, UShort i2, UChar rxb)
 {
    if (! s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -3121,8 +3121,8 @@ s390_format_VRI_V0U(void (*irgen)(UChar v1, UShort i2),
 
 
 static void
-s390_format_VRI_V0UUU(void (*irgen)(UChar v1, UChar i2, UChar i3, UChar m4),
-                      UChar v1, UChar i2, UChar i3, UChar m4, UChar rxb)
+s390_format_VRIb(void (*irgen)(UChar v1, UChar i2, UChar i3, UChar m4),
+                 UChar v1, UChar i2, UChar i3, UChar m4, UChar rxb)
 {
    if (! s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -3135,8 +3135,8 @@ s390_format_VRI_V0UUU(void (*irgen)(UChar v1, UChar i2, UChar i3, UChar m4),
 
 
 static void
-s390_format_VRI_V0IU(void (*irgen)(UChar v1, UShort i2, UChar m3),
-                     UChar v1, UShort i2, UChar m3, UChar rxb)
+s390_format_VRIa(void (*irgen)(UChar v1, UShort i2, UChar m3),
+                 UChar v1, UShort i2, UChar m3, UChar rxb)
 {
    if (! s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -3149,22 +3149,8 @@ s390_format_VRI_V0IU(void (*irgen)(UChar v1, UShort i2, UChar m3),
 
 
 static void
-s390_format_VRI_VIM(void (*irgen)(UChar v1, UShort i2, UChar m3),
-                    UChar v1, UShort i2, UChar m3, UChar rxb)
-{
-   if (! s390_host_has_vx) {
-      emulation_failure(EmFail_S390X_vx);
-      return;
-   }
-
-   v1  = s390_vr_getVRindex(v1, 1, rxb);
-   irgen(v1, i2, m3);
-}
-
-
-static void
-s390_format_VRI_VVIM(void (*irgen)(UChar v1, UChar v3, UShort i2, UChar m4),
-                     UChar v1, UChar v3, UShort i2, UChar m4, UChar rxb)
+s390_format_VRIc(void (*irgen)(UChar v1, UChar v3, UShort i2, UChar m4),
+                 UChar v1, UChar v3, UShort i2, UChar m4, UChar rxb)
 {
    if (! s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -3177,10 +3163,8 @@ s390_format_VRI_VVIM(void (*irgen)(UChar v1, UChar v3, UShort i2, UChar m4),
 }
 
 static void
-s390_format_VRI_VVIMM(void (*irgen)(UChar v1, UChar v2, UShort i3,
-                                    UChar m4, UChar m5),
-                      UChar v1, UChar v2, UShort i3, UChar m4, UChar m5,
-                      UChar rxb)
+s390_format_VRIe(void (*irgen)(UChar v1, UChar v2, UShort i3, UChar m4, UChar m5),
+                 UChar v1, UChar v2, UShort i3, UChar m4, UChar m5, UChar rxb)
 {
    if (!s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -3353,10 +3337,8 @@ s390_format_VRR_VVMM(void (*irgen)(UChar v1, UChar v2, UChar m3,
 
 
 static void
-s390_format_VRId_VVVIM(void (*irgen)(UChar v1, UChar v2, UChar v3,
-                                     UChar i4, UChar m5),
-                       UChar v1, UChar v2, UChar v3, UChar i4, UChar m5,
-                       UChar rxb)
+s390_format_VRIdm(void (*irgen)(UChar v1, UChar v2, UChar v3, UChar i4, UChar m5),
+                  UChar v1, UChar v2, UChar v3, UChar i4, UChar m5, UChar rxb)
 {
    if (! s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -3371,9 +3353,8 @@ s390_format_VRId_VVVIM(void (*irgen)(UChar v1, UChar v2, UChar v3,
 
 
 static void
-s390_format_VRId_VVVI(void (*irgen)(UChar v1, UChar v2, UChar v3,
-                                    UChar i4),
-                      UChar v1, UChar v2, UChar v3, UChar i4, UChar rxb)
+s390_format_VRId(void (*irgen)(UChar v1, UChar v2, UChar v3, UChar i4),
+                 UChar v1, UChar v2, UChar v3, UChar i4, UChar rxb)
 {
    if (! s390_host_has_vx) {
       emulation_failure(EmFail_S390X_vx);
@@ -19541,33 +19522,42 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                             VRSb_b2(ovl), VRSb_d2(ovl),
                                             VRSb_r3(ovl), VRSb_rxb(ovl));
                            goto ok;
-   case 0xe70000000040ULL: s390_format_VRI_VIM(s390_irgen_VLEIB, VRI_v1(ovl),
-                                                 VRI_i2(ovl), VRI_m3(ovl),
-                                                 VRI_rxb(ovl));  goto ok;
-   case 0xe70000000041ULL: s390_format_VRI_VIM(s390_irgen_VLEIH, VRI_v1(ovl),
-                                               VRI_i2(ovl), VRI_m3(ovl),
-                                               VRI_rxb(ovl));  goto ok;
-   case 0xe70000000042ULL: s390_format_VRI_VIM(s390_irgen_VLEIG, VRI_v1(ovl),
-                                               VRI_i2(ovl), VRI_m3(ovl),
-                                               VRI_rxb(ovl));  goto ok;
-   case 0xe70000000043ULL: s390_format_VRI_VIM(s390_irgen_VLEIF, VRI_v1(ovl),
-                                               VRI_i2(ovl), VRI_m3(ovl),
-                                               VRI_rxb(ovl));  goto ok;
-   case 0xe70000000044ULL: s390_format_VRI_V0U(s390_irgen_VGBM, VRI_v1(ovl),
-                                               VRI_i2(ovl), VRI_rxb(ovl));  goto ok;
-   case 0xe70000000045ULL: s390_format_VRI_V0IU(s390_irgen_VREPI, VRI_v1(ovl),
-                                                VRI_i2(ovl), VRI_m3(ovl),
-                                                VRI_rxb(ovl));  goto ok;
-   case 0xe70000000046ULL: s390_format_VRI_V0UUU(s390_irgen_VGM, VRIb_v1(ovl),
-                                                 VRIb_i2(ovl), VRIb_i3(ovl), VRIb_m4(ovl),
-                                                 VRIb_rxb(ovl));  goto ok;
-   case 0xe7000000004aULL: s390_format_VRI_VVIMM(s390_irgen_VFTCI, VRIe_v1(ovl),
-                                                 VRIe_v2(ovl), VRIe_i3(ovl),
-                                                 VRIe_m4(ovl), VRIe_m5(ovl),
-                                                 VRIe_rxb(ovl));  goto ok;
-   case 0xe7000000004dULL: s390_format_VRI_VVIM(s390_irgen_VREP, VRIc_v1(ovl),
-                                               VRIc_v3(ovl), VRIc_i2(ovl),
-                                               VRIc_m4(ovl), VRIc_rxb(ovl));  goto ok;
+   case 0xe70000000040ULL: s390_format_VRIa(s390_irgen_VLEIB, VRIa_v1(ovl),
+                                            VRIa_i2(ovl), VRIa_m3(ovl),
+                                            VRIa_rxb(ovl));
+                           goto ok;
+   case 0xe70000000041ULL: s390_format_VRIa(s390_irgen_VLEIH, VRIa_v1(ovl),
+                                            VRIa_i2(ovl), VRIa_m3(ovl),
+                                            VRIa_rxb(ovl));
+                           goto ok;
+   case 0xe70000000042ULL: s390_format_VRIa(s390_irgen_VLEIG, VRIa_v1(ovl),
+                                            VRIa_i2(ovl), VRIa_m3(ovl),
+                                            VRIa_rxb(ovl));
+                           goto ok;
+   case 0xe70000000043ULL: s390_format_VRIa(s390_irgen_VLEIF, VRIa_v1(ovl),
+                                            VRIa_i2(ovl), VRIa_m3(ovl),
+                                            VRIa_rxb(ovl));
+                           goto ok;
+   case 0xe70000000044ULL: s390_format_VRIa0(s390_irgen_VGBM, VRIa_v1(ovl),
+                                             VRIa_i2(ovl), VRIa_rxb(ovl));
+                           goto ok;
+   case 0xe70000000045ULL: s390_format_VRIa(s390_irgen_VREPI, VRIa_v1(ovl),
+                                            VRIa_i2(ovl), VRIa_m3(ovl),
+                                            VRIa_rxb(ovl));
+                           goto ok;
+   case 0xe70000000046ULL: s390_format_VRIb(s390_irgen_VGM, VRIb_v1(ovl),
+                                            VRIb_i2(ovl), VRIb_i3(ovl),
+                                            VRIb_m4(ovl), VRIb_rxb(ovl));
+                           goto ok;
+   case 0xe7000000004aULL: s390_format_VRIe(s390_irgen_VFTCI, VRIe_v1(ovl),
+                                            VRIe_v2(ovl), VRIe_i3(ovl),
+                                            VRIe_m4(ovl), VRIe_m5(ovl),
+                                            VRIe_rxb(ovl));
+                           goto ok;
+   case 0xe7000000004dULL: s390_format_VRIc(s390_irgen_VREP, VRIc_v1(ovl),
+                                            VRIc_v3(ovl), VRIc_i2(ovl),
+                                            VRIc_m4(ovl), VRIc_rxb(ovl));
+                           goto ok;
    case 0xe70000000050ULL: s390_format_VRR_VVM(s390_irgen_VPOPCT, VRRa_v1(ovl),
                                                VRRa_v2(ovl), VRRa_m3(ovl),
                                                VRR_rxb(ovl));  goto ok;
@@ -19634,10 +19624,11 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xe70000000070ULL: s390_format_VRR_VVVM(s390_irgen_VESLV, VRR_v1(ovl),
                                                 VRR_v2(ovl), VRR_v3(ovl),
                                                 VRR_m4(ovl), VRR_rxb(ovl));  goto ok;
-   case 0xe70000000072ULL: s390_format_VRId_VVVIM(s390_irgen_VERIM, VRId_v1(ovl),
-                                                  VRId_v2(ovl), VRId_v3(ovl),
-                                                  VRId_i4(ovl), VRId_m5(ovl),
-                                                  VRId_rxb(ovl));  goto ok;
+   case 0xe70000000072ULL: s390_format_VRIdm(s390_irgen_VERIM, VRId_v1(ovl),
+                                             VRId_v2(ovl), VRId_v3(ovl),
+                                             VRId_i4(ovl), VRId_m5(ovl),
+                                             VRId_rxb(ovl));
+                           goto ok;
    case 0xe70000000073ULL: s390_format_VRR_VVVM(s390_irgen_VERLLV, VRR_v1(ovl),
                                                 VRR_v2(ovl), VRR_v3(ovl),
                                                 VRR_m4(ovl), VRR_rxb(ovl));  goto ok;
@@ -19647,9 +19638,10 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xe70000000075ULL: s390_format_VRR_VVV(s390_irgen_VSLB, VRR_v1(ovl),
                                                VRR_v2(ovl), VRR_v3(ovl),
                                                VRR_rxb(ovl));  goto ok;
-   case 0xe70000000077ULL: s390_format_VRId_VVVI(s390_irgen_VSLDB, VRId_v1(ovl),
-                                                 VRId_v2(ovl), VRId_v3(ovl),
-                                                 VRId_i4(ovl), VRId_rxb(ovl));  goto ok;
+   case 0xe70000000077ULL: s390_format_VRId(s390_irgen_VSLDB, VRId_v1(ovl),
+                                            VRId_v2(ovl), VRId_v3(ovl),
+                                            VRId_i4(ovl), VRId_rxb(ovl));
+                           goto ok;
    case 0xe70000000078ULL: s390_format_VRR_VVVM(s390_irgen_VESRLV, VRR_v1(ovl),
                                                 VRR_v2(ovl), VRR_v3(ovl),
                                                 VRR_m4(ovl), VRR_rxb(ovl));  goto ok;
@@ -19686,14 +19678,14 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
    case 0xe70000000085ULL: s390_format_VRR_VVV(s390_irgen_VBPERM, VRR_v1(ovl),
                                                VRR_v2(ovl), VRR_v3(ovl),
                                                VRR_rxb(ovl));  goto ok;
-   case 0xe70000000086ULL: s390_format_VRId_VVVI(s390_irgen_VSLD, VRId_v1(ovl),
-                                                 VRId_v2(ovl), VRId_v3(ovl),
-                                                 VRId_i4(ovl),
-                                                 VRId_rxb(ovl));  goto ok;
-   case 0xe70000000087ULL: s390_format_VRId_VVVI(s390_irgen_VSRD, VRId_v1(ovl),
-                                                 VRId_v2(ovl), VRId_v3(ovl),
-                                                 VRId_i4(ovl),
-                                                 VRId_rxb(ovl));  goto ok;
+   case 0xe70000000086ULL: s390_format_VRId(s390_irgen_VSLD, VRId_v1(ovl),
+                                            VRId_v2(ovl), VRId_v3(ovl),
+                                            VRId_i4(ovl), VRId_rxb(ovl));
+                           goto ok;
+   case 0xe70000000087ULL: s390_format_VRId(s390_irgen_VSRD, VRId_v1(ovl),
+                                            VRId_v2(ovl), VRId_v3(ovl),
+                                            VRId_i4(ovl), VRId_rxb(ovl));
+                           goto ok;
    case 0xe70000000088ULL: /* VEVAL */ goto unimplemented;
    case 0xe70000000089ULL: /* VBLEND */ goto unimplemented;
    case 0xe7000000008aULL: s390_format_VRR_VVVVMM(s390_irgen_VSTRC, VRRd_v1(ovl),
