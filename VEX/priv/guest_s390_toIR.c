@@ -278,19 +278,18 @@ typedef enum {
 #define VRIe_m5(insn) (((insn) >> 32) & 0xf)
 #define VRIe_m4(insn) (((insn) >> 28) & 0xf)
 #define VRIe_rxb(insn) (((insn) >> 24) & 0xf)
-#define VRS_v1(insn) (((insn) >> 52) & 0xf)
-#define VRS_v3(insn) (((insn) >> 48) & 0xf)
-#define VRS_r3(insn) (((insn) >> 48) & 0xf)
-#define VRS_b2(insn) (((insn) >> 44) & 0xf)
-#define VRS_d2(insn) (((insn) >> 32) & 0xfff)
-#define VRS_m4(insn) (((insn) >> 28) & 0xf)
-#define VRS_rxb(insn) (((insn) >> 24) & 0xf)
 #define VRSa_v1(insn) (((insn) >> 52) & 0xf)
 #define VRSa_v3(insn) (((insn) >> 48) & 0xf)
 #define VRSa_b2(insn) (((insn) >> 44) & 0xf)
 #define VRSa_d2(insn) (((insn) >> 32) & 0xfff)
 #define VRSa_m4(insn) (((insn) >> 28) & 0xf)
 #define VRSa_rxb(insn) (((insn) >> 24) & 0xf)
+#define VRSb_v1(insn) (((insn) >> 52) & 0xf)
+#define VRSb_r3(insn) (((insn) >> 48) & 0xf)
+#define VRSb_b2(insn) (((insn) >> 44) & 0xf)
+#define VRSb_d2(insn) (((insn) >> 32) & 0xfff)
+#define VRSb_m4(insn) (((insn) >> 28) & 0xf)
+#define VRSb_rxb(insn) (((insn) >> 24) & 0xf)
 #define VRSc_r1(insn) (((insn) >> 52) & 0xf)
 #define VRSc_v3(insn) (((insn) >> 48) & 0xf)
 #define VRSc_b2(insn) (((insn) >> 44) & 0xf)
@@ -3251,9 +3250,8 @@ s390_format_VRSa(void (*irgen)(UChar v1, IRTemp op2addr, UChar v3, UChar m4),
 
 
 static void
-s390_format_VRS_VRRDM(void (*irgen)(UChar v1, IRTemp op2addr, UChar r3,
-                                    UChar m4),
-                      UChar v1, UChar b2, UShort d2, UChar r3, UChar m4, UChar rxb)
+s390_format_VRSbm(void (*irgen)(UChar v1, IRTemp op2addr, UChar r3, UChar m4),
+                  UChar v1, UChar b2, UShort d2, UChar r3, UChar m4, UChar rxb)
 {
    IRTemp op2addr = newTemp(Ity_I64);
 
@@ -3271,8 +3269,8 @@ s390_format_VRS_VRRDM(void (*irgen)(UChar v1, IRTemp op2addr, UChar r3,
 
 
 static void
-s390_format_VRS_VRRD(void (*irgen)(UChar v1, IRTemp op2addr, UChar r3),
-                     UChar v1, UChar b2, UShort d2, UChar r3, UChar rxb)
+s390_format_VRSb(void (*irgen)(UChar v1, IRTemp op2addr, UChar r3),
+                 UChar v1, UChar b2, UShort d2, UChar r3, UChar rxb)
 {
    IRTemp op2addr = newTemp(Ity_I64);
 
@@ -19496,9 +19494,11 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                             VRSc_v3(ovl), VRSc_m4(ovl),
                                             VRSc_rxb(ovl));
                            goto ok;
-   case 0xe70000000022ULL: s390_format_VRS_VRRDM(s390_irgen_VLVG, VRS_v1(ovl),
-                                                VRS_b2(ovl), VRS_d2(ovl), VRS_v3(ovl),
-                                                VRS_m4(ovl), VRS_rxb(ovl));  goto ok;
+   case 0xe70000000022ULL: s390_format_VRSbm(s390_irgen_VLVG, VRSb_v1(ovl),
+                                             VRSb_b2(ovl), VRSb_d2(ovl),
+                                             VRSb_r3(ovl), VRSb_m4(ovl),
+                                             VRSb_rxb(ovl));
+                           goto ok;
    case 0xe70000000027ULL: s390_format_RXE(s390_irgen_LCBB, RXE_r1(ovl),
                                            RXE_x2(ovl), RXE_b2(ovl),
                                            RXE_d2(ovl), RXE_m3(ovl));
@@ -19518,9 +19518,10 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                             VRSa_v3(ovl), VRSa_m4(ovl),
                                             VRSa_rxb(ovl));
                            goto ok;
-   case 0xe70000000037ULL: s390_format_VRS_VRRD(s390_irgen_VLL, VRS_v1(ovl),
-                                                VRS_b2(ovl), VRS_d2(ovl), VRS_r3(ovl),
-                                                VRS_rxb(ovl));  goto ok;
+   case 0xe70000000037ULL: s390_format_VRSb(s390_irgen_VLL, VRSb_v1(ovl),
+                                            VRSb_b2(ovl), VRSb_d2(ovl),
+                                            VRSb_r3(ovl), VRSb_rxb(ovl));
+                           goto ok;
    case 0xe70000000038ULL: s390_format_VRSa(s390_irgen_VESRL, VRSa_v1(ovl),
                                             VRSa_b2(ovl), VRSa_d2(ovl),
                                             VRSa_v3(ovl), VRSa_m4(ovl),
@@ -19536,9 +19537,10 @@ s390_decode_6byte_and_irgen(const UChar *bytes)
                                             VRSa_v3(ovl), VRSa_m4(ovl),
                                             VRSa_rxb(ovl));
                            goto ok;
-   case 0xe7000000003fULL: s390_format_VRS_VRRD(s390_irgen_VSTL, VRS_v1(ovl),
-                                                VRS_b2(ovl), VRS_d2(ovl), VRS_r3(ovl),
-                                                VRS_rxb(ovl));  goto ok;
+   case 0xe7000000003fULL: s390_format_VRSb(s390_irgen_VSTL, VRSb_v1(ovl),
+                                            VRSb_b2(ovl), VRSb_d2(ovl),
+                                            VRSb_r3(ovl), VRSb_rxb(ovl));
+                           goto ok;
    case 0xe70000000040ULL: s390_format_VRI_VIM(s390_irgen_VLEIB, VRI_v1(ovl),
                                                  VRI_i2(ovl), VRI_m3(ovl),
                                                  VRI_rxb(ovl));  goto ok;
