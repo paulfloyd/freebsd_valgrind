@@ -20768,8 +20768,8 @@ Long dis_ESC_NONE (
          dis_REP_op ( dres, AMD64CondAlways, dis_MOVS, sz,
                       guest_RIP_curr_instr,
                       guest_RIP_bbstart+delta, "rep movs", pfx );
-        dres->whatNext = Dis_StopHere;
-        return delta;
+         vassert(dres->whatNext == Dis_StopHere);
+         return delta;
       }
       /* A4: movsb */
       if (!haveF3(pfx) && !haveF2(pfx)) {
@@ -20782,14 +20782,31 @@ Long dis_ESC_NONE (
 
    case 0xA6:
    case 0xA7:
-      /* F3 A6/A7: repe cmps/rep cmps{w,l,q} */
-      if (haveF3(pfx) && !haveF2(pfx)) {
+      /* F2 A6/A7: repne cmpsb/repne cmps{w,l,q} */
+      if (haveF2(pfx) && !haveF3(pfx)) {
+         if (opc == 0xA6)
+            sz = 1;
+         dis_REP_op ( dres, AMD64CondNZ, dis_CMPS, sz, 
+                      guest_RIP_curr_instr,
+                      guest_RIP_bbstart+delta, "repne cmps", pfx );
+         vassert(dres->whatNext == Dis_StopHere);
+         return delta;
+      }
+      /* F3 A6/A7: repe cmpsb/repe cmps{w,l,q} */
+      if (!haveF2(pfx) && haveF3(pfx)) {
          if (opc == 0xA6)
             sz = 1;
          dis_REP_op ( dres, AMD64CondZ, dis_CMPS, sz, 
                       guest_RIP_curr_instr,
                       guest_RIP_bbstart+delta, "repe cmps", pfx );
-         dres->whatNext = Dis_StopHere;
+         vassert(dres->whatNext == Dis_StopHere);
+         return delta;
+      }
+      /* A6/A7: cmpsb/cmps{w,l,q} */
+      if (!haveF2(pfx) && !haveF3(pfx)) {
+         if (opc == 0xA6)
+            sz = 1;
+         dis_string_op ( dis_CMPS, sz, "cmps", pfx );
          return delta;
       }
       goto decode_failure;
