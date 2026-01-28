@@ -1,0 +1,4 @@
+prereq: which xmllint > /dev/null
+prog: nothing
+args: | xmllint --noout -
+vgopts: --xml=yes --xml-fd=1

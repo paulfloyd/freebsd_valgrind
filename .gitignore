@@ -974,6 +974,7 @@
 /memcheck/tests/new_nothrow
 /memcheck/tests/new_override
 /memcheck/tests/noisy_child
+/memcheck/tests/nothing
 /memcheck/tests/null_socket
 /memcheck/tests/origin1-yes
 /memcheck/tests/origin2-not-quite
@@ -1009,6 +1010,8 @@
 /memcheck/tests/sendmsg
 /memcheck/tests/sh-mem
 /memcheck/tests/sh-mem-random
+/memcheck/tests/simple_leak
+/memcheck/tests/simple_reachable
 /memcheck/tests/sized_aligned_new_delete_args
 /memcheck/tests/sized_aligned_new_delete_misaligned1
 /memcheck/tests/sized_aligned_new_delete_misaligned2
@@ -1067,6 +1070,7 @@
 /memcheck/tests/wrapmalloc
 /memcheck/tests/wrapmallocstatic
 /memcheck/tests/writev1
+/memcheck/tests/xmas_tree
 /memcheck/tests/xml1
 /memcheck/tests/zeropage
 
