@@ -578,8 +578,7 @@ check_PROGRAMS = \
 	wmemcmp \
 	wrap1 wrap2 wrap3 wrap4 wrap5 wrap6 wrap7 wrap7so.so wrap8 \
 	wrapmalloc wrapmallocso.so wrapmallocstatic \
-	writev1 \
-	xmas_tree
+	writev1
 
 if !SOLARIS_SUN_STUDIO_AS
 # Sun Studio assembler fails on "IDENT too long"
@@ -627,7 +626,8 @@ check_PROGRAMS += cxx17_aligned_new sized_aligned_new_delete_args \
 	new_aligned_delete_default \
 	sized_aligned_new_delete_misaligned1 \
 	sized_aligned_new_delete_misaligned2 \
-	sized_aligned_new_delete_misaligned3
+	sized_aligned_new_delete_misaligned3 \
+	xmas_tree
 endif
 
 if HAVE_CLOSE_RANGE
