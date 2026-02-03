@@ -43,6 +43,6 @@ int main(int argc, char** argv)
    ret = readlink("/proc/self/exe", (char*)1, 100);
 #endif
    assert(ret == -1);
-   assert(errno = EFAULT);
+   assert(errno == EFAULT);
 }
 
