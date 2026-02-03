@@ -155,13 +155,13 @@ case $host_os in
       [  --with-darwin-platform=PLAT  Specify which Darwin platform we are compiling for (macOS, iOS, etc)],
       [
           # TODO: some kind of case-insensitive check?
-          if test "x$withval" == "xmacOS"; then
+          if test "x$withval" = "xmacOS"; then
             darwin_platform="macosx"
-          elif test "x$withval" == "xmacos"; then
+          elif test "x$withval" = "xmacos"; then
             darwin_platform="macosx"
-          elif test "x$withval" == "xiOS"; then
+          elif test "x$withval" = "xiOS"; then
             darwin_platform="iphoneos"
-          elif test "x$withval" == "xios"; then
+          elif test "x$withval" = "xios"; then
             darwin_platform="iphoneos"
           else
             darwin_platform="$withval"
