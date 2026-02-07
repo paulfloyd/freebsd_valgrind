@@ -1188,6 +1188,14 @@ that can report errors, e.g. Memcheck, but not Cachegrind.</para>
       will make Valgrind run a bit more slowly and take a bit more
       memory, but can be useful when working with programs with
       deeply-nested call chains.</para>
+
+      <para>The minimum value for this is 2. A value of 1 is not allowed
+      for two reasons. Firstly, some of the default suppressions use
+      "<computeroutput>...</computeroutput>" which is forbidden with
+      <computeroutput>--num-callers=1</computeroutput>. Secondly, it would
+      make leak suppressions match all allocations using the allocation
+      function (e.g., <computeroutput>malloc</computeroutput>).</para>
+
     </listitem>
   </varlistentry>
 

@@ -100,8 +100,13 @@ static void load_client(/*OUT*/ExeInfo *info,
          exe_name = interp_name;
       }
       HChar resolved_name[VKI_PATH_MAX];
-      VG_(realpath)(exe_name, resolved_name);
-      VG_(resolved_exename) = VG_(strdup)("initimg-solaris.lc.1", resolved_name);
+      if (VG_(realpath)(exe_name, resolved_name)) {
+         VG_(resolved_exename) = VG_(strdup)("initimg-solaris.lc.1", resolved_name);
+      } else {
+         /* This should not really happen. realpath tried and failed.
+            So lets just continue with the exe_name as is. */
+         VG_(resolved_exename) = VG_(strdup)("initimg-solaris.lc.2", exe_name);
+      }
    }
 
    /* Set initial brk values. */

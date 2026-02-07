@@ -31,7 +31,7 @@
 
 #include "libvex_basictypes.h"
 
-void s390_disasm(const UChar *);
+HChar *s390_disasm(const UChar *, Int);
 
 /*---------------------------------------------------------------*/
 /*--- end                                       s390_disasm.h ---*/

@@ -83,6 +83,75 @@ static inline IRTemp math_BLENDPD_128 ( IRTemp sV, IRTemp dV, UInt imm8 )
    return res;
 }
 
+static inline IRTemp math_BLENDPS_128 ( IRTemp sV, IRTemp dV, UInt imm8 )
+{
+   UShort imm8_perms[16] = { 0x0000, 0x000F, 0x00F0, 0x00FF, 0x0F00,
+                             0x0F0F, 0x0FF0, 0x0FFF, 0xF000, 0xF00F,
+                             0xF0F0, 0xF0FF, 0xFF00, 0xFF0F, 0xFFF0,
+                             0xFFFF };
+   IRTemp imm8_mask = newTemp(Ity_V128);
+   assign( imm8_mask, mkV128( imm8_perms[ (imm8 & 15) ] ) );
+
+   IRTemp res = newTemp(Ity_V128);
+   assign ( res, binop( Iop_OrV128,
+                        binop( Iop_AndV128, mkexpr(sV),
+                                            mkexpr(imm8_mask) ),
+                        binop( Iop_AndV128, mkexpr(dV),
+                               unop( Iop_NotV128, mkexpr(imm8_mask) ) ) ) );
+   return res;
+}
+
+/*------------------------------------------------------------*/
+/*---                                                      ---*/
+/*--- Top-level SSE4: dis_ESC_0F38__SSE4                   ---*/
+/*---                                                      ---*/
+/*------------------------------------------------------------*/
+
+static inline IRTemp math_PBLENDVB_128 ( IRTemp vecE, IRTemp vecG,
+                                  IRTemp vec0/*controlling mask*/,
+                                  UInt gran, IROp opSAR )
+{
+   /* The tricky bit is to convert vec0 into a suitable mask, by
+      copying the most significant bit of each lane into all positions
+      in the lane. */
+   IRTemp sh = newTemp(Ity_I8);
+   assign(sh, mkU8(8 * gran - 1));
+
+   IRTemp mask = newTemp(Ity_V128);
+   assign(mask, binop(opSAR, mkexpr(vec0), mkexpr(sh)));
+
+   IRTemp notmask = newTemp(Ity_V128);
+   assign(notmask, unop(Iop_NotV128, mkexpr(mask)));
+
+   IRTemp res = newTemp(Ity_V128);
+   assign(res,  binop(Iop_OrV128,
+                      binop(Iop_AndV128, mkexpr(vecE), mkexpr(mask)),
+                      binop(Iop_AndV128, mkexpr(vecG), mkexpr(notmask))));
+   return res;
+}
+
+static inline IRTemp math_PBLENDW_128 ( IRTemp sV, IRTemp dV, UInt imm8 )
+{
+   /* Make w be a 16-bit version of imm8, formed by duplicating each
+      bit in imm8. */
+   Int i;
+   UShort imm16 = 0;
+   for (i = 0; i < 8; i++) {
+      if (imm8 & (1 << i))
+         imm16 |= (3 << (2*i));
+   }
+   IRTemp imm16_mask = newTemp(Ity_V128);
+   assign( imm16_mask, mkV128( imm16 ));
+
+   IRTemp res = newTemp(Ity_V128);
+   assign ( res, binop( Iop_OrV128,
+                        binop( Iop_AndV128, mkexpr(sV),
+                                            mkexpr(imm16_mask) ),
+                        binop( Iop_AndV128, mkexpr(dV),
+                               unop( Iop_NotV128, mkexpr(imm16_mask) ) ) ) );
+   return res;
+}
+
 #endif /* ndef __VEX_GUEST_GENERIC_SSE_H */
 
 /*---------------------------------------------------------------*/

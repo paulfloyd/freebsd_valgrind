@@ -29,6 +29,6 @@ int main(int argc, char** argv)
 
    ret = readlinkat(101, "/proc/self/path/a.out", (char*)1, 100);
    assert(ret == -1);
-   assert(errno = EFAULT);
+   assert(errno == EFAULT);
 }
 

@@ -721,7 +721,7 @@ static void process_option (Clo_Mode mode,
    else if VG_INT_CLO (arg, "--dump-error",       VG_(clo_dump_error))   {}
    else if VG_INT_CLO (arg, "--input-fd",         VG_(clo_input_fd))     {}
    else if VG_INT_CLO (arg, "--sanity-level",     VG_(clo_sanity_level)) {}
-   else if VG_BINT_CLO(arg, "--num-callers",      VG_(clo_backtrace_size), 1,
+   else if VG_BINT_CLO(arg, "--num-callers",      VG_(clo_backtrace_size), 2,
                        VG_DEEPEST_BACKTRACE) {}
    else if VG_BINT_CLO(arg, "--num-transtab-sectors",
                        VG_(clo_num_transtab_sectors),

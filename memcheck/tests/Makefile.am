@@ -206,6 +206,7 @@ EXTRA_DIST = \
 	new_delete_mismatch_size_supp.stderr.exp-32 \
 		new_delete_mismatch_size_supp.vgtest \
 		new_delete_mismatch_size_supp.supp \
+	num_callers_1.stderr.exp num_callers_1.vgtest \
 	deep-backtrace.vgtest deep-backtrace.stderr.exp \
 	demangle.stderr.exp demangle.vgtest \
 	big_debuginfo_symbol.vgtest \

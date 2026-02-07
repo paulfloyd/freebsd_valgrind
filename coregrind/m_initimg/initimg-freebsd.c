@@ -421,7 +421,11 @@ static Addr setup_client_stack(const void*  init_sp,
       exe_name = interp_name;
    }
    HChar resolved_name[VKI_PATH_MAX];
-   VG_(realpath)(exe_name, resolved_name);
+   if (!VG_(realpath)(exe_name, resolved_name)) {
+      /* This should not really happen. realpath tried and failed.
+         So lets just continue with the exe_name as is. */
+      VG_(strcpy)(resolved_name, exe_name);
+   }
 
    /* use our own auxv as a prototype */
    orig_auxv = find_auxv(init_sp);

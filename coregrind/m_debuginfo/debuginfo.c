@@ -5235,12 +5235,14 @@ void VG_(load_all_debuginfo) (void)
 
 SizeT VG_(data_size)(void)
 {
-   HChar resolved[1000];
-   VG_(realpath)( VG_(args_the_exename), resolved);
-
-   for (DebugInfo* di = debugInfo_list; di; di = di->next) {
-      if (di->data_size  && VG_(strcmp)(di->soname, "NONE") == 0 && VG_(strcmp)(resolved, di->fsm.filename) == 0) {
-         return VG_PGROUNDUP(di->data_size);
+   HChar resolved[VKI_PATH_MAX];
+   if (VG_(realpath)( VG_(args_the_exename), resolved)) {
+      for (DebugInfo* di = debugInfo_list; di; di = di->next) {
+         if (di->data_size
+             && VG_(strcmp)(di->soname, "NONE") == 0
+             && VG_(strcmp)(resolved, di->fsm.filename) == 0) {
+            return VG_PGROUNDUP(di->data_size);
+         }
       }
    }
    return 0U;

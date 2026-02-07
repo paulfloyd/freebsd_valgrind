@@ -31,17 +31,21 @@ static int opc_index[256];
 static int current_arch_mask = 0;
 static int option_use_insn_len_bits_p = 0;
 static int option_print_insn_desc = 0;
-
+static int pad_mnemonic;
 
 static const char *
 padmnm(const char *mnm)
 {
   static char buf[S390_MAX_MNEMONIC_LEN + 1];
 
-  if (vex_strlen(mnm) > S390_MAX_MNEMONIC_LEN)
-     return "failed: buf too small";
+  if (pad_mnemonic) {
+     if (vex_strlen(mnm) > S390_MAX_MNEMONIC_LEN)
+        return "failed: buf too small";
 
-  vex_sprintf(buf, "%-*s", S390_MAX_MNEMONIC_LEN, mnm);
+     vex_sprintf(buf, "%-*s", S390_MAX_MNEMONIC_LEN, mnm);
+  } else {
+     vex_sprintf(buf, "%s", mnm);
+  }
 
   return buf;
 }
@@ -677,8 +681,10 @@ s390_disasm_init(SFILE *dis, unsigned (*fp)(char *, const char *, va_list))
 }
 
 
-void
-s390_disasm(const unsigned char insn[])
+/* Watch out: returned string is allocated in a static buffer and will
+   be overwritten in the next invocation. */
+HChar *
+s390_disasm(const unsigned char insn[], int pad_mnm)
 {
   static int initialised = 0;
   static SFILE disasm;
@@ -688,6 +694,7 @@ s390_disasm(const unsigned char insn[])
      s390_disasm_init(&disasm, vex_vsprintf);
   }
 
+  pad_mnemonic = pad_mnm;
   disasm.pos = 0;        /* reset */
   disasm.buf[0] = '\0';
   
@@ -697,5 +704,5 @@ s390_disasm(const unsigned char insn[])
      the current address:  .+offset of .-offset */
   int rc = print_insn_s390(/* address */ 0, insn, disasm.info);
 
-  vex_printf("%s\n", (rc == 0) ? "disassemly failed" : disasm.buf);
+  return rc == 0 ? NULL : disasm.buf;
 }

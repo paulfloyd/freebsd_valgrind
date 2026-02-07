@@ -1473,8 +1473,10 @@ s390_insn_map_regs(HRegRemap *m, s390_insn *insn)
 static __inline__ UChar *
 emit(UChar *p, const UChar *insn, UInt len)
 {
-   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM))
-      s390_disasm(insn);
+   if (UNLIKELY(vex_traceflags & VEX_TRACE_ASM)) {
+      HChar *str = s390_disasm(insn, /* padmnm */ 1);
+      vex_printf("%s\n", str ? str : "disassembly failed");
+   }
 
    return (UChar *)__builtin_memcpy(p, insn, len) + len;
 }

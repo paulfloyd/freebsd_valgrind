@@ -77,6 +77,11 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 514659  ltp 20250930 vs linux 6.18.3 doesn't build
 514762  Many "Bad file descriptor" messages when using --track-fds=yes and
         -d on systems without /proc
+515183  Error occurred while executing the command
+        `valgrind --num-callers=1 ./hello_world`
+515265  Add SSE4.1 BLENDPS and PBLENDW instruction for x86 32 bit
+515612  Sanity check VG_(realpath) and VG_(readlink) return values
+
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

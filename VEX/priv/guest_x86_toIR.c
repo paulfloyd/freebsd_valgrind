@@ -8054,6 +8054,54 @@ static IRTemp math_BSWAP ( IRTemp t1, IRType ty )
 }
 
 /*------------------------------------------------------------*/
+/*--- SSE4.1 BLEND instruction helpers                     ---*/
+/*------------------------------------------------------------*/
+
+/* decode_sse4_blend_imm: Helper for decoding BLEND instructions
+   (BLENDPS, BLENDPD, PBLENDW).  */
+static void decode_sse4_blend_imm (Int* delta_inout, const UChar*  insn,
+                                   const HChar*  insn_name,
+                                   IRTemp (*math_fn)(IRTemp, IRTemp, UInt),
+                                   UChar sorb)
+{
+     Int imm8, alen;
+     UChar modrm;
+     IRTemp addr;
+     HChar dis_buf[50];
+     Int delta = *delta_inout;
+     IRTemp dst_vec = newTemp(Ity_V128);
+     IRTemp src_vec = newTemp(Ity_V128);
+
+     //no REX prefix on 32bit
+     modrm = insn[3];
+     assign( dst_vec, getXMMReg( gregOfRM(modrm) ) );
+
+     if ( epartIsReg(modrm) ) {
+       imm8 = insn[4];
+       assign( src_vec, getXMMReg( eregOfRM(modrm) ) );
+       //skip opcode bytes: +3
+       delta += 1 + 1 + 3;
+       DIP( "%s $%d, %s,%s\n", insn_name, imm8,
+           nameXMMReg( eregOfRM(modrm) ),
+           nameXMMReg( gregOfRM(modrm) ) );
+     } else {
+       //delta + 3 skips the opcode bytes
+       addr = disAMode( &alen, sorb, delta + 3, dis_buf);
+       assign( src_vec, loadLE( Ity_V128, mkexpr(addr) ) );
+       imm8 = insn[3 + alen];
+       //skip opcode bytes: +3
+       delta += alen + 1 + 3;
+       DIP( "%s $%d, %s,%s\n", insn_name,
+           imm8, dis_buf, nameXMMReg( gregOfRM(modrm) ) );
+     }
+
+     putXMMReg( gregOfRM(modrm),
+         mkexpr( math_fn( src_vec, dst_vec, imm8) ) );
+
+     *delta_inout = delta;
+}
+
+/*------------------------------------------------------------*/
 /*--- Disassemble a single instruction                     ---*/
 /*------------------------------------------------------------*/
 
@@ -13001,54 +13049,21 @@ DisResult disInstr_X86_WRK (
       goto decode_success;
    }
 
-   /* 66 0F 3A 0D /r ib = BLENDPD xmm1, xmm2/m128, imm8
-         Blend Packed Double Precision Floating-Point Values (XMM)
-         - 66 = mandatory prefix (this is what makes sz == 2)
-         - 0F 3A 0D = three opcode bytes
-         - /r = ModR/M byte follows (specifies registers or memory addressing)
-         - ib = immediate byte follows (1 byte immediate value)
-         insn[] array layout:
-
-         insn[0] = 0x0F     (first opcode byte)
-         insn[1] = 0x3A     (second opcode byte)
-         insn[2] = 0x0D     (third opcode byte)
-         insn[3] = ModR/M   (specifies source/dest registers or memory mode)
-
-         Register-to-register form:
-         insn[3] = ModR/M byte (tells us which registers)
-         insn[4] = immediate byte
-         alen var tells us how many bytes the addressing mode consumed after the ModR/M byte
-*/
+   /* 66 0F 3A 0D /r ib = BLENDPD */
    if (sz == 2 && insn[0] == 0x0F && insn[1] == 0x3A && insn[2] == 0x0D) {
-     Int imm8;
-     IRTemp dst_vec = newTemp(Ity_V128);
-     IRTemp src_vec = newTemp(Ity_V128);
+     decode_sse4_blend_imm(&delta, insn, "blendpd", math_BLENDPD_128, sorb);
+     goto decode_success;
+   }
 
-     modrm = insn[3];
-     //no REX prefix on 32bit
-     assign( dst_vec, getXMMReg( gregOfRM(modrm) ) );
+   /* 66 0F 3A 0C /r ib = BLENDPS */
+   if (sz == 2 && insn[0] == 0x0F && insn[1] == 0x3A && insn[2] == 0x0C) {
+     decode_sse4_blend_imm(&delta, insn, "blendps", math_BLENDPS_128, sorb);
+     goto decode_success;
+   }
 
-     if ( epartIsReg( modrm ) ) {
-       imm8 = insn[4];
-       assign( src_vec, getXMMReg( eregOfRM(modrm) ) );
-       //skip 0F 3A 0D opcode bytes: +3
-       delta += 1+1 + 3;
-       DIP( "blendpd $%d, %s,%s\n", imm8,
-           nameXMMReg( eregOfRM(modrm) ),
-           nameXMMReg( gregOfRM(modrm) ) );
-     } else {
-       //delta+3 skips the 0F 3A 0D bytes
-       addr = disAMode( &alen, sorb, delta + 3, dis_buf);
-       assign( src_vec, loadLE( Ity_V128, mkexpr(addr) ) );
-       imm8 = insn[3+alen];
-       //skip 0F 3A 0D opcode bytes: +3
-       delta += alen+1 + 3;
-       DIP( "blendpd $%d, %s,%s\n",
-           imm8, dis_buf, nameXMMReg( gregOfRM(modrm) ) );
-     }
-
-     putXMMReg( gregOfRM(modrm),
-         mkexpr( math_BLENDPD_128( src_vec, dst_vec, imm8) ) );
+   /* 66 0F 3A 0E /r ib = PBLENDW */
+   if (sz == 2 && insn[0] == 0x0F && insn[1] == 0x3A && insn[2] == 0x0E) {
+     decode_sse4_blend_imm(&delta, insn, "pblendw", math_PBLENDW_128, sorb);
      goto decode_success;
    }
 

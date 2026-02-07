@@ -3289,8 +3289,10 @@ s390_format_VRV(void (*irgen)(UChar v1, IRTemp op2addr, UChar m3),
    vassert(type == Ity_I32 || type == Ity_I64);
    IRExpr *x2;
    if(type == Ity_I32) {
+      s390_insn_assert(m3 < 4);
       x2 = unop(Iop_32Uto64, get_vr(v2, type, m3));
    } else {
+      s390_insn_assert(m3 < 2);
       x2 = get_vr(v2, type, m3);
    }
 
@@ -9337,6 +9339,7 @@ s390_irgen_SRNMB(UChar b2, UShort d2)
 {
    /* Can only check at IR generation time when b2 == 0 */
    if (b2 == 0) {
+      d2 &= 0xff;     // d2[0:55] is ignored
       s390_insn_assert(d2 <= 3 || d2 == 7);  // valid rounding mode
    }
    IRTemp op2addr = newTemp(Ity_I64);
@@ -13019,8 +13022,6 @@ s390_irgen_FLOGR(UChar r1, UChar r2)
 static void
 s390_irgen_POPCNT(UChar m3, UChar r1, UChar r2)
 {
-   s390_insn_assert((m3 & 7) == 0);
-
    static const ULong masks[] = {
       0x5555555555555555, 0x3333333333333333, 0x0F0F0F0F0F0F0F0F,
       0x00FF00FF00FF00FF, 0x0000FFFF0000FFFF, 0x00000000FFFFFFFF,
@@ -14425,7 +14426,7 @@ s390_irgen_VSTEH(UChar v1, IRTemp op2addr, UChar m3)
 static void
 s390_irgen_VSTEF(UChar v1, IRTemp op2addr, UChar m3)
 {
-   s390_insn_assert(m3 < 8);
+   s390_insn_assert(m3 < 4);
 
    store(mkexpr(op2addr), get_vr(v1, Ity_I32, m3));
 }
@@ -16404,7 +16405,7 @@ s390_irgen_VMSL(UChar v1, UChar v2, UChar v3, UChar v4, UChar m5, UChar m6)
       return;
    }
 
-   s390_insn_assert(m5 == 3 && (m6 & 3) == 0);
+   s390_insn_assert(m5 == 3);
 
    IRDirty* d;
    IRTemp cc = newTemp(Ity_I64);
@@ -17161,7 +17162,7 @@ s390_irgen_VSTER(UChar v1, IRTemp op2addr, UChar m3)
       return;
    }
 
-   s390_insn_assert(m3 >= 1 && m3 <= 4);
+   s390_insn_assert(m3 >= 1 && m3 <= 3);
 
    store(mkexpr(op2addr), s390_reverse_elements(get_vr_qw(v1), m3));
 }
@@ -20799,8 +20800,10 @@ s390_decode_and_irgen(const UChar *bytes, UInt insn_length, DisResult *dres)
          s390_decode_special_and_irgen(bytes + S390_SPECIAL_OP_PREAMBLE_SIZE);
    } else {
       /* Handle normal instructions. */
-      if (UNLIKELY(vex_traceflags & VEX_TRACE_FE))
-         s390_disasm(bytes);
+      if (UNLIKELY(vex_traceflags & VEX_TRACE_FE)) {
+         HChar *str = s390_disasm(bytes, /* padmnm */ 1);
+         vex_printf("%s\n", str ? str : "disassembly failed");
+      }
  
       switch (insn_length) {
       case 2:
@@ -20869,6 +20872,11 @@ s390_decode_and_irgen(const UChar *bytes, UInt insn_length, DisResult *dres)
          if (i != 0)
             vex_printf(" ");
          vex_printf("%02x%02x", bytes[i], bytes[i + 1]);
+      }
+      if (status == S390_DECODE_UNIMPLEMENTED_INSN ||
+          status == S390_DECODE_SPECIFICATION_EXCEPTION) {
+         const HChar *str = s390_disasm(bytes, /* padmnm */ 0);
+         vex_printf("   %s", str == NULL ? "??????" : str);
       }
       vex_printf("\n");
    }

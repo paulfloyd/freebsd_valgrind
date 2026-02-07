@@ -114,6 +114,8 @@ int main(void)
    test_PMINUW();
    test_PMULLD();
    test_BLENDPD();
+   test_BLENDPS();
+   test_PBLENDW();
 
    return 0;
 }

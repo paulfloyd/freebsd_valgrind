@@ -1867,6 +1867,8 @@ Bool VG_(realpath)(const HChar *path, HChar *resolved)
 
    if (VKI_S_ISLNK(statbuf.mode)) {
       SizeT link_len = VG_(readlink)(path, tmp, VKI_PATH_MAX);
+      if (link_len < 0)
+         return False;
       tmp[link_len] = '\0';
       resolved_name = tmp;
    } else {
@@ -1885,6 +1887,9 @@ Bool VG_(realpath)(const HChar *path, HChar *resolved)
 #elif defined(VGO_freebsd)
       res = VG_(do_syscall2)(__NR___getcwd, (UWord)wd, VKI_PATH_MAX);
 #endif
+      if (sr_isError(res)) {
+         return False;
+      }
       VG_(snprintf)(resolved, VKI_PATH_MAX, "%s/%s", wd, resolved_name);
    } else {
       VG_(snprintf)(resolved, VKI_PATH_MAX, "%s", resolved_name);

@@ -2102,7 +2102,6 @@ static UChar* push_word_from_tags ( UChar* p, UShort tags )
       *p++ = 0x6A;
       *p++ = 0xFF;
    } else {
-      vassert(0); /* awaiting test case */
       w = 0;
       if (tags & 1) w |= 0x000000FF;
       if (tags & 2) w |= 0x0000FF00;
