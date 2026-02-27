@@ -1635,6 +1635,37 @@ exit:
 }
 #endif /* SOLARIS_SPAWN_SYSCALL */
 
+static Bool handle_auxv_open(SyscallStatus *status, const HChar *filename,
+                           int flags)
+{
+   HChar  name[30];   // large enough
+
+   if (!ML_(safe_to_deref)((const void *) filename, 1))
+      return False;
+
+   /* Opening /proc/<pid>/auxv or /proc/self/auxv? */
+   VG_(sprintf)(name, "/proc/%d/auxv", VG_(getpid)());
+   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/auxv"))
+      return False;
+
+   /* Allow to open the file only for reading. */
+   if (flags & (VKI_O_WRONLY | VKI_O_RDWR)) {
+      SET_STATUS_Failure(VKI_EACCES);
+      return True;
+   }
+
+   VG_(sprintf)(name, "/proc/self/fd/%d", VG_(cl_auxv_fd));
+   SysRes sres = VG_(open)(name, flags, 0);
+   SET_STATUS_from_SysRes(sres);
+   if (!sr_isError(sres)) {
+      OffT off = VG_(lseek)(sr_Res(sres), 0, VKI_SEEK_SET);
+      if (off < 0)
+         SET_STATUS_Failure(VKI_EMFILE);
+   }
+
+   return True;
+}
+
 /* Handles the case where the open is of /proc/self/psinfo or
    /proc/<pid>/psinfo. Fetch fresh contents into psinfo_t,
    fake fname, psargs, argc and argv. Write the structure to the fake
@@ -1763,12 +1794,17 @@ PRE(sys_open)
 
    PRE_MEM_RASCIIZ("open(filename)", ARG1);
 
-   if (ML_(handle_auxv_open)(status, (const HChar*)ARG1, ARG2))
+   if (handle_auxv_open(status, (const HChar*)ARG1, ARG2))
       return;
 
    if (handle_psinfo_open(status, False /*use_openat*/, (const HChar*)ARG1, 0,
                           ARG2, ARG3))
       return;
+
+#if defined(SOLARIS_PROC_CMDLINE)
+   if (handle_cmdline_open(status, (const HChar*)ARG1))
+      return;
+#endif
 
    *flags |= SfMayBlock;
 }
@@ -4202,7 +4238,7 @@ PRE(sys_openat)
       return;
    }
 
-   if (ML_(handle_auxv_open)(status, (const HChar *) ARG2, ARG3))
+   if (handle_auxv_open(status, (const HChar *) ARG2, ARG3))
       return;
 
    if (handle_psinfo_open(status, True /*use_openat*/, (const HChar *) ARG2,

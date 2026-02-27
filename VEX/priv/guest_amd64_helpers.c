@@ -1989,6 +1989,14 @@ IRExpr* guest_amd64_spechelper ( const HChar* function_name,
       //   vassert(0);
       //}
 
+      /*---------------- SHLB ----------------*/
+      if (isU64(cc_op, AMD64G_CC_OP_SHLB) && isU64(cond, AMD64CondZ)) {
+         /* SHLB, then Z --> test dep1 == 0 */
+         return unop(Iop_1Uto64,
+                     binop(Iop_CmpEQ8, unop(Iop_64to8, cc_dep1),
+                           mkU8(0)));
+      }
+
       /*---------------- COPY ----------------*/
       /* This can happen, as a result of amd64 FP compares: "comisd ... ;
          jbe" for example. */

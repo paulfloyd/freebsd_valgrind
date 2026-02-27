@@ -194,12 +194,6 @@ EXTRA_DIST = \
 		nodir.stderr.exp-freebsd \
 	pending.stdout.exp pending.stderr.exp pending.vgtest \
 	ppoll_alarm.vgtest \
-	procfs-linux.stderr.exp-with-readlinkat \
-	procfs-linux.stderr.exp-without-readlinkat \
-	procfs-linux.vgtest \
-	procfs-non-linux.vgtest \
-	procfs-non-linux.stderr.exp-with-readlinkat \
-	procfs-non-linux.stderr.exp-without-readlinkat \
 	pselect_alarm.vgtest \
 	pselect_sigmask_null.vgtest \
 	pth_atfork1.stderr.exp pth_atfork1.stdout.exp pth_atfork1.vgtest \
@@ -225,6 +219,7 @@ EXTRA_DIST = \
 	rcrl.stderr.exp rcrl.stdout.exp rcrl.vgtest \
 	readline1.stderr.exp readline1.stdout.exp \
 	readline1.vgtest \
+	replaces_malloc_client_req.stdout.exp replaces_malloc_client_req.vgtest \
 	require-text-symbol-1.vgtest \
 	require-text-symbol-2.vgtest \
 		require-text-symbol-2.stderr.exp-libcso1 \
@@ -300,7 +295,6 @@ check_PROGRAMS = \
 	munmap_exe map_unaligned map_unmap mq \
 	nocwd \
 	pending \
-	procfs-cmdline-exe \
 	pselect_alarm \
 	pselect_sigmask_null \
 	pth_atfork1 pth_blockedsig pth_cancel1 pth_cancel2 pth_cvsimple \

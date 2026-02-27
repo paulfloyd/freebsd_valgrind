@@ -21,7 +21,7 @@ check_PROGRAMS = \
 	coredump_single_thread_sse \
 	syscalls
 
-AM_CFLAGS    += @FLAG_M32@
+AM_CFLAGS    += @FLAG_M32@ ${FLAG_MSSE}
 AM_CXXFLAGS  += @FLAG_M32@
 AM_CCASFLAGS += @FLAG_M32@
 

@@ -956,7 +956,13 @@ static enum ExtensionError do_extension_STFLE(ThreadState* tst, ULong variant)
        /* 80: DFP packed-conversion, not supported */
        /* 81: PPA-in-order, not supported */
        | S390_SETBITS(82, 82)
-       /* 83-127: unassigned */),
+       /* 83: unassigned */
+       | S390_SETBITS(84, 84)
+       /* 85: sequential-instruction, not supported */
+       /* 86: MSA 12, not supported */
+       /* 87: PLO-extension, not supported */
+       /* 88-127: unassigned */
+       ),
 
       /* ===  128 .. 191  === */
       (S390_SETBITS(128, 131)
@@ -984,7 +990,9 @@ static enum ExtensionError do_extension_STFLE(ThreadState* tst, ULong variant)
       /* 192: vector-packed-decimal, not supported */
       (S390_SETBITS(193, 194)
        /* 195: unassigned */
-       | S390_SETBITS(196, 197)),
+       | S390_SETBITS(196, 198)
+       /* 199: vector-packed-decimal-enhancment 3, not supported */
+       /* 200-255: unassigned */),
    };
 
    cc = do_STFLE_insn((void*)addr, last_dw + 1, &gpr0);
@@ -1171,18 +1179,22 @@ S390_DEFINE_DO_0R_INSN(do_KIMD_insn, 0xb93e)
    S390_DO_FUNC(34, S390_KIMD_SHA3_384, 200)                                   \
    S390_DO_FUNC(35, S390_KIMD_SHA3_512, 200)                                   \
    S390_DO_FUNC(36, S390_KIMD_SHAKE_128, 200)                                  \
-   S390_DO_FUNC(37, S390_KIMD_SHAKE_256, 200)                                  \
-   S390_DO_FUNC(65, S390_KIMD_GHASH, 32)
+   S390_DO_FUNC(37, S390_KIMD_SHAKE_256, 200)
+
+#define S390_DO_FUNCTIONS1 S390_DO_FUNC(65, S390_KIMD_GHASH, 32)
 
 #define S390_DO_FUNC(fc, name, plen) [fc] = plen,
-static const UChar S390_KIMD_parms_len[] = {S390_DO_FUNCTIONS};
+static const UChar S390_KIMD_parms_len[] = {
+   S390_DO_FUNCTIONS S390_DO_FUNCTIONS1};
 #undef S390_DO_FUNC
 
 #define S390_DO_FUNC(fc, name, plen) | S390_SETBIT(fc)
-static const ULong S390_KIMD_supported_fc[] = {0 S390_DO_FUNCTIONS};
+static const ULong S390_KIMD_supported_fc[] = {0 S390_DO_FUNCTIONS,
+                                               0 S390_DO_FUNCTIONS1};
 #undef S390_DO_FUNC
 
 #undef S390_DO_FUNCTIONS
+#undef S390_DO_FUNCTIONS1
 
 static enum ExtensionError do_extension_KIMD(ThreadState* tst, ULong variant)
 {

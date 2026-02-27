@@ -1729,7 +1729,6 @@ extern int * __error(void) __attribute__((weak));
       MALLOC_TRACE(" = %p\n", v ); \
       if (v == NULL) { \
          if (!(size*nmemb == 0U && info.clo_realloc_zero_bytes_frees == True)) {\
-            VG_REPLACE_FUNCTION_EZU(10050,VG_Z_LIBC_SONAME,free)(ptrV); \
             SET_ERRNO_ENOMEM; \
       } \
    } \

@@ -7,9 +7,9 @@
 # kma   - Cannot express constraint that r3 must be different from r1 and r2
 # srnmb - The compile-time checkable constraint cannot be expressed in opcode.c
 #
-prereq: ./disasm-test --check-march=arch14
+prereq: ./disasm-test --check-march=arch15
 prog: /bin/true
-post: ./disasm-test --gcc-flags=-march=arch14 --all --exclude exrl kma srnmb --summary
+post: ./disasm-test --gcc-flags=-march=arch15 --all --exclude exrl kma srnmb --summary
 vgopts: -q
 stderr_filter:
 stderrB_filter:

@@ -2405,13 +2405,8 @@ s390x_dirtyhelper_vec_op(VexGuestS390XState *guest_state,
       {0x00, 0x00}, /* invalid */
       [S390_VEC_OP_VPKS]  = {0xe7, 0x97},
       [S390_VEC_OP_VPKLS] = {0xe7, 0x95},
-      [S390_VEC_OP_VCEQ]  = {0xe7, 0xf8},
       [S390_VEC_OP_VGFM]  = {0xe7, 0xb4},
       [S390_VEC_OP_VGFMA] = {0xe7, 0xbc},
-      [S390_VEC_OP_VMAH]  = {0xe7, 0xab},
-      [S390_VEC_OP_VMALH] = {0xe7, 0xa9},
-      [S390_VEC_OP_VCH]   = {0xe7, 0xfb},
-      [S390_VEC_OP_VCHL]  = {0xe7, 0xf9},
       [S390_VEC_OP_VFTCI] = {0xe7, 0x4a},
       [S390_VEC_OP_VFMIN] = {0xe7, 0xee},
       [S390_VEC_OP_VFMAX] = {0xe7, 0xef},
@@ -2492,10 +2487,7 @@ s390x_dirtyhelper_vec_op(VexGuestS390XState *guest_state,
    switch(d->op) {
    case S390_VEC_OP_VPKS:
    case S390_VEC_OP_VPKLS:
-   case S390_VEC_OP_VCEQ:
    case S390_VEC_OP_VGFM:
-   case S390_VEC_OP_VCH:
-   case S390_VEC_OP_VCHL:
       the_insn.VRR.v1 = 1;
       the_insn.VRR.v2 = 2;
       the_insn.VRR.v3 = 3;
@@ -2505,8 +2497,6 @@ s390x_dirtyhelper_vec_op(VexGuestS390XState *guest_state,
       break;
 
    case S390_VEC_OP_VGFMA:
-   case S390_VEC_OP_VMAH:
-   case S390_VEC_OP_VMALH:
    case S390_VEC_OP_VMSL:
       the_insn.VRRd.v1 = 1;
       the_insn.VRRd.v2 = 2;

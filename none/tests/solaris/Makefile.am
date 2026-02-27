@@ -46,6 +46,7 @@ check_PROGRAMS = \
 	proc_auxv \
 	proc_auxv_multiple \
 	proc_psinfo \
+	procfs-cmdline-exe \
 	posix_spawn \
 	pthread-stack \
 	readlinkat_self \

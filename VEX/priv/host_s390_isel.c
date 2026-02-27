@@ -1984,6 +1984,11 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
          return dst;
       }
 
+      case Iop_PopCount64: {
+         addInstr(env, s390_insn_popcnt(8, dst, opnd));
+         return dst;
+      }
+
       default:
          goto irreducible;
       }
@@ -4071,6 +4076,15 @@ s390_isel_vec_expr_wrk(ISelEnv *env, IRExpr *expr)
          return dst;
       }
 
+      case Iop_ReinterpI128asV128: {
+         HReg reg2 = INVALID_HREG;
+         dst = newVRegV(env);
+         s390_isel_int128_expr(&reg1, &reg2, env, arg);
+         addInstr(env, s390_insn_vec_binop(size, S390_VEC_INIT_FROM_GPRS,
+                                           dst, reg1, reg2));
+         return dst;
+      }
+
       default:
          goto irreducible;
       }
@@ -4479,6 +4493,23 @@ s390_isel_vec_expr_wrk(ISelEnv *env, IRExpr *expr)
       case Iop_MullEven32Ux4:
          size = 4;
          vec_binop = S390_VEC_INT_MUL_ODDU;
+         goto Iop_VV_wrk;
+
+      case Iop_DivU128:
+         size = 16;
+         vec_binop = S390_VEC_INT_DIVU;
+         goto Iop_VV_wrk;
+      case Iop_DivS128:
+         size = 16;
+         vec_binop = S390_VEC_INT_DIVS;
+         goto Iop_VV_wrk;
+      case Iop_ModU128:
+         size = 16;
+         vec_binop = S390_VEC_INT_MODU;
+         goto Iop_VV_wrk;
+      case Iop_ModS128:
+         size = 16;
+         vec_binop = S390_VEC_INT_MODS;
          goto Iop_VV_wrk;
 
       case Iop_Shl8x16:

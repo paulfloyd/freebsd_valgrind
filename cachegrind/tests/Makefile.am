@@ -42,6 +42,7 @@ EXTRA_DIST = \
 	clreq3.vgtest clreq3.stderr.exp \
 	dlclose.vgtest dlclose.stderr.exp dlclose.stdout.exp \
 	notpower2.vgtest notpower2.stderr.exp \
+	replaces_malloc_client_req.vgtest replaces_malloc_client_req.stdout.exp \
 	test.c a.c \
 	wrap5.vgtest wrap5.stderr.exp wrap5.stdout.exp
 

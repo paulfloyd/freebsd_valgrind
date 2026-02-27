@@ -1,5 +1,5 @@
 /*
- * Read /proc/self/cmdline and /proc/self/exe such that it can be tested
+ * Read /proc/self/cmdline and /proc/self/path/a.out such that it can be tested
  * whether Valgrind intercepts the system calls that access these pseudo-files
  * properly on Linux and whether Valgrind does not modify the behavior of
  * accessing these files on other operating systems.
@@ -15,7 +15,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
-#include "../../config.h"
+#include "../../../config.h"
 
 static void test_cmdline(const char* const cwd, const char* const label,
                          const char* const path)
@@ -103,13 +103,13 @@ int main(int argc, char** argv)
   test_cmdline(cwd, "/proc/self/cmdline", "/proc/self/cmdline");
   test_cmdline(cwd, "/proc/<pid>/cmdline", path);
 
-  snprintf(path, sizeof(path), "/proc/%ld/exe", (long) getpid());
+  snprintf(path, sizeof(path), "/proc/%ld/path/a.out", (long) getpid());
 
-  test_readlink(cwd, "/proc/self/exe", "/proc/self/exe");
-  test_readlink(cwd, "/proc/<pid>/exe", path);
+  test_readlink(cwd, "/proc/self/path/a.out", "/proc/self/path/a.out");
+  test_readlink(cwd, "/proc/<pid>/path/a.out", path);
 
-  test_readlinkat(cwd, "/proc/self/exe", "/proc/self/exe");
-  test_readlinkat(cwd, "/proc/<pid>/exe", path);
+  test_readlinkat(cwd, "/proc/self/path/a.out", "/proc/self/path/a.out");
+  test_readlinkat(cwd, "/proc/<pid>/path/a.out", path);
 
   return 0;
 }

@@ -11,6 +11,7 @@ EXTRA_DIST = \
 	bt_everything.stdout.exp bt_everything.vgtest \
 	bug132146.vgtest bug132146.stdout.exp \
 	bug279698.vgtest bug279698.stdout.exp \
+	bug406674.vgtest \
 	bug492210_1.vgtest bug492210_1.stderr.exp \
 	bug492210_2.vgtest \
 	fxsave-amd64.vgtest fxsave-amd64.stdout.exp \
@@ -40,6 +41,7 @@ check_PROGRAMS = \
 	bt_everything \
 	bug132146 \
 	bug279698 \
+	bug406674 \
 	fxsave-amd64 \
 	insn-bsfl \
 	insn-pmovmskb \
@@ -72,6 +74,7 @@ AM_CFLAGS    += @FLAG_M64@
 AM_CXXFLAGS  += @FLAG_M64@
 AM_CCASFLAGS += @FLAG_M64@
 
+bug406674_SOURCES	= bug406674.cpp
 bug492210_CFLAGS	= ${AM_CFLAGS} @FLAG_NO_PIE@ @FLAG_W_NO_UNINITIALIZED@
 fxsave_amd64_CFLAGS	= $(AM_CFLAGS) @FLAG_NO_PIE@
 insn_pcmpistri_CFLAGS	= $(AM_CFLAGS)

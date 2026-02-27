@@ -4,7 +4,7 @@ include $(top_srcdir)/Makefile.tool-tests.am
 dist_noinst_SCRIPTS = filter_stderr filter_pts dump_stdout filter_sigwait \
 	filter_scalar filter_realpathat filter_fstat filter_eventfd2 \
 	toucher1 toucher2 filter_getfsstat filter_context filter_frame \
-	filter_supp filter_kenv
+	filter_supp filter_kenv filter_heap_usage
 
 EXTRA_DIST = \
 	access.vgtest \
@@ -18,6 +18,8 @@ EXTRA_DIST = \
 	aligned_allocs_supp.vgtest \
 	aligned_allocs_supp.stderr.exp \
 	aligned_allocs_supp.supp \
+	bug233298.vgtest \
+	bug233298.stderr.exp \
 	bug464476.vgtest \
 	bug464476.stdout.exp \
 	bug464476_abs_symlink.vgtest \
@@ -73,6 +75,8 @@ EXTRA_DIST = \
 	kqueue.stdout.exp \
 	kqueuex.vgtest \
 	kqueuex.stdout.exp \
+	leak-autofreepool-7.vgtest \
+	leak-autofreepool-7.stderr.exp \
 	linkat.vgtest \
 	linkat.stderr.exp \
         memalign.vgtest memalign.stderr.exp \

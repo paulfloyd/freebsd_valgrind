@@ -526,6 +526,102 @@ PRE(sys_fork)
 
 // SYS_open 5
 // generic
+// int open(const char *path, int flags, mode_t mode);
+PRE(sys_open)
+{
+   HChar  name[30];   // large enough
+   Bool   proc_curproc_file = False;
+
+   /* Check for /proc/curproc/file or /proc/<pid>/file case
+    * first so that we can then use the later checks. */
+   VG_(sprintf)(name, "/proc/%d/file", VG_(getpid)());
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG1, 1 )
+       && (VG_(strcmp)((HChar *)(Addr)ARG1, name) == 0
+           || VG_(strcmp)((HChar *)(Addr)ARG1, "/proc/curproc/file") == 0)) {
+      proc_curproc_file = True;
+   }
+
+   if (ARG2 & VKI_O_CREAT) {
+      // 3-arg version
+      PRINT("sys_open ( %#" FMT_REGWORD "x(%s), %ld, %ld )",ARG1,
+            (HChar*)(Addr)ARG1, SARG2, SARG3);
+      PRE_REG_READ3(long, "open",
+                    const char *, filename, int, flags, int, mode);
+   } else {
+      // 2-arg version
+      PRINT("sys_open ( %#" FMT_REGWORD "x(%s), %ld )",ARG1,
+            (HChar*)(Addr)ARG1, SARG2);
+      PRE_REG_READ2(long, "open",
+                    const char *, filename, int, flags);
+   }
+   PRE_MEM_RASCIIZ( "open(filename)", ARG1 );
+
+   // check that we are not trying to open the client exe for writing
+   if ((ARG2 & VKI_O_WRONLY) ||
+       (ARG2 & VKI_O_RDWR)) {
+      if (proc_curproc_file) {
+         SET_STATUS_Failure( VKI_ETXTBSY );
+         return;
+      } else {
+         vg_assert(VG_(resolved_exename));
+         const HChar* path = (const HChar*)ARG1;
+         if (ML_(safe_to_deref)(path, 1)) {
+            // we need something like a "ML_(safe_to_deref_path)" that does a binary search for the addressable length, and maybe nul
+            HChar tmp[VKI_PATH_MAX];
+            if (VG_(realpath)(path, tmp)) {
+               if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+                  SET_STATUS_Failure( VKI_ETXTBSY );
+                  return;
+               }
+            }
+         }
+      }
+   }
+
+   /* Handle the case where the open is of /proc/self/cmdline or
+      /proc/<pid>/cmdline, and just give it a copy of the fd for the
+      fake file we cooked up at startup (in m_main).  Also, seek the
+      cloned fd back to the start. */
+   {
+      HChar* arg1s = (HChar*) (Addr)ARG1;
+      SysRes sres;
+
+      VG_(sprintf)(name, "/proc/%d/cmdline", VG_(getpid)());
+      if (ML_(safe_to_deref)( arg1s, 1 )
+          && (VG_STREQ(arg1s, name) || VG_STREQ(arg1s, "/proc/curproc/cmdline"))) {
+         sres = VG_(dup)( VG_(cl_cmdline_fd) );
+         SET_STATUS_from_SysRes( sres );
+         if (!sr_isError(sres)) {
+            OffT off = VG_(lseek)( sr_Res(sres), 0, VKI_SEEK_SET );
+            if (off < 0)
+               SET_STATUS_Failure( VKI_EMFILE );
+         }
+         return;
+      }
+   }
+
+   if (proc_curproc_file) {
+      // do the syscall with VG_(resolved_exename)
+      ARG1 = (Word)VG_(resolved_exename);
+   }
+
+   /* Otherwise handle normally */
+   *flags |= SfMayBlock;
+}
+
+POST(sys_open)
+{
+   vg_assert(SUCCESS);
+   POST_newFd_RES;
+   if (!ML_(fd_allowed)(RES, "open", tid, True)) {
+      VG_(close)(RES);
+      SET_STATUS_Failure( VKI_EMFILE );
+   } else {
+      if (VG_(clo_track_fds))
+         ML_(record_fd_open_with_given_name)(tid, RES, (HChar*)(Addr)ARG1);
+   }
+}
+
 
 // SYS_close   6
 // generic
@@ -2736,7 +2832,7 @@ PRE(sys_lutimes)
 // int fhopen(const fhandle_t *fhp, int flags);
 PRE(sys_fhopen)
 {
-   PRINT("sys_open ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
+   PRINT("sys_fhopen ( %#" FMT_REGWORD "x, %" FMT_REGWORD "u )",ARG1,ARG2);
    PRE_REG_READ2(int, "fhopen",
                  struct fhandle_t *, fhp, int, flags);
    PRE_MEM_READ( "fhopen(fhp)", ARG1, sizeof(struct vki_fhandle) );
@@ -5373,39 +5469,9 @@ PRE(sys_freebsd11_mknodat)
 // int openat(int fd, const char *path, int flags, ...);
 PRE(sys_openat)
 {
-   // check that we are not trying to open the client exe for writing
-   if ((ARG3 & VKI_O_WRONLY) ||
-       (ARG3 & VKI_O_RDWR)) {
-      vg_assert(VG_(resolved_exename) && VG_(resolved_exename)[0] == '/');
-      Int fd = ARG1;
-      const HChar* path = (const HChar*)ARG2;
-      if (ML_(safe_to_deref)(path, 1)) { // we need something like a "ML_(safe_to_deref_path)" that does a binary search for the addressable length, and maybe nul
-         if (fd  == VKI_AT_FDCWD) {
-            HChar tmp[VKI_PATH_MAX];
-            if (VG_(realpath)(path, tmp)) {
-               if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
-                     SET_STATUS_Failure( VKI_ETXTBSY );
-               }
-            }
-         } else {
-            const HChar* dirname;
-            if (VG_(resolve_filename)(fd, &dirname) == False) {
-               goto no_client_write; // let the OS do the error handling
-            }
-            HChar tmp1[VKI_PATH_MAX];
-            VG_(snprintf)(tmp1, VKI_PATH_MAX, "%s/%s", dirname, path);
-            tmp1[VKI_PATH_MAX - 1] = '\0';
-            //VG_(free)((void*)dirname);
-            HChar tmp2[VKI_PATH_MAX];
-            if (VG_(realpath)(tmp1, tmp2)) {
-               if (!VG_(strcmp)(tmp2, VG_(resolved_exename))) {
-                     SET_STATUS_Failure( VKI_ETXTBSY );
-               }
-            }
-         }
-      }
-   }
-no_client_write:
+   HChar  name[30];   // large enough
+   Bool   proc_curproc_file = False;
+
    if (ARG3 & VKI_O_CREAT) {
       // 4-arg version
       PRINT("sys_openat ( %" FMT_REGWORD "u, %#" FMT_REGWORD "x(%s), %" FMT_REGWORD "u, %" FMT_REGWORD "u )",ARG1,ARG2,(char*)ARG2,ARG3,ARG4);
@@ -5419,6 +5485,81 @@ no_client_write:
    }
    ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "openat", tid, status);
    PRE_MEM_RASCIIZ("openat(path)", ARG2);
+
+   /* Check for /proc/curproc/file or /proc/<pid>/file case
+    * first so that we can then use the later checks. */
+   VG_(sprintf)(name, "/proc/%d/file", VG_(getpid)());
+   if (ML_(safe_to_deref)( (void*)(Addr)ARG1, 1 )
+      && (VG_(strcmp)((HChar *)(Addr)ARG1, name) == 0
+         || VG_(strcmp)((HChar *)(Addr)ARG1, "/proc/curproc/file") == 0)) {
+      proc_curproc_file = True;
+   }
+
+   // check that we are not trying to open the client exe for writing
+   if ((ARG3 & VKI_O_WRONLY) ||
+       (ARG3 & VKI_O_RDWR)) {
+       if (proc_curproc_file) {
+         SET_STATUS_Failure( VKI_ETXTBSY );
+         return;
+      }
+      vg_assert(VG_(resolved_exename) && VG_(resolved_exename)[0] == '/');
+      Int fd = ARG1;
+      const HChar* path = (const HChar*)ARG2;
+      if (ML_(safe_to_deref)(path, 1)) { // we need something like a "ML_(safe_to_deref_path)" that does a binary search for the addressable length, and maybe nul
+         if (fd  == VKI_AT_FDCWD) {
+            HChar tmp[VKI_PATH_MAX];
+            if (VG_(realpath)(path, tmp)) {
+               if (!VG_(strcmp)(tmp, VG_(resolved_exename))) {
+                  SET_STATUS_Failure( VKI_ETXTBSY );
+                  return;
+               }
+            }
+         } else {
+            const HChar* dirname;
+            if (VG_(resolve_filename)(fd, &dirname) == True) {
+               HChar tmp1[VKI_PATH_MAX];
+               VG_(snprintf)(tmp1, VKI_PATH_MAX, "%s/%s", dirname, path);
+               tmp1[VKI_PATH_MAX - 1] = '\0';
+               //VG_(free)((void*)dirname);
+               HChar tmp2[VKI_PATH_MAX];
+               if (VG_(realpath)(tmp1, tmp2)) {
+                  if (!VG_(strcmp)(tmp2, VG_(resolved_exename))) {
+                     SET_STATUS_Failure( VKI_ETXTBSY );
+                     return;
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   /* Handle the case where the open is of /proc/curproc/cmdline or
+      /proc/<pid>/cmdline, and just give it a copy of the fd for the
+      fake file we cooked up at startup (in m_main).  Also, seek the
+      cloned fd back to the start. */
+   {
+      HChar* arg2s = (HChar*) (Addr)ARG2;
+      SysRes sres;
+
+      VG_(sprintf)(name, "/proc/%d/cmdline", VG_(getpid)());
+      if (ML_(safe_to_deref)( arg2s, 1 )
+          && (VG_STREQ(arg2s, name) || VG_STREQ(arg2s, "/proc/curproc/cmdline"))) {
+
+         sres = VG_(dup)( VG_(cl_cmdline_fd) );
+         SET_STATUS_from_SysRes( sres );
+         if (!sr_isError(sres)) {
+            OffT off = VG_(lseek)( sr_Res(sres), 0, VKI_SEEK_SET );
+            if (off < 0)
+               SET_STATUS_Failure( VKI_EMFILE );
+         }
+         return;
+      }
+   }
+
+   if (proc_curproc_file) {
+      // do the syscall with VG_(resolved_exename)
+      ARG2 = (Word)VG_(resolved_exename);
+   }
 
    /* Otherwise handle normally */
    *flags |= SfMayBlock;
@@ -6583,7 +6724,7 @@ PRE(sys_copy_file_range)
       valgrind itself uses some, so make sure someone didn't
       put in one of our own...  */
    if (!ML_(fd_allowed)(ARG1, "copy_file_range(infd)", tid, False) ||
-       !ML_(fd_allowed)(ARG3, "copy_file_range(infd)", tid, False))
+       !ML_(fd_allowed)(ARG3, "copy_file_range(outfd)", tid, False))
       SET_STATUS_Failure( VKI_EBADF );
 
    /* Now see if the offsets are defined. PRE_MEM_READ will
@@ -7229,7 +7370,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_read,             sys_read),              // 3
 
    GENX_(__NR_write,            sys_write),             // 4
-   GENXY(__NR_open,             sys_open),              // 5
+   BSDXY(__NR_open,             sys_open),              // 5
    GENX_(__NR_close,            sys_close),             // 6
    GENXY(__NR_wait4,            sys_wait4),             // 7
 
@@ -7936,6 +8077,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 
     BSDX_(__NR_jail_attach_jd,  sys_jail_attach_jd),    // 597
     BSDX_(__NR_jail_remove_jd,  sys_jail_remove_jd),    // 598
+    BSDX_(__NR_kexec_load,      sys_kexec_load),        // 599
 
    BSDX_(__NR_freebsd_fake_sigreturn,   sys_fake_sigreturn), // 1000, fake sigreturn
 

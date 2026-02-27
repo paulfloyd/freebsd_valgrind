@@ -173,6 +173,8 @@ typedef
 #define VEX_HWCAPS_S390X_VXD   (1 << 14) /* Vector packed-decimal facility */
 #define VEX_HWCAPS_S390X_MSA8  (1 << 15) /* Message-security-assist extension 8 */
 #define VEX_HWCAPS_S390X_MSA9  (1 << 16) /* Message-security-assist extension 9 */
+#define VEX_HWCAPS_S390X_MI3   (1 << 17) /* Miscellaneous-instruction-extensions facility 3 */
+#define VEX_HWCAPS_S390X_VXE3  (1 << 18) /* Vector-enhancements facility 3 */
 
 /* Special value representing all available s390x hwcaps */
 #define VEX_HWCAPS_S390X_ALL   (VEX_HWCAPS_S390X_VX    | \
@@ -185,7 +187,9 @@ typedef
                                 VEX_HWCAPS_S390X_VXE2  | \
                                 VEX_HWCAPS_S390X_VXD   | \
                                 VEX_HWCAPS_S390X_MSA8  | \
-                                VEX_HWCAPS_S390X_MSA9)
+                                VEX_HWCAPS_S390X_MSA9  | \
+                                VEX_HWCAPS_S390X_MI3   | \
+                                VEX_HWCAPS_S390X_VXE3)
 
 #define VEX_HWCAPS_S390X(x)  ((x) & ~VEX_S390X_MODEL_MASK)
 #define VEX_S390X_MODEL(x)   ((x) &  VEX_S390X_MODEL_MASK)

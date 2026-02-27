@@ -999,6 +999,7 @@
 /memcheck/tests/realloc1
 /memcheck/tests/realloc2
 /memcheck/tests/realloc3
+/memcheck/tests/replaces_malloc_client_req
 /memcheck/tests/recursive-merge
 /memcheck/tests/resvn_stack
 /memcheck/tests/sbfragment
@@ -1082,6 +1083,7 @@
 /memcheck/tests/amd64/bt_everything
 /memcheck/tests/amd64/bug132146
 /memcheck/tests/amd64/bug279698
+/memcheck/tests/amd64/bug406674
 /memcheck/tests/amd64/bug492210
 /memcheck/tests/amd64/defcfaexpr
 /memcheck/tests/amd64/fxsave-amd64
@@ -1645,7 +1647,6 @@
 /none/tests/pluto
 /none/tests/ppoll_alarm
 /none/tests/process_vm_readv_writev
-/none/tests/procfs-cmdline-exe
 /none/tests/pselect_alarm
 /none/tests/pselect_sigmask_null
 /none/tests/pth_2sig
@@ -1902,6 +1903,7 @@
 /none/tests/darwin/bug254164
 /none/tests/darwin/bug390269
 /none/tests/darwin/bug411369
+/none/tests/darwin/procfs-cmdline-exe
 /none/tests/darwin/rlimit
 
 # /none/tests/linux/
@@ -1924,6 +1926,7 @@
 /none/tests/linux/mremap5
 /none/tests/linux/mremap6
 /none/tests/linux/open_client
+/none/tests/linux/procfs-cmdline-exe
 /none/tests/linux/pthread-stack
 /none/tests/linux/readlinkat_self
 /none/tests/linux/stack-overflow
@@ -2238,6 +2241,7 @@
 /none/tests/s390x/pfpo
 /none/tests/s390x/rxsbg
 /none/tests/s390x/popcnt
+/none/tests/s390x/popcnt-mi3
 /none/tests/s390x/vector
 /none/tests/s390x/lsc2
 /none/tests/s390x/ppno
@@ -2247,8 +2251,11 @@
 /none/tests/s390x/high-word
 /none/tests/s390x/vector_float
 /none/tests/s390x/misc3
+/none/tests/s390x/misc4
 /none/tests/s390x/vec2
 /none/tests/s390x/vec2_float
+/none/tests/s390x/vec3
+/none/tests/s390x/vecdiv
 
 # /none/tests/riscv64/
 /none/tests/riscv64/*.stderr.diff
@@ -2325,6 +2332,7 @@
 /none/tests/solaris/proc_auxv
 /none/tests/solaris/proc_auxv_multiple
 /none/tests/solaris/proc_psinfo
+/none/tests/solaris/procfs-cmdline-exe
 /none/tests/solaris/pthread-stack
 /none/tests/solaris/readlinkat_self
 /none/tests/solaris/reserve_sysstat_addr
@@ -2355,6 +2363,7 @@ none/tests/freebsd/bug499212
 /none/tests/freebsd/hello_world
 /none/tests/freebsd/open_client
 /none/tests/freebsd/proc_pid_file
+/none/tests/freebsd/procfs-cmdline-exe
 /none/tests/freebsd/sanity_level_thread
 /none/tests/freebsd/usrstack
 /none/tests/freebsd/umtx_shm_creat

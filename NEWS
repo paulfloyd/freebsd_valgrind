@@ -20,6 +20,12 @@ for nanoMIPS/Linux. macOS is supported up to version 12 Monterey (amd64 only).
   back to mprotect PROT_NONE which valgrind is able to track.
   See also https://bugs.kde.org/show_bug.cgi?id=514297
 
+* --num-callers now has a minimum value of 2.
+
+  This is a breaking change. See
+  https://bugs.kde.org/show_bug.cgi?id=515183#c13
+  for full details.
+
 * ================== PLATFORM CHANGES =================
 
 s390x: Machine models older than z196 are no longer supported.
@@ -45,8 +51,11 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 
 126256  (fnop) vex x86->IR: unhandled instruction bytes: 0xD9 0xD0 0x31 0xC0
 228343  none/tests/darwin/bug228343 fails on OS X
+233298  MEMPOOL_FREE not reflected in heap summary
 253436  vex amd64->IR: unhandled instruction bytes: 0xF2 0xA6 (repne cmps)
 258140  Valgrind on OS X always reports some memory "still reachable"
+406674  False positive when reading bitfield value on code compiled with
+        clang 7.0
 413369  unhandled amd64-darwin syscall: unix:151 (getpgid)
 487055  memcheck/tests/x86-linux/scalar fails running in Docker
 509562  s390x: Define minimum required machine model
@@ -72,6 +81,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 514094  readlink("/proc/self/exe") overwrites buffer beyond its return value
 514206  Assertion '!sr_isError(sr)' failed - mmap fd points to an open
         descriptor to a PCI device
+514343  Add a valgrind.h macro VALGRIND_REPLACES_MALLOC
 514596  Add SSE4.1 BLENDPD instruction for x86 32 bit
 514613  Unclosed leak_summary/still_reachable tag in xml output
 514659  ltp 20250930 vs linux 6.18.3 doesn't build
@@ -81,7 +91,10 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         `valgrind --num-callers=1 ./hello_world`
 515265  Add SSE4.1 BLENDPS and PBLENDW instruction for x86 32 bit
 515612  Sanity check VG_(realpath) and VG_(readlink) return values
-
+515731  Distinguish between realloc functions in realloc size 0 error messages
+515810  Update the LTP version in valgrind testsuite to 20260130
+515992  Add FreeBSD /proc virtualisation for cmdline and file
+516090  Regression : Linux FreeBSD and Darwin: refactor *at syscall dirfd checks
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

@@ -20,6 +20,9 @@ EXTRA_DIST = \
 	mremap6.vgtest \
 	open_client.vgtest \
 	pthread-stack.stderr.exp pthread-stack.vgtest \
+	procfs-cmdline-exe.stderr.exp-without-readlinkat \
+	procfs-cmdline-exe.stderr.exp-with-readlinkat \
+	procfs-cmdline-exe.vgtest \
 	readlinkat_self.stderr.exp readlinkat_self.vgtest \
 	stack-overflow.stderr.exp stack-overflow.vgtest
 
@@ -37,6 +40,7 @@ check_PROGRAMS = \
 	mremap5 \
 	mremap6 \
 	pthread-stack \
+	procfs-cmdline-exe \
 	readlinkat_self \
 	stack-overflow
 

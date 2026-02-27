@@ -389,6 +389,7 @@ EXTRA_DIST = \
 	realloc2.vgtest \
 	realloc3.stderr.exp realloc3.vgtest \
 	recursive-merge.stderr.exp recursive-merge.vgtest \
+	replaces_malloc_client_req.stdout.exp replaces_malloc_client_req.vgtest \
 	resvn_stack.stderr.exp resvn_stack.vgtest \
 	demangle-rust.vgtest demangle-rust.stderr.exp \
 	sbfragment.stdout.exp sbfragment.stderr.exp sbfragment.vgtest \
@@ -554,6 +555,7 @@ check_PROGRAMS = \
 	realloc_size_zero_again \
 	realloc1 realloc2 realloc3 \
 	recursive-merge \
+	replaces_malloc_client_req \
 	resvn_stack \
 	sbfragment \
 	sendmsg \

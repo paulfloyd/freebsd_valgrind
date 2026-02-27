@@ -1913,7 +1913,7 @@ static void set_address_range_perms ( Addr a, SizeT lenT, UWord vabits16,
 void MC_(make_mem_noaccess) ( Addr a, SizeT len )
 {
    PROF_EVENT(MCPE_MAKE_MEM_NOACCESS);
-   DEBUG("MC_(make_mem_noaccess)(%p, %lu)\n", a, len);
+   DEBUG("MC_(make_mem_noaccess)(%p, %lu)\n", (void*)a, len);
    set_address_range_perms ( a, len, VA_BITS16_NOACCESS, SM_DIST_NOACCESS );
    if (UNLIKELY( MC_(clo_mc_level) == 3 ))
       ocache_sarp_Clear_Origins ( a, len );
@@ -1922,14 +1922,14 @@ void MC_(make_mem_noaccess) ( Addr a, SizeT len )
 static void make_mem_undefined ( Addr a, SizeT len )
 {
    PROF_EVENT(MCPE_MAKE_MEM_UNDEFINED);
-   DEBUG("make_mem_undefined(%p, %lu)\n", a, len);
+   DEBUG("make_mem_undefined(%p, %lu)\n", (void*)a, len);
    set_address_range_perms ( a, len, VA_BITS16_UNDEFINED, SM_DIST_UNDEFINED );
 }
 
 void MC_(make_mem_undefined_w_otag) ( Addr a, SizeT len, UInt otag )
 {
    PROF_EVENT(MCPE_MAKE_MEM_UNDEFINED_W_OTAG);
-   DEBUG("MC_(make_mem_undefined)(%p, %lu)\n", a, len);
+   DEBUG("MC_(make_mem_undefined)(%p, %lu)\n", (void*)a, len);
    set_address_range_perms ( a, len, VA_BITS16_UNDEFINED, SM_DIST_UNDEFINED );
    if (UNLIKELY( MC_(clo_mc_level) == 3 ))
       ocache_sarp_Set_Origins ( a, len, otag );
@@ -1966,7 +1966,7 @@ void mc_new_mem_w_tid_no_ECU  ( Addr a, SizeT len, ThreadId tid )
 void MC_(make_mem_defined) ( Addr a, SizeT len )
 {
    PROF_EVENT(MCPE_MAKE_MEM_DEFINED);
-   DEBUG("MC_(make_mem_defined)(%p, %lu)\n", a, len);
+   DEBUG("MC_(make_mem_defined)(%p, %lu)\n", (void*)a, len);
    set_address_range_perms ( a, len, VA_BITS16_DEFINED, SM_DIST_DEFINED );
    if (UNLIKELY( MC_(clo_mc_level) == 3 ))
       ocache_sarp_Clear_Origins ( a, len );
@@ -1986,7 +1986,7 @@ static void make_mem_defined_if_addressable ( Addr a, SizeT len )
 {
    SizeT i;
    UChar vabits2;
-   DEBUG("make_mem_defined_if_addressable(%p, %llu)\n", a, (ULong)len);
+   DEBUG("make_mem_defined_if_addressable(%p, %llu)\n", (void*)a, (ULong)len);
    for (i = 0; i < len; i++) {
       vabits2 = get_vabits2( a+i );
       if (LIKELY(VA_BITS2_NOACCESS != vabits2)) {
@@ -2003,7 +2003,7 @@ static void make_mem_defined_if_noaccess ( Addr a, SizeT len )
 {
    SizeT i;
    UChar vabits2;
-   DEBUG("make_mem_defined_if_noaccess(%p, %llu)\n", a, (ULong)len);
+   DEBUG("make_mem_defined_if_noaccess(%p, %llu)\n", (void*)a, (ULong)len);
    for (i = 0; i < len; i++) {
       vabits2 = get_vabits2( a+i );
       if (LIKELY(VA_BITS2_NOACCESS == vabits2)) {

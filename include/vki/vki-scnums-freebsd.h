@@ -639,6 +639,10 @@
 
 #define __NR_jail_attach_jd      597
 #define __NR_jail_remove_jd      598
+#define __NR_kexec_load          599
+#define __NR_pdrfork             600
+#define __NR_pdwait              601
+
 
 #define __NR_freebsd_fake_sigreturn 1000
 

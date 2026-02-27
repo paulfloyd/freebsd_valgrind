@@ -73,7 +73,7 @@ static void clear_facilities(unsigned long long *ret, unsigned num_dw)
    }
 }
 
-void stfle(unsigned long long *ret, unsigned num_dw)
+static void stfle(unsigned long long *ret, unsigned num_dw)
 {
    register unsigned long long r0 asm("0") = num_dw - 1;
    asm volatile(".insn s,0xb2b00000,%0\n" /* stfle */
@@ -220,10 +220,11 @@ static model_info *get_host(void)
    return model;
 }
 
+/* Extract bit x from facility list f */
+#define FAC_BIT(f, x) ((f)[x / 64] & (1ULL << (63 - ((x) & 63))))
 
-/* Convenience macro that maps the facility bit number as given in the
-   Principles of Ops "facility indications" section to a bit mask */
-#define FAC_BIT(x)   (1ULL << (63 - (x)))
+/* VX needs kernel support; thus check the appropriate HWCAP bit */
+#define HAVE_VX() (GET_HWCAP() & 0x800)
 
 static int go(char *feature, char *cpu)
 {
@@ -237,15 +238,18 @@ static int go(char *feature, char *cpu)
    clear_facilities(facilities, num_dw);
    stfle(facilities, num_dw);
 
-   if (strcmp(feature, "s390x-vx") == 0 ) {
-      /* VX needs kernel support; thus check the appropriate HWCAP bit. */
-      match = (GET_HWCAP() & 0x800) && (facilities[2] & FAC_BIT(1));
-   } else if (strcmp(feature, "s390x-msa5") == 0 ) {
-      match = facilities[0] & FAC_BIT(57); /* message security assist 5 facility */
-   } else if (strcmp(feature, "s390x-mi2") == 0 ) {
-      match = facilities[0] & FAC_BIT(58);
-   } else if (strcmp(feature, "s390x-vxe2") == 0 ) {
-      match = (GET_HWCAP() & 0x800) && (facilities[2] & FAC_BIT(20));
+   if (strcmp(feature, "s390x-vx") == 0) {
+      match = HAVE_VX() && FAC_BIT(facilities, 129);
+   } else if (strcmp(feature, "s390x-msa5") == 0) {
+      match = FAC_BIT(facilities, 57); /* message security assist 5 facility */
+   } else if (strcmp(feature, "s390x-mi2") == 0) {
+      match = FAC_BIT(facilities, 58);
+   } else if (strcmp(feature, "s390x-mi3") == 0) {
+      match = FAC_BIT(facilities, 61);
+   } else if (strcmp(feature, "s390x-vxe2") == 0) {
+      match = HAVE_VX() && FAC_BIT(facilities, 148);
+   } else if (strcmp(feature, "s390x-vxe3") == 0) {
+      match = HAVE_VX() && FAC_BIT(facilities, 198);
    } else {
       return 2;          // Unrecognised feature.
    }

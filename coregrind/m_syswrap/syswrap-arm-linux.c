@@ -285,7 +285,6 @@ PRE(sys_fstatat64)
    PRE_REG_READ3(long, "fstatat64",
                  int, dfd, char *, file_name, struct stat64 *, buf);
    ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "fstatat64", tid, status);
-      SET_STATUS_Failure( VKI_EBADF );
    PRE_MEM_RASCIIZ( "fstatat64(file_name)", ARG2 );
    PRE_MEM_WRITE( "fstatat64(buf)", ARG3, sizeof(struct vki_stat64) );
 }

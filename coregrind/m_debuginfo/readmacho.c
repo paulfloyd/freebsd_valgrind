@@ -1340,7 +1340,9 @@ Bool ML_(read_macho_debug_info)( struct _DebugInfo* di )
      VG_(strcat)(cmd, "\"");
      VG_(strcat)(cmd, di->fsm.filename);
      VG_(strcat)(cmd, "\"");
-     VG_(message)(Vg_DebugMsg, "run: %s\n", cmd);
+     if (VG_(clo_verbosity) > 0) {
+        VG_(message)(Vg_DebugMsg, "run: %s\n", cmd);
+     }
      r = VG_(system)( cmd );
      if (r)
         VG_(message)(Vg_DebugMsg, "run: %s FAILED\n", dsymutil);

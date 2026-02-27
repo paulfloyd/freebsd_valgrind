@@ -207,7 +207,7 @@ MANPAGES_XML_FILES = $(myxmldir)/manpages-index.xml \
 all-docs: FAQ.txt man-pages html-docs print-docs
 
 valid-manual: $(MANUAL_XML_FILES)
-	if type $(XMLLINT) 2>/dev/null; then \
+	if command -v $(XMLLINT) >/dev/null; then \
 	  if [ -f $(XML_CATALOG_FILES) ]; then \
 	    export XML_CATALOG_FILES=$(XML_CATALOG_FILES) && \
 	    $(XMLLINT) $(XMLLINT_FLAGS) $(myxmldir)/index.xml && \
@@ -216,7 +216,7 @@ valid-manual: $(MANUAL_XML_FILES)
 	fi
 
 valid-manpages: $(MANPAGES_XML_FILES)
-	if type $(XMLLINT) 2>/dev/null; then \
+	if command -v $(XMLLINT) >/dev/null; then \
 	  if [ -f $(XML_CATALOG_FILES) ]; then \
 	    export XML_CATALOG_FILES=$(XML_CATALOG_FILES) && \
 	    $(XMLLINT) $(XMLLINT_FLAGS) $(myxmldir)/manpages-index.xml && \

@@ -1,4 +1,4 @@
-prereq: which xmllint > /dev/null
+prereq: [ -x "$(command -v xmllint)" ]
 prog: simple_reachable
 args: | xmllint --noout -
 vgopts: --xml=yes --xml-fd=1

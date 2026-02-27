@@ -50,7 +50,7 @@ DECL_TEMPLATE(freebsd, sys_exit) // 1
 DECL_TEMPLATE(freebsd, sys_fork) // 2
 // generic read 3
 // generic write 4
-// generic open 5
+DECL_TEMPLATE(freebsd, sys_open) // 5
 // generic close 6
 // generic wait4 7
 // generic link 9
@@ -552,6 +552,9 @@ DECL_TEMPLATE(freebsd, sys_inotify_rm_watch) // 594
 
 DECL_TEMPLATE(freebsd, sys_jail_attach_jd) // 597
 DECL_TEMPLATE(freebsd, sys_jail_remove_jd) // 598
+DECL_TEMPLATE(freebsd, sys_kexec_load) // 599
+DECL_TEMPLATE(freebsd, sys_pdrfork) // 600
+DECL_TEMPLATE(freebsd, sys_pdwait) // 601
 
 DECL_TEMPLATE(freebsd, sys_fake_sigreturn)
 

@@ -1583,6 +1583,10 @@ const HChar* LibVEX_EmNote_string ( VexEmNote ew )
         return "Encountered an instruction that requires the"
                " message-security-assist extension 9.\n"
                "  That extension is not available on this host";
+     case EmFail_S390X_vxe3:
+        return "Encountered an instruction that requires the vector-enhancements\n"
+               " facility 3.\n"
+               "  That facility is not available on this host";
      default:
         vpanic("LibVEX_EmNote_string: unknown warning");
    }
@@ -1911,6 +1915,7 @@ static const HChar* show_hwcaps_s390x ( UInt hwcaps )
       { VEX_HWCAPS_S390X_VXD,   "vxd" },
       { VEX_HWCAPS_S390X_MSA8,  "msa8" },
       { VEX_HWCAPS_S390X_MSA9,  "msa9" },
+      { VEX_HWCAPS_S390X_VXE3,  "vxe3" },
    };
    /* Allocate a large enough buffer */
    static HChar buf[sizeof prefix + 

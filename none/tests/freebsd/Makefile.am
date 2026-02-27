@@ -36,6 +36,8 @@ EXTRA_DIST = \
 	ksh_test.ksh \
 	ksh_test.stdout.exp \
 	open_client.vgtest \
+	procfs-cmdline-exe.vgtest \
+	procfs-cmdline-exe.stderr.exp \
 	readlinkat.vgtest \
 	readlinkat2.vgtest \
 	sanity_level_thread.vgtest \
@@ -52,7 +54,7 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	auxv bug452274 bug498317 bug499212 fexecve hello_world open_client \
-	osrel proc_pid_file readlinkat readlinkat2 sanity_level_thread swapcontext \
+	osrel proc_pid_file procfs-cmdline-exe readlinkat readlinkat2 sanity_level_thread swapcontext \
 	umtx_shm_creat usrstack
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)

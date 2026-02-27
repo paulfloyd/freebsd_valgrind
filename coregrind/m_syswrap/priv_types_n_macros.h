@@ -414,6 +414,18 @@ static inline UWord getERR ( SyscallStatus* st ) {
    return sr_Err(st->sres);
 }
 
+/*
+ * On FreeBSD, syscalls can return an error code directly rather than
+ * setting the carry flag and returning the error code (with the
+ * syscall wrapper putting the error code into errno and returning -1).
+ *
+ * It is the carry flag that triggers using errno and returning -1.
+ * So we want a macro that sets the return value but does not set
+ * the error flag. Normally that's the job of SET_STATUS_Success.
+ * Since using a "Success" macro for a failure error code would
+ * be misleading this macro is used as an alias to make it more readable.
+ */
+#define SET_STATUS_FailureErrorCode SET_STATUS_Success
 
 /* Set the current result status/value in various ways. */
 #define SET_STATUS_Success(zzz)                      \

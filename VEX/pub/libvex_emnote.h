@@ -135,6 +135,10 @@ typedef
          on this host */
       EmFail_S390X_msa9,
 
+      /* insn needs vector-enhancements facility 3 which is not available on
+         this host */
+      EmFail_S390X_vxe3,
+
       EmNote_NUMBER
    }
    VexEmNote;

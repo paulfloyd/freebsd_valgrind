@@ -5489,6 +5489,35 @@ Syscall param fhreadlink(buf) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+569:     SYS_copy_file_range 6s 2m
+---------------------------------------------------------
+Syscall param copy_file_range("infd") contains uninitialised byte(s)
+   ...
+
+Syscall param copy_file_range("inoffp") contains uninitialised byte(s)
+   ...
+
+Syscall param copy_file_range("outfd") contains uninitialised byte(s)
+   ...
+
+Syscall param copy_file_range("outoffp") contains uninitialised byte(s)
+   ...
+
+Syscall param copy_file_range("len") contains uninitialised byte(s)
+   ...
+
+Syscall param copy_file_range("flags") contains uninitialised byte(s)
+   ...
+
+Syscall param copy_file_range(inoffp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param copy_file_range(outoffp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 570:      SYS___sysctlbyname (getoldlen) 3s 2m
 ---------------------------------------------------------
 Syscall param __sysctlbyname(name) contains uninitialised byte(s)
@@ -5869,6 +5898,25 @@ Syscall param setgroups(list) contains uninitialised byte(s)
    ...
 
 Syscall param setgroups(list) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
+599:          SYS_kexec_load 4s 1m
+---------------------------------------------------------
+Syscall param kexec_load(entry) contains uninitialised byte(s)
+   ...
+
+Syscall param kexec_load(count) contains uninitialised byte(s)
+   ...
+
+Syscall param kexec_load(segments) contains uninitialised byte(s)
+   ...
+
+Syscall param kexec_load(flag) contains uninitialised byte(s)
+   ...
+
+Syscall param kexec_load(segments) points to unaddressable byte(s)
    ...
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 

@@ -103,6 +103,7 @@
    mi1   --> miscellaneous-instruction-extensions facility 1
    mi2   --> miscellaneous-instruction-extensions facility 2
    mi3   --> miscellaneous-instruction-extensions facility 3
+   mi4   --> miscellaneous-instruction-extensions facility 4
    msa4  --> message-security-assist extension 4
    msa5  --> message-security-assist extension 5
    msa8  --> message-security-assist extension 8
@@ -115,7 +116,8 @@
    stfle --> STFLE facility
    vx    --> vector facility
    vxe   --> vector enhancements facility 1
-   vxe2  --> vector enhancements facility 2   implies vxe and vx
+   vxe2  --> vector enhancements facility 2
+   vxe3  --> vector enhancements facility 3
    vxd   --> vector packed decimal facility
 */
 
@@ -203,6 +205,9 @@ static const char *opcodes[] = {
 
    "ncrk    r1,r2,r3",          // mi3
    "ncgrk   r1,r2,r3",          // mi3
+
+   "bdepg   r1,r2,r3",          // mi4
+   "bextg   r1,r2,r3",          // mi4
 
    // balr   not implemented
    // bal    not implemented
@@ -411,6 +416,9 @@ static const char *opcodes[] = {
 
    "cpya   a1,a2",
 
+   "clzg   r1,r2",     // mi4
+   "ctzg   r1,r2",     // mi4
+
    "dr     r1:{0,2,4,6,8,10,12,14},r2",
    "d      r1:{0,2,4,6,8,10,12,14},d12(x2,b2)",
 
@@ -560,6 +568,12 @@ static const char *opcodes[] = {
 
    "lfhat  r1,d20(x2,b2)",      // lat
 
+   "lxab   r1,d20(x2,b2)",      // mi4
+   "lxah   r1,d20(x2,b2)",      // mi4
+   "lxaf   r1,d20(x2,b2)",      // mi4
+   "lxag   r1,d20(x2,b2)",      // mi4
+   "lxaq   r1,d20(x2,b2)",      // mi4
+
    "llgfr  r1,r2",
    "llgf   r1,d20(x2,b2)",
 
@@ -592,6 +606,12 @@ static const char *opcodes[] = {
    "llilf  r1,i2:u32",          // eimm
    "llilh  r1,i2:u16",
    "llill  r1,i2:u16",
+
+   "llxab   r1,d20(x2,b2)",     // mi4
+   "llxah   r1,d20(x2,b2)",     // mi4
+   "llxaf   r1,d20(x2,b2)",     // mi4
+   "llxag   r1,d20(x2,b2)",     // mi4
+   "llxaq   r1,d20(x2,b2)",     // mi4
 
    "llgtr  r1,r2",
    "llgt   r1,d20(x2,b2)",
@@ -1187,9 +1207,11 @@ static const char *opcodes[] = {
    // all opcodes require VX facility
 
    "vbperm  v1,v2,v3",                          // vxe
+   "vblend  v1,v2,v3,v4,m5:{0..4}",             // vxe3
    "vgef    v1,d12(v2,b2),m3:{0,1,2,3}",
    "vgeg    v1,d12(v2,b2),m3:{0,1}",
    "vgbm    v1,i2:u16",
+   "vgem    v1,v2,m3:{0..4}",                   // vxe3
    "vgm     v1,i2:u8,i3:u8,m4:{0..3}",
    "vl      v1,d12(x2,b2),m3",
    "vlr     v1,v2",
@@ -1245,10 +1267,10 @@ static const char *opcodes[] = {
    "vstrlr  v1,r3,d12(b2)",                      // vxd
    "vstrl   v1,d12(b2),i3:u8{0..15}",            // vxd
    "vstl    v1,r3,d12(b2)",
-   "vuph    v1,v2,m3:{0..2}",
-   "vuplh   v1,v2,m3:{0..2}",
-   "vupl    v1,v2,m3:{0..2}",
-   "vupll   v1,v2,m3:{0..2}",
+   "vuph    v1,v2,m3:{0..3}",
+   "vuplh   v1,v2,m3:{0..3}",
+   "vupl    v1,v2,m3:{0..3}",
+   "vupll   v1,v2,m3:{0..3}",
 
    // Chapter 22: Vector Integer Instructions
    "va      v1,v2,v3,m4:{0..4}",
@@ -1257,45 +1279,50 @@ static const char *opcodes[] = {
    "vaccc   v1,v2,v3,v4,m5:{4}",
    "vn      v1,v2,v3",
    "vnc     v1,v2,v3",
-   "vavg    v1,v2,v3,m4:{0..3}",
-   "vavgl   v1,v2,v3,m4:{0..3}",
+   "vavg    v1,v2,v3,m4:{0..4}",
+   "vavgl   v1,v2,v3,m4:{0..4}",
    "vcksm   v1,v2,v3",
-   "vec     v1,v2,m3:{0..3}",
-   "vecl    v1,v2,m3:{0..3}",
-   "vceq    v1,v2,v3,m4:{0..3},m5",
-   "vch     v1,v2,v3,m4:{0..3},m5",
-   "vchl    v1,v2,v3,m4:{0..3},m5",
-   "vclz    v1,v2,m3:{0..3}",
-   "vctz    v1,v2,m3:{0..3}",
+   "vec     v1,v2,m3:{0..4}",
+   "vecl    v1,v2,m3:{0..4}",
+   "vceq    v1,v2,v3,m4:{0..4},m5",
+   "vch     v1,v2,v3,m4:{0..4},m5",
+   "vchl    v1,v2,v3,m4:{0..4},m5",
+   "vclz    v1,v2,m3:{0..4}",
+   "vctz    v1,v2,m3:{0..4}",
+   "vd      v1,v2,v3,m4:{2,3,4},m5",             // vxe3
+   "vdl     v1,v2,v3,m4:{2,3,4},m5",             // vxe3
+   "veval   v1,v2,v3,v4,i5:u8",                  // vxe3
    "vx      v1,v2,v3",
    "vgfm    v1,v2,v3,m4:{0..3}",
    "vgfma   v1,v2,v3,v4,m5:{0..3}",
-   "vlc     v1,v2,m3:{0..3}",
-   "vlp     v1,v2,m3:{0..3}",
-   "vmx     v1,v2,v3,m4:{0..3}",
-   "vmxl    v1,v2,v3,m4:{0..3}",
-   "vmn     v1,v2,v3,m4:{0..3}",
-   "vmnl    v1,v2,v3,m4:{0..3}",
-   "vmal    v1,v2,v3,v4,m5:{0..2}",
-   "vmah    v1,v2,v3,v4,m5:{0..2}",
-   "vmalh   v1,v2,v3,v4,m5:{0..2}",
-   "vmae    v1,v2,v3,v4,m5:{0..2}",
-   "vmale   v1,v2,v3,v4,m5:{0..2}",
-   "vmao    v1,v2,v3,v4,m5:{0..2}",
-   "vmalo   v1,v2,v3,v4,m5:{0..2}",
-   "vmh     v1,v2,v3,m4:{0..2}",
-   "vmlh    v1,v2,v3,m4:{0..2}",
-   "vml     v1,v2,v3,m4:{0..2}",
-   "vme     v1,v2,v3,m4:{0..2}",
-   "vmle    v1,v2,v3,m4:{0..2}",
-   "vmo     v1,v2,v3,m4:{0..2}",
-   "vmlo    v1,v2,v3,m4:{0..2}",
+   "vlc     v1,v2,m3:{0..4}",
+   "vlp     v1,v2,m3:{0..4}",
+   "vmx     v1,v2,v3,m4:{0..4}",
+   "vmxl    v1,v2,v3,m4:{0..4}",
+   "vmn     v1,v2,v3,m4:{0..4}",
+   "vmnl    v1,v2,v3,m4:{0..4}",
+   "vmal    v1,v2,v3,v4,m5:{0..4}",
+   "vmah    v1,v2,v3,v4,m5:{0..4}",
+   "vmalh   v1,v2,v3,v4,m5:{0..4}",
+   "vmae    v1,v2,v3,v4,m5:{0..3}",
+   "vmale   v1,v2,v3,v4,m5:{0..3}",
+   "vmao    v1,v2,v3,v4,m5:{0..3}",
+   "vmalo   v1,v2,v3,v4,m5:{0..3}",
+   "vmh     v1,v2,v3,m4:{0..4}",
+   "vmlh    v1,v2,v3,m4:{0..4}",
+   "vml     v1,v2,v3,m4:{0..4}",
+   "vme     v1,v2,v3,m4:{0..3}",
+   "vmle    v1,v2,v3,m4:{0..3}",
+   "vmo     v1,v2,v3,m4:{0..3}",
+   "vmlo    v1,v2,v3,m4:{0..3}",
    "vmsl    v1,v2,v3,v4,m5:{3},m6",              // vxe
    "vnn     v1,v2,v3",                           // vxe
    "vno     v1,v2,v3",
    "vnx     v1,v2,v3",                           // vxe
    "vo      v1,v2,v3",
    "voc     v1,v2,v3",                           // vxe
+   "vr      v1,v2,v3,m4:{2,3,4},m5",             // vxe3
+   "vrl     v1,v2,v3,m4:{2,3,4},m5",             // vxe3
    "vpopct  v1,v2,m3:{0..3}",
    "verllv  v1,v2,v3,m4:{0..3}",
    "verll   v1,v3,d12(b2),m4:{0..3}",

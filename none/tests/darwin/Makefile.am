@@ -10,6 +10,9 @@ EXTRA_DIST = \
 	bug254164.vgtest \
 	bug390269.vgtest \
 	bug411369.vgtest \
+	procfs-cmdline-exe.stderr.exp-without-readlinkat \
+	procfs-cmdline-exe.stderr.exp-with-readlinkat \
+	procfs-cmdline-exe.vgtest \
 	rlimit.stderr.exp rlimit.vgtest
 
 check_PROGRAMS = \
@@ -19,6 +22,7 @@ check_PROGRAMS = \
 	bug254164 \
 	bug390269 \
 	bug411369 \
+	procfs-cmdline-exe \
 	rlimit
 
 

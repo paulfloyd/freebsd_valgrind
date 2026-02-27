@@ -120,14 +120,6 @@ void ML_(POST_unknown_ioctl)(ThreadId tid, UInt res, UWord request, UWord arg);
 extern
 void ML_(pre_argv_envp)(Addr a, ThreadId tid, const HChar *s1, const HChar *s2);
 
-extern Bool
-ML_(handle_auxv_open)(SyscallStatus *status, const HChar *filename,
-                      int flags);
-
-extern Bool
-ML_(handle_self_exe_open)(SyscallStatus *status, const HChar *filename,
-                          int flags);
-
 /* Helper function for generic mprotect and linux pkey_mprotect. */
 extern void handle_sys_mprotect (ThreadId tid, SyscallStatus *status,
                                  Addr *addr, SizeT *len, Int *prot);
