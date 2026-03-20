@@ -864,7 +864,7 @@ static SyscallTableEntry syscall_table[] = {
    GENX_(__NR_madvise,           sys_madvise),           // 205
    GENXY(__NR_mincore,           sys_mincore),           // 206
    LINX_(__NR_gettid,            sys_gettid),            // 207
-   LINX_(__NR_tkill,             sys_tkill),             // 208 */Linux
+   LINXY(__NR_tkill,             sys_tkill),             // 208 */Linux
    LINX_(__NR_setxattr,          sys_setxattr),          // 209
    LINX_(__NR_lsetxattr,         sys_lsetxattr),         // 210
    LINX_(__NR_fsetxattr,         sys_fsetxattr),         // 211
@@ -886,8 +886,8 @@ static SyscallTableEntry syscall_table[] = {
 // __NR_tuxcall                                               // 225
 
    LINXY(__NR_sendfile64,        sys_sendfile64),        // 226
-//.. 
-   LINX_(__NR_io_setup,          sys_io_setup),          // 227
+//..
+   LINXY(__NR_io_setup,          sys_io_setup),          // 227
    LINX_(__NR_io_destroy,        sys_io_destroy),        // 228
    LINXY(__NR_io_getevents,      sys_io_getevents),      // 229
    LINX_(__NR_io_submit,         sys_io_submit),         // 230
@@ -1013,7 +1013,7 @@ static SyscallTableEntry syscall_table[] = {
    LINXY(__NR_recvmmsg,          sys_recvmmsg),         // 343
    LINXY(__NR_accept4,           sys_accept4),          // 344
 
-   LINX_(__NR_clock_adjtime,     sys_clock_adjtime),    // 347
+   LINXY(__NR_clock_adjtime,     sys_clock_adjtime),    // 347
    LINX_(__NR_syncfs,            sys_syncfs),           // 348
    LINXY(__NR_sendmmsg,          sys_sendmmsg),         // 349
 
@@ -1034,7 +1034,7 @@ static SyscallTableEntry syscall_table[] = {
 
    GENX_(__NR_mlock2,            sys_mlock2),           // 378
    LINX_(__NR_copy_file_range,   sys_copy_file_range),  // 379
-   LINX_(__NR_preadv2,           sys_preadv2),          // 380
+   LINXY(__NR_preadv2,           sys_preadv2),          // 380
    LINX_(__NR_pwritev2,          sys_pwritev2),         // 381
 
    LINXY(__NR_statx,             sys_statx),            // 383

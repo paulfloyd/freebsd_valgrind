@@ -193,6 +193,10 @@
 #define __NR_task_for_pid                     VG_DARWIN_SYSCALL_CONSTRUCT_MACH(45)
 #define __NR_pid_for_task                     VG_DARWIN_SYSCALL_CONSTRUCT_MACH(46)
 
+#if DARWIN_VERS >= DARWIN_13_00
+#define __NR_mach_msg2_trap                   VG_DARWIN_SYSCALL_CONSTRUCT_MACH(47)
+#endif
+
 #if defined(VGA_x86)
 #define __NR_macx_swapon                      VG_DARWIN_SYSCALL_CONSTRUCT_MACH(48)
 #define __NR_macx_swapoff                     VG_DARWIN_SYSCALL_CONSTRUCT_MACH(49)
@@ -475,7 +479,7 @@
 #define __NR_kqueue_from_portset_np VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(214)
 #define __NR_kqueue_portset_np VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(215)
 #endif
-#define	__NR_mkcomplex      VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(216)
+#define	__NR_open_dprotected_np VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(216)
 #define	__NR_statv          VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(217)
 #define	__NR_lstatv         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(218)
 #define	__NR_fstatv         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(219)
@@ -887,6 +891,17 @@
 #if DARWIN_VERS >= DARWIN_12_00
 #define __NR_tracker_action         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(546)
 #define __NR_debug_syscall_reject   VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(547)
+#endif
+
+#if DARWIN_VERS >= DARWIN_13_00
+#define __NR_sys_debug_syscall_reject_config  VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(548)
+#define __NR_graftdmg                         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(549)
+#define __NR_map_with_linking_np              VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(550)
+#define __NR_freadlink                        VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(551)
+#define __NR_sys_record_system_event          VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(552)
+#define __NR_mkfifoat                         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(553)
+#define __NR_mknodat                          VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(554)
+#define __NR_ungraftdmg                       VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(555)
 #endif
 
 #define __NR_darwin_fake_sigreturn  VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(1000)

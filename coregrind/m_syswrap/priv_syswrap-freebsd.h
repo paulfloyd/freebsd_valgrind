@@ -84,7 +84,7 @@ DECL_TEMPLATE(freebsd, sys_fchflags) // 35
 DECL_TEMPLATE(freebsd, sys_freebsd10_pipe) // 42
 // generic getegid 43
 // generic profil redirect to ni_syscall 44
-// sys_ktrace refirect to ni_syscall 45
+// sys_ktrace redirect to ni_syscall 45
 // generic getgid 47
 DECL_TEMPLATE(freebsd, sys_getlogin) // 49
 DECL_TEMPLATE(freebsd, sys_setlogin) // 50
@@ -553,7 +553,7 @@ DECL_TEMPLATE(freebsd, sys_inotify_rm_watch) // 594
 DECL_TEMPLATE(freebsd, sys_jail_attach_jd) // 597
 DECL_TEMPLATE(freebsd, sys_jail_remove_jd) // 598
 DECL_TEMPLATE(freebsd, sys_kexec_load) // 599
-DECL_TEMPLATE(freebsd, sys_pdrfork) // 600
+// generic sys_pdrfork redirect to ni_syscall 600
 DECL_TEMPLATE(freebsd, sys_pdwait) // 601
 
 DECL_TEMPLATE(freebsd, sys_fake_sigreturn)

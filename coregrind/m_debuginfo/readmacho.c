@@ -434,7 +434,7 @@ void add_symbol( /*OUT*/XArray* /* DiSym */ syms,
                       di->text_avma+di->text_size - sym_addr;
   disym.isText     = inside_text;
   disym.isIFunc    = False;
-  disym.isGlobal   = inside_data || inside_d_data;
+  disym.isGlobal   = (nl->n_type & N_EXT) != 0;
   // Lots of user function names get prepended with an underscore.  Eg. the
   // function 'f' becomes the symbol '_f'.  And the "below main"
   // function is called "start".  So we skip the leading underscore, and

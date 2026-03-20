@@ -1003,7 +1003,7 @@ static SyscallTableEntry syscall_main_table[] = {
    LINXY (__NR_futex,                  sys_futex),                   // 238
    LINX_ (__NR_sched_setaffinity,      sys_sched_setaffinity),       // 239
    LINXY (__NR_sched_getaffinity,      sys_sched_getaffinity),       // 240
-   LINX_ (__NR_io_setup,               sys_io_setup),                // 241
+   LINXY (__NR_io_setup,               sys_io_setup),                // 241
    LINX_ (__NR_io_destroy,             sys_io_destroy),              // 242
    LINXY (__NR_io_getevents,           sys_io_getevents),            // 243
    LINX_ (__NR_io_submit,              sys_io_submit),               // 244
@@ -1125,7 +1125,7 @@ static SyscallTableEntry syscall_main_table[] = {
    //..
    LINXY(__NR_statx,                   sys_statx),                   // 366
    GENX_(__NR_rseq,                    sys_ni_syscall),              // 367
-   LINX_(__NR_io_pgetevents,           sys_io_pgetevents),           // 368
+   LINXY(__NR_io_pgetevents,           sys_io_pgetevents),           // 368
 
    LINX_(__NR_semget,                  sys_semget),                  // 393
    LINXY(__NR_semctl,                  sys_semctl),                  // 394

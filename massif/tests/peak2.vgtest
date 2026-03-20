@@ -10,5 +10,7 @@ vgopts: --ignore-fn=_objc_init --ignore-fn-"objc::DenseMap<char const*, objc::de
 stderr_filter: filter_verbose
 # Darwin ignore functions, for macOS 12
 vgopts: --ignore-fn=_xpc_alloc
+# Darwin ignore functions, for macOS 13
+vgopts: --ignore-fn=_xpc_strdup --ignore-fn=_vasprintf --ignore-fn="_fetchInitializingClassList(bool)" --ignore-fn="cache_t::allocateBuckets(unsigned int)"
 post: perl ../../massif/ms_print massif.out | ../../tests/filter_addresses | ./filter_ignore_fn
 cleanup: rm massif.out

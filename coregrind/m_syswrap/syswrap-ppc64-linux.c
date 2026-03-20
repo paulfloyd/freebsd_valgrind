@@ -871,7 +871,7 @@ static SyscallTableEntry syscall_table[] = {
 
 // _____(__NR_tuxcall,           sys_tuxcall),            // 225
 // /* #define __NR_sendfile64      226     32bit only */
-   LINX_(__NR_io_setup,          sys_io_setup),           // 227
+   LINXY(__NR_io_setup,          sys_io_setup),           // 227
    LINX_(__NR_io_destroy,        sys_io_destroy),         // 228
    LINXY(__NR_io_getevents,      sys_io_getevents),       // 229
    LINX_(__NR_io_submit,         sys_io_submit),          // 230
@@ -1025,13 +1025,13 @@ static SyscallTableEntry syscall_table[] = {
 
    GENX_(__NR_mlock2,            sys_mlock2),           // 378
    LINX_(__NR_copy_file_range,   sys_copy_file_range),  // 379
-   LINX_(__NR_preadv2,           sys_preadv2),          // 380
+   LINXY(__NR_preadv2,           sys_preadv2),          // 380
    LINX_(__NR_pwritev2,          sys_pwritev2),         // 381
 
    LINXY(__NR_statx,             sys_statx),            // 383
 
    GENX_(__NR_rseq,              sys_ni_syscall),       // 387
-   LINX_(__NR_io_pgetevents,     sys_io_pgetevents),    // 388
+   LINXY(__NR_io_pgetevents,     sys_io_pgetevents),    // 388
    LINX_(__NR_semtimedop,        sys_semtimedop),        // 392
    LINXY(__NR_semctl,            sys_semctl),            // 394
    LINXY(__NR_shmctl,            sys_shmctl),            // 396

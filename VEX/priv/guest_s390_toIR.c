@@ -17688,19 +17688,25 @@ s390_irgen_KMC(UChar r1, UChar r2)
 }
 
 static void
-s390_irgen_KIMD(UChar r1, UChar r2)
+s390_irgen_KIMD(UChar r1, UChar r2, UChar m3)
 {
    /* r1 is reserved */
    s390_insn_assert(r2 != 0 && r2 % 2 == 0);
-   extension(S390_EXT_KIMD, r1 | (r2 << 4));
+   if (!s390_host_has_msa12) {
+      m3 = 0;
+   }
+   extension(S390_EXT_KIMD, r1 | (r2 << 4) | (m3 << 8));
 }
 
 static void
-s390_irgen_KLMD(UChar r1, UChar r2)
+s390_irgen_KLMD(UChar r1, UChar r2, UChar m3)
 {
    /* r1 is only used by some functions */
    s390_insn_assert(r2 != 0 && r2 % 2 == 0);
-   extension(S390_EXT_KLMD, r1 | (r2 << 4));
+   if (!s390_host_has_msa12) {
+      m3 = 0;
+   }
+   extension(S390_EXT_KLMD, r1 | (r2 << 4) | (m3 << 8));
 }
 
 static void
@@ -19007,9 +19013,9 @@ s390_decode_4byte_and_irgen(const UChar *bytes)
                 goto ok;
    case 0xb93c: s390_irgen_PRNO(RRE_r1(ovl), RRE_r2(ovl));
                 goto ok;
-   case 0xb93e: s390_irgen_KIMD(RRE_r1(ovl), RRE_r2(ovl));
+   case 0xb93e: s390_irgen_KIMD(RRFc_r1(ovl), RRFc_r2(ovl), RRFc_m3(ovl));
                 goto ok;
-   case 0xb93f: s390_irgen_KLMD(RRE_r1(ovl), RRE_r2(ovl));
+   case 0xb93f: s390_irgen_KLMD(RRFc_r1(ovl), RRFc_r2(ovl), RRFc_m3(ovl));
                 goto ok;
    case 0xb941: s390_irgen_CFDTR(RRFe_m3(ovl), RRFe_m4(ovl), RRFe_r1(ovl),
                                  RRFe_r2(ovl));

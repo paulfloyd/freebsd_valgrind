@@ -4789,7 +4789,7 @@ static Bool handle_auxv_open(SyscallStatus *status, const HChar *filename,
 
    /* Opening /proc/<pid>/auxv or /proc/self/auxv? */
    VG_(sprintf)(name, "/proc/%d/auxv", VG_(getpid)());
-   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/auxv"))
+   if ((VG_(strcmp)(filename, name)!=0) && (VG_(strcmp)(filename, "/proc/self/auxv")!=0))
       return False;
 
    /* Allow to open the file only for reading. */
@@ -4819,7 +4819,7 @@ static Bool handle_self_exe_open(SyscallStatus *status, const HChar *filename,
 
    /* Opening /proc/<pid>/exe or /proc/self/exe? */
    VG_(sprintf)(name, "/proc/%d/exe", VG_(getpid)());
-   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/exe"))
+   if ((VG_(strcmp)(filename, name)!=0) && (VG_(strcmp)(filename, "/proc/self/exe")!=0))
       return False;
 
    /* Allow to open the file only for reading. */
@@ -4910,7 +4910,7 @@ PRE(sys_open)
 
       VG_(sprintf)(name, "/proc/%d/cmdline", VG_(getpid)());
       if (ML_(safe_to_deref)( arg1s, 1 )
-          && (VG_STREQ(arg1s, name) || VG_STREQ(arg1s, "/proc/self/cmdline"))) {
+          && (VG_(strcmp)(arg1s, name)==0 || VG_(strcmp)(arg1s, "/proc/self/cmdline")==0)) {
          sres = VG_(dup)( VG_(cl_cmdline_fd) );
          SET_STATUS_from_SysRes( sres );
          if (!sr_isError(sres)) {
@@ -5094,7 +5094,7 @@ PRE(sys_readlink)
       HChar* arg1s = (HChar*) (Addr)ARG1;
       VG_(sprintf)(name, PID_EXEPATH, VG_(getpid)());
       if (ML_(safe_to_deref)(arg1s, 1)
-          && (VG_STREQ(arg1s, name) || VG_STREQ(arg1s, SELF_EXEPATH))) {
+          && (VG_(strcmp)(arg1s, name)==0 || VG_(strcmp)(arg1s, SELF_EXEPATH)==0)) {
          HChar* out_name = (HChar*)ARG2;
          SizeT res = VG_(strlen)(VG_(resolved_exename));
          res = VG_MIN(res, ARG3);

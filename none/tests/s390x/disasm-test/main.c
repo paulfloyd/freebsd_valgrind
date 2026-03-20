@@ -199,7 +199,7 @@ main(int argc, char *argv[])
          rc += num_tests != num_spec_exc;
       }
       if (mode & GEN_NO_SPEC_EXC) {
-         unsigned num_tests = 0, num_spec_exc = 0;
+         unsigned num_spec_exc = 0;
          if (verbose)
             printf("Looking for unexpected specification exceptions\n");
 
@@ -209,7 +209,6 @@ main(int argc, char *argv[])
             opcode *opc = get_opcode_by_name(name);  // never NULL
 
             test_stats stats = run_opcode(opc, /* gen-spec-exc-tests */ 0);
-            num_tests    += stats.num_generated;
             num_spec_exc += stats.num_spec_exc;
          }
          rc += num_spec_exc != 0;

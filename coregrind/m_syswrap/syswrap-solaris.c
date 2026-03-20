@@ -1251,7 +1251,7 @@ PRE(sys_spawn)
                   VKI_POSIX_SPAWN_WAITPID_NP    | VKI_POSIX_SPAWN_NOEXECERR_NP);
                if (rem != 0) {
                   VG_(unimplemented)("Support for spawn() with attributes flag "
-                                     "%#x.", sap->sa_psflags);
+                                     "%#x.", (unsigned)sap->sa_psflags);
                }
             }
          }
@@ -1619,7 +1619,7 @@ PRE(sys_spawn)
    VG_(free)(argenv);
 
    if (SUCCESS) {
-      PRINT("   spawn: process %d spawned child %ld\n", VG_(getpid)(), RES);
+      PRINT("   spawn: process %d spawned child %lu\n", VG_(getpid)(), RES);
    }
 
 exit:
@@ -1645,7 +1645,7 @@ static Bool handle_auxv_open(SyscallStatus *status, const HChar *filename,
 
    /* Opening /proc/<pid>/auxv or /proc/self/auxv? */
    VG_(sprintf)(name, "/proc/%d/auxv", VG_(getpid)());
-   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/auxv"))
+   if ((VG_(strcmp)(filename, name)!=0) && (VG_(strcmp)(filename, "/proc/self/auxv")!=0))
       return False;
 
    /* Allow to open the file only for reading. */
@@ -1682,7 +1682,7 @@ static Bool handle_psinfo_open(SyscallStatus *status,
    HChar name[VKI_PATH_MAX];    // large enough
    VG_(sprintf)(name, "/proc/%d/psinfo", VG_(getpid)());
 
-   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/psinfo"))
+   if ((VG_(strcmp)(filename, name)!=0) && (VG_(strcmp)(filename, "/proc/self/psinfo")!=0))
       return False;
 
    /* Use original arguments to open() or openat(). */
@@ -1758,7 +1758,7 @@ static Bool handle_cmdline_open(SyscallStatus *status, const HChar *filename)
    HChar name[VKI_PATH_MAX];    // large enough
    VG_(sprintf)(name, "/proc/%d/cmdline", VG_(getpid)());
 
-   if (!VG_STREQ(filename, name) && !VG_STREQ(filename, "/proc/self/cmdline"))
+   if ((VG_(strcmp)(filename, name)!=0) && (VG_(strcmp)(filename, "/proc/self/cmdline")!=0))
       return False;
 
    SysRes sres = VG_(dup)(VG_(cl_cmdline_fd));
@@ -3305,6 +3305,7 @@ PRE(sys_ioctl)
       PRE_MEM_WRITE("ioctl(FIOGETOWN)", ARG3, sizeof(vki_pid_t));
       break;
 
+#if defined(HAVE_SYS_CRYPTO_IOCTL_H)
    /* CRYPTO */
    case VKI_CRYPTO_GET_PROVIDER_LIST:
       {
@@ -3322,7 +3323,8 @@ PRE(sys_ioctl)
             when we know pre-handler succeeded.
           */
       }
-      break; 
+      break;
+#endif
 
    /* dtrace */
    case VKI_DTRACEHIOC_REMOVE:
@@ -3354,9 +3356,13 @@ PRE(sys_ioctl)
    /* Be strict. */
    if (!ML_(fd_allowed)(ARG1, "ioctl", tid, False)) {
       SET_STATUS_Failure(VKI_EBADF);
-   } else if (ARG2 == VKI_CRYPTO_GET_PROVIDER_LIST) {
-      /* Save the requested count to unused ARG4 now. */
-      ARG4 = ARG3;
+   } else {
+#if defined(HAVE_SYS_CRYPTO_IOCTL_H)
+       if (ARG2 == VKI_CRYPTO_GET_PROVIDER_LIST) {
+         /* Save the requested count to unused ARG4 now. */
+         ARG4 = ARG3;
+       }
+#endif
    }
 }
 
@@ -3554,6 +3560,7 @@ POST(sys_ioctl)
       POST_MEM_WRITE(ARG3, sizeof(vki_pid_t));
       break;
 
+#if defined(HAVE_SYS_CRYPTO_IOCTL_H)
    /* CRYPTO */
    case VKI_CRYPTO_GET_PROVIDER_LIST:
       {
@@ -3568,6 +3575,7 @@ POST(sys_ioctl)
                            sizeof(vki_crypto_provider_entry_t));
       }
       break;
+#endif
 
    /* dtrace */
    case VKI_DTRACEHIOC_REMOVE:
@@ -5010,7 +5018,7 @@ PRE(sys_getsetcontext)
 
          /* The thread is setting the ustack pointer.  It is a good time to get
             information about its stack. */
-         if (tst->os_state.ustack->ss_flags == 0) {
+         if (tst->os_state.ustack->ss_flags == 0 && tid != 1) {
             /* If the sanity check of ss_flags passed set the stack. */
             set_stack(tid, tst->os_state.ustack);
 
@@ -5023,6 +5031,18 @@ PRE(sys_getsetcontext)
          SET_STATUS_Success(0);
       }
       break;
+#ifdef VKI_CLRSSONSTACK
+   case VKI_CLRSSONSTACK:
+      /* Libc: int clrssonstack(void); */
+      SET_STATUS_Success(0);
+      break;
+#endif
+#ifdef VKI_SETUJMPBUF
+   case VKI_SETUJMPBUF:
+      /* Libc: int setujmpbuf(void *buf, void *func); */
+      SET_STATUS_Success(0);
+      break;
+#endif
    default:
       VG_(unimplemented)("Syswrap of the context call with flag %ld.", SARG1);
       /*NOTREACHED*/
@@ -10992,7 +11012,7 @@ static SyscallTableEntry syscall_table[] = {
    SOLXY(__NR_lwp_mutex_wakeup,     sys_lwp_mutex_wakeup),      /* 168 */
    SOLXY(__NR_lwp_cond_wait,        sys_lwp_cond_wait),         /* 170 */
    SOLXY(__NR_lwp_cond_signal,      sys_lwp_cond_signal),       /* 171 */
-   SOLX_(__NR_lwp_cond_broadcast,   sys_lwp_cond_broadcast),    /* 172 */
+   SOLXY(__NR_lwp_cond_broadcast,   sys_lwp_cond_broadcast),    /* 172 */
    SOLXY(__NR_pread,                sys_pread),                 /* 173 */
    SOLX_(__NR_pwrite,               sys_pwrite),                /* 174 */
 #if defined(VGP_x86_solaris)

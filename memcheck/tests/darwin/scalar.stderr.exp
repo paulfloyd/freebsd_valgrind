@@ -545,6 +545,43 @@ Syscall param exchangedata(path2) points to unaddressable byte(s)
 (228-229):       unused
 -----------------------------------------------------
 -----------------------------------------------------
+x20000f4(244):    __NR_posix_spawn 6s 4m
+-----------------------------------------------------
+Syscall param posix_spawn(pid) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_spawn(path) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_spawn(file_actions) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_spawn(attrp) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_spawn(argv) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_spawn(envp) contains uninitialised byte(s)
+   ...
+
+Syscall param posix_spawn(pid) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param posix_spawn(path) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param posix_spawn(argv) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param posix_spawn(envp) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+-----------------------------------------------------
 (245-246):       unused
 -----------------------------------------------------
 -----------------------------------------------------
@@ -584,6 +621,7 @@ Syscall param shmctl(IPC_STAT, buf) points to unaddressable byte(s)
 -----------------------------------------------------
 x2000108(264):          __NR_shmdt 1s 0m
 -----------------------------------------------------
+
 Syscall param shmdt(shmaddr) contains uninitialised byte(s)
    ...
 
@@ -630,7 +668,6 @@ Syscall param sem_close(sem) contains uninitialised byte(s)
 -----------------------------------------------------
 x200010e(270):     __NR_sem_unlink 1s 1m
 -----------------------------------------------------
-
 Syscall param sem_unlink(name) contains uninitialised byte(s)
    ...
 

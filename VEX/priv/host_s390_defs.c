@@ -41,6 +41,9 @@
 #include "s390_disasm.h"
 #include "guest_s390_defs.h"    /* S390X_GUEST_OFFSET */
 
+/* Whether or not names of guest registers should be written symbolically. */
+#define SYMBOLIC_REGNAMES 1
+
 /*------------------------------------------------------------*/
 /*--- Forward declarations                                 ---*/
 /*------------------------------------------------------------*/
@@ -48,6 +51,7 @@
 static void s390_insn_map_regs(HRegRemap *, s390_insn *);
 static void s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *);
 static UInt s390_tchain_load64_len(void);
+static const HChar *s390_guest_regname(UInt);
 
 
 /*------------------------------------------------------------*/
@@ -293,15 +297,26 @@ s390_amode_as_string(const s390_amode *am)
    switch (am->tag) {
    case S390_AMODE_B12:
    case S390_AMODE_B20:
-      vex_sprintf(p, "%d(%s)", am->d, s390_hreg_as_string(am->b));
+      if (SYMBOLIC_REGNAMES &&
+          hregNumber(am->b) == S390_REGNO_GUEST_STATE_POINTER) {
+         vex_sprintf(p, "%s", s390_guest_regname(am->d));
+      } else {
+         vex_sprintf(p, "%d(%s)", am->d, s390_hreg_as_string(am->b));
+      }
       break;
 
    case S390_AMODE_BX12:
    case S390_AMODE_BX20:
-      /* s390_hreg_as_string returns pointer to local buffer. Need to
-         split this into two printfs */
-      p += vex_sprintf(p, "%d(%s,", am->d, s390_hreg_as_string(am->x));
-      vex_sprintf(p, "%s)", s390_hreg_as_string(am->b));
+      if (SYMBOLIC_REGNAMES &&
+          hregNumber(am->b) == S390_REGNO_GUEST_STATE_POINTER &&
+          hregNumber(am->x) == 0) {
+         vex_sprintf(p, "%s", s390_guest_regname(am->d));
+      } else {
+         /* s390_hreg_as_string returns a pointer to a static buffer.
+            Need to split this into two printfs */
+         p += vex_sprintf(p, "%d(%s,", am->d, s390_hreg_as_string(am->x));
+         vex_sprintf(p, "%s)", s390_hreg_as_string(am->b));
+      }
       break;
 
    default:
@@ -806,11 +821,6 @@ s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *insn)
       s390_opnd_RMI_get_reg_usage(u, insn->variant.clz.src);
       break;
 
-   case S390_INSN_POPCNT:
-      addHRegUse(u, HRmWrite, insn->variant.popcnt.dst);
-      s390_opnd_RMI_get_reg_usage(u, insn->variant.popcnt.src);
-      break;
-
    case S390_INSN_UNOP:
       addHRegUse(u, HRmWrite, insn->variant.unop.dst);
       s390_opnd_RMI_get_reg_usage(u, insn->variant.unop.src);
@@ -1165,11 +1175,6 @@ s390_insn_map_regs(HRegRemap *m, s390_insn *insn)
       insn->variant.clz.num_bits = lookupHRegRemap(m, insn->variant.clz.num_bits);
       insn->variant.clz.clobber  = lookupHRegRemap(m, insn->variant.clz.clobber);
       s390_opnd_RMI_map_regs(m, &insn->variant.clz.src);
-      break;
-
-   case S390_INSN_POPCNT:
-      insn->variant.popcnt.dst = lookupHRegRemap(m, insn->variant.popcnt.dst);
-      s390_opnd_RMI_map_regs(m, &insn->variant.popcnt.src);
       break;
 
    case S390_INSN_UNOP:
@@ -4171,21 +4176,21 @@ s390_emit_RISBG(UChar *p, UChar r1, UChar r2, UChar i3, Char i4, UChar i5)
 static __inline__ Bool
 uint_fits_signed_16bit(UInt val)
 {
-   return val <= 0x7FFFu;
+   return val + 0x8000 <= 0xFFFF;
 }
 
 
 static __inline__ Bool
 ulong_fits_signed_16bit(ULong val)
 {
-   return val <= 0x7FFFu;
+   return val + 0x8000 <= 0xFFFF;
 }
 
 
 static __inline__ Bool
 ulong_fits_signed_32bit(ULong val)
 {
-   return val <= 0x7FFFFFFFu;
+   return val + 0x80000000 <= 0xFFFFFFFF;
 }
 
 
@@ -4888,22 +4893,6 @@ s390_insn_clz(UChar size, HReg num_bits, HReg clobber, s390_opnd_RMI src)
    insn->variant.clz.num_bits = num_bits;
    insn->variant.clz.clobber  = clobber;
    insn->variant.clz.src = src;
-
-   return insn;
-}
-
-
-s390_insn *
-s390_insn_popcnt(UChar size, HReg dst, s390_opnd_RMI src)
-{
-   s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
-
-   vassert(size == 8);
-
-   insn->tag  = S390_INSN_POPCNT;
-   insn->size = size;
-   insn->variant.popcnt.dst = dst;
-   insn->variant.popcnt.src = src;
 
    return insn;
 }
@@ -5888,6 +5877,111 @@ s390_insn_vec_replicate(UChar size, HReg dst, HReg op1, UChar idx)
 /*--- Debug print                                             ---*/
 /*---------------------------------------------------------------*/
 
+/* Convenience macro to test whether OFFSET lies within the interval
+   [FROM, TO] */
+#define in_range(offset, from, to) \
+   ((offset) >= S390X_GUEST_OFFSET(from) && \
+    (offset) <= S390X_GUEST_OFFSET(to))
+
+static const HChar *
+s390_guest_regname_WRK(UInt offset, const HChar *prefix)
+{
+   static HChar buf[30];  /* large enough */
+   UInt regno;
+
+   vassert(vex_strlen(prefix) < 10); /* precaution against buffer overflow */
+
+   if (vex_streq(prefix, "spill")) {
+      vex_sprintf(buf, "%s_%u", prefix, offset);
+   } else if (in_range(offset, guest_a0, guest_a15)) {
+      regno = (offset - S390X_GUEST_OFFSET(guest_a0)) / 4;
+      vex_sprintf(buf, "%s_a%u",  prefix, regno);
+   } else if (in_range(offset, guest_r0, guest_r15)) {
+      regno = (offset - S390X_GUEST_OFFSET(guest_r0)) / 8;
+      vex_sprintf(buf, "%s_r%u",  prefix, regno);
+   } else if (in_range(offset, guest_v0, guest_v31)) {
+      regno = (offset - S390X_GUEST_OFFSET(guest_v0)) / 16;
+      vex_sprintf(buf, "%s_v%u",  prefix, regno);
+   } else if (vex_streq(prefix, "spill")) {
+      vex_sprintf(buf, "%s_%u", prefix, offset);
+   } else {
+
+#define NUM_SPECIAL_REGS (sizeof special_regs / sizeof special_regs[0])
+#define SPECIAL_REG_NAME(prefix,name) #name
+#define SPECIAL_REG_OFFSET(prefix,name) S390X_GUEST_OFFSET(prefix##_##name)
+#define SPECIAL_REG_NBYTES(prefix,name) (sizeof((VexGuestS390XState *)0)->prefix##_##name)
+
+#define SPECIAL_REG(prefix,name)              \
+            SPECIAL_REG_NAME(prefix, name),   \
+            SPECIAL_REG_OFFSET(prefix, name), \
+            SPECIAL_REG_NBYTES(prefix, name)
+      static const struct {
+         const HChar *name;
+         const UInt  offset;
+         const UInt  nbytes;
+      } special_regs[] = {
+         { SPECIAL_REG(guest, counter) },
+         { SPECIAL_REG(guest, fpc)     },
+         { SPECIAL_REG(guest, IA)      },
+         { SPECIAL_REG(guest, SYSNO)   },
+         { SPECIAL_REG(guest, CC_OP)   },
+         { SPECIAL_REG(guest, CC_DEP1) },
+         { SPECIAL_REG(guest, CC_DEP2) },
+         { SPECIAL_REG(guest, CC_NDEP) },
+         { SPECIAL_REG(guest, NRADDR)  },
+         { SPECIAL_REG(guest, CMSTART) },
+         { SPECIAL_REG(guest, CMLEN)   },
+         { SPECIAL_REG(guest, IP_AT_SYSCALL) },
+         { SPECIAL_REG(guest, EMNOTE) },
+         { SPECIAL_REG(host, EvC_COUNTER)  },
+         { SPECIAL_REG(host, EvC_FAILADDR) },
+      };
+
+      Int found = 0;
+      for (UInt i = 0; i < NUM_SPECIAL_REGS; ++i) {
+         if (offset >= special_regs[i].offset &&
+            offset < special_regs[i].offset + special_regs[i].nbytes ) {
+            vex_sprintf(buf, "%s_%s", prefix, special_regs[i].name);
+            found = 1;
+            break;
+         }
+      }
+      if (! found)
+         vex_sprintf(buf, "%s_%u ???", prefix, offset);
+   }
+
+   return buf;
+}
+
+
+/* Construct a symbolic name for a guest register. The name is constructed
+   in a static array which will be overwritten on every invocation. You
+   have been warned. */
+static const HChar *
+s390_guest_regname(UInt offset)
+{
+   if (offset < sizeof(VexGuestS390XState))
+      return s390_guest_regname_WRK(offset, "guest");
+
+   if (offset >= sizeof(VexGuestS390XState) &&
+       offset < 2*sizeof(VexGuestS390XState)) {
+      offset -= sizeof(VexGuestS390XState);
+      return s390_guest_regname_WRK(offset, "shadow1");
+   }
+   if (offset >= 2*sizeof(VexGuestS390XState) &&
+       offset < 3*sizeof(VexGuestS390XState)) {
+      offset -= 2*sizeof(VexGuestS390XState);
+      return s390_guest_regname_WRK(offset, "shadow2");
+   }
+   if (offset >= 3*sizeof(VexGuestS390XState) &&
+       offset < 3*sizeof(VexGuestS390XState) + LibVEX_N_SPILL_BYTES) {
+      offset -= 3*sizeof(VexGuestS390XState);
+      return s390_guest_regname_WRK(offset, "spill");
+   }
+   vpanic("s390_guest_regname");
+}
+
+
 static const HChar *
 s390_cc_as_string(s390_cc_t cc)
 {
@@ -6141,10 +6235,6 @@ s390_insn_as_string(const s390_insn *insn)
       s390_sprintf(buf, "%M %R,%O", "v-clz", insn->variant.clz.num_bits,
                    &insn->variant.clz.src);
       break;
-
-   case S390_INSN_POPCNT:
-      s390_sprintf(buf, "%M %R,%O", "v-popcnt", insn->variant.popcnt.dst,
-                   &insn->variant.popcnt.src);
       break;
 
    case S390_INSN_UNOP:
@@ -6163,6 +6253,10 @@ s390_insn_as_string(const s390_insn *insn)
 
       case S390_NEGATE:
          op = "v-neg";
+         break;
+
+      case S390_POPCNT:
+         op = "v-popcnt";
          break;
 
       case S390_VEC_FILL:
@@ -7423,17 +7517,35 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
             return s390_emit_MSGR(buf, dst, R0);
 
             /* Do it in two steps: upper half [0:31] and lower half [32:63] */
-         case S390_ALU_AND:
-            buf  = s390_emit_NIHF(buf, dst, value >> 32);
-            return s390_emit_NILF(buf, dst, value & 0xFFFFFFFF);
+         case S390_ALU_AND: {
+            UInt high = value >> 32;
+            UInt low  = value & 0xffffffff;
+            if (high != 0xffffffff)
+               buf = s390_emit_NIHF(buf, dst, high);
+            if (low != 0xffffffff)
+               buf = s390_emit_NILF(buf, dst, low);
+            return buf;
+         }
 
-         case S390_ALU_OR:
-            buf  = s390_emit_OIHF(buf, dst, value >> 32);
-            return s390_emit_OILF(buf, dst, value & 0xFFFFFFFF);
+         case S390_ALU_OR: {
+            UInt high = value >> 32;
+            UInt low  = value & 0xffffffff;
+            if (high != 0)
+               buf = s390_emit_OIHF(buf, dst, high);
+            if (low != 0)
+               buf = s390_emit_OILF(buf, dst, low);
+            return buf;
+         }
 
-         case S390_ALU_XOR:
-            buf  = s390_emit_XIHF(buf, dst, value >> 32);
-            return s390_emit_XILF(buf, dst, value & 0xFFFFFFFF);
+         case S390_ALU_XOR: {
+            UInt high = value >> 32;
+            UInt low  = value & 0xffffffff;
+            if (high != 0)
+               buf = s390_emit_XIHF(buf, dst, high);
+            if (low != 0)
+               buf = s390_emit_XILF(buf, dst, low);
+            return buf;
+         }
 
             /* No special considerations for long displacement here. Only the six
                least significant bits of VALUE will be taken; all other bits are
@@ -7708,6 +7820,43 @@ s390_negate_emit(UChar *buf, const s390_insn *insn)
 
 
 static UChar *
+s390_popcnt_emit(UChar *buf, const s390_insn *insn)
+{
+   s390_opnd_RMI src;
+   UChar r1, r2, *p;
+
+   vassert(insn->size == 8);
+   p = buf;
+   r1  = hregNumber(insn->variant.unop.dst);
+   src = insn->variant.unop.src;
+
+   /* Get operand and move it to r2 */
+   switch (src.tag) {
+   case S390_OPND_REG:
+      r2 = hregNumber(src.variant.reg);
+      break;
+
+   case S390_OPND_AMODE: {
+      p  = s390_emit_load_mem(p, 8, R0, src.variant.am);
+      r2 = R0;
+      break;
+   }
+
+   case S390_OPND_IMMEDIATE: {
+      p  = s390_emit_load_64imm(p, R0, src.variant.imm);
+      r2 = R0;
+      break;
+   }
+
+   default:
+      vpanic("s390_popcnt_emit");
+   }
+
+   return s390_emit_POPCNT(p, r1, r2);
+}
+
+
+static UChar *
 s390_vec_duplicate_emit(UChar *buf, const s390_insn *insn)
 {
    UChar v1 = hregNumber(insn->variant.unop.dst);
@@ -7770,6 +7919,7 @@ s390_insn_unop_emit(UChar *buf, const s390_insn *insn)
    case S390_SIGN_EXTEND_32: return s390_widen_emit(buf, insn, 4, 1);
 
    case S390_NEGATE:         return s390_negate_emit(buf, insn);
+   case S390_POPCNT:         return s390_popcnt_emit(buf, insn);
    case S390_VEC_FILL: {
       vassert(insn->variant.unop.src.tag == S390_OPND_IMMEDIATE);
       UChar v1 = hregNumber(insn->variant.unop.dst);
@@ -8491,49 +8641,6 @@ s390_insn_clz_emit(UChar *buf, const s390_insn *insn)
    }
 
    return s390_emit_FLOGR(p, r1, r2);
-}
-
-
-static UChar *
-s390_insn_popcnt_emit(UChar *buf, const s390_insn *insn)
-{
-   s390_opnd_RMI src;
-   UChar r1, r2, *p;
-
-   p = buf;
-   r1  = hregNumber(insn->variant.popcnt.dst);
-   src = insn->variant.clz.src;
-
-   /* Get operand and move it to r2 */
-   switch (src.tag) {
-   case S390_OPND_REG:
-      r2 = hregNumber(src.variant.reg);
-      break;
-
-   case S390_OPND_AMODE: {
-      const s390_amode *am = src.variant.am;
-      UChar b = hregNumber(am->b);
-      UChar x = hregNumber(am->x);
-      Int   d = am->d;
-
-      p  = s390_emit_LG(p, R0, x, b, DISP20(d));
-      r2 = R0;
-      break;
-   }
-
-   case S390_OPND_IMMEDIATE: {
-      ULong value = src.variant.imm;
-
-      p  = s390_emit_load_64imm(p, R0, value);
-      r2 = R0;
-      break;
-   }
-
-   default:
-      vpanic("s390_insn_popcnt_emit");
-   }
-
-   return s390_emit_POPCNT(p, r1, r2);
 }
 
 
@@ -9987,10 +10094,6 @@ emit_S390Instr(Bool *is_profinc, UChar *buf, Int nbuf, const s390_insn *insn,
 
    case S390_INSN_CLZ:
       end = s390_insn_clz_emit(buf, insn);
-      break;
-
-   case S390_INSN_POPCNT:
-      end = s390_insn_popcnt_emit(buf, insn);
       break;
 
    case S390_INSN_UNOP:

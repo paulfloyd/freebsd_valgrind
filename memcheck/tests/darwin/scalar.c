@@ -421,7 +421,11 @@ int main(void)
    // __NR_flistxattr 241
    // __NR_fsctl 242
    // __NR_initgroups 243
-   // __NR_posix_spawn 244
+
+   // two of the pointers, file_actions and attr, are opaque void* pointers
+   // currently we do not check what they point to, so "4m" for the moment
+   GO(__NR_posix_spawn, 244, "6s 4m");
+   SY(__NR_posix_spawn, x0+1, x0+1, x0+1, x0+1, x0+1, x0+1);
 
    GO_UNIMP(245-246, "unused");
 

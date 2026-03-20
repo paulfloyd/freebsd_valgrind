@@ -1693,7 +1693,7 @@ const HChar *VG_(signame)(Int sigNo)
 /* Hit ourselves with a signal using the default handler */
 void VG_(kill_self)(Int sigNo)
 {
-   Int r;
+   Int r __attribute__((unused));
    vki_sigset_t	         mask, origmask;
    vki_sigaction_toK_t   sa, origsa2;
    vki_sigaction_fromK_t origsa;   

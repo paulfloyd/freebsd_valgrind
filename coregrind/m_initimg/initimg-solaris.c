@@ -499,11 +499,6 @@ static Addr setup_client_stack(Addr init_sp,
    /* Calculate the max stack size. */
    clstack_max_size = VG_PGROUNDUP(clstack_max_size);
 
-   /* Record stack extent -- needed for stack-change code. */
-   VG_(clstk_start_base) = clstack_start;
-   VG_(clstk_end) = clstack_end;
-   VG_(clstk_max_size) = clstack_max_size;
-
    if (0)
       VG_(printf)("stringsize=%lu, auxsize=%lu, stacksize=%lu, maxsize=%#lx\n"
                   "clstack_start %#lx\n"
@@ -576,6 +571,14 @@ static Addr setup_client_stack(Addr init_sp,
          VG_(exit)(1);
          /*NOTREACHED*/
       }
+
+      /* Record stack extent -- needed for stack-change code. */
+      VG_(clstk_start_base) = anon_start -inner_HACK;
+      VG_(clstk_end)  = VG_(clstk_start_base) + anon_size +inner_HACK -1;
+      // Only Solaris sets this despite a comment in syswrap-generic.c
+      // that all platforms should set it.
+      VG_(clstk_max_size) = clstack_max_size;
+
    }
 
    /* ==================== create client stack ==================== */

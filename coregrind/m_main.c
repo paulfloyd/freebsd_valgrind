@@ -458,9 +458,9 @@ static void process_option (Clo_Mode mode,
    // in case someone has combined a prefix with a core-specific option,
    // eg.  "--memcheck:verbose".
    if (*colon == ':') {
-      if (VG_STREQN(2,            arg,                "--") &&
-          VG_STREQN(toolname_len, arg+2,              VG_(clo_toolname)) &&
-          VG_STREQN(1,            arg+2+toolname_len, ":")) {
+      if (VG_STREQN(2, arg, "--") &&
+          VG_(strncmp)(arg+2, VG_(clo_toolname), toolname_len)==0 &&
+          VG_(strncmp)(arg+2+toolname_len, ":", 1)==0) {
          // Prefix matches, convert "--toolname:foo" to "--foo".
          // Two things to note:
          // - We cannot modify the option in-place.  If we did, and then

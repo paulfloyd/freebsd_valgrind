@@ -1525,8 +1525,6 @@ Bool VG_(machine_get_hwcaps)( void )
 
 #elif defined(VGA_s390x)
 
-#  include "libvex_s390x_common.h"
-
    {
      Int i, model;
 
@@ -1535,6 +1533,8 @@ Bool VG_(machine_get_hwcaps)( void )
         identification yet. Keeping fingers crossed. */
      model = VG_(get_machine_model)();
 
+     /* When upgrading the minimum machine model do not forget to adjust
+        VEX_HWCAPS_S390X_MMM below and in main_main.c */
      if (model < VEX_S390X_MODEL_Z196) {
         VG_(message)(Vg_FailMsg, "Your machine is too old. "
                      "You need at least a z196 to run valgrind.\n");
@@ -1572,8 +1572,9 @@ Bool VG_(machine_get_hwcaps)( void )
         UInt installed;
         const UInt facility_bit;
         const UInt hwcaps_bit;
-        const HChar name[5];   // may need adjustment for new facility names
+        const HChar name[6];   // may need adjustment for new facility names
      } fac_hwcaps[] = {
+        { True,    0,  VEX_HWCAPS_S390X_MRMM,  "Z196"  }, /* always first */
         { False, 129,  VEX_HWCAPS_S390X_VX,    "VX"    },
         { False,  57,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
         { False,  58,  VEX_HWCAPS_S390X_MI2,   "MI2"   },
@@ -1587,6 +1588,7 @@ Bool VG_(machine_get_hwcaps)( void )
         { False, 155,  VEX_HWCAPS_S390X_MSA9,  "MSA9"  },
         { False,  61,  VEX_HWCAPS_S390X_MI3,   "MI3"   },
         { False, 198,  VEX_HWCAPS_S390X_VXE3,  "VXE3"  },
+        { False,  86,  VEX_HWCAPS_S390X_MSA12, "MSA12" },
      };
 
      /* Set hwcaps according to the detected facilities */

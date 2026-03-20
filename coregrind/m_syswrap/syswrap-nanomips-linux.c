@@ -657,7 +657,7 @@ static SyscallTableEntry syscall_main_table[] = {
    LINX_ (__NR_sched_yield,            sys_sched_yield),
    LINX_ (__NR_sched_get_priority_max, sys_sched_get_priority_max),
    LINX_ (__NR_sched_get_priority_min, sys_sched_get_priority_min),
-   LINX_ (__NR_sched_rr_get_interval,  sys_sched_rr_get_interval),
+   LINXY (__NR_sched_rr_get_interval,  sys_sched_rr_get_interval),
    GENX_ (__NR_kill,                   sys_kill),
    LINXY (__NR_tkill,                  sys_tkill),
    LINXY (__NR_tgkill,                 sys_tgkill),

@@ -214,6 +214,7 @@ EXTRA_DIST = \
 	descr_belowsp.vgtest descr_belowsp.stderr.exp \
 	doublefree.stderr.exp doublefree.vgtest \
 	dw4.vgtest dw4.stderr.exp dw4.stderr.exp-solaris \
+		dw4.stderr.exp-darwin \
 	err_disable1.vgtest err_disable1.stderr.exp \
 	err_disable2.vgtest err_disable2.stderr.exp \
 	err_disable3.vgtest err_disable3.stderr.exp \
@@ -235,7 +236,7 @@ EXTRA_DIST = \
 		fprw.stderr.exp-freebsd-x86 \
 	fwrite.stderr.exp fwrite.vgtest fwrite.stderr.exp-kfail \
 	gone_abrt_xml.vgtest gone_abrt_xml.stderr.exp gone_abrt_xml.stderr.exp-solaris \
-		gone_abrt_xml.stderr.exp-freebsd \
+		gone_abrt_xml.stderr.exp-freebsd gone_abrt_xml.stderr.exp-darwin \
 	holey_buffer_too_small.vgtest holey_buffer_too_small.stderr.exp \
 	inits.stderr.exp inits.vgtest \
 	inline.stderr.exp inline.stdout.exp inline.vgtest \
@@ -629,8 +630,10 @@ check_PROGRAMS += cxx17_aligned_new sized_aligned_new_delete_args \
 	new_aligned_delete_default \
 	sized_aligned_new_delete_misaligned1 \
 	sized_aligned_new_delete_misaligned2 \
-	sized_aligned_new_delete_misaligned3 \
-	xmas_tree
+	sized_aligned_new_delete_misaligned3
+if HAVE_FSIZED_DEALLOCATION
+check_PROGRAMS += xmas_tree
+endif
 endif
 
 if HAVE_CLOSE_RANGE
@@ -981,4 +984,4 @@ writev1_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_STRINGOP_OVERFLOW@ @FLAG_W_NO_STRINGOP
 xml1_CFLAGS             = $(AM_CFLAGS) -D_GNU_SOURCE @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
 
 xmas_tree_SOURCES	= xmas_tree.cpp
-xmas_tree_CXXFLAGS	= ${AM_CXXFLAGS} -std=c++17 @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_MISMATCHED_NEW_DELETE@ @FLAG_W_ALLOC_SIZE_LARGER_THAN@
+xmas_tree_CXXFLAGS	= ${AM_CXXFLAGS} -std=c++17 @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_MISMATCHED_NEW_DELETE@ @FLAG_W_ALLOC_SIZE_LARGER_THAN@ @FLAG_FSIZED_DEALLOCATION@

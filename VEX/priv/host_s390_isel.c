@@ -1985,7 +1985,7 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
       }
 
       case Iop_PopCount64: {
-         addInstr(env, s390_insn_popcnt(8, dst, opnd));
+         addInstr(env, s390_insn_unop(8, S390_POPCNT, dst, opnd));
          return dst;
       }
 

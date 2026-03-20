@@ -2647,9 +2647,7 @@ void VG_(post_syscall) (ThreadId tid)
    */
    ent = get_syscall_entry(canonical_sysno);
    if (ent->after
-       && ((!sr_isError(sci->status.sres))
-           || (sr_isError(sci->status.sres)
-               && (sci->flags & SfPostOnFail) ))) {
+       && (!sr_isError(sci->status.sres) || (sci->flags & SfPostOnFail))) {
 
       (ent->after)( tid, &sci->args, &sci->status );
    }
@@ -3407,40 +3405,24 @@ VG_(fixup_guest_state_after_syscall_interrupted)( ThreadId tid,
          we expect our caller (the signal handler) will have fixed
          this up. */
 /* XXX: needed? */
-#if defined(VGP_x86_freebsd)
-      /* On FreeBSD, the success/fail status is returned to the caller
-        and still has to be fixed up here. */
+#if defined(VGP_x86_freebsd) || defined(VGP_x86_solaris) || defined(VGP_x86_darwin)
+      /* The %eax and %edx values are committed but the carry flag is still
+         uncommitted.  Save it now. */
       if (!(sci->flags & SfNoWriteResult)) {
-        if (sr_isError(sres))
-           LibVEX_GuestX86_put_eflag_c(1, &th_regs->vex);
-        else
-           LibVEX_GuestX86_put_eflag_c(0, &th_regs->vex);
+         LibVEX_GuestX86_put_eflag_c(sr_isError(sres), &th_regs->vex);
       }
-#elif defined(VGP_amd64_freebsd)
+#elif defined(VGP_amd64_freebsd) || defined(VGP_amd64_solaris) || defined(VGP_amd64_darwin)
       if (!(sci->flags & SfNoWriteResult)) {
-        if (sr_isError(sres))
-           LibVEX_GuestAMD64_put_rflag_c(1, &th_regs->vex);
-        else
-           LibVEX_GuestAMD64_put_rflag_c(0, &th_regs->vex);
+         LibVEX_GuestAMD64_put_rflag_c(sr_isError(sres), &th_regs->vex);
       }
 #elif defined(VGP_arm64_freebsd)
       if (!(sci->flags & SfNoWriteResult)) {
-         if (sr_isError(sres))
-            LibVEX_GuestARM64_put_nzcv_c(1, &th_regs->vex);
-         else
-            LibVEX_GuestARM64_put_nzcv_c(0, &th_regs->vex);
+         LibVEX_GuestARM64_put_nzcv_c(sr_isError(sres), &th_regs->vex);
       }
 #endif
       if (VG_(clo_trace_signals))
          VG_(message)( Vg_DebugMsg,
                        "  completed and committed: nothing to do\n");
-#     if defined(VGP_x86_solaris)
-      /* The %eax and %edx values are committed but the carry flag is still
-         uncommitted.  Save it now. */
-      LibVEX_GuestX86_put_eflag_c(sr_isError(sres), &th_regs->vex);
-#     elif defined(VGP_amd64_solaris)
-      LibVEX_GuestAMD64_put_rflag_c(sr_isError(sres), &th_regs->vex);
-#     endif
       getSyscallStatusFromGuestState( &sci->status, &th_regs->vex );
       vg_assert(sci->status.what == SsComplete);
       VG_(post_syscall)(tid);

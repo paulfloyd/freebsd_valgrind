@@ -9,5 +9,7 @@ vgopts: --ignore-fn="_NXMapRehash(_NXMapTable*)" --ignore-fn=arc4_init --ignore-
 vgopts: --ignore-fn=_objc_init --ignore-fn-"objc::DenseMap<char const*, objc::detail::DenseSetEmpty, objc::DenseMapValueInfo<objc::detail::DenseSetEmpty>, objc::DenseMapInfo<char const*>, objc::detail::DenseSetPair<char const*> >::grow(unsigned int)" --ignore-fn="objc::DenseMap<char const*, objc::detail::DenseSetEmpty, objc::DenseMapValueInfo<objc::detail::DenseSetEmpty>, objc::DenseMapInfo<char const*>, objc::detail::DenseSetPair<char const*> >::grow(unsigned int)" --ignore-fn="realizeClassWithoutSwift(objc_class*, objc_class*)" --ignore-fn="schedule_class_load(objc_class*)" --ignore-fn="objc::SafeRanges::add(unsigned long, unsigned long)"
 # Darwin ignore functions, for macOS 12
 vgopts: --ignore-fn=_xpc_alloc
+# Darwin ignore functions, for macOS 13
+vgopts: --ignore-fn=_xpc_strdup --ignore-fn=_vasprintf --ignore-fn="_fetchInitializingClassList(bool)" --ignore-fn="cache_t::allocateBuckets(unsigned int)"
 stderr_filter: filter_verbose
 cleanup: rm massif.out

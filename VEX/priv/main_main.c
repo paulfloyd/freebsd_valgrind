@@ -1899,11 +1899,11 @@ static const HChar* show_hwcaps_arm64 ( UInt hwcaps )
 
 static const HChar* show_hwcaps_s390x ( UInt hwcaps )
 {
-   static const HChar prefix[] = "s390x";
    static const struct {
       UInt  hwcaps_bit;
       HChar name[6];
    } hwcaps_list[] = {
+      { VEX_HWCAPS_S390X_MRMM,  "z196" },   /* always first */
       { VEX_HWCAPS_S390X_VX,    "vx" },
       { VEX_HWCAPS_S390X_MSA5,  "msa5" },
       { VEX_HWCAPS_S390X_MI2,   "mi2" },
@@ -1915,11 +1915,12 @@ static const HChar* show_hwcaps_s390x ( UInt hwcaps )
       { VEX_HWCAPS_S390X_VXD,   "vxd" },
       { VEX_HWCAPS_S390X_MSA8,  "msa8" },
       { VEX_HWCAPS_S390X_MSA9,  "msa9" },
+      { VEX_HWCAPS_S390X_MI3,   "mi3" },
       { VEX_HWCAPS_S390X_VXE3,  "vxe3" },
+      { VEX_HWCAPS_S390X_MSA12, "msa12" },
    };
    /* Allocate a large enough buffer */
-   static HChar buf[sizeof prefix + 
-                    NUM_HWCAPS * (sizeof hwcaps_list[0].name + 1) + 1]; // '\0'
+   static HChar buf[NUM_HWCAPS * (sizeof hwcaps_list[0].name + 1) + 1]; // '\0'
 
    if (buf[0] != '\0') return buf;  /* already constructed */
 
@@ -1928,8 +1929,8 @@ static const HChar* show_hwcaps_s390x ( UInt hwcaps )
 
    hwcaps = VEX_HWCAPS_S390X(hwcaps);
 
-   p = buf + vex_sprintf(buf, "%s", prefix);
-   for (i = 0 ; i < NUM_HWCAPS; ++i) {
+   p = buf + vex_sprintf(buf, "%s", hwcaps_list[0].name);
+   for (i = 1 ; i < NUM_HWCAPS; ++i) {
       if (hwcaps & hwcaps_list[i].hwcaps_bit)
          p = p + vex_sprintf(p, "-%s", hwcaps_list[i].name);
    }

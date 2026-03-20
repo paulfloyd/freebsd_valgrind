@@ -32,6 +32,7 @@ EXTRA_DIST = \
 	pkcs11.stderr.exp-illumos pkcs11.stderr.exp-solaris pkcs11.vgtest \
 	scalar.stderr.exp scalar.vgtest \
 	scalar_auditon_stat.stderr.exp scalar_auditon_stat.vgtest \
+	scalar_crypto.stderr.exp scalar_crypto.vgtest \
 	scalar_frealpathat.stderr.exp scalar_frealpathat.vgtest \
 	scalar_getrandom.stderr.exp scalar_getrandom.vgtest \
 	scalar_getrandom.stderr.exp-illumos \
@@ -105,6 +106,10 @@ endif
 
 if SOLARIS_AUDITON_STAT
 check_PROGRAMS += scalar_auditon_stat
+endif
+
+if SOLARIS_HAVE_SYS_CRYPTO_IOCTL_H
+check_PROGRAMS += scalar_crypto
 endif
 
 if SOLARIS_FREALPATHAT_SYSCALL

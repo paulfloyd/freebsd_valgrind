@@ -1014,6 +1014,15 @@ void MC_(record_realloc_size_zero) ( ThreadId tid, Addr a )
 {
    MC_Error extra;
    tl_assert(VG_INVALID_THREADID != tid);
+   /*
+    * We can't fill the Block as in freemismatch above.
+    * That's because if realloc size zero frees we literally do that
+    * and transform the call into a free before bothering to get the
+    * old MC_Chunk.
+    *
+    * See VG_(maybe_record_error) for a description of how this gets
+    * filled on demand.
+    */
    extra.Err.ReallocSizeZero.ai.tag = Addr_Undescribed;
    VG_(maybe_record_error)( tid, Err_ReallocSizeZero, a, /*s*/NULL, &extra );
 }

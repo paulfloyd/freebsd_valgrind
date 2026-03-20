@@ -42,6 +42,7 @@
 #include "pub_core_mallocfree.h"    // VG_(malloc), VG_(free)
 #include "pub_core_syscall.h"       // VG_(strerror)
 #include "pub_core_clientstate.h"
+#include "pub_core_options.h"
 #include "pub_core_ume.h"           // self
 
 #include "priv_ume.h"
@@ -349,10 +350,22 @@ load_genericthread(struct thread_command *threadcmd, int type,
    GrP fixme 64-bit? */
 static vki_size_t default_stack_size(void)
 {
-   struct vki_rlimit lim;
-   int err = VG_(getrlimit)(VKI_RLIMIT_STACK, &lim);
-   if (err) return 8*1024*1024; // 8 MB
-   else return lim.rlim_cur;
+   SizeT m1  = 1024 * 1024;
+   SizeT m16 = 16 * m1;
+   SizeT szB = (SizeT)VG_(client_rlimit_stack).rlim_cur;
+   if (szB < m1) {
+      szB = m1;
+   }
+   if (szB > m16) {
+      szB = m16;
+   }
+   if (VG_(clo_main_stacksize) > 0) {
+      szB = VG_(clo_main_stacksize);
+   }
+   if (szB < m1) {
+      szB = m1;
+   }
+   return szB;
 }
 
 

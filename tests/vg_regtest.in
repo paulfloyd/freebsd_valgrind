@@ -47,6 +47,7 @@
 #   --loop-till-fail: loops on the test(s) till one fail, then exit
 #              This is useful to obtain detailed trace or --keep-unfiltered
 #              output of a non deterministic test failure
+#   --no-bunsen: do not generate files for bunsen post-processing
 #
 # The easiest way is to run all tests in valgrind/ with (assuming you installed
 # in $PREFIX):
@@ -140,7 +141,7 @@ my $usage="\n"
      . "Usage:\n"
      . "   vg_regtest [--all, --valgrind, --valgrind-lib, --keep-unfiltered\n"
      . "                 --outer-valgrind, --outer-tool, --outer-args\n"
-     . "                 --loop-till-fail]\n"
+     . "                 --loop-till-fail --no-bunsen]\n"
      . "   Use EXTRA_REGTEST_OPTS to supply extra args for all tests\n"
      . "\n";
 
@@ -174,6 +175,7 @@ my %num_failures        = (stderr => 0, stdout => 0,
                            stderrB => 0, stdoutB => 0,
                            post => 0);
 my %num_results         = ();
+my $no_bunsen           = 0;
 
 # Default valgrind to use is this build tree's (uninstalled) one
 my $valgrind = "./coregrind/valgrind";
@@ -252,6 +254,8 @@ sub process_command_line()
                 $keepunfiltered = 1;
             } elsif ($arg =~ /^--loop-till-fail$/) {
                 $looptillfail = 1;
+            } elsif ($arg =~ /^--no-bunsen$/) {
+                $no_bunsen = 1;
             } else {
                 die $usage;
             }
@@ -511,6 +515,7 @@ sub do_one_test($$)
             printf("%-16s (skipping, prereq failed: $prereq)\n", "$name:");
             print VGTESTLOG scalar localtime, " skipping, prereq failed\n";
             close(VGTESTLOG);
+            unlink("$vgtest.log") if ($no_bunsen);
             return "SKIP";
         } else {
             # Bad prereq; abort.
@@ -692,6 +697,7 @@ sub do_one_test($$)
 
     close(VGTESTLOG);
     $num_tests_done++;
+    unlink("$vgtest.log") if ($no_bunsen);
     return $rc;
 }
 
@@ -745,10 +751,11 @@ sub test_one_dir($$)
             print TSDIRLOG "See $tests_dir/test-suite-overall.log\n";
             print TSDIRLOG "    for overall results, including all non-PASS .log contents.\n";
             close(TSDIRLOG);
+            unlink("test-suite.log") if ($no_bunsen);
             my $result = do_one_test($full_dir, $f);
             print TSLOG scalar localtime, " result: $result $full_dir/$f.log\n";
             $num_results{$result} ++;
-            if ($result ne "PASS") {
+            if ($result ne "PASS" && $no_bunsen == 0) {
                # transcribe .log file into the overall log.
                open(LOGFILE, "< $f.log") || die "Cannot open $f.log";
                while (<LOGFILE>) { print TSLOG "|\t$_"; }
@@ -760,6 +767,7 @@ sub test_one_dir($$)
             print VGTESTTRS ":recheck: no\n"; # ?
             print VGTESTTRS ":copy-in-global-log: no\n"; # ?
             close(VGTESTTRS);
+            unlink ("$f.trs") if ($no_bunsen);
         }
     }
     if ($found_tests) {
@@ -863,6 +871,7 @@ while (1) { # we will exit after one loop, unless looptillfail
             print VGTESTTRS ":recheck: no\n"; # ?
             print VGTESTTRS ":copy-in-global-log: no\n"; # ?
             close(VGTESTTRS);
+            unlink ("$f.trs") if ($no_bunsen);
         }
         chdir($tests_dir);
     }
@@ -875,6 +884,8 @@ summarise_results();
 if ($ENV{"EXTRA_REGTEST_OPTS"}) {
     warn_about_EXTRA_REGTEST_OPTS();
 }
+
+unlink("test-suite-overall.log") if ($no_bunsen);
 
 if (0 == $num_failures{"stdout"} &&
     0 == $num_failures{"stderr"} &&

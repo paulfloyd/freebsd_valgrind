@@ -782,10 +782,12 @@
 
 # I suppose that this is deliberate
 # and that Apple know what they are doing?
+# On macOS 12 at least this seems to have changed name to ___chkstk_darwin
+# this matches both
 {
    macOS1015:__chkstk_darwin_probe
    Memcheck:Addr8
-   fun:__chkstk_darwin_probe
+   fun:__*chkstk_darwin*
 }
 
 {
@@ -815,7 +817,7 @@
 {
    macOS1100:__chkstk_darwin_probe
    Memcheck:Addr1
-   fun:__chkstk_darwin_probe
+   fun:__*chkstk_darwin*
 }
 
 {
@@ -846,3 +848,90 @@
    fun:_ZN5dyld413ProcessConfigC2EPKNS_10KernelArgsERNS_15SyscallDelegateE
 }
 
+{
+   macOS1300:xpc_copy_entitlements_for_self
+   Memcheck:Cond
+   ...
+   fun:xpc_copy_entitlements_for_self
+}
+
+{
+   macOS1300:libSystem_initializer
+   Memcheck:Cond
+   ...
+   fun:libSystem_initializer
+}
+
+{
+   macOS13:DyldSharedCache::*
+   Memcheck:Addr4
+   fun:_ZNK15DyldSharedCache*
+}
+
+{
+   macOS1300:dyld* Value8
+   Memcheck:Value8
+   fun:_ZN*5dyld*
+}
+
+{
+   macOS1300:dyld*
+   Memcheck:Cond
+   fun:_ZN*5dyld*
+}
+
+{
+   macOS1300:dyld*
+   Memcheck:Addr1
+   ...
+   fun:_ZN5dyld*
+}
+
+{
+   macOS1300:dyld*
+   Memcheck:Addr4
+   ...
+   fun:_ZN5dyld*
+}
+
+{
+   macOS1300:dyld*
+   Memcheck:Addr8
+   ...
+   fun:_ZN5dyld*
+}
+
+{
+   macOS1300:dyld3::*
+   Memcheck:Addr16
+   ...
+   fun:_ZN5dyld3*
+}
+
+{
+   macOS1300:DyldSharedCache::*
+   Memcheck:Addr8
+   ...
+   fun:_ZNK15DyldSharedCache*
+}
+
+{
+   macOS1300:DyldSharedCache::*
+   Memcheck:Addr16
+   ...
+   fun:_ZNK15DyldSharedCache*
+}
+
+{
+   macOS1300:libSystem_atfork_child
+   Memcheck:Cond
+   ...
+   fun:libSystem_atfork_child
+}
+
+{
+   macOS1300:libSystem_atfork_child
+   Memcheck:Value8
+   ...
+   fun:libSystem_atfork_child
+}

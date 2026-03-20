@@ -558,6 +558,10 @@ case "${host_os}" in
 		  AC_MSG_RESULT([Darwin 21.x (${kernel}) / macOS 12 Monterey])
 		  DARWIN_VERS=$DARWIN_12_00
 		  ;;
+	     22.*)
+		  AC_MSG_RESULT([Darwin 22.x (${kernel}) / macOS 13 Ventura])
+		  DARWIN_VERS=$DARWIN_13_00
+		  ;;
 	     *)
 		  AC_MSG_RESULT([unsupported (${darwin_platform} ${kernel})])
 		  AC_MSG_ERROR([Valgrind works on Darwin 12.x-19.x (Mac OS X 10.8-10.11, macOS 10.12-10.15)])
@@ -691,17 +695,19 @@ esac
 
 case "$ARCH_MAX-$VGCONF_OS" in
      amd64-linux|ppc64be-linux|arm64-linux|amd64-solaris|amd64-darwin|amd64-freebsd)
-        AC_MSG_CHECKING([for 32 bit build support])
+        AC_MSG_CHECKING([for 32 bit build and execution support])
         safe_CFLAGS=$CFLAGS
         CFLAGS="-m32"
-        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
+        AC_RUN_IFELSE([AC_LANG_PROGRAM([[]], [[
           return 0;
         ]])], [
         AC_MSG_RESULT([yes])
         ], [
         vg_cv_only64bit="yes"
         AC_MSG_RESULT([no])
-        ])
+        ] , [
+        AC_MSG_RESULT([cross compiling, assuming no])
+        vg_cv_only64bit="yes"])
         CFLAGS=$safe_CFLAGS;;
     mips64-linux)
         AC_MSG_CHECKING([for 32 bit build support])
@@ -2639,13 +2645,14 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
 ]])], [
 ac_compiler_supports_mlong_double_128=yes
 AC_MSG_RESULT([yes])
+FLAG_MLONG_DOUBLE_128="-mlong-double-128"
 ], [
 ac_compiler_supports_mlong_double_128=no
 AC_MSG_RESULT([no])
+FLAG_MLONG_DOUBLE_128=""
 ])
 CFLAGS=$safe_CFLAGS
 AM_CONDITIONAL(HAS_MLONG_DOUBLE_128, test x$ac_compiler_supports_mlong_double_128 = xyes)
-FLAG_MLONG_DOUBLE_128="-mlong-double-128"
 AC_SUBST(FLAG_MLONG_DOUBLE_128)
 
 # does this toolchain support lto ?
@@ -2956,6 +2963,48 @@ CFLAGS=$safe_CFLAGS
 
 AC_SUBST(FLAG_FINLINE_FUNCTIONS)
 
+# does this compiler support -fno-diagnostics-show-caret ?
+AC_MSG_CHECKING([if gcc accepts -fno-diagnostics-show-caret])
+
+safe_CFLAGS=$CFLAGS
+CFLAGS="-fno-diagnostics-show-caret -Werror"
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+  return 0;
+]])], [
+no_diagnostics_show_caret=yes
+FLAG_FNO_DIAGNOSTICS_SHOW_CARET="-fno-diagnostics-show-caret"
+AC_MSG_RESULT([yes])
+], [
+no_diagnostics_show_caret=no
+FLAG_FNO_DIAGNOSTICS_SHOW_CARET=""
+AC_MSG_RESULT([no])
+])
+CFLAGS=$safe_CFLAGS
+
+AC_SUBST(FLAG_FNO_DIAGNOSTICS_SHOW_CARET)
+
+# does this compiler support -ftrack-macro-expansion=0 ?
+AC_MSG_CHECKING([if gcc accepts -ftrack-macro-expansion=0])
+
+safe_CFLAGS=$CFLAGS
+CFLAGS="-ftrack-macro-expansion=0 -Werror"
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+  return 0;
+]])], [
+track_macro_expansion=yes
+FLAG_FTRACK_MACRO_EXPANSION="-ftrack-macro-expansion=0"
+AC_MSG_RESULT([yes])
+], [
+track_macro_expansion=no
+FLAG_FTRACK_MACRO_EXPANSION=""
+AC_MSG_RESULT([no])
+])
+CFLAGS=$safe_CFLAGS
+
+AC_SUBST(FLAG_FTRACK_MACRO_EXPANSION)
+
 # Does GCC support disabling Identical Code Folding?
 # We want to disabled Identical Code Folding for the
 # tools preload shared objects to get better backraces.
@@ -3194,26 +3243,25 @@ AM_CONDITIONAL([HAVE_ANSI], [test x$ac_have_ansi = xyes])
 CFLAGS=$safe_CFLAGS
 
 
-# Does this compiler support -no-pie?
+# Does this linker support -no-pie?
 # On Ubuntu 16.10+, gcc produces position independent executables (PIE) by
 # default. However this gets in the way with some tests, we use -no-pie
 # for these.
-
 AC_MSG_CHECKING([if gcc accepts -no-pie])
 
-safe_CFLAGS=$CFLAGS
-CFLAGS="-no-pie -Werror"
+safe_LDFLAGS=$LDFLAGS
+LDFLAGS="-Wl,-no-pie"
 
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]], [[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[ ]], [[
   return 0;
 ]])], [
-AC_SUBST([FLAG_NO_PIE], ["-no-pie"])
+AC_SUBST([LDFLAG_NO_PIE], ["-Wl,-no-pie"])
 AC_MSG_RESULT([yes])
 ], [
-AC_SUBST([FLAG_NO_PIE], [""])
+AC_SUBST([LDFLAG_NO_PIE], [""])
 AC_MSG_RESULT([no])
 ])
-CFLAGS=$safe_CFLAGS
+LDFLAGS=$safe_LDFLAGS
 
 
 # We want to use use the -Ttext-segment option to the linker.
@@ -4004,6 +4052,14 @@ fi
 
 if test "$VGCONF_OS" = "solaris" ; then
 AC_CHECK_HEADERS([sys/lgrp_user_impl.h])
+
+AC_CHECK_HEADER([sys/crypto/ioctl.h], [
+    AC_DEFINE([HAVE_SYS_CRYPTO_IOCTL_H], [1], [Define to 1 if sys/crypto/ioctl.h is available.])
+    ac_have_sys_crypto_ioctl_h=yes
+], [
+    ac_have_sys_crypto_ioctl_h=no
+])
+AM_CONDITIONAL(SOLARIS_HAVE_SYS_CRYPTO_IOCTL_H, test x$ac_have_sys_crypto_ioctl_h = xyes )
 
 # Solaris-specific check determining if the Sun Studio Assembler is used to
 # build Valgrind.  The test checks if the x86/amd64 assembler understands the
@@ -4971,6 +5027,7 @@ AC_MSG_RESULT([no])
 ])
 
 else
+AM_CONDITIONAL(SOLARIS_HAVE_SYS_CRYPTO_IOCTL_H, false)
 AM_CONDITIONAL(SOLARIS_SUN_STUDIO_AS, false)
 AM_CONDITIONAL(SOLARIS_XPG_SYMBOLS_PRESENT, false)
 AM_CONDITIONAL(SOLARIS_PROC_CMDLINE, false)

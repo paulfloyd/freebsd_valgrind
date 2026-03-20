@@ -5993,6 +5993,36 @@ Syscall param kexec_load(segments) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+601:              SYS_pdwait 5s 3m
+---------------------------------------------------------
+Syscall param pdwait(fd) contains uninitialised byte(s)
+   ...
+
+Syscall param pdwait(status) contains uninitialised byte(s)
+   ...
+
+Syscall param pdwait(options) contains uninitialised byte(s)
+   ...
+
+Syscall param pdwait(wrusage) contains uninitialised byte(s)
+   ...
+
+Syscall param pdwait(infop) contains uninitialised byte(s)
+   ...
+
+Syscall param pdwait(status) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param pdwait(wrusage) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param pdwait(infop) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 9999:                    9999 1e
 ---------------------------------------------------------
 WARNING: unhandled x86-freebsd syscall: 9999

@@ -35,8 +35,9 @@ EXTRA_DIST = \
 		chflags.stderr.exp-x86 \
 	chmod_chown.vgtest \
 	chmod_chown.stderr.exp \
-	clock_nanosleep_interrupt.vgtest \
-	clock_nanosleep_interrupt.stderr.exp \
+	clock_nanosleep1.vgtest \
+	clock_nanosleep1.stderr.exp \
+	clock_nanosleep2.vgtest \
 	delete_sized_mismatch.vgtest \
 	delete_sized_mismatch.stderr.exp \
 	delete_sized_mismatch_xml.vgtest \
@@ -79,6 +80,8 @@ EXTRA_DIST = \
 	leak-autofreepool-7.stderr.exp \
 	linkat.vgtest \
 	linkat.stderr.exp \
+	lsframe1.vgtest lsframe1.stderr.exp \
+	lsframe2.vgtest lsframe2.stderr.exp \
         memalign.vgtest memalign.stderr.exp \
 	memalign_supp.vgtest memalign_supp.stderr.exp \
 	memalign_supp.supp \
@@ -148,14 +151,14 @@ check_PROGRAMS = \
 	access aio aio_read aligned_alloc bug464476 bug470713 \
 	bug483786 \
 	capsicum chflags \
-	chmod_chown clock_nanosleep_interrupt \
+	chmod_chown clock_nanosleep1 clock_nanosleep2 \
 	delete_sized_mismatch errno_aligned_allocs \
 	extattr fbsd278566 \
 	fexecve \
 	file_locking_wait6 \
 	get_set_context get_set_login getfh \
 	kenv \
-	kqueue linkat memalign misc \
+	kqueue linkat lsframe1 lsframe2 memalign misc \
 	openpty \
 	pdfork_pdkill getfsstat inlinfo inlinfo_nested.so \
 	revoke scalar \
@@ -231,7 +234,7 @@ endif
 access_CFLAGS 			= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
 aligned_alloc_CFLAGS 		= ${AM_CFLAGS} @FLAG_W_NO_NON_POWER_OF_TWO_ALIGNMENT@
 capsicum_CFLAGS 		= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
-clock_nanosleep_interrupt_CFLAGS = ${AM_CFLAGS} @FLAG_W_NO_ALLOC_SIZE@
+clock_nanosleep1_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_ALLOC_SIZE@
 chflags_CFLAGS 			= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
 chmod_chown_CFLAGS 		= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
 delete_sized_mismatch_CXXFLAGS	= ${AM_CXXFLAGS} --std=c++14
@@ -260,7 +263,7 @@ scalar_pdfork_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@
 scalar_thr_exit_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@
 scalar_vfork_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_UNUSED_VARIABLE@
 sctp2_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@
-sigwait_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@
+sigwait_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@ @FLAG_W_NO_NONNULL@
 stat_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_MAYBE_UNINITIALIZED@ @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@
 statfs_CFLAGS			= ${AM_CFLAGS} @FLAG_W_NO_UNINITIALIZED@ @FLAG_W_NO_USE_AFTER_FREE@ @FLAG_W_NO_ALLOC_SIZE@
 timing_safe_CFLAGS		= ${AM_CFLAGS} @FLAG_W_NO_USE_AFTER_FREE@

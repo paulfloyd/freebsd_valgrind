@@ -274,7 +274,7 @@ DECL_TEMPLATE(darwin, __sysctl);                // 202
 // 213  Reserved for AppleTalk
 // NYI kqueue_from_portset_np 214
 // NYI kqueue_portset_np 215
-// NYI mkcomplex 216
+DECL_TEMPLATE(darwin, open_dprotected_np)       // 216
 // NYI statv 217
 // NYI lstatv 218
 // NYI fstatv 219
@@ -676,6 +676,16 @@ DECL_TEMPLATE(darwin, ulock_wait2);       // 544
 // NYI tracker_action         // 546
 // NYI debug_syscall_reject   // 547
 #endif
+#if DARWIN_VERS >= DARWIN_13_00
+// NYI sys_debug_syscall_reject_config  // 548
+// NYI graftdmg                         // 549
+DECL_TEMPLATE(darwin, map_with_linking_np); // 550
+// NYI freadlink                        // 551
+// NYI sys_record_system_event          // 552
+// NYI mkfifoat                         // 553
+// NYI mknodat                          // 554
+// NYI ungraftdmg                       // 555
+#endif
 
 // Mach message helpers
 DECL_TEMPLATE(darwin, mach_port_set_context);
@@ -825,6 +835,10 @@ DECL_TEMPLATE(darwin, task_restartable_ranges_register);
 DECL_TEMPLATE(darwin, kernelrpc_mach_port_type_trap);
 DECL_TEMPLATE(darwin, kernelrpc_mach_port_request_notification_trap);
 #endif /* DARWIN_VERS >= DARWIN_10_15 */
+
+#if DARWIN_VERS >= DARWIN_13_00
+DECL_TEMPLATE(darwin, mach_msg2);
+#endif
 
 // Machine-dependent traps
 DECL_TEMPLATE(darwin, thread_fast_set_cthread_self);

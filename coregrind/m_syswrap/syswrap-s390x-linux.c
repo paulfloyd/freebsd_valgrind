@@ -863,7 +863,7 @@ static SyscallTableEntry syscall_table[] = {
    LINXY(__NR_statx, sys_statx),                                      // 379
 
    GENX_(__NR_rseq, sys_ni_syscall),                                  // 381
-   LINX_(__NR_io_pgetevents, sys_io_pgetevents),                      // 382
+   LINXY(__NR_io_pgetevents, sys_io_pgetevents),                      // 382
 
    LINX_(__NR_semtimedop, sys_semtimedop),                            // 392
    LINXY(__NR_semctl, sys_semctl),                                    // 394

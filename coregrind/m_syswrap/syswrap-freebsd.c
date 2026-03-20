@@ -2613,7 +2613,7 @@ PRE(sys_clock_nanosleep)
 
 POST(sys_clock_nanosleep)
 {
-   if (ARG4 != 0 && FAILURE && ERR == VKI_EINTR) {
+   if (ARG4 != 0 && RES == VKI_EINTR) {
       POST_MEM_WRITE( ARG4, sizeof(struct vki_timespec) );
    }
 }
@@ -4211,11 +4211,8 @@ PRE(sys_sigwait)
    PRE_REG_READ2(int, "sigwait",
                  const vki_sigset_t *, set, int *, sig);
    PRE_MEM_READ(  "sigwait(set)",  ARG1, sizeof(vki_sigset_t));
-   vki_sigset_t* set = (vki_sigset_t*)ARG1;
-   if (ML_(safe_to_deref)(set, sizeof(vki_sigset_t))) {
-      *flags |= SfMayBlock;
-   }
    PRE_MEM_WRITE( "sigwait(sig)", ARG2, sizeof(int));
+   *flags |= SfMayBlock;
 }
 
 // sigwait doesn't follow the norm of returning -1 on error
@@ -6168,13 +6165,13 @@ POST(sys_rctl_remove_rule)
 }
 
 // SYS_posix_fallocate  530
-// x86/amd64
+// x86/amd64/arm64
 
 // SYS_posix_fadvise 531
-// x86/amd64
+// x86/amd64/arm64
 
 // SYS_wait6   532
-// amd64 / x86
+// x86/amd64/arm64
 
 // SYS_cap_rights_limit 533
 //int cap_rights_limit(int fd, const cap_rights_t *rights);
@@ -7026,15 +7023,7 @@ PRE(sys_aio_readv)
          SET_STATUS_Failure( VKI_EBADF );
       } else {
          SizeT vec_count = (SizeT)iocb->aio_nbytes;
-#if defined(__clang__)
-#pragma clang diagnostic push
-         // yes, I know it is volatile
-#pragma clang diagnostic ignored "-Wcast-qual"
-#endif
-         struct vki_iovec* p_iovec  = (struct vki_iovec*)iocb->aio_buf;
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+         struct vki_iovec* p_iovec  = (struct vki_iovec*)(uintptr_t)iocb->aio_buf;
          PRE_MEM_READ("aio_readv(iocb->aio_iov)", (Addr)p_iovec,  vec_count*sizeof(struct vki_iovec));
          if (ML_(safe_to_deref)(p_iovec, vec_count*sizeof(struct vki_iovec))) {
             for (SizeT i = 0U; i < vec_count; ++i) {
@@ -7358,6 +7347,39 @@ PRE(sys_jail_remove_jd)
 
     if (!ML_(fd_allowed)(ARG1, "jail_remove_id", tid, False))
        SET_STATUS_Failure(VKI_EBADF);
+}
+
+// SYS_pdwait   601
+// pid_t pdwait(int fd, int *status, int options,
+//              struct __wrusage *wrusage, siginfo_t *infop);
+PRE(sys_pdwait)
+{
+   PRINT("sys_pdwait ( %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %" FMT_REGWORD "d, %#" FMT_REGWORD "x, %#" FMT_REGWORD "x )",
+         SARG1, ARG2, SARG3, ARG4, ARG5);
+   PRE_REG_READ5(pid_t, "pdwait", int, fd, int *, status, int, options,
+                 struct vki___wrusage *, wrusage, vki_siginfo_t *,infop);
+   PRE_MEM_WRITE("pdwait(status)", ARG2, sizeof(int));
+   if (ARG5) {
+      PRE_MEM_WRITE("pdwait(wrusage)", ARG4, sizeof(struct vki___wrusage));
+   }
+   if (ARG6) {
+      PRE_MEM_WRITE("pdwait(infop)", ARG5, sizeof(vki_siginfo_t));
+   }
+   if (!ML_(fd_allowed)(ARG1, "pdwait", tid, False)) {
+      SET_STATUS_Failure(VKI_EBADF);
+   }
+}
+
+POST(sys_pdwait)
+{
+   POST_MEM_WRITE(ARG2, sizeof(int));
+   if (ARG5) {
+      POST_MEM_WRITE(ARG4, sizeof(struct vki___wrusage));
+   }
+
+   if (ARG6) {
+      POST_MEM_WRITE(ARG5, sizeof(vki_siginfo_t));
+   }
 }
 
 #undef PRE
@@ -7747,7 +7769,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENX_(__NR_mlockall,         sys_mlockall),          // 324
    BSDX_(__NR_munlockall,       sys_munlockall),        // 325
    BSDXY(__NR___getcwd,         sys___getcwd),          // 326
-   BSDX_(__NR_sched_setparam,   sys_sched_setparam),    // 327
+   BSDXY(__NR_sched_setparam,   sys_sched_setparam),    // 327
    BSDXY(__NR_sched_getparam,   sys_sched_getparam),    // 328
    BSDX_(__NR_sched_setscheduler, sys_sched_setscheduler), // 329
    BSDX_(__NR_sched_getscheduler, sys_sched_getscheduler), // 330
@@ -8075,9 +8097,13 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    GENXY(__NR_getgroups,        sys_getgroups),         // 596
 #endif
 
-    BSDX_(__NR_jail_attach_jd,  sys_jail_attach_jd),    // 597
-    BSDX_(__NR_jail_remove_jd,  sys_jail_remove_jd),    // 598
-    BSDX_(__NR_kexec_load,      sys_kexec_load),        // 599
+   BSDX_(__NR_jail_attach_jd,  sys_jail_attach_jd),    // 597
+   BSDX_(__NR_jail_remove_jd,  sys_jail_remove_jd),    // 598
+   BSDX_(__NR_kexec_load,      sys_kexec_load),        // 599
+   // we only have partial support for rfork, so mark pdrfork
+   // as not implemented for the moment
+   GENX_(__NR_pdrfork,         sys_ni_syscall),        // 600
+   BSDXY(__NR_pdwait,          sys_pdwait),            // 601
 
    BSDX_(__NR_freebsd_fake_sigreturn,   sys_fake_sigreturn), // 1000, fake sigreturn
 

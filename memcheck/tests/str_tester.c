@@ -984,7 +984,8 @@ test_memcmp (void)
   check(memcmp("abcd", "abce", 4) < 0, 3);	/* Honestly unequal. */
   check(memcmp("abce", "abcd", 4) > 0, 4);
   check(memcmp("alph", "beta", 4) < 0, 5);
-  check(memcmp("a\203", "a\003", 2) > 0, 6);
+  // Darwin 17 uses a builtin which fails test 6. Use parens to inhibit the use of builtins.
+  check((memcmp)("a\203", "a\003", 2) > 0, 6);
   check(memcmp("abce", "abcd", 3) == 0, 7);	/* Count limited. */
   check(memcmp("abc", "def", 0) == 0, 8);	/* Zero count. */
 }

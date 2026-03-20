@@ -526,6 +526,7 @@ static inline void my_exit ( int x )
 # if DARWIN_VERS >= DARWIN_10_9
   STRLEN(VG_Z_LIBSYSTEM_C_SONAME, strlen)
 # endif
+ STRLEN(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_strlen)
 
 #elif defined(VGO_solaris)
  STRLEN(VG_Z_LIBC_SONAME,          strlen)
@@ -1004,6 +1005,10 @@ static inline void my_exit ( int x )
   /* _platform_memchr$VARIANT$Base */
   MEMCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memchr$VARIANT$Base)
 #endif
+// FIXME: unsure of the exact version
+#  if DARWIN_VERS >= DARWIN_13_00
+  MEMCHR(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memchr$VARIANT$NoOverread)
+#  endif
 
 #elif defined(VGO_solaris)
  MEMCHR(VG_Z_LIBC_SONAME, memchr)
@@ -1248,6 +1253,10 @@ static inline void my_exit ( int x )
   // rip-relative jump but the dest address is NULL
   MEMCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memcmp$VARIANT$Base)
 #endif
+// FIXME: unsure of the exact version
+# if DARWIN_VERS >= DARWIN_13_00 && defined(VGA_amd64)
+  MEMCMP(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memcmp$VARIANT$NoOverread)
+#endif
 
 #elif defined(VGO_solaris)
  MEMCMP(VG_Z_LIBC_SONAME, memcmp)
@@ -1398,6 +1407,12 @@ static inline void my_exit ( int x )
  //MEMSET(VG_Z_LIBC_SONAME, memset)
  //MEMSET(VG_Z_DYLD,        memset)
  MEMSET(VG_Z_LIBC_SONAME, memset)
+// FIXME: unsure of the exact version
+#  if DARWIN_VERS >= DARWIN_13_00
+  MEMSET(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memset$VARIANT$Base)
+  MEMSET(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memset$VARIANT$Haswell)
+  MEMSET(VG_Z_LIBSYSTEM_PLATFORM_SONAME, _platform_memset$VARIANT$Ivybridge)
+#  endif
 
 #elif defined(VGO_solaris)
  MEMSET(VG_Z_LIBC_SONAME, memset)

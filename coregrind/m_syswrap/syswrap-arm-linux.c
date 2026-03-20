@@ -875,7 +875,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENXY(__NR_statfs64,          sys_statfs64),       // 268
    GENXY(__NR_fstatfs64,         sys_fstatfs64),      // 269
 
-   LINX_(__NR_tgkill,            sys_tgkill),         // 270 */Linux
+   LINXY(__NR_tgkill,            sys_tgkill),         // 270 */Linux
    GENX_(__NR_utimes,            sys_utimes),         // 271
    GENX_(__NR_vserver,           sys_ni_syscall),     // 273
    LINX_(__NR_mbind,             sys_mbind),          // 274 ?/?

@@ -50,6 +50,35 @@
 #include "pub_core_pathscan.h"        /* find_executable */
 #include "pub_core_initimg.h"         /* self */
 
+// change this to one to see the env/apple pointer area that Darwin gives us
+// and also the env and apple pointer area that we pass on to the guest
+#define DEBUG_ENV_APPLE 0
+
+#if (DEBUG_ENV_APPLE)
+static void print_env_apple(HChar** envp, const HChar* where)
+{
+   int i;
+   int j;
+   HChar** apple;
+   VG_(printf)("Start env and apple pointer strings at %s\n", where);
+
+   for (i = 0; envp[i]; ++i) {
+      VG_(printf)("initimg-darwin: i %d &envp[i] %p envp[i] %s\n", i, &envp[i], envp[i]);
+   }
+   // should be NULL
+   VG_(printf)("initimg-darwin: i %d &envp[i] %p envp[i] %s\n", i, &envp[i], envp[i]);
+
+   apple = &envp[i];
+   ++apple;
+
+   for (j = 0; apple[j]; ++j) {
+      VG_(printf)("initimg-darwin: j %d &apple[j] %p apple[j] %s\n", j, &apple[j], apple[j]);
+   }
+   VG_(printf)("initimg-darwin: j %d &apple[j] %p apple[j] %s\n", j, &apple[j], apple[j]);
+   VG_(printf)("End env and apple pointer strings at %s\n", where);
+}
+#endif
+
 
 /*====================================================================*/
 /*=== Loading the client                                           ===*/
@@ -74,6 +103,10 @@ static void load_client ( /*OUT*/ExeInfo* info,
 
    VG_(memset)(info, 0, sizeof(*info));
    ret = VG_(do_exec)(exe_name, info);
+   if (ret < 0) {
+      VG_(printf)("valgrind: could not execute '%s'\n", exe_name);
+      VG_(exit)(1);
+   }
 
    // The client was successfully loaded!  Continue.
 
@@ -316,7 +349,7 @@ static HChar *copy_str(HChar **tab, const HChar *str)
 
 static 
 Addr setup_client_stack( void*  init_sp,
-                         HChar** orig_envp, 
+                         HChar** envp,
                          const ExeInfo* info,
                          Addr   clstack_end,
                          SizeT  clstack_max_size,
@@ -371,7 +404,7 @@ Addr setup_client_stack( void*  init_sp,
 
    /* ...and the environment */
    envc = 0;
-   for (cpp = orig_envp; cpp && *cpp; cpp++) {
+   for (cpp = envp; cpp && *cpp; cpp++) {
       envc++;
       stringsize += VG_(strlen)(*cpp) + 1;
    }
@@ -386,10 +419,10 @@ Addr setup_client_stack( void*  init_sp,
    }
 
 #if defined(VGA_arm64)
-    // This is required so that dyld can load our dylib specified in DYLD_INSERT_LIBRARIES
+   // This is required so that dyld can load our dylib specified in DYLD_INSERT_LIBRARIES
 #define EXTRA_APPLE_ARG "arm64e_abi=all"
-    stringsize += VG_(strlen)(EXTRA_APPLE_ARG) + 1;
-    auxsize += sizeof(Word);
+   stringsize += VG_(strlen)(EXTRA_APPLE_ARG) + 1;
+   auxsize += sizeof(Word);
 #endif
 
    /* Darwin mach_header */
@@ -405,17 +438,26 @@ Addr setup_client_stack( void*  init_sp,
       sizeof(HChar **)*envc +                 /* envp */
       sizeof(HChar **) +                      /* terminal NULL */
       auxsize +                               /* auxv */
-      VG_ROUNDUP(stringsize, sizeof(Word));   /* strings (aligned) */
+      VG_ROUNDUP(stringsize, sizeof(Word));   /* strings (Word aligned) */
+
+   /* The stacksize will be rounded to 16. Any rounding could come from a combination of
+      rounding up stringsize to a multiple of sizeof(Word) plus rounding of the whole
+      from a multiple of sizeof(Word) to a multiple of 16. Need to keep both of these
+      in order to calculate stringbase. */
+   size_t pointer_slop = VG_ROUNDUP(stacksize, 16) - stacksize;
+   stacksize = VG_ROUNDUP(stacksize, 16);
 
    if (0) VG_(printf)("stacksize = %u\n", stacksize);
 
    /* client_SP is the client's stack pointer */
+   vg_assert(stacksize % 16 == 0);
+   vg_assert((clstack_end + 1) % 16 == 0);
    client_SP = clstack_end + 1 - stacksize;
-   client_SP = VG_ROUNDDN(client_SP, 32); /* make stack 32 byte aligned */
+   vg_assert(client_SP % 16 == 0);
 
    /* base of the string table (aligned) */
-   stringbase = strtab = (HChar *)clstack_end + 1
-                         - VG_ROUNDUP(stringsize, sizeof(int));
+   stringbase = strtab = (HChar *)clstack_end + 1 - VG_ROUNDUP(stringsize, sizeof(Word)) - pointer_slop;
+   vg_assert((Addr)stringbase % sizeof(Word) == 0);
 
    /* The max stack size */
    clstack_max_size = VG_PGROUNDUP(clstack_max_size);
@@ -468,24 +510,21 @@ Addr setup_client_stack( void*  init_sp,
 
    /* --- envp --- */
    VG_(client_envp) = (HChar **)ptr;
-   for (cpp = orig_envp; cpp && *cpp; ptr++, cpp++)
+   for (cpp = envp; cpp && *cpp; ptr++, cpp++)
       *ptr = (Addr)copy_str(&strtab, *cpp);
    *ptr++ = 0;
 
    /* --- executable_path --- */
-   if (info->executable_path) {
+   vg_assert(info->executable_path);
 #if SDK_VERS >= SDK_10_14_6
-       Int executable_path_len = VG_(strlen)(info->executable_path) + 16 + 1;
-       HChar *executable_path = VG_(malloc)("initimg-darwin.scs.1", executable_path_len);
-       VG_(snprintf)(executable_path, executable_path_len, "executable_path=%s", info->executable_path);
-       *ptr++ = (Addr)copy_str(&strtab, executable_path);
-       VG_(free)(executable_path);
+   Int executable_path_len = VG_(strlen)(info->executable_path) + 16 + 1;
+   HChar *executable_path = VG_(malloc)("initimg-darwin.scs.1", executable_path_len);
+   VG_(snprintf)(executable_path, executable_path_len, "executable_path=%s", info->executable_path);
+   *ptr++ = (Addr)copy_str(&strtab, executable_path);
+   VG_(free)(executable_path);
 #else
-      *ptr++ = (Addr)copy_str(&strtab, info->executable_path);
+   *ptr++ = (Addr)copy_str(&strtab, info->executable_path);
 #endif
-   }
-   // FIXME PJF there was an extra  *ptr++ = 0; in an else here
-   // there is a good chance that executable_path is never NULL so itr was nevwer used
 
 #if defined(VGA_arm64)
    *ptr++ = (Addr)copy_str(&strtab, EXTRA_APPLE_ARG);
@@ -495,7 +534,10 @@ Addr setup_client_stack( void*  init_sp,
 
    vg_assert((strtab-stringbase) == stringsize);
 
-   vg_assert((HChar*)ptr <= stringbase);
+#if (DEBUG_ENV_APPLE)
+   VG_(printf)("initimg-darwin: ptr %p stringbase %p\n", ptr, stringbase);
+#endif
+   vg_assert((HChar*)ptr == stringbase);
 
    if (VG_(resolved_exename) == NULL) {
       const HChar *exe_name = VG_(find_executable)(VG_(args_the_exename));
@@ -512,6 +554,10 @@ Addr setup_client_stack( void*  init_sp,
          VG_(resolved_exename) = VG_(strdup)("initimg-darwin.scs.3", exe_name);
       }
    }
+
+#if (DEBUG_ENV_APPLE)
+   print_env_apple(VG_(client_envp), "final envp");
+#endif
 
    /* client_SP is pointing at client's argc/argv */
 
@@ -613,6 +659,10 @@ IIFinaliseImageInfo VG_(ii_create_image)( IICreateImageInfo iicii,
       VG_(err_missing_prog)();
 
    load_client(&info, &iifii.initial_client_IP);
+
+#if (DEBUG_ENV_APPLE)
+   print_env_apple(iicii.envp, "original envp");
+#endif
 
    //--------------------------------------------------------------
    // Set up client's environment

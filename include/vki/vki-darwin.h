@@ -1339,4 +1339,9 @@ struct vki_necp_agent_use_parameters {
 
 #endif /* DARWIN_VERS >= DARWIN_10_12 */
 
+#include <spawn.h>
+
+typedef posix_spawn_file_actions_t vki_posix_spawn_file_actions_t;
+typedef posix_spawnattr_t vki_posix_spawnattr_t;
+
 #endif

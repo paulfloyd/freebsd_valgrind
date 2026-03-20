@@ -1463,10 +1463,9 @@ Int VG_(socket) ( Int domain, Int type, Int protocol )
    if (!sr_isError(res)) {
        // Set SO_NOSIGPIPE so write() returns EPIPE instead of raising SIGPIPE
        Int optval = 1;
-       SysRes res2;
-       res2 = VG_(do_syscall5)(__NR_setsockopt, sr_Res(res), VKI_SOL_SOCKET, 
-                               VKI_SO_NOSIGPIPE, (UWord)&optval, 
-                               sizeof(optval));
+       (void)VG_(do_syscall5)(__NR_setsockopt, sr_Res(res), VKI_SOL_SOCKET, 
+                              VKI_SO_NOSIGPIPE, (UWord)&optval, 
+                              sizeof(optval));
        // ignore setsockopt() error
    }
    return sr_isError(res) ? -1 : sr_Res(res);

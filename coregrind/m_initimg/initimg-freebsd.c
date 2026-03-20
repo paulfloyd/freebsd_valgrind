@@ -542,7 +542,7 @@ static Addr setup_client_stack(const void*  init_sp,
    higher address +-----------------+ <- clstack_end    ^                ^
                   | args env auxv   |                   |                |
                   |   see above     |                   |                |
-    ower address  +-----------------+ <- client_SP   anon_size           |
+   lower address  +-----------------+ <- client_SP   anon_size           |
                   |  round to page  |                   |                |
                   +-----------------+ <- clstack_start  |                |
                   |    one page     |                   |           clstack_max_size
@@ -551,6 +551,10 @@ static Addr setup_client_stack(const void*  init_sp,
                   :      RSVN       :                resvn_size          |
                   :                 :                   |                |
                   +-----------------+ <- resvn_start    v                v
+
+(The "one page" below clstack_start is only present when VG_STACK_REDZONE_SZB
+is not zero, which for FreeBSD is only on amd64. This page is not present
+on other platforms.)
 
    */
 

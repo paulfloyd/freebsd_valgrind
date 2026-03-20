@@ -2629,6 +2629,41 @@ int main(void)
    FAKE_SY("\n");
 #endif
 
+   /* SYS_pdwait                  601 */
+#if defined(SYS_pdwait)
+   GO(SYS_pdwait, "5s 3m");
+   SY(SYS_pdwait, x0+10000000, x0+1, x0, x0+1, x0+1); FAIL;
+#else
+   FAKE_GO("601:              SYS_pdwait 5s 3m");
+   FAKE_SY("Syscall param pdwait(fd) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(status) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(options) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(wrusage) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(infop) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(status) points to unaddressable byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY(" Address 0x........ is not stack'd, malloc'd or (recently) free'd\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(wrusage) points to unaddressable byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY(" Address 0x........ is not stack'd, malloc'd or (recently) free'd\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param pdwait(infop) points to unaddressable byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY(" Address 0x........ is not stack'd, malloc'd or (recently) free'd\n");
+   FAKE_SY("\n");
+#endif
+
    // no such syscall...
    GO(9999, "1e");
    SY(9999); FAIL;

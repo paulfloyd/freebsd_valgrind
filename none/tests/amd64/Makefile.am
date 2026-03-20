@@ -205,11 +205,12 @@ bug132918_LDADD		= -lm
 bug485148_CXXFLAGS      = ${AM_CXXFLAGS} -mfma
 bug485148_SOURCES       = bug485148.cpp
 bug487439_SOURCES	= bug487439.cpp
-cmpxchg_CFLAGS		= $(AM_CFLAGS) @FLAG_NO_PIE@
+cmpxchg_LDFLAGS		= @LDFLAG_NO_PIE@
 fb_test_amd64_CFLAGS	= $(AM_CFLAGS) -O -fno-strict-aliasing
 fb_test_amd64_LDADD	= -lm
-fcmovnu_CFLAGS		= $(AM_CFLAGS) @FLAG_NO_PIE@
-fxtract_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_OVERFLOW@ @FLAG_NO_PIE@
+fcmovnu_LDFLAGS		= @LDFLAG_NO_PIE@
+fxtract_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_OVERFLOW@
+fxtract_LDFLAGS		= @LDFLAG_NO_PIE@
 insn_basic_SOURCES	= insn_basic.def
 insn_basic_LDADD	= -lm
 insn_mmx_SOURCES	= insn_mmx.def
@@ -231,10 +232,10 @@ if VGCONF_OS_IS_SOLARIS
 fma4_CFLAGS		+= -D__EXTENSIONS__
 endif
 fma4_LDADD		= -lm
-jrcxz_CFLAGS		= $(AM_CFLAGS) @FLAG_NO_PIE@
-looper_CFLAGS		= $(AM_CFLAGS) @FLAG_NO_PIE@
-sbbmisc_CFLAGS		= $(AM_CFLAGS) @FLAG_NO_PIE@
-shrld_CFLAGS		= $(AM_CFLAGS) @FLAG_NO_PIE@
+jrcxz_LDFLAGS		= @LDFLAG_NO_PIE@
+looper_LDFLAGS		= @LDFLAG_NO_PIE@
+sbbmisc_LDFLAGS		= @LDFLAG_NO_PIE@
+shrld_LDFLAGS		= @LDFLAG_NO_PIE@
 
 .def.c:
 	$(PERL) $(srcdir)/gen_insn_test.pl < $< > $@

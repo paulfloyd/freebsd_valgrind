@@ -6,7 +6,7 @@ PPC32/Linux, PPC64BE/Linux, PPC64LE/Linux, S390X/Linux, MIPS32/Linux,
 MIPS64/Linux, RISCV64/Linux, ARM/Android, ARM64/Android, MIPS32/Android,
 X86/Android, X86/Solaris, AMD64/Solaris, X86/macOS, AMD64/macOS. 
 X86/FreeBSD, AMD64/FreeBSD and ARM64/FreeBSD. There is preliminary support
-for nanoMIPS/Linux. macOS is supported up to version 12 Monterey (amd64 only).
+for nanoMIPS/Linux. macOS is supported up to version 13 Ventura (amd64 only).
 
 * ==================== CORE CHANGES ===================
 
@@ -28,14 +28,19 @@ for nanoMIPS/Linux. macOS is supported up to version 12 Monterey (amd64 only).
 
 * ================== PLATFORM CHANGES =================
 
-s390x: Machine models older than z196 are no longer supported.
+* s390x: Machine models older than z196 are no longer supported.
+
+* s390x: Support new z/Architecture features from the 15th edition.  In
+  particular this enables running binaries compiled with `-march=arch15'
+  or `-march=z17' and exploiting the new MSA extensions 10-13.
 
 Support for the following macOS versions has been added
-10,13 High Sierra (bug fixes)
+10.13 High Sierra (bug fixes)
 10.14 Mojave
-10.15 Calalina
+10.15 Catalina
 11.0  Big Sur (Intel only)
-12.0  Monterey (intel only)
+12.0  Monterey (Intel only)
+13.0  Ventura (Intel only, preliminary)
 
 * ==================== TOOL CHANGES ===================
 
@@ -54,15 +59,19 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 233298  MEMPOOL_FREE not reflected in heap summary
 253436  vex amd64->IR: unhandled instruction bytes: 0xF2 0xA6 (repne cmps)
 258140  Valgrind on OS X always reports some memory "still reachable"
+390754  unhandled amd64-darwin syscall: unix:216 (open_dprotected_np)
 406674  False positive when reading bitfield value on code compiled with
         clang 7.0
 413369  unhandled amd64-darwin syscall: unix:151 (getpgid)
+413410  unhandled amd64-darwin syscall: mach:50 (on macOS 10.15)
 487055  memcheck/tests/x86-linux/scalar fails running in Docker
+503238  s390x: Support miscellaneous-instruction-extensions facility 4
+503239  s390x: Support vector-enhancements facility 3
+503240  s390x: Support MSA extensions 10, 11, and 12
 509562  s390x: Define minimum required machine model
 510416  Missing syswraps for file_getattr and file_setattr
 510563  Add missing syswraps for lsm_get_self_attr and lsm_set_self_attr
 510864  Add SSE4.1 PMAXSD and PMINSD instructions support for 32-bit x86
-512873  Add SSE4.1 min/max instructions for x86 32 bit
 511329  Darwin and FreeBSD: Move setting of carry flag out of
         ML_(do_syscall_for_client_WRK)
 511713  Refactor syscall argument handling
@@ -73,7 +82,10 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         '-Wno-alloc-size-larger-than=18446744073709551615'
 512030  s390x: bfp-convert testcase fails
 512037  malloc trace does not print free size or alignment
-512571  regtest problems with darwin dsymuti
+512291  Valgrind on Solaris should drop support for long gone /dev/crypto
+        framework
+512571  regtest problems with darwin dsymutil
+512873  Add SSE4.1 min/max instructions for x86 32 bit
 513257  Add missing syswraps for lsm_list_modules
 513522  m_libcassert.c: 'ordered comparison of pointer with integer zero'
         compiler warning
@@ -95,6 +107,11 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 515810  Update the LTP version in valgrind testsuite to 20260130
 515992  Add FreeBSD /proc virtualisation for cmdline and file
 516090  Regression : Linux FreeBSD and Darwin: refactor *at syscall dirfd checks
+516289  illumos lsframe2 regtest fails
+516748  Incorrect use of SET_STATUS_Failure for syscall wrappers that return
+        error codes rather than -1 on error
+517697  Implement CLRSSONSTACK and SETUJMPBUF handling on Solaris.
+517748  Add ability to redirect global functions to Darwin
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX
@@ -121,6 +138,9 @@ X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
   Makefile BUILD_DOCS to none, all or html. none, does not build any
   documentation.  all, builds all documentation. html, builds HTML
   docs but skips building PDFs. See also README_DEVELOPERS.
+
+* Control generation of files that are only useful for post-processing
+  with bunsen. make regtest BUNSEN=no inhibits generating those files.
 
 * New VEX API function LibVEX_set_VexControl
 

@@ -68,6 +68,13 @@ pkgconfig_DATA = valgrind.pc
 BUILT_SOURCES  = default.supp include/vgversion.h valgrind.pc
 CLEANFILES     = default.supp
 
+BUNSEN ?= yes
+ ifeq "$(BUNSEN)" "no"
+  VG_REGTEST_ARG ?= "--no-bunsen"
+ else
+  VG_REGTEST_ARG ?=
+ endif
+
 default.supp: $(DEFAULT_SUPP_FILES)
 	echo "# This is a generated file, composed of the following suppression rules:" > default.supp
 	echo "# " $(DEFAULT_SUPP_FILES) >> default.supp
@@ -76,7 +83,7 @@ default.supp: $(DEFAULT_SUPP_FILES)
 ## Ensure make exits with error if vg_regtest fails or post_regtest_checks fails.
 regtest: check
 	$(top_srcdir)/gdbserver_tests/make_local_links $(GDB)
-	if tests/vg_regtest gdbserver_tests $(TOOLS) $(EXP_TOOLS) ; then \
+	if tests/vg_regtest $(VG_REGTEST_ARG) gdbserver_tests $(TOOLS) $(EXP_TOOLS) ; then \
 	   tests/post_regtest_checks $(abs_top_srcdir) gdbserver_tests $(TOOLS) $(EXP_TOOLS); \
 	else \
 	   tests/post_regtest_checks $(abs_top_srcdir) gdbserver_tests $(TOOLS) $(EXP_TOOLS); \
@@ -85,9 +92,9 @@ regtest: check
 post-regtest-checks:
 	tests/post_regtest_checks $(abs_top_srcdir) gdbserver_tests $(TOOLS) $(EXP_TOOLS)
 nonexp-regtest: check
-	tests/vg_regtest $(TOOLS)
+	tests/vg_regtest $(VG_REGTEST_ARG) $(TOOLS)
 exp-regtest: check
-	tests/vg_regtest gdbserver_tests $(EXP_TOOLS)
+	tests/vg_regtest $(VG_REGTEST_ARG) gdbserver_tests $(EXP_TOOLS)
 # Nb: gdbserver_tests are put in exp-regtest rather than nonexp-regtest
 # because they are tested with various valgrind tools, so might be using
 # an experimental tool.

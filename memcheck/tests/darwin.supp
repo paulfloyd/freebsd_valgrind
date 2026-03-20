@@ -53,3 +53,20 @@
    fun:_ZN5dyld3L18reuseExistingCacheERKNS_18SharedCacheOptionsEPNS_19SharedCacheLoadInfoE
 }
 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:task_*et_special_port
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_fetch_self_token
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:host_get_clock_service
+}
