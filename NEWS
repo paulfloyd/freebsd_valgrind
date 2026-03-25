@@ -74,6 +74,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 510864  Add SSE4.1 PMAXSD and PMINSD instructions support for 32-bit x86
 511329  Darwin and FreeBSD: Move setting of carry flag out of
         ML_(do_syscall_for_client_WRK)
+511461  Darwin 17 (MacOS X 10.13) memcheck issues
 511713  Refactor syscall argument handling
 511717  gdbserver (valgrind_read_memory) the 'impossible' happened:
         Killed by fatal signal (SIGSEGV)
@@ -112,6 +113,8 @@ are not entered into bugzilla tend to get forgotten about or ignored.
         error codes rather than -1 on error
 517697  Implement CLRSSONSTACK and SETUJMPBUF handling on Solaris.
 517748  Add ability to redirect global functions to Darwin
+518076  FreeBSD: add syscall wrapper for renameat2
+518078  Configure should accept names for GDB other than "gdb"
 
 To see details of a given bug, visit
   https://bugs.kde.org/show_bug.cgi?id=XXXXXX

@@ -39,29 +39,6 @@ static void test_all_veval(void)
    TEST_VEVAL(f, f);
 }
 
-/* -- Vector blend -- */
-
-#define TEST_VBLEND(m5)                                                        \
-   {                                                                           \
-      ulong_v          out;                                                    \
-      register ulong_v c __asm__("v4") = vc;                                   \
-      __asm__(".insn vrr,0xe7000" #m5 "000089,%0,%1,%2,4,0,0"                  \
-              : [out] "=v"(out)                                                \
-              : "v"(va), "v"(vb), "v"(c)                                       \
-              :);                                                              \
-      printf("\t%016lx %016lx\n", out[0], out[1]);                             \
-   }
-
-static void test_all_vblend(void)
-{
-   puts("vblend");
-   TEST_VBLEND(0);
-   TEST_VBLEND(1);
-   TEST_VBLEND(2);
-   TEST_VBLEND(3);
-   TEST_VBLEND(4);
-}
-
 /* -- Vector generate element masks -- */
 
 #define TEST_VGEM(m3, op)                                                      \
@@ -293,17 +270,25 @@ static void test_all_v2op(void)
 #define TEST_V3OP(m5, opc, a, b, c)                                            \
    {                                                                           \
       ulong_v          out;                                                    \
+      register ulong_v v3 __asm__("v3") = b;                                   \
       register ulong_v v4 __asm__("v4") = c;                                   \
                                                                                \
-      __asm__(".insn vrr,0xe7000" #m5 "0000" opc ",%0,%1,%2,4,0,0"             \
+      __asm__(".insn vri,0xe700000000" opc ",%0,%1,0x3" #m5 "0,4,0"            \
               : [out] "=v"(out)                                                \
-              : "v"(a), "v"(b), "v"(v4)                                        \
+              : "v"(a), "v"(v3), "v"(v4)                                       \
               :);                                                              \
       printf("\t%016lx %016lx\n", out[0], out[1]);                             \
    }
 
 static void test_all_v3op(void)
 {
+   puts("vblend");
+   TEST_V3OP(0, "89", va, vb, vc);
+   TEST_V3OP(1, "89", va, vb, vc);
+   TEST_V3OP(2, "89", va, vb, vc);
+   TEST_V3OP(3, "89", va, vb, vc);
+   TEST_V3OP(4, "89", va, vb, vc);
+
    puts("vmae");
    TEST_V3OP(3, "ae", v8, vc, v0);
    TEST_V3OP(3, "ae", va, vb, vc);
@@ -395,7 +380,6 @@ static void test_all_vec(void)
 int main(void)
 {
    test_all_veval();
-   test_all_vblend();
    test_all_vgem();
    test_all_v1op();
    test_all_v2op();

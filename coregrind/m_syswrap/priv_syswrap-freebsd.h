@@ -555,6 +555,7 @@ DECL_TEMPLATE(freebsd, sys_jail_remove_jd) // 598
 DECL_TEMPLATE(freebsd, sys_kexec_load) // 599
 // generic sys_pdrfork redirect to ni_syscall 600
 DECL_TEMPLATE(freebsd, sys_pdwait) // 601
+// generic renameat2 602
 
 DECL_TEMPLATE(freebsd, sys_fake_sigreturn)
 

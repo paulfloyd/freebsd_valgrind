@@ -81,8 +81,12 @@ vector_float_CFLAGS    = $(AM_CFLAGS) -march=z13 -DS390_TEST_COUNT=4
 vec2_CFLAGS      = $(AM_CFLAGS) -march=z13
 vec2_float_CFLAGS = $(AM_CFLAGS) -march=z13
 vec3_CFLAGS       = $(AM_CFLAGS) -march=z13
+vecdiv_CFLAGS     = $(AM_CFLAGS) -march=z13
 bfp_arith_CFLAGS   = $(AM_CFLAGS) @FLAG_MLONG_DOUBLE_128@
 bfp_compare_CFLAGS = $(AM_CFLAGS) @FLAG_MLONG_DOUBLE_128@
 bfp_convert_CFLAGS = $(AM_CFLAGS) @FLAG_MLONG_DOUBLE_128@
 bfp_load_CFLAGS    = $(AM_CFLAGS) @FLAG_MLONG_DOUBLE_128@
 bfp_tdc_CFLAGS     = $(AM_CFLAGS) @FLAG_MLONG_DOUBLE_128@
+bfp_fpc_CFLAGS     = $(AM_CFLAGS) -march=arch9
+ex_CFLAGS          = $(AM_CFLAGS) -march=arch9
+exrl_CFLAGS        = $(AM_CFLAGS) -march=arch9

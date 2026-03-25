@@ -2664,6 +2664,38 @@ int main(void)
    FAKE_SY("\n");
 #endif
 
+   /* SYS_renameat2               602 */
+#if defined(SYS_renameat2)
+   GO(SYS_renameat2, "5s 2m");
+   SY(SYS_renameat2, x0+9999, x0+1, x0+9998, x0+1, x0+123456); FAIL;
+#else
+   FAKE_GO("602:           SYS_renameat2 5s 2m");
+   FAKE_SY("Syscall param renameat2(olddfd) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param renameat2(oldpath) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param renameat2(newdfd) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param renameat2(newpath) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param renameat2(flags) contains uninitialised byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param renameat2(oldpath) points to unaddressable byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY(" Address 0x........ is not stack'd, malloc'd or (recently) free'd\n");
+   FAKE_SY("\n");
+   FAKE_SY("Syscall param renameat2(newpath) points to unaddressable byte(s)\n");
+   FAKE_SY("   ...\n");
+   FAKE_SY(" Address 0x........ is not stack'd, malloc'd or (recently) free'd\n");
+   FAKE_SY("\n");
+
+#endif
+
    // no such syscall...
    GO(9999, "1e");
    SY(9999); FAIL;

@@ -1628,6 +1628,8 @@ void VG_(redir_initialise) ( void )
                          (Addr)&VG_(amd64_darwin_REDIR_FOR_strcpy), NULL);
       add_hardwired_spec("dyld", "strlcat",
                          (Addr)&VG_(amd64_darwin_REDIR_FOR_strlcat), NULL);
+      add_hardwired_spec("dyld", "bcmp",
+                         (Addr)&VG_(amd64_darwin_REDIR_FOR_bcmp), NULL);
       // DDD: #warning fixme rdar://6166275
       add_hardwired_spec("dyld", "arc4random",
                          (Addr)&VG_(amd64_darwin_REDIR_FOR_arc4random), NULL);

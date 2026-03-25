@@ -6,12 +6,6 @@ veval
 	0000444444440440 0000010101808080
 	5666aaaaaaaa6a26 bcfe4e74ba722e5c
 	ffffffffffffffff ffffffffffffffff
-vblend
-	bbaabbbbbbbbaaaa 6789ccf0aa0f5533
-	bbbbbbbbbbbbaaaa 6789ccf0aa335533
-	bbbbbbbbbbbbbbbb 6789f0aaaa330f55
-	bbbbbbbbbbbbbbbb 6789f0aa4c0f5533
-	bbbbbbbbbbbbbbbb 6789f0aa4c0f5533
 vgem
 	00ff00ff00ffff00 ff00ff00ff00ff00
 	0000ffff0000ffff 0000ffffffff0000
@@ -153,6 +147,12 @@ vmlh
 	3f8e38e38e38e38e 29bc214695ac6999
 	004510000000412f 6b8dab5e0679dbaa
 	ffffffffffffffff fffffffffffffffe
+vblend
+	bbaabbbbbbbbaaaa 6789ccf0aa0f5533
+	bbbbbbbbbbbbaaaa 6789ccf0aa335533
+	bbbbbbbbbbbbbbbb 6789f0aaaa330f55
+	bbbbbbbbbbbbbbbb 6789f0aa4c0f5533
+	bbbbbbbbbbbbbbbb 6789f0aa4c0f5533
 vmae
 	ff99ffffffff9fba 0000000000000000
 	e9af8e38e38ef96f 8e622da51dd80b3d

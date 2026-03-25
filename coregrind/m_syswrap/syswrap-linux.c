@@ -6631,22 +6631,6 @@ PRE(sys_renameat)
    PRE_MEM_RASCIIZ( "renameat(newpath)", ARG4 );
 }
 
-PRE(sys_renameat2)
-{
-   FUSE_COMPATIBLE_MAY_BLOCK();
-   PRINT("sys_renameat2 ( %ld, %#" FMT_REGWORD "x(%s), %ld, %#" FMT_REGWORD
-         "x(%s), %" FMT_REGWORD "u )", SARG1, ARG2, (HChar*)(Addr)ARG2, SARG3,
-         ARG4, (HChar*)(Addr)ARG4, ARG5);
-   PRE_REG_READ5(long, "renameat2",
-                 int, olddfd, const char *, oldpath,
-                 int, newdfd, const char *, newpath,
-                 unsigned int, flags);
-   ML_(fd_at_check_allowed)(SARG1, (const HChar*)ARG2, "renameat2(olddirfd)", tid, status);
-   ML_(fd_at_check_allowed)(SARG3, (const HChar*)ARG4, "renameat2(newdirfd)", tid, status);
-   PRE_MEM_RASCIIZ( "renameat2(oldpath)", ARG2 );
-   PRE_MEM_RASCIIZ( "renameat2(newpath)", ARG4 );
-}
-
 PRE(sys_linkat)
 {
    *flags |= SfMayBlock;

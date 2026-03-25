@@ -131,13 +131,31 @@ static void load_client ( /*OUT*/ExeInfo* info,
    Also, remove any binding for VALGRIND_LAUNCHER=.  The client should
    not be able to see this.
 
-   Before macOS 11:
-   Also, add DYLD_SHARED_REGION=avoid, because V doesn't know how 
-   to process the dyld shared cache file.
+   There are up to three other environment variables that we need to
+   add or modify.
 
-   Since macOS 11:
-   Use DYLD_SHARED_REGION=use because system libraries aren't provided outside the cache anymore.
-   This means we need to start processing the dyld shared cache file.
+   PTHREAD_PTR_MUNGE_TOKEN: This is used by libc/libpthread to obfuscate
+   some saved context registers.
+   FIXME PJF - if we correctly propagate the apple parameter ptr_munge
+   would we still need this env var?
+
+   DYLD_SHARED_REGION: Darwin switched to dematerialising system libraries.
+   On some versions of Darwin this environment variable can be used
+   with a value of 'avoid' to force using the physical libraries on disk.
+   Later versions removed the physical library files so we can
+   no longer use this option with 'avoid' and we need to start processing
+   the dyld shared cache file. Darwin 20 and 21 seem to work OK
+   without needing DYLD_SHARED_REGION. Darwin 22 does need it to be
+   set explicitly to 'use' even though that is the default.
+
+   DYLD_INSERT_LIBRARIES: V uses this to preload its core and tool
+   shared libraries.
+
+   The following macOS versions have the following requirements
+   All versions: DYLD_INSERT_LIBRARIES
+   DARWIN_VERS >= DARWIN_10_15 PTHREAD_PTR_MUNGE_TOKEN
+   DARWIN_VERS < DARWIN_11_00 DYLD_SHARED_REGION=avoid
+   DARWIN_VERS >= DARWIN_11_00 DYLD_SHARED_REGION=use
 
    Also, change VYLD_* (mangled by launcher) back to DYLD_*.
 
@@ -149,23 +167,34 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    const HChar* preload_core    = "vgpreload_core";
    const HChar* ld_preload      = "DYLD_INSERT_LIBRARIES=";
    const HChar* dyld_cache      = "DYLD_SHARED_REGION=";
-#if DARWIN_VERS >= DARWIN_11_00
-   const HChar* dyld_cache_value= "use";
-#else
+#if DARWIN_VERS < DARWIN_11_00
    const HChar* dyld_cache_value= "avoid";
+#else
+   const HChar* dyld_cache_value= "use";
+#endif
+   Int    dyld_cache_len  = VG_(strlen)( dyld_cache );
+   Bool   dyld_cache_done = False;
+#if DARWIN_VERS >= DARWIN_10_15
+   Bool   pthread_ptr_munge_token_present = False;
 #endif
    const HChar* v_launcher      = VALGRIND_LAUNCHER "=";
+   Int    extra_env_vars;
    Int    ld_preload_len  = VG_(strlen)( ld_preload );
-   Int    dyld_cache_len  = VG_(strlen)( dyld_cache );
    Int    v_launcher_len  = VG_(strlen)( v_launcher );
    Bool   ld_preload_done = False;
-   Bool   dyld_cache_done = False;
    Int    vglib_len       = VG_(strlen)(VG_(libdir));
 
    HChar** cpp;
    HChar** ret;
    HChar*  preload_tool_path;
    Int     envc, i;
+
+   // number of env vars to add if not already present
+#if DARWIN_VERS < DARWIN_10_15
+   extra_env_vars = 2; // DYLD_INSERT_LIBRARIES and DYLD_SHARED_REGION
+#else
+   extra_env_vars = 3; // DYLD_INSERT_LIBRARIES, DYLD_SHARED_REGION and PTHREAD_PTR_MUNGE_TOKEN
+#endif
 
    /* Alloc space for the vgpreload_core.so path and vgpreload_<tool>.so
       paths.  We might not need the space for vgpreload_<tool>.so, but it
@@ -197,16 +226,28 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
 
    /* Count the original size of the env */
    envc = 0;
-   for (cpp = origenv; cpp && *cpp; cpp++)
+   for (cpp = origenv; cpp && *cpp; cpp++) {
+      if (VG_(memcmp)(*cpp, ld_preload, ld_preload_len) == 0) {
+         --extra_env_vars;
+      }
+      if (VG_(memcmp)(*cpp, dyld_cache, dyld_cache_len) == 0) {
+         --extra_env_vars;
+      }
+#if DARWIN_VERS >= DARWIN_10_15
+      // strictly would should check for presence and that it is not set to zero
+      if (VG_(memcmp)(*cpp, "PTHREAD_PTR_MUNGE_TOKEN=", VG_(strlen)("PTHREAD_PTR_MUNGE_TOKEN=")) == 0) {
+         --extra_env_vars;
+         pthread_ptr_munge_token_present = True;
+      }
+#endif
       envc++;
+   }
+
+   vg_assert(extra_env_vars >= 0);
 
    /* Allocate a new space */
    ret = VG_(malloc) ("initimg-darwin.sce.3", 
-#if DARWIN_VERS >= DARWIN_10_15
-                      sizeof(HChar *) * (envc+3+1)); /* 3 new entries + NULL */
-#else
-                      sizeof(HChar *) * (envc+2+1)); /* 2 new entries + NULL */
-#endif
+                      sizeof(HChar *) * (envc+extra_env_vars+1)); /* 1 to 3 new entries + NULL */
 
    /* copy it over */
    for (cpp = ret; *origenv; )
@@ -259,7 +300,9 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
    }
 #if DARWIN_VERS >= DARWIN_10_15
    // pthread really wants a non-zero value for ptr_munge
-   ret[envc++] = VG_(strdup)("initimg-darwin.sce.6", "PTHREAD_PTR_MUNGE_TOKEN=0x00000001");
+   if (!pthread_ptr_munge_token_present) {
+      ret[envc++] = VG_(strdup)("initimg-darwin.sce.6", "PTHREAD_PTR_MUNGE_TOKEN=0x00000001");
+   }
 #endif
 
    /* ret[0 .. envc-1] is live now. */
@@ -280,7 +323,6 @@ static HChar** setup_client_env ( HChar** origenv, const HChar* toolname)
          ret[i][0] = 'D';
       }
    }
-
 
    VG_(free)(preload_string);
    ret[envc] = NULL;

@@ -1381,6 +1381,21 @@ VG_(amd64_darwin_REDIR_FOR_strchr):
 2:
         popq    %rbp
         ret
+
+.globl VG_(amd64_darwin_REDIR_FOR_bcmp)
+VG_(amd64_darwin_REDIR_FOR_bcmp):
+        xorl    %eax, %eax
+        xorl    %ecx, %ecx
+1:
+        cmpq    %rcx, %rdx
+        je      2f
+        movzbl  (%rdi,%rcx), %r8d
+        cmpb    (%rsi,%rcx), %r8b
+        leaq    1(%rcx), %rcx
+        je      1b
+        movl    $1, %eax
+2:
+        ret
         
 .globl VG_(trampoline_stuff_end)
 VG_(trampoline_stuff_end):

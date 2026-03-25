@@ -5951,6 +5951,32 @@ Syscall param pdwait(infop) points to unaddressable byte(s)
  Address 0x........ is not stack'd, malloc'd or (recently) free'd
 
 ---------------------------------------------------------
+602:           SYS_renameat2 5s 2m
+---------------------------------------------------------
+Syscall param renameat2(olddfd) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat2(oldpath) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat2(newdfd) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat2(newpath) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat2(flags) contains uninitialised byte(s)
+   ...
+
+Syscall param renameat2(oldpath) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+Syscall param renameat2(newpath) points to unaddressable byte(s)
+   ...
+ Address 0x........ is not stack'd, malloc'd or (recently) free'd
+
+---------------------------------------------------------
 9999:                    9999 1e
 ---------------------------------------------------------
 WARNING: unhandled amd64-freebsd syscall: 9999

@@ -244,13 +244,19 @@ static void env_unsetenv ( HChar **env, const HChar *varname )
 #endif
 }
 
+// FIXME PJF to we really need this?
+// We already do env cleanup before any exec
 static void vg_cleanup_env(void)  __attribute__((constructor));
 static void vg_cleanup_env(void)
 {
     HChar **envp = (HChar**)*_NSGetEnviron();
+#if DARWIN_VERS < DARWIN_11_00
     env_unsetenv(envp, "DYLD_SHARED_REGION");
+#endif
     // GrP fixme should be more like mash_colon_env()
     env_unsetenv(envp, "DYLD_INSERT_LIBRARIES");
+    // FIXME PJF on macOS >= 10.15 we also insert PTHREAD_PTR_MUNGE_TOKEN
+    // should we remove it here?
 }   
 
 /* ---------------------------------------------------------------------

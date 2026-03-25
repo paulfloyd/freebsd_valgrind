@@ -91,7 +91,9 @@ AC_ARG_VAR([LTO_AR],[Archiver command for link time optimisation])
 AC_PATH_PROG(PERL, perl)
 
 # figure out where gdb lives
-AC_PATH_PROG(GDB, gdb, "/no/gdb/was/found/at/configure/time")
+# MacPorts uses ggdb
+AC_ARG_VAR([GDB], [Path to the GNU Debugger])
+AC_PATH_PROGS([GDB], [gdb ggdb], ["/no/gdb/was/found/at/configure/time"])
 AC_DEFINE_UNQUOTED(GDB_PATH, "$GDB", [path to GDB])
 
 # figure out how to compile assembler sources

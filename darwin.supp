@@ -511,20 +511,6 @@
 }
 
 {
-   OSX1013:dyld-3
-   Memcheck:Cond
-   fun:bcmp
-   fun:_ZN16ImageLoaderMachO18validateFirstPagesEPK21linkedit_data_commandiPKhmxRKN11ImageLoader11LinkContextE
-}
-
-{
-   OSX1013:dyld-4
-   Memcheck:Value8
-   fun:bcmp
-   fun:_ZN16ImageLoaderMachO18validateFirstPagesEPK21linkedit_data_commandiPKhmxRKN11ImageLoader11LinkContextE
-}
-
-{
    OSX1013:dyld-5
    Memcheck:Cond
    fun:_ZN16ImageLoaderMachO18validateFirstPagesEPK21linkedit_data_commandiPKhmxRKN11ImageLoader11LinkContextE

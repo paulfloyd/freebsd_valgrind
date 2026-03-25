@@ -450,6 +450,12 @@
 }
 
 {
+   macOS1015:getMethodNoSuper_nolock(objc_class*, objc_selector*)
+   drd:ConflictingAccess
+   fun:_ZL23getMethodNoSuper_nolockP10objc_classP13objc_selector
+}
+
+{
    macOS1100:_os_semaphore_wait.cold.1
    drd:ConflictingAccess
    fun:_os_semaphore_wait.cold.1

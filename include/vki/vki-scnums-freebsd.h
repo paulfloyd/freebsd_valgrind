@@ -642,6 +642,7 @@
 #define __NR_kexec_load          599
 #define __NR_pdrfork             600
 #define __NR_pdwait              601
+#define __NR_renameat2           602
 
 
 #define __NR_freebsd_fake_sigreturn 1000

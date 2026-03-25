@@ -20,3 +20,5 @@ vstrc_CFLAGS  = $(AM_CFLAGS) -march=z13
 vfae_CFLAGS   = $(AM_CFLAGS) -march=z13
 vistr_CFLAGS  = $(AM_CFLAGS) -march=z13
 vstrs_CFLAGS  = $(AM_CFLAGS) -march=z13
+vme_CFLAGS    = $(AM_CFLAGS) -march=z13
+tmxx_CFLAGS   = $(AM_CFLAGS) -march=arch9

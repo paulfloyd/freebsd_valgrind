@@ -93,6 +93,7 @@ EXTRA_DIST = \
 	pdfork_pdkill.supp \
 	realpathat.vgtest \
 	realpathat.stderr.exp \
+	realpathat.stderr.exp2 \
 	revoke.vgtest \
 	revoke.stderr.exp \
 	scalar.h scalar.vgtest \

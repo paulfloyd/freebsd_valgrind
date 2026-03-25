@@ -8104,6 +8104,7 @@ const SyscallTableEntry ML_(syscall_table)[] = {
    // as not implemented for the moment
    GENX_(__NR_pdrfork,         sys_ni_syscall),        // 600
    BSDXY(__NR_pdwait,          sys_pdwait),            // 601
+   GENX_(__NR_renameat2,       sys_renameat2),         // 602
 
    BSDX_(__NR_freebsd_fake_sigreturn,   sys_fake_sigreturn), // 1000, fake sigreturn
 
