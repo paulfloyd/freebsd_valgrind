@@ -980,7 +980,7 @@ static SyscallTableEntry syscall_main_table[] = {
    PLAXY (__NR_fstat64,                sys_fstat64),                 // 215
    LINX_ (__NR_pivot_root,             sys_pivot_root),              // 216
    GENXY (__NR_mincore,                sys_mincore),                 // 217
-   GENX_ (__NR_madvise,                sys_madvise),                 // 218
+   GENXY (__NR_madvise,                sys_madvise),                 // 218
    GENXY (__NR_getdents64,             sys_getdents64),              // 219
    LINXY (__NR_fcntl64,                sys_fcntl64),                 // 220
    //..

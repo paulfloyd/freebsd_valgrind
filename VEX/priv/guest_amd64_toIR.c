@@ -19027,60 +19027,6 @@ static IRTemp math_DPPS_128 ( IRTemp src_vec, IRTemp dst_vec, UInt imm8 )
    return res;
 }
 
-
-static IRTemp math_MPSADBW_128 ( IRTemp dst_vec, IRTemp src_vec, UInt imm8 )
-{
-   /* Mask out bits of the operands we don't need.  This isn't
-      strictly necessary, but it does ensure Memcheck doesn't
-      give us any false uninitialised value errors as a
-      result. */
-   UShort src_mask[4] = { 0x000F, 0x00F0, 0x0F00, 0xF000 };
-   UShort dst_mask[2] = { 0x07FF, 0x7FF0 };
-
-   IRTemp src_maskV = newTemp(Ity_V128);
-   IRTemp dst_maskV = newTemp(Ity_V128);
-   assign(src_maskV, mkV128( src_mask[ imm8 & 3 ] ));
-   assign(dst_maskV, mkV128( dst_mask[ (imm8 >> 2) & 1 ] ));
-
-   IRTemp src_masked = newTemp(Ity_V128);
-   IRTemp dst_masked = newTemp(Ity_V128);
-   assign(src_masked, binop(Iop_AndV128, mkexpr(src_vec), mkexpr(src_maskV)));
-   assign(dst_masked, binop(Iop_AndV128, mkexpr(dst_vec), mkexpr(dst_maskV)));
-
-   /* Generate 4 64 bit values that we can hand to a clean helper */
-   IRTemp sHi = newTemp(Ity_I64);
-   IRTemp sLo = newTemp(Ity_I64);
-   assign( sHi, unop(Iop_V128HIto64, mkexpr(src_masked)) );
-   assign( sLo, unop(Iop_V128to64,   mkexpr(src_masked)) );
-
-   IRTemp dHi = newTemp(Ity_I64);
-   IRTemp dLo = newTemp(Ity_I64);
-   assign( dHi, unop(Iop_V128HIto64, mkexpr(dst_masked)) );
-   assign( dLo, unop(Iop_V128to64,   mkexpr(dst_masked)) );
-
-   /* Compute halves of the result separately */
-   IRTemp resHi = newTemp(Ity_I64);
-   IRTemp resLo = newTemp(Ity_I64);
-
-   IRExpr** argsHi
-      = mkIRExprVec_5( mkexpr(sHi), mkexpr(sLo), mkexpr(dHi), mkexpr(dLo),
-                       mkU64( 0x80 | (imm8 & 7) ));
-   IRExpr** argsLo
-      = mkIRExprVec_5( mkexpr(sHi), mkexpr(sLo), mkexpr(dHi), mkexpr(dLo),
-                       mkU64( 0x00 | (imm8 & 7) ));
-
-   assign(resHi, mkIRExprCCall( Ity_I64, 0/*regparm*/,
-                                "amd64g_calc_mpsadbw",
-                                &amd64g_calc_mpsadbw, argsHi ));
-   assign(resLo, mkIRExprCCall( Ity_I64, 0/*regparm*/,
-                                "amd64g_calc_mpsadbw",
-                                &amd64g_calc_mpsadbw, argsLo ));
-
-   IRTemp res = newTemp(Ity_V128);
-   assign(res, binop(Iop_64HLtoV128, mkexpr(resHi), mkexpr(resLo)));
-   return res;
-}
-
 static Long dis_EXTRACTPS ( const VexAbiInfo* vbi, Prefix pfx,
                             Long delta, Bool isAvx )
 {

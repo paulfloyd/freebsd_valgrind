@@ -1,9 +1,15 @@
-#! /bin/sh
+#!/bin/sh
 
-awk '/Massif arguments/{gsub(/ ?unsigned int/, "uint")}{print}' |
-awk '/Massif arguments/{gsub(/ ?unsigned long/, "ulong")}{print}' |
-awk '/Massif arguments/{gsub(/char const/, "char_const")}{print}' |
-awk '/Massif arguments/{gsub(/ objc/, "_objc")}{print}' |
-awk '/Massif arguments/{gsub(/> >/, ">>")}{print}' |
-# unmangled C++ names can contain spaces so the above filter removes themn first
-awk '{gsub(/ --ignore-fn=[^ ]*/, ""); print}'
+awk '/Massif arguments/ {
+    gsub(/ ?unsigned int/, "uint")
+    gsub(/ ?unsigned long/, "ulong")
+    gsub(/char const/, "char_const")
+    gsub(/void const/, "void_const")
+    gsub(/header_info const/, "header_info_const")
+    gsub(/ objc/, "_objc")
+    gsub(/> >/, ">>")
+    gsub(/, /, ",")
+    gsub(/int slice/, "int_slice")
+    gsub(/ --ignore-fn=[^ ]*/, "")
+}
+{ print }'

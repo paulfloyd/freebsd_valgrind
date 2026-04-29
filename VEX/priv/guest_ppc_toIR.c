@@ -31502,14 +31502,14 @@ static Bool dis_VSR_byte_mask ( UInt prefix, UInt theInstr,
          immediate16_hi = (immediate16 >> 8) & 0xFF;
          immediate16_lo = immediate16 & 0xFF;
 
-         immediate64_hi = ((immediate16_hi << 32) | (immediate16_hi << 56) |
+         immediate64_hi = ((immediate16_hi << 56) |
                            (immediate16_hi << 48) | (immediate16_hi << 40) |
-                           (immediate16_hi << 32) | (immediate16_hi << 16) |
+                           (immediate16_hi << 32) | (immediate16_hi << 24) | (immediate16_hi << 16) |
                            (immediate16_hi << 8) | immediate16_hi);
 
-         immediate64_lo = ((immediate16_lo << 32) | (immediate16_lo << 56) |
+         immediate64_lo = ((immediate16_lo << 56) |
                            (immediate16_lo << 48) | (immediate16_lo << 40) |
-                           (immediate16_lo << 32) | (immediate16_lo << 16) |
+                           (immediate16_lo << 32) | (immediate16_lo << 24) | (immediate16_lo << 16) |
                            (immediate16_lo << 8) | immediate16_lo);
 
          /* Shift the bits in each element so the bit corresponding to the

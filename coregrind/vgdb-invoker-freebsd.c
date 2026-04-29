@@ -7,7 +7,7 @@
    framework.
 
    Copyright (C) 2011-2017 Philippe Waroquiers
-   Copyright (C) 2021-2022 Paul Floyd
+   Copyright (C) 2021-2026 Paul Floyd
       pjfloyd@wanadoo.fr
 
    This program is free software; you can redistribute it and/or

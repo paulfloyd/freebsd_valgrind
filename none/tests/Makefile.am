@@ -137,6 +137,7 @@ EXTRA_DIST = \
 	double_close_range_xml.vgtest \
 	double_close_range_sup.stderr.exp double_close_range_sup.vgtest \
 	empty-exe.vgtest empty-exe.stderr.exp \
+	empty-exe.stderr.exp-darwin19 \
 	exec-sigmask.vgtest exec-sigmask.stdout.exp \
 	exec-sigmask.stdout.exp2 exec-sigmask.stdout.exp3 \
 	exec-sigmask.stdout.exp-solaris exec-sigmask.stderr.exp \

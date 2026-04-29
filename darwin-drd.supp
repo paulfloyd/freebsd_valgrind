@@ -456,6 +456,18 @@
 }
 
 {
+   macOS1015:search_method_list(method_list_t const*, objc_selector*)
+   drd:ConflictingAccess
+   fun:_ZL18search_method_listPK13method_list_tP13objc_selector
+}
+
+{
+   macOS1015:objc_object::sidetable_clearDeallocating()
+   drd:ConflictingAccess
+   fun:_ZN11objc_object27sidetable_clearDeallocatingEv
+}
+
+{
    macOS1100:_os_semaphore_wait.cold.1
    drd:ConflictingAccess
    fun:_os_semaphore_wait.cold.1

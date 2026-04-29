@@ -682,6 +682,7 @@
 /helgrind/tests/bug327548
 /helgrind/tests/bug392331
 /helgrind/tests/bug484480
+/helgrind/tests/bug513598
 /helgrind/tests/cond_init_destroy
 /helgrind/tests/cond_timedwait_invalid
 /helgrind/tests/cond_timedwait_test
@@ -697,6 +698,7 @@
 /helgrind/tests/locked_vs_unlocked1
 /helgrind/tests/locked_vs_unlocked2
 /helgrind/tests/locked_vs_unlocked3
+/helgrind/tests/lock_destroy_report
 /helgrind/tests/Makefile
 /helgrind/tests/Makefile.in
 /helgrind/tests/pth_barrier
@@ -944,6 +946,7 @@
 /memcheck/tests/lsframe2
 /memcheck/tests/Makefile
 /memcheck/tests/Makefile.in
+/memcheck/tests/linux/madv_guard
 /memcheck/tests/mallinfo
 /memcheck/tests/mallinfo2
 /memcheck/tests/malloc1

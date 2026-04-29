@@ -8,7 +8,7 @@
    This file is part of Valgrind, a dynamic binary instrumentation
    framework.
 
-   Copyright IBM Corp. 2010-2020
+   Copyright IBM Corp. 2010-2026
    Copyright (C) 2012-2017  Florian Krohm   (britzel@acm.org)
 
    This program is free software; you can redistribute it and/or
@@ -167,6 +167,16 @@ get_guest_reg(Int offset)
    }
 
    return GUEST_UNKNOWN;
+}
+
+
+static inline Bool
+is_IRExpr_Not(const IRExpr* e)
+{
+   IROp op;
+   return e->tag == Iex_Unop &&
+          ((op = e->Iex.Unop.op) == Iop_Not8 || op == Iop_Not16 ||
+           op == Iop_Not32 || op == Iop_Not64);
 }
 
 /* Add an instruction */
@@ -1681,10 +1691,46 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
       if (is_commutative) {
          order_commutative_operands(arg1, arg2);
       }
+      res  = newVRegI(env);
+
+      /* Pattern match: "arg1 and/or not(x)"  -->  and/or with complement */
+      if ((env->hwcaps & VEX_HWCAPS_S390X_MI3) &&
+          (opkind == S390_ALU_OR || opkind == S390_ALU_AND)) {
+         if (is_IRExpr_Not(arg1)) { // swap
+            IRExpr* tmp = arg2;
+            arg2        = arg1;
+            arg1        = tmp;
+         }
+         if (is_IRExpr_Not(arg2)) {
+            HReg h2;
+            h1 = s390_isel_int_expr(env, arg1);
+            h2 = s390_isel_int_expr(env, arg2->Iex.Unop.arg);
+            addInstr(env, s390_insn_alu3(size <= 4 ? 4 : 8,
+                                         opkind == S390_ALU_OR ? S390_ALU3_ORC
+                                                               : S390_ALU3_ANDC,
+                                         res, h1, h2));
+            return res;
+         }
+      }
+
+      /* Is this a match for "load address"? */
+      if (expr->Iex.Binop.op == Iop_Add64 && arg2->tag == Iex_Const) {
+         ULong disp = arg2->Iex.Const.con->Ico.U64;
+         if (ulong_fits_signed_20bit(disp)) {
+            h1 = s390_isel_int_expr(env, arg1);
+            opnd.tag = S390_OPND_AMODE;
+            if (ulong_fits_unsigned_12bit(disp)) {
+               opnd.variant.am = s390_amode_b12(disp, h1);
+            } else {
+               opnd.variant.am = s390_amode_b20((Int)disp, h1);
+            }
+            addInstr(env, s390_insn_unop(size, S390_LOAD_ADDRESS, res, opnd));
+            return res;
+         }
+      }
 
       h1   = s390_isel_int_expr(env, arg1);       /* Process 1st operand */
       op2  = s390_isel_int_expr_RMI(env, arg2);   /* Process 2nd operand */
-      res  = newVRegI(env);
 
       /* As right shifts of one/two byte opreands are implemented using a
          4-byte shift op, we first need to zero/sign-extend the shiftee. */
@@ -1834,8 +1880,6 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
          return dst;
       }
 
-      /* Regular processing */
-
       if (unop == Iop_128to64) {
          HReg dst_hi, dst_lo;
 
@@ -1874,6 +1918,38 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
                                              dst, vec, am));
          return dst;
       }
+
+      /* NAND or NOR */
+      if ((env->hwcaps & VEX_HWCAPS_S390X_MI3) && is_IRExpr_Not(expr) &&
+          arg->tag == Iex_Binop) {
+         s390_alu3_t bitop;
+
+         switch (binop) {
+         case Iop_And8:
+         case Iop_And16:
+         case Iop_And32:
+         case Iop_And64:
+            bitop = S390_ALU3_NAND;
+            goto do_nand_nor;
+         case Iop_Or8:
+         case Iop_Or16:
+         case Iop_Or32:
+         case Iop_Or64:
+            bitop = S390_ALU3_NOR;
+         do_nand_nor: {
+            HReg h2;
+            dst = newVRegI(env);
+            h1  = s390_isel_int_expr(env, arg->Iex.Binop.arg1);
+            h2  = s390_isel_int_expr(env, arg->Iex.Binop.arg2);
+            addInstr(env,
+                     s390_insn_alu3(size <= 4 ? 4 : 8, bitop, dst, h1, h2));
+            return dst;
+         }
+         default:;
+         }
+      }
+
+      /* Regular processing */
 
       dst  = newVRegI(env);     /* Result goes into a new register */
       opnd = s390_isel_int_expr_RMI(env, arg);     /* Process the operand */
@@ -1944,10 +2020,16 @@ s390_isel_int_expr_wrk(ISelEnv *env, IRExpr *expr)
       case Iop_Not16:
       case Iop_Not32:
       case Iop_Not64:
-         /* XOR with ffff... */
-         mask.variant.imm = ~(ULong)0;
-         addInstr(env, s390_opnd_copy(size, dst, opnd));
-         insn = s390_insn_alu(size, S390_ALU_XOR, dst, mask);
+         if ((env->hwcaps & VEX_HWCAPS_S390X_MI3) &&
+             opnd.tag == S390_OPND_REG) {
+            insn = s390_insn_alu3(size <= 4 ? 4 : 8, S390_ALU3_NOR, dst,
+                                  opnd.variant.reg, opnd.variant.reg);
+         } else {
+            /* XOR with ffff... */
+            addInstr(env, s390_opnd_copy(size, dst, opnd));
+            mask.variant.imm = ~(ULong)0;
+            insn             = s390_insn_alu(size, S390_ALU_XOR, dst, mask);
+         }
          break;
 
       case Iop_Left8:

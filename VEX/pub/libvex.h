@@ -589,11 +589,6 @@ extern void LibVEX_ShowAllocStats ( void );
 
 /* Describe the guest state enough that the instrumentation
    functions can work. */
-
-/* The max number of guest state chunks which we can describe as
-   always defined (for the benefit of Memcheck). */
-#define VEXGLO_N_ALWAYSDEFD  24
-
 typedef
    struct {
       /* Total size of the guest state, in bytes.  Must be
@@ -614,7 +609,7 @@ typedef
       struct {
          Int offset;
          Int size;
-      } alwaysDefd[VEXGLO_N_ALWAYSDEFD];
+      } alwaysDefd[];
    }
    VexGuestLayout;
 

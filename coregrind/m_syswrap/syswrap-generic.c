@@ -270,7 +270,20 @@ ML_(notify_core_and_tool_of_mprotect) ( Addr a, SizeT len, Int prot )
                                  "ML_(notify_core_and_tool_of_mprotect)" );
 }
 
-
+#if defined(VGO_linux)
+void
+ML_(notify_core_and_tool_of_madv_guard) ( Addr a, SizeT len, Bool install )
+{
+   page_align_addr_and_len(&a, &len);
+   if (install) {
+      if (VG_(am_notify_madv_guard)( a, len, True ))
+         VG_(discard_translations)( a, (ULong)len,
+                                    "ML_(notify_core_and_tool_of_madv_guard)" );
+   } else {
+      VG_(am_notify_madv_guard)(a, len, False);
+   }
+}
+#endif
 
 #if HAVE_MREMAP
 /* Expand (or shrink) an existing mapping, potentially moving it at
@@ -3112,17 +3125,23 @@ PRE(sys_madvise)
                         ARG1, ARG2, SARG3);
    PRE_REG_READ3(long, "madvise",
                  unsigned long, start, vki_size_t, length, int, advice);
-   /* Ugly hack to try to bypass the problem of guard pages not being
-      understood by valgrind aspace manager.
-      By making the syscall fail, we expect glibc to fallback
-      on implementing guard pages with mprotect PROT_NONE to ensure
-      the valgrind address space manager is not confused wrongly
-      believing the guard page is rw. */
-#ifdef VKI_MADV_GUARD_INSTALL
-   if (ARG3 == VKI_MADV_GUARD_INSTALL)
-      SET_STATUS_Failure( VKI_EINVAL );
-#endif
 }
+
+#if defined(VGO_linux)
+POST(sys_madvise)
+{
+   if (ARG3 == VKI_MADV_GUARD_INSTALL) {
+      Addr a    = ARG1;
+      SizeT len = ARG2;
+      ML_(notify_core_and_tool_of_madv_guard)(a, len, True);
+   }
+   if (ARG3 == VKI_MADV_GUARD_REMOVE) {
+      Addr a    = ARG1;
+      SizeT len = ARG2;
+      ML_(notify_core_and_tool_of_madv_guard)(a, len, False);
+   }
+}
+#endif
 
 #if HAVE_MREMAP
 PRE(sys_mremap)

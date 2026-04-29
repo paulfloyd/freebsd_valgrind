@@ -8,7 +8,7 @@
 
    Copyright (C) 2000-2008 Nicholas Nethercote
       njn@valgrind.org
-   Copyright (C) 2018-2021 Paul Floyd
+   Copyright (C) 2018-2026 Paul Floyd
       pjfloyd@wanadoo.fr
 
    This program is free software; you can redistribute it and/or

@@ -876,6 +876,17 @@ int pthread_once_intercept(pthread_once_t *once_control,
    CALL_FN_W_WW(ret, fn, once_control, init_routine);
    ANNOTATE_IGNORE_READS_AND_WRITES_END();
    DRD_STOP_IGNORING_VAR(*once_control);
+#if defined(VGO_darwin)
+   /*
+    * The Darwin function that implemented this is _os_once. That uses
+    * __ulock_wait/__ulock_wake to make any subsequent threads wait for
+    * the first thread to complete calling the init_routine.
+    * DRD can't see these ulock functions so we need to create
+    * an HB edge manually.
+    */
+   ANNOTATE_HAPPENS_BEFORE(once_control);
+   ANNOTATE_HAPPENS_AFTER(once_control);
+#endif
    return ret;
 }
 

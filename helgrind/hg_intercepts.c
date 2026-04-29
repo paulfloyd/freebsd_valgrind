@@ -2315,6 +2315,33 @@ static int pthread_spin_trylock_WRK(pthread_spinlock_t *lock)
 // darwin:  pthread_rwlock_init$UNIX2003
 // Solaris: rwlock_init (pthread_rwlock_init is built atop of rwlock_init)
 // FreeBSD: pthread_rwlock_init
+#if defined(VGO_solaris)
+__attribute__((noinline))
+static int pthread_rwlock_init_WRK(rwlock_t *rwlock,
+                                   int type, void *arg)
+{
+   int    ret;
+   OrigFn fn;
+   VALGRIND_GET_ORIG_FN(fn);
+   if (TRACE_PTH_FNS) {
+      fprintf(stderr, "<< rwl_init %p", rwlock); fflush(stderr);
+   }
+
+   CALL_FN_W_WWW(ret, fn, rwlock, type, arg);
+
+   if (ret == 0 /*success*/) {
+      DO_CREQ_v_W(_VG_USERREQ__HG_PTHREAD_RWLOCK_INIT_POST,
+                  rwlock_t *, rwlock);
+   } else {
+      DO_PthAPIerror("rwlock_init", ret);
+   }
+
+   if (TRACE_PTH_FNS) {
+      fprintf(stderr, " :: rwl_init -> %d >>\n", ret);
+   }
+   return ret;
+}
+#else
 __attribute__((noinline))
 static int pthread_rwlock_init_WRK(pthread_rwlock_t *rwl,
                                    pthread_rwlockattr_t* attr)
@@ -2340,6 +2367,7 @@ static int pthread_rwlock_init_WRK(pthread_rwlock_t *rwl,
    }
    return ret;
 }
+#endif
 #if defined(VGO_linux)
    PTH_FUNC(int, pthreadZurwlockZuinit, // pthread_rwlock_init
                  pthread_rwlock_t *rwl,
@@ -2359,41 +2387,13 @@ static int pthread_rwlock_init_WRK(pthread_rwlock_t *rwl,
       return pthread_rwlock_init_WRK(rwl, attr);
    }
 #elif defined(VGO_solaris)
-static int pthread_rwlock_init_WRK(pthread_rwlock_t *rwl,
-                                   pthread_rwlockattr_t* attr)
-                                   __attribute__((unused));
+   PTH_FUNC(int, rwlockZuinit, // rwlock_init
+            rwlock_t *rwlock, int type, void *arg) {
+      return pthread_rwlock_init_WRK(rwlock, type, arg);
+   }
 #else
 #  error "Unsupported OS"
 #endif
-
-#if defined(VGO_solaris)
-PTH_FUNC(int, rwlockZuinit, // rwlock_init
-              rwlock_t *rwlock,
-              int type,
-              void *arg)
-{
-   int    ret;
-   OrigFn fn;
-   VALGRIND_GET_ORIG_FN(fn);
-   if (TRACE_PTH_FNS) {
-      fprintf(stderr, "<< rwl_init %p", rwlock); fflush(stderr);
-   }
-
-   CALL_FN_W_WWW(ret, fn, rwlock, type, arg);
-
-   if (ret == 0 /*success*/) {
-      DO_CREQ_v_W(_VG_USERREQ__HG_PTHREAD_RWLOCK_INIT_POST,
-                  rwlock_t *, rwlock);
-   } else {
-      DO_PthAPIerror("rwlock_init", ret);
-   }
-
-   if (TRACE_PTH_FNS) {
-      fprintf(stderr, " :: rwl_init -> %d >>\n", ret);
-   }
-   return ret;
-}
-#endif /* VGO_solaris */
 
 
 //-----------------------------------------------------------

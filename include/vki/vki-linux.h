@@ -5680,6 +5680,99 @@ struct vki_lsm_ctx {
 	__vki_u8 ctx[]; /* __counted_by(ctx_len); */
 };
 
+//----------------------------------------------------------------------
+// From include/uapi/linux/userfaultfd.h
+//----------------------------------------------------------------------
+
+struct vki_uffdio_api {
+   __vki_u64 api;
+   __vki_u64 features;
+   __vki_u64 ioctls;
+};
+
+struct vki_uffdio_range {
+   __vki_u64 start;
+   __vki_u64 len;
+};
+
+struct vki_uffdio_register {
+   struct vki_uffdio_range range;
+   __vki_u64 mode;
+   __vki_u64 ioctls;
+};
+
+struct vki_uffdio_copy {
+   __vki_u64 dst;
+   __vki_u64 src;
+   __vki_u64 len;
+   __vki_u64 mode;
+   __vki_s64 copy;
+};
+
+struct vki_uffdio_zeropage {
+   struct vki_uffdio_range range;
+   __vki_u64 mode;
+   __vki_s64 zeropage;
+};
+
+struct vki_uffdio_move {
+   __vki_u64 dst;
+   __vki_u64 src;
+   __vki_u64 len;
+   __vki_u64 mode;
+   __vki_s64 move;
+};
+
+struct vki_uffdio_writeprotect {
+   struct vki_uffdio_range range;
+   __vki_u64 mode;
+};
+
+struct vki_uffdio_continue {
+   struct vki_uffdio_range range;
+   __vki_u64 mode;
+   __vki_s64 mapped;
+};
+
+struct vki_uffdio_poison {
+   struct vki_uffdio_range range;
+   __vki_u64 mode;
+   __vki_s64 updated;
+};
+
+#define _UFFDIO_REGISTER                (0x00)
+#define _UFFDIO_UNREGISTER              (0x01)
+#define _UFFDIO_WAKE                    (0x02)
+#define _UFFDIO_COPY                    (0x03)
+#define _UFFDIO_ZEROPAGE                (0x04)
+#define _UFFDIO_MOVE                    (0x05)
+#define _UFFDIO_WRITEPROTECT            (0x06)
+#define _UFFDIO_CONTINUE                (0x07)
+#define _UFFDIO_POISON                  (0x08)
+#define _UFFDIO_API                     (0x3F)
+
+#define VKI_UFFDIO 0xAA
+#define VKI_UFFDIO_API              _VKI_IOWR(VKI_UFFDIO, _UFFDIO_API,      \
+                                      struct vki_uffdio_api)
+#define VKI_UFFDIO_REGISTER         _VKI_IOWR(VKI_UFFDIO, _UFFDIO_REGISTER, \
+                                      struct vki_uffdio_register)
+#define VKI_UFFDIO_UNREGISTER       _VKI_IOR(VKI_UFFDIO, _UFFDIO_UNREGISTER,        \
+                                     struct vki_uffdio_range)
+#define VKI_UFFDIO_WAKE             _VKI_IOR(VKI_UFFDIO, _UFFDIO_WAKE,      \
+                                     struct vki_uffdio_range)
+#define VKI_UFFDIO_COPY             _VKI_IOWR(VKI_UFFDIO, _UFFDIO_COPY,     \
+                                      struct vki_uffdio_copy)
+#define VKI_UFFDIO_ZEROPAGE         _VKI_IOWR(VKI_UFFDIO, _UFFDIO_ZEROPAGE, \
+                                      struct vki_uffdio_zeropage)
+#define VKI_UFFDIO_MOVE             _VKI_IOWR(VKI_UFFDIO, _UFFDIO_MOVE,     \
+                                      struct vki_uffdio_move)
+#define VKI_UFFDIO_WRITEPROTECT     _VKI_IOWR(VKI_UFFDIO, _UFFDIO_WRITEPROTECT, \
+                                      struct vki_uffdio_writeprotect)
+#define VKI_UFFDIO_CONTINUE         _VKI_IOWR(VKI_UFFDIO, _UFFDIO_CONTINUE, \
+                                      struct vki_uffdio_continue)
+#define VKI_UFFDIO_POISON           _VKI_IOWR(VKI_UFFDIO, _UFFDIO_POISON, \
+                                      struct vki_uffdio_poison)
+
 /*--------------------------------------------------------------------*/
 /*--- end                                                          ---*/
 /*--------------------------------------------------------------------*/

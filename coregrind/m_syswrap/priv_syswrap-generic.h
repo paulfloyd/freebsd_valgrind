@@ -102,6 +102,9 @@ extern void
 ML_(notify_core_and_tool_of_mprotect) ( Addr a, SizeT len, Int prot );
 
 extern void
+ML_(notify_core_and_tool_of_madv_guard) ( Addr a, SizeT len, Bool install );
+
+extern void
 ML_(pre_mem_read_sockaddr) ( ThreadId tid, const HChar *description,
                              struct vki_sockaddr *sa, UInt salen );
 extern void

@@ -39,16 +39,38 @@ Massif:   15: xpc_array_create
 Massif:   16: _NXMapRehash(_NXMapTable*)
 Massif:   17: arc4_init
 Massif:   18: realizeClassWithoutSwift(objc_class*)
-Massif:   19: _objc_init
-Massif:   20: objc::DenseMap<char const*, objc::detail::DenseSetEmpty, objc::DenseMapValueInfo<objc::detail::DenseSetEmpty>, objc::DenseMapInfo<char const*>, objc::detail::DenseSetPair<char const*> >::grow(unsigned int)
-Massif:   21: realizeClassWithoutSwift(objc_class*, objc_class*)
-Massif:   22: schedule_class_load(objc_class*)
-Massif:   23: objc::SafeRanges::add(unsigned long, unsigned long)
-Massif:   24: _xpc_alloc
-Massif:   25: _xpc_strdup
-Massif:   26: _vasprintf
-Massif:   27: _fetchInitializingClassList(bool)
-Massif:   28: cache_t::allocateBuckets(unsigned int)
+Massif:   19: objc_class::setHasCustomRR(bool)
+Massif:   20: _objc_flush_caches
+Massif:   21: remapClass(objc_class*)
+Massif:   22: isEqualPrototype(void const*, void const*, void const*)
+Massif:   23: TimeLogger::log(char const*)
+Massif:   24: freeBuckets(NXHashTable*, int)
+Massif:   25: NXHashGet
+Massif:   26: call_load_methods
+Massif:   27: objc_msgLookup
+Massif:   28: _objc_init
+Massif:   29: objc::DenseMap<char const*, objc::detail::DenseSetEmpty, objc::DenseMapValueInfo<objc::detail::DenseSetEmpty>, objc::DenseMapInfo<char const*>, objc::detail::DenseSetPair<char const*> >::grow(unsigned int)
+Massif:   30: realizeClassWithoutSwift(objc_class*, objc_class*)
+Massif:   31: schedule_class_load(objc_class*)
+Massif:   32: objc::SafeRanges::add(unsigned long, unsigned long)
+Massif:   33: getProtocol(char const*)
+Massif:   34: class_setWeakIvarLayout
+Massif:   35: NXMapRemove
+Massif:   36: int sliceRequiresGC<Arch32>(Arch32::mh_t, FileSlice)
+Massif:   37: _mapStrIsEqual(_NXMapTable*, void const*, void const*)
+Massif:   38: _NXMapMember(_NXMapTable*, void const*, void**)
+Massif:   39: NXMapInsert
+Massif:   40: objc::DenseMap<objc_class*, objc_class*, objc::DenseMapValueInfo<objc_class*>, objc::DenseMapInfo<objc_class*>, objc::detail::DenseMapPair<objc_class*, objc_class*> >::grow(unsigned int)
+Massif:   41: object_setClass
+Massif:   42: objc_msgSend_stret
+Massif:   43: protocols()
+Massif:   44: copySwiftV1MangledName(char const*, bool)
+Massif:   45: _getObjc2ProtocolList(header_info const*, unsigned long*)
+Massif:   46: _xpc_alloc
+Massif:   47: _xpc_strdup
+Massif:   48: _vasprintf
+Massif:   49: _fetchInitializingClassList(bool)
+Massif:   50: cache_t::allocateBuckets(unsigned int)
 Massif: startup S.  0 (t:0, hp:0, ex:0, st:0)
 Massif:   alloc S.  1 (t:32, hp:16, ex:16, st:0)
 Massif:   alloc S.  2 (t:64, hp:32, ex:32, st:0)

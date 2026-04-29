@@ -252,8 +252,12 @@ static void usage_NORETURN ( int need_help )
 "                  recovered by stack scanning [5]\n"
 "    --resync-filter=no|yes|verbose [yes on MacOS, no on other OSes]\n"
 "              attempt to avoid expensive address-space-resync operations\n"
-"    --max-threads=<number>    maximum number of threads that valgrind can\n"
-"                              handle [%d]\n"
+"    --max-threads=<number>     maximum number of threads that valgrind can\n"
+"                               handle [%d]\n"
+#if defined(VGO_linux)
+"    --max-guard-pages=<number> maximum number of madvise guard pages that\n"
+"                               valgrind can handle [%d]\n"
+#endif
 "\n";
 
    const HChar usage2[] =
@@ -337,8 +341,8 @@ static void usage_NORETURN ( int need_help )
 "  Extra options read from ~/.valgrindrc, $VALGRIND_OPTS, ./.valgrindrc\n"
 "\n"
 "  %s is %s\n"
-"  Valgrind is Copyright (C) 2000-2024, and GNU GPL'd, by Julian Seward et al.\n"
-"  LibVEX is Copyright (C) 2004-2024, and GNU GPL'd, by OpenWorks LLP et al.\n"
+"  Valgrind is Copyright (C) 2000-2026, and GNU GPL'd, by Julian Seward et al.\n"
+"  LibVEX is Copyright (C) 2004-2026, and GNU GPL'd, by OpenWorks LLP et al.\n"
 "\n"
 "  Bug reports, feedback, admiration, abuse, etc, to: %s.\n"
 "\n";
@@ -380,6 +384,9 @@ static void usage_NORETURN ( int need_help )
                   VG_(vgdb_prefix_default)() /* char* */,
                   N_SECTORS_DEFAULT          /* int */,
                   MAX_THREADS_DEFAULT        /* int */
+#if defined(VGO_linux)
+                , MAX_GUARDS_DEFAULT         /* int */
+#endif
                );
    if (need_help > 1 && VG_(details).name) {
       VG_(printf)("  user options for %s:\n", VG_(details).name);
@@ -512,7 +519,19 @@ static void process_option (Clo_Mode mode,
    else if VG_INT_CLOM(cloE, arg, "--main-stacksize", VG_(clo_main_stacksize)) {}
 
    // Set up VG_(clo_max_threads); needed for VG_(tl_pre_clo_init)
-   else if VG_INT_CLOM(cloE, arg, "--max-threads", VG_(clo_max_threads)) {}
+   else if VG_INT_CLOM(cloE, arg, "--max-threads", VG_(clo_max_threads)) {
+#if defined(VGO_linux)
+      // VG_(clo_max_guard_pages) defaults to VG_(clo_max_threads)
+      // unless explititly set otherwise - below.  With glibc upstream
+      // commit a6fbe36b7f31 and others, a guard page is installed for
+      // each new thread.
+      VG_(clo_max_guard_pages) = VG_(clo_max_threads);
+#endif
+   }
+#if defined(VGO_linux)
+   // Set up VG_(clo_max_guard_pages); needed for aspacemgr init
+   else if VG_INT_CLOM(cloE, arg, "--max-guard-pages", VG_(clo_max_guard_pages)) {}
+#endif
 
    // Set up VG_(clo_sim_hints). This is needed a.o. for an inner
    // running in an outer, to have "no-inner-prefix" enabled
@@ -1333,8 +1352,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    /* Start the debugging-log system ASAP.  First find out how many
       "-d"s were specified.  This is a pre-scan of the command line.  Also
       get --profile-heap=yes, --core-redzone-size, --redzone-size
-      --aspace-minaddr which are needed by the time we start up dynamic
-      memory management.  */
+      --aspace-minaddr, --max-guard-pages  which are needed by the time
+      we start up dynamic memory management.  */
    loglevel = 0;
    for (i = 1; i < argc; i++) {
       const HChar* tmp_str;
@@ -1355,6 +1374,18 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
                                                    &errmsg))
             VG_(fmsg_bad_option)(argv[i], "%s\n", errmsg);
       }
+      if VG_INT_CLOM(cloE, argv[i], "--max-threads", VG_(clo_max_threads)) {
+#if defined(VGO_linux)
+         // VG_(clo_max_guard_pages) defaults to VG_(clo_max_threads)
+         // unless explititly set otherwise - below.  With glibc upstream
+         // commit a6fbe36b7f31 and others, a guard page is installed for
+         // each new thread.
+         VG_(clo_max_guard_pages) = VG_(clo_max_threads);
+#endif
+      }
+#if defined(VGO_linux)
+      if VG_INT_CLOM(cloE, argv[i], "--max-guard-pages", VG_(clo_max_guard_pages)) {}
+#endif
    }
 
    /* ... and start the debug logger.  Now we can safely emit logging

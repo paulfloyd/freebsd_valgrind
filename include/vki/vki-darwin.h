@@ -419,6 +419,9 @@ typedef uint32_t vki_u32;
 #define VKI_F_FREEZE_FS	F_FREEZE_FS
 #define VKI_F_THAW_FS	F_THAW_FS
 #define	VKI_F_GLOBAL_NOCACHE	F_GLOBAL_NOCACHE
+#if defined(F_GETPROTECTIONCLASS)
+#define VKI_F_GETPROTECTIONCLASS F_GETPROTECTIONCLASS
+#endif
 
 #define VKI_FD_CLOEXEC	FD_CLOEXEC
 
@@ -1343,5 +1346,37 @@ struct vki_necp_agent_use_parameters {
 
 typedef posix_spawn_file_actions_t vki_posix_spawn_file_actions_t;
 typedef posix_spawnattr_t vki_posix_spawnattr_t;
+
+// from sys/persona.h, not public
+#define VKI_PERSONA_INFO_V1       1
+#define VKI_PERSONA_INFO_V2       2
+#define VKI_PERSONA_OP_ALLOC    1
+#define VKI_PERSONA_OP_PALLOC   2
+#define VKI_PERSONA_OP_DEALLOC  3
+#define VKI_PERSONA_OP_GET      4
+#define VKI_PERSONA_OP_INFO     5
+#define VKI_PERSONA_OP_PIDINFO  6
+#define VKI_PERSONA_OP_FIND     7
+#define VKI_PERSONA_OP_GETPATH  8
+#define VKI_PERSONA_OP_FIND_BY_TYPE  9
+
+#define VKI_MAXLOGNAME      255
+
+struct vki_kpersona_info {
+   /* v1 fields */
+   vki_uint32_t persona_info_version;
+
+   uid_t    persona_id;
+   Int      persona_type;
+   vki_gid_t    persona_gid; /* unused */
+   vki_uint32_t persona_ngroups; /* unused */
+   vki_gid_t    persona_groups[NGROUPS]; /* unused */
+   vki_uid_t    persona_gmuid; /* unused */
+   HChar     persona_name[VKI_MAXLOGNAME + 1];
+
+   /* v2 fields */
+   vki_uid_t    persona_uid;
+} __attribute__((packed));
+
 
 #endif

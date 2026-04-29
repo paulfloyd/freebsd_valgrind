@@ -781,7 +781,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENX_(__NR_mlockall,          sys_mlockall),          // 230
    LINX_(__NR_munlockall,        sys_munlockall),        // 231
    GENXY(__NR_mincore,           sys_mincore),           // 232
-   GENX_(__NR_madvise,           sys_madvise),           // 233
+   GENXY(__NR_madvise,           sys_madvise),           // 233
    LINX_(__NR_remap_file_pages,  sys_remap_file_pages),  // 234
    LINX_(__NR_mbind,             sys_mbind),             // 235
    LINXY(__NR_get_mempolicy,     sys_get_mempolicy),     // 236

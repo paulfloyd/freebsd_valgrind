@@ -673,7 +673,7 @@ static SyscallTableEntry syscall_table[] = {
    LINX_(__NR_setfsgid, sys_setfsgid),                                // 216
    LINX_(__NR_pivot_root, sys_pivot_root),                            // 217
    GENXY(__NR_mincore, sys_mincore),                                  // 218
-   GENX_(__NR_madvise,  sys_madvise),                                 // 219
+   GENXY(__NR_madvise,  sys_madvise),                                 // 219
 
    GENXY(__NR_getdents64,  sys_getdents64),                           // 220
    GENX_(221, sys_ni_syscall), /* unimplemented (by the kernel) */    // 221

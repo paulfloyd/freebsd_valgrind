@@ -11054,6 +11054,97 @@ PRE(sys_ioctl)
          PRE_MEM_WRITE("ioctl(PROCMAP_QUERY)", (Addr)pq->build_id_addr, pq->build_id_size);
       break;
    }
+   case VKI_UFFDIO_API: {
+      struct vki_uffdio_api *ap =
+         (struct vki_uffdio_api *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (ap, sizeof(struct vki_uffdio_api)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_API).api", ap->api);
+      PRE_FIELD_READ("ioctl(UFFDIO_API).features", ap->features);
+      PRE_MEM_WRITE("ioctl(UFFDIO_API)", (Addr)ap, sizeof(*ap));
+      break;
+   }
+   case VKI_UFFDIO_REGISTER: {
+      struct vki_uffdio_register *ur =
+         (struct vki_uffdio_register *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (ur, sizeof(struct vki_uffdio_register)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_REGISTER).mode", ur->mode);
+      PRE_FIELD_READ("ioctl(UFFDIO_REGISTER).range", ur->range);
+      PRE_MEM_WRITE("ioctl(UFFDIO_REGISTER)", (Addr)ur, sizeof(*ur));
+      break;
+   }
+   case VKI_UFFDIO_UNREGISTER:
+   case VKI_UFFDIO_WAKE: {
+      struct vki_uffdio_range *rg =
+         (struct vki_uffdio_range *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (rg, sizeof(struct vki_uffdio_range)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_UNREGISTER).start", rg->start);
+      PRE_FIELD_READ("ioctl(UFFDIO_UNREGISTER).len", rg->len);
+      break;
+   }
+   case VKI_UFFDIO_COPY: {
+      struct vki_uffdio_copy *uc =
+         (struct vki_uffdio_copy *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (uc, sizeof(struct vki_uffdio_copy)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_COPY).dst", uc->dst);
+      PRE_FIELD_READ("ioctl(UFFDIO_COPY).src", uc->src);
+      PRE_FIELD_READ("ioctl(UFFDIO_COPY).len", uc->len);
+      PRE_FIELD_READ("ioctl(UFFDIO_COPY).mode", uc->mode);
+      PRE_MEM_WRITE("ioctl(UFFDIO_COPY)", (Addr)uc, sizeof(*uc));
+      break;
+   }
+   case VKI_UFFDIO_ZEROPAGE: {
+      struct vki_uffdio_zeropage *zp =
+         (struct vki_uffdio_zeropage *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (zp, sizeof(struct vki_uffdio_zeropage)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_REGISTER).range", zp->range);
+      PRE_FIELD_READ("ioctl(UFFDIO_REGISTER).mode", zp->mode);
+      break;
+   }
+   case VKI_UFFDIO_MOVE: {
+      struct vki_uffdio_move *mv =
+         (struct vki_uffdio_move *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (mv, sizeof(struct vki_uffdio_move)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_MOVE).dst", mv->dst);
+      PRE_FIELD_READ("ioctl(UFFDIO_MOVE).src", mv->src);
+      PRE_FIELD_READ("ioctl(UFFDIO_MOVE).len", mv->len);
+      PRE_FIELD_READ("ioctl(UFFDIO_MOVE).mode", mv->mode);
+      PRE_MEM_WRITE("ioctl(UFFDIO_MOVE)", (Addr)mv, sizeof(*mv));
+      break;
+   }
+   case VKI_UFFDIO_WRITEPROTECT: {
+      struct vki_uffdio_writeprotect *vp =
+         (struct vki_uffdio_writeprotect *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (vp, sizeof(struct vki_uffdio_writeprotect)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_WRITEPROTECT).range", vp->range);
+      break;
+   }
+   case VKI_UFFDIO_CONTINUE: {
+      struct vki_uffdio_continue *vk =
+         (struct vki_uffdio_continue *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (vk, sizeof(struct vki_uffdio_continue)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_CONTINUE).range", vk->range);
+      PRE_FIELD_READ("ioctl(UFFDIO_CONTINUE).mode", vk->mode);
+      PRE_MEM_WRITE("ioctl(UFFDIO_CONTINUE)", (Addr)vk, sizeof(*vk));
+      break;
+   }
+   case VKI_UFFDIO_POISON: {
+      struct vki_uffdio_poison *po =
+         (struct vki_uffdio_poison *)(Addr)ARG3;
+      if (!ML_(safe_to_deref) (po, sizeof(struct vki_uffdio_poison)))
+         break;
+      PRE_FIELD_READ("ioctl(UFFDIO_POISON).range", po->range);
+      PRE_FIELD_READ("ioctl(UFFDIO_POISON).mode", po->mode);
+      PRE_MEM_WRITE("ioctl(UFFDIO_POISON)", (Addr)po, sizeof(*po));
+      break;
+   }
 
    default:
       /* EVIOC* are variable length and return size written on success */
@@ -13226,6 +13317,52 @@ POST(sys_ioctl)
       POST_MEM_WRITE((Addr)pq, pq->size);
       break;
    }
+   case VKI_UFFDIO_API: {
+      struct vki_uffdio_api *ap =
+         (struct vki_uffdio_api *)(Addr)ARG3;
+      POST_FIELD_WRITE(ap->features);
+      POST_FIELD_WRITE(ap->ioctls);
+      break;
+   }
+   case VKI_UFFDIO_REGISTER: {
+      struct vki_uffdio_register *ur =
+         (struct vki_uffdio_register *)(Addr)ARG3;
+      POST_FIELD_WRITE(ur->ioctls);
+      break;
+   }
+   // case VKI_UFFDIO_UNREGISTER - no output members
+   // case VKI_UFFDIO_WAKE - no output members
+   case VKI_UFFDIO_COPY: {
+      struct vki_uffdio_copy *uc =
+         (struct vki_uffdio_copy *)(Addr)ARG3;
+      POST_FIELD_WRITE(uc->mode);
+      break;
+   }
+   case VKI_UFFDIO_ZEROPAGE: {
+      struct vki_uffdio_zeropage *zp =
+         (struct vki_uffdio_zeropage *)(Addr)ARG3;
+      POST_FIELD_WRITE(zp->mode);
+      break;
+   }
+   case VKI_UFFDIO_MOVE: {
+      struct vki_uffdio_move *mv =
+         (struct vki_uffdio_move *)(Addr)ARG3;
+      POST_FIELD_WRITE(mv->move);
+      break;
+   }
+   // case VKI_UFFDIO_WRITEPROTECT: no output members
+   case VKI_UFFDIO_CONTINUE: {
+      struct vki_uffdio_continue *vk =
+         (struct vki_uffdio_continue *)(Addr)ARG3;
+      POST_FIELD_WRITE(vk->mapped);
+      break;
+   }
+   case VKI_UFFDIO_POISON: {
+      struct vki_uffdio_poison *po =
+         (struct vki_uffdio_poison *)(Addr)ARG3;
+      POST_FIELD_WRITE(po->updated);
+      break;
+   }
 
    default:
       /* EVIOC* are variable length and return size written on success */
@@ -14694,7 +14831,7 @@ PRE(sys_fsconfig)
    if (ARG3)
       PRE_MEM_RASCIIZ( "fsconfig(key)", ARG3);
    if (!ML_(fd_allowed)(ARG1, "fsconfig", tid, False))
-      SET_STATUS_Failure( VKI_EBADF );
+      SET_STATUS_Failure( VKI_EINVAL ); // Bug 518951
    /* XXX we could also check the value based on the cmd FSCONFIG_...  */
 }
 

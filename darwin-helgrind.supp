@@ -192,6 +192,13 @@
 }
 
 {
+   macOS1014:list_array_tt<unsigned long, protocol_list_t>::tryFree()
+   Helgrind:Race
+   fun:_ZN13list_array_ttIm15protocol_list_tE7tryFreeEv
+   fun:NXMapRemove
+}
+
+{
    macOS1015:NXMapInsert
    Helgrind:Race
    fun:NXMapInsert
@@ -218,6 +225,30 @@
 }
 
 {
+   macOS1015:__csrctl
+   Helgrind:Race
+   fun:__csrctl
+}
+
+{
+   macOS1015:search_method_list(method_list_t const*, objc_selector*)
+   Helgrind:Race
+   fun:_ZL18search_method_listPK13method_list_tP13objc_selector
+}
+
+{
+   macOS1015:cerror
+   Helgrind:Race
+   fun:cerror
+}
+
+{
+   macOS1015:getPreoptimizedClass
+   Helgrind:Race
+   fun:getPreoptimizedClass
+}
+
+{
    maxOS1100:dlopen_internal
    Helgrind:Race
    ...
@@ -229,4 +260,50 @@
    Helgrind:Race
    ...
    fun:__CFInitialize
+}
+
+{
+   macOS1300:voucher_activity_trace_v_2
+   Helgrind:Race
+   fun:_platform_memmove$VARIANT$*
+   fun:voucher_activity_trace_v_2
+}
+
+{
+   macOS1300:Main_Decrypt_Loop
+   Helgrind:Race
+   fun:Main_Decrypt_Loop
+}
+
+{
+   macOS1300:ccrng_schedule_timer_notify_reseed
+   Helgrind:Race
+   fun:ccrng_schedule_timer_notify_reseed
+}
+
+{
+   macOS1300:drbg_reseed
+   Helgrind:Race
+   fun:drbg_reseed
+}
+
+{
+   macOS1300:ccrng_schedule_*read
+   Helgrind:Race
+   fun:ccrng_schedule_*read
+}
+
+{
+   macOS1300:getenv
+   Helgrind:Race
+   fun:__findenv_locked
+   fun:getenv
+}
+
+{
+   macOS1300:exit1
+   Helgrind:Race
+   fun:__sflush
+   fun:_fwalk
+   fun:exit
 }

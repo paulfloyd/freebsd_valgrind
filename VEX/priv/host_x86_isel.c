@@ -3861,6 +3861,9 @@ static HReg iselVecExpr_wrk ( ISelEnv* env, const IRExpr* e )
          return dst;
       }
 
+      case Iop_CmpEQ64x2:
+         fn = (HWord)h_generic_calc_CmpEQ64x2;
+         goto do_SseAssistedBinary;
       case Iop_NarrowBin32to16x8:
          fn = (HWord)h_generic_calc_NarrowBin32to16x8;
          goto do_SseAssistedBinary;
@@ -3894,6 +3897,12 @@ static HReg iselVecExpr_wrk ( ISelEnv* env, const IRExpr* e )
       case Iop_Mul32x4:
          fn = (HWord)h_generic_calc_Mul32x4;
          goto do_SseAssistedBinary;
+      case Iop_SarN64x2:
+         fn = (HWord)h_generic_calc_SarN64x2;
+         goto do_SseAssistedVectorAndScalar;
+      case Iop_SarN8x16:
+         fn = (HWord)h_generic_calc_SarN8x16;
+         goto do_SseAssistedVectorAndScalar;
       do_SseAssistedBinary: {
          /* As with the amd64 case (where this is copied from) we
             generate pretty bad code. */
@@ -3935,6 +3944,51 @@ static HReg iselVecExpr_wrk ( ISelEnv* env, const IRExpr* e )
                                       3, mk_RetLoc_simple(RLPri_None) ));
          /* fetch the result from memory, using %r_argp, which the
             register allocator will keep alive across the call. */
+         addInstr(env, X86Instr_SseLdSt(True/*isLoad*/, dst,
+                                        X86AMode_IR(0, argp)));
+         /* and finally, clear the space */
+         add_to_esp(env, 112);
+         return dst;
+      }
+
+      do_SseAssistedVectorAndScalar: {
+         /* RRRufff!  RRRufff code is what we're generating here.  Oh
+            well. */
+         vassert(fn != 0);
+         HReg dst = newVRegV(env);
+         HReg argL = iselVecExpr(env, e->Iex.Binop.arg1);
+         HReg argR = iselIntExpr_R(env, e->Iex.Binop.arg2);
+         HReg argp = newVRegI(env);
+
+         /* Allocate stack space*/
+         sub_from_esp(env, 112);
+         /* leal 48(%esp), %argp  -- point into it */
+         addInstr(env, X86Instr_Lea32(X86AMode_IR(48, hregX86_ESP()),
+                                        argp));
+         /* andl $-16, %argp      -- 16-align the pointer */
+         addInstr(env, X86Instr_Alu32R(Xalu_AND,
+                                      X86RMI_Imm( ~(UInt)15 ),
+                                      argp));
+         /* Prepare 2 vector arg regs:
+            leal 0(%argp), %eax result pointer
+            leal 16(%argp), %edx
+         */
+         addInstr(env, X86Instr_Lea32(X86AMode_IR(0, argp),
+                                      hregX86_EAX()));
+         addInstr(env, X86Instr_Lea32(X86AMode_IR(16, argp),
+                                      hregX86_EDX()));
+         /* Store the vector arg, at (%edx):
+            movupd  %argL, 0(%edx)
+         */
+         addInstr(env, X86Instr_SseLdSt(False/*!isLoad*/, argL,
+                                        X86AMode_IR(0, hregX86_EDX())));
+         /* And get the scalar value into ecx */
+         addInstr(env, mk_iMOVsd_RR(argR, hregX86_ECX()));
+
+         /* call the helper */
+         addInstr(env, X86Instr_Call( Xcc_ALWAYS, (Addr32)fn,
+                                      3, mk_RetLoc_simple(RLPri_None) ));
+         /* fetch the result from memory, using %argp */
          addInstr(env, X86Instr_SseLdSt(True/*isLoad*/, dst,
                                         X86AMode_IR(0, argp)));
          /* and finally, clear the space */

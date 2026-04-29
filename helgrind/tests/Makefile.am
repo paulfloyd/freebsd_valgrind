@@ -15,6 +15,8 @@ noinst_SCRIPTS = \
 	filter_stderr
 
 EXTRA_DIST = \
+	bug513598.vgtest \
+	lock_destroy_report.vgtest lock_destroy_report.stderr.exp \
 	annotate_hbefore.vgtest \
 	annotate_rwlock.vgtest annotate_rwlock.stderr.exp \
 	annotate_smart_pointer.vgtest annotate_smart_pointer.stderr.exp \
@@ -96,7 +98,6 @@ EXTRA_DIST = \
 	tc12_rwl_trivial.vgtest \
 		tc12_rwl_trivial.stderr.exp \
 		tc12_rwl_trivial.stderr.exp-darwin970 \
-		tc12_rwl_trivial.stderr.exp-solaris \
 		tc12_rwl_trivial.stderr.exp-freebsd \
 	tc13_laog1.vgtest tc13_laog1.stderr.exp \
 	tc14_laog_dinphils.vgtest \
@@ -146,7 +147,9 @@ noinst_HEADERS = safe-pthread.h safe-semaphore.h
 # should be conditionally compiled like tc20_verifywrap is.
 check_PROGRAMS = \
 	annotate_hbefore \
+	bug513598 \
 	bug327548 \
+	lock_destroy_report \
 	bug484480 \
 	cond_init_destroy \
 	cond_timedwait_invalid \

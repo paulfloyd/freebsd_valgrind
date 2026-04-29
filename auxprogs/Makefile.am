@@ -21,7 +21,8 @@ LTP_FILTERS = \
 	filters/select03 \
 	filters/munmap01
 
-LTP_PATCHES =
+LTP_PATCHES = \
+	ltp-patches/openat2.patch
 
 EXTRA_DIST = \
 	docs/valgrind-listener-manpage.xml \

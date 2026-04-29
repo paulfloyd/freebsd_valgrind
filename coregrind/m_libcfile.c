@@ -1865,7 +1865,7 @@ Bool VG_(realpath)(const HChar *path, HChar *resolved)
    }
 
    if (VKI_S_ISLNK(statbuf.mode)) {
-      SizeT link_len = VG_(readlink)(path, tmp, VKI_PATH_MAX);
+      SSizeT link_len = VG_(readlink)(path, tmp, VKI_PATH_MAX);
       if (link_len < 0)
          return False;
       tmp[link_len] = '\0';

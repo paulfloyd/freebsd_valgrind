@@ -766,6 +766,38 @@
    fun:_NXHashRehashToCapacity
 }
 
+{
+   macOS1014:remapClass(objc_class*)
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc_zone_calloc
+   fun:_ZL10remapClassP10objc_class
+}
+
+{
+   macOS1014:NXHashGet
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:NXHashGet
+}
+
+{
+   macOS1014:NXHashInsert
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc*
+   fun:NXHashInsert
+}
+
+{
+   macOS1014:isEqualPrototype(void const*, void const*, void const*)
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc_zone_malloc
+   fun:_ZL16isEqualPrototypePKvS0_S0_
+}
+
 # I suppose that this is deliberate
 # and that Apple know what they are doing?
 # On macOS 12 at least this seems to have changed name to ___chkstk_darwin
@@ -782,6 +814,16 @@
    match-leak-kinds: definite
    fun:malloc
    fun:_mh_execute_header
+}
+
+{
+   macOS1015:_objc_atfork_parent
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:class_setWeakIvarLayout
+   fun:class_setWeakIvarLayout
+   fun:_objc_atfork_parent
 }
 
 # FIXME PJF all these Addr* issues looks like problems with memory mapping
@@ -920,4 +962,32 @@
    Memcheck:Value8
    ...
    fun:libSystem_atfork_child
+}
+
+{
+   macOS1300:_fetchInitializingClassList(bool)
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:?alloc
+   fun:_ZL27_fetchInitializingClassListb
+}
+
+{
+   macOS1300:libSystem_initializer
+   Memcheck:Param
+   mach_msg2(msg)
+   fun:mach_msg2_trap
+   fun:mach_msg2_internal
+   fun:task_set_special_port
+   fun:_os_trace_create_debug_control_port
+   fun:_libtrace_init
+   fun:libSystem_initializer
+}
+
+{
+   macOS1300:fork
+   Memcheck:Addr4
+   fun:xpc_atfork_child
+   fun:libSystem_atfork_child
+   fun:fork
 }

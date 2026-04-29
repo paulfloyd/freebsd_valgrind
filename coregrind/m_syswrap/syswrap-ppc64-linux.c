@@ -846,7 +846,7 @@ static SyscallTableEntry syscall_table[] = {
    LINX_(__NR_pivot_root,        sys_pivot_root),         // 203
    LINXY(__NR_fcntl64,           sys_fcntl64),            // 204 !!!!?? 32bit only */
 
-   GENX_(__NR_madvise,           sys_madvise),            // 205
+   GENXY(__NR_madvise,           sys_madvise),            // 205
    GENXY(__NR_mincore,           sys_mincore),            // 206
    LINX_(__NR_gettid,            sys_gettid),             // 207
    LINXY(__NR_tkill,             sys_tkill),              // 208

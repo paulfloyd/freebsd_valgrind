@@ -2,6 +2,7 @@
 include $(top_srcdir)/Makefile.tool-tests.am
 
 dist_noinst_SCRIPTS = filter_stderr \
+	filter_madv_guard \
 	filter_ioctl_procmap_query
 
 EXTRA_DIST = \
@@ -22,6 +23,7 @@ EXTRA_DIST = \
 	ioctl-tiocsig.vgtest \
 	lsframe1.vgtest lsframe1.stderr.exp \
 	lsframe2.vgtest lsframe2.stderr.exp \
+	madv_guard.stdout.exp madv_guard.vgtest \
 	memfd_create.vgtest memfd_create.stderr.exp \
 		memfd_create.stderr.exp-fcntl64 \
 	rfcomm.vgtest rfcomm.stderr.exp \
@@ -112,6 +114,10 @@ if HAVE_LIBAIO
 if HAVE_NR_IO_PGETEVENTS
         check_PROGRAMS += bug420682_2
 endif
+endif
+
+if HAVE_MADV_GUARD_INSTALL
+        check_PROGRAMS += madv_guard
 endif
 
 AM_CFLAGS   += $(AM_FLAG_M3264_PRI)

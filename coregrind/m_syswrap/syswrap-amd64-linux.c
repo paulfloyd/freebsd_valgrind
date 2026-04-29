@@ -503,7 +503,7 @@ static SyscallTableEntry syscall_table[] = {
    GENX_(__NR_mremap,            sys_mremap),         // 25 
    GENX_(__NR_msync,             sys_msync),          // 26 
    GENXY(__NR_mincore,           sys_mincore),        // 27 
-   GENX_(__NR_madvise,           sys_madvise),        // 28 
+   GENXY(__NR_madvise,           sys_madvise),        // 28 
    LINX_(__NR_shmget,            sys_shmget),         // 29 
 
    LINXY(__NR_shmat,             sys_shmat),          // 30 

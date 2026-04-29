@@ -8,7 +8,7 @@
    This file is part of Valgrind, a dynamic binary instrumentation
    framework.
 
-   Copyright IBM Corp. 2010-2020
+   Copyright IBM Corp. 2010-2026
    Copyright (C) 2012-2017  Florian Krohm   (britzel@acm.org)
 
    This program is free software; you can redistribute it and/or
@@ -795,6 +795,12 @@ s390_insn_get_reg_usage(HRegUsage *u, const s390_insn *insn)
       s390_opnd_RMI_get_reg_usage(u, insn->variant.alu.op2);
       break;
 
+   case S390_INSN_ALU3:
+      addHRegUse(u, HRmWrite, insn->variant.alu3.dst);
+      addHRegUse(u, HRmRead, insn->variant.alu3.op1);
+      addHRegUse(u, HRmRead, insn->variant.alu3.op2);
+      break;
+
    case S390_INSN_SMUL:
    case S390_INSN_UMUL:
       addHRegUse(u, HRmModify, insn->variant.mul.dst_lo); /* op1 */
@@ -1149,6 +1155,12 @@ s390_insn_map_regs(HRegRemap *m, s390_insn *insn)
    case S390_INSN_ALU:
       insn->variant.alu.dst = lookupHRegRemap(m, insn->variant.alu.dst);
       s390_opnd_RMI_map_regs(m, &insn->variant.alu.op2);
+      break;
+
+   case S390_INSN_ALU3:
+      insn->variant.alu3.dst = lookupHRegRemap(m, insn->variant.alu3.dst);
+      insn->variant.alu3.op1 = lookupHRegRemap(m, insn->variant.alu3.op1);
+      insn->variant.alu3.op2 = lookupHRegRemap(m, insn->variant.alu3.op2);
       break;
 
    case S390_INSN_SMUL:
@@ -1665,6 +1677,19 @@ emit_RRF5(UChar *p, UInt op, UChar m4, UChar r1, UChar r2)
    ULong the_insn = op;
 
    the_insn |= ((ULong)m4) << 8;
+   the_insn |= ((ULong)r1) << 4;
+   the_insn |= ((ULong)r2) << 0;
+
+   return emit_4bytes(p, the_insn);
+}
+
+
+static UChar *
+emit_RRF6(UChar *p, UInt op, UChar r1, UChar r2, UChar r3)
+{
+   ULong the_insn = op;
+
+   the_insn |= ((ULong)r3) << 12;
    the_insn |= ((ULong)r1) << 4;
    the_insn |= ((ULong)r2) << 0;
 
@@ -2521,9 +2546,9 @@ s390_emit_IILF(UChar *p, UChar r1, UInt i2)
 
 
 static UChar *
-s390_emit_IPM(UChar *p, UChar r1, UChar r2)
+s390_emit_IPM(UChar *p, UChar r1)
 {
-   return emit_RRE(p, 0xb2220000, r1, r2);
+   return emit_RRE(p, 0xb2220000, r1, 0);
 }
 
 
@@ -2559,6 +2584,20 @@ static UChar *
 s390_emit_LY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
 {
    return emit_RXY(p, 0xe30000000058ULL, r1, x2, b2, dl2, dh2);
+}
+
+
+static UChar *
+s390_emit_LA(UChar *p, UChar r1, UChar x2, UChar b2, UShort d2)
+{
+   return emit_RX(p, 0x41000000, r1, x2, b2, d2);
+}
+
+
+static UChar *
+s390_emit_LAY(UChar *p, UChar r1, UChar x2, UChar b2, UShort dl2, UChar dh2)
+{
+   return emit_RXY(p, 0xe30000000071ULL, r1, x2, b2, dl2, dh2);
 }
 
 
@@ -4161,6 +4200,54 @@ s390_emit_RISBG(UChar *p, UChar r1, UChar r2, UChar i3, Char i4, UChar i5)
    return emit_RIEf(p, 0xec0000000055ULL, r1, r2, i3, i4, i5);
 }
 
+static UChar *
+s390_emit_NCRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9f50000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_NCGRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9e50000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_OCRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9750000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_OCGRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9650000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_NNRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9740000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_NNGRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9640000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_NORK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9760000, r1, r2, r3);
+}
+
+static UChar *
+s390_emit_NOGRK(UChar *p, UChar r1, UChar r2, UChar r3)
+{
+   return emit_RRF6(p, 0xb9660000, r1, r2, r3);
+}
+
 
 /* Provide a symbolic name for register "R0" */
 #define R0 0
@@ -4816,6 +4903,24 @@ s390_insn_alu(UChar size, s390_alu_t tag, HReg dst, s390_opnd_RMI op2)
    insn->variant.alu.tag = tag;
    insn->variant.alu.dst = dst;
    insn->variant.alu.op2 = op2;
+
+   return insn;
+}
+
+
+s390_insn *
+s390_insn_alu3(UChar size, s390_alu3_t tag, HReg dst, HReg op1, HReg op2)
+{
+   s390_insn *insn = LibVEX_Alloc_inline(sizeof(s390_insn));
+
+   vassert(size == 4 || size == 8);
+
+   insn->tag  = S390_INSN_ALU3;
+   insn->size = size;
+   insn->variant.alu3.tag = tag;
+   insn->variant.alu3.dst = dst;
+   insn->variant.alu3.op1 = op1;
+   insn->variant.alu3.op2 = op2;
 
    return insn;
 }
@@ -6203,6 +6308,18 @@ s390_insn_as_string(const s390_insn *insn)
                    &insn->variant.alu.op2);
       break;
 
+   case S390_INSN_ALU3:
+      switch (insn->variant.alu3.tag) {
+      case S390_ALU3_ANDC: op = "v-andc"; break;
+      case S390_ALU3_ORC:  op = "v-orc";  break;
+      case S390_ALU3_NAND: op = "v-nand"; break;
+      case S390_ALU3_NOR:  op = "v-nor";  break;
+      default: goto fail;
+      }
+      s390_sprintf(buf, "%M %R,%R,%R", op, insn->variant.alu3.dst,
+                   insn->variant.alu3.op1, insn->variant.alu3.op2);
+      break;
+
    case S390_INSN_SMUL:
    case S390_INSN_UMUL:
       if (insn->tag == S390_INSN_SMUL) {
@@ -6248,6 +6365,10 @@ s390_insn_as_string(const s390_insn *insn)
       case S390_SIGN_EXTEND_16:
       case S390_SIGN_EXTEND_32:
          op = "v-signx";
+         break;
+
+      case S390_LOAD_ADDRESS:
+         op = "v-laddr";
          break;
 
       case S390_NEGATE:
@@ -6900,7 +7021,7 @@ static UChar *
 s390_emit_load_cc(UChar *p, UChar reg)
 {
    p = s390_emit_LGHI(p, reg, 0);  /* Clear out, cc not affected */
-   p = s390_emit_IPM(p, reg, reg);
+   p = s390_emit_IPM(p, reg);
    /* Shift 28 bits to the right --> [0,1,2,3] */
    return s390_emit_SRL(p, reg, 0, 28); /* REG = cc */
 }
@@ -7565,6 +7686,36 @@ s390_insn_alu_emit(UChar *buf, const s390_insn *insn)
    vpanic("s390_insn_alu_emit");
 }
 
+static UChar *
+s390_insn_alu3_emit(UChar *buf, const s390_insn *insn)
+{
+   UInt dst, op1, op2;
+
+   dst = hregNumber(insn->variant.alu3.dst);
+   op1 = hregNumber(insn->variant.alu3.op1);
+   op2 = hregNumber(insn->variant.alu3.op2);
+
+   switch (insn->variant.alu3.tag) {
+   case S390_ALU3_ANDC:
+      return insn->size == 4 ? s390_emit_NCRK(buf, dst, op1, op2)
+                             : s390_emit_NCGRK(buf, dst, op1, op2);
+   case S390_ALU3_ORC:
+      return insn->size == 4 ? s390_emit_OCRK(buf, dst, op1, op2)
+                             : s390_emit_OCGRK(buf, dst, op1, op2);
+   case S390_ALU3_NAND:
+      return insn->size == 4 ? s390_emit_NNRK(buf, dst, op1, op2)
+                             : s390_emit_NNGRK(buf, dst, op1, op2);
+   case S390_ALU3_NOR:
+      return insn->size == 4 ? s390_emit_NORK(buf, dst, op1, op2)
+                             : s390_emit_NOGRK(buf, dst, op1, op2);
+   default:
+      goto fail;
+   }
+
+ fail:
+   vpanic("s390_insn_alu3_emit");
+}
+
 
 static UChar *
 s390_widen_emit(UChar *buf, const s390_insn *insn, UInt from_size,
@@ -7917,7 +8068,24 @@ s390_insn_unop_emit(UChar *buf, const s390_insn *insn)
    case S390_SIGN_EXTEND_16: return s390_widen_emit(buf, insn, 2, 1);
    case S390_SIGN_EXTEND_32: return s390_widen_emit(buf, insn, 4, 1);
 
-   case S390_NEGATE:         return s390_negate_emit(buf, insn);
+   case S390_LOAD_ADDRESS: {
+      vassert(insn->variant.unop.src.tag == S390_OPND_AMODE);
+      UChar       dst = hregNumber(insn->variant.unop.dst);
+      s390_amode* am  = insn->variant.unop.src.variant.am;
+      UChar       x   = hregNumber(am->x);
+      UChar       b   = hregNumber(am->b);
+      switch (am->tag) {
+      case S390_AMODE_B12:
+      case S390_AMODE_BX12:
+         return s390_emit_LA(buf, dst, x, b, am->d);
+      case S390_AMODE_B20:
+      case S390_AMODE_BX20:
+         return s390_emit_LAY(buf, dst, x, b, DISP20(am->d));
+      }
+      vpanic("s390_insn_unop_emit -- load address");
+   }
+   case S390_NEGATE:
+      return s390_negate_emit(buf, insn);
    case S390_POPCNT:         return s390_popcnt_emit(buf, insn);
    case S390_VEC_FILL: {
       vassert(insn->variant.unop.src.tag == S390_OPND_IMMEDIATE);
@@ -10075,6 +10243,10 @@ emit_S390Instr(Bool *is_profinc, UChar *buf, Int nbuf, const s390_insn *insn,
 
    case S390_INSN_ALU:
       end = s390_insn_alu_emit(buf, insn);
+      break;
+
+   case S390_INSN_ALU3:
+      end = s390_insn_alu3_emit(buf, insn);
       break;
 
    case S390_INSN_SMUL:

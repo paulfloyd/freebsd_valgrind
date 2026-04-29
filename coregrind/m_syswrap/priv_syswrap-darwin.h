@@ -609,7 +609,7 @@ DECL_TEMPLATE(darwin, guarded_writev_np);           // 487
 // NYI stack_snapshot_with_config                   // 491
 // NYI microstackshot                               // 492
 // NYI grab_pgo_data                                // 493
-// NYI persona                                      // 494
+DECL_TEMPLATE(darwin, persona);                     // 494
 // 495
 // 496
 // 497

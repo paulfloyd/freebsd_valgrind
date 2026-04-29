@@ -16,10 +16,10 @@ AC_PREREQ(2.69)
 # Also set the (expected/last) release date here.
 # Do not forget to rerun ./autogen.sh
 m4_define([v_major_ver], [3])
-m4_define([v_minor_ver], [27])
+m4_define([v_minor_ver], [28])
 m4_define([v_micro_ver], [0])
 m4_define([v_suffix_ver], [GIT])
-m4_define([v_rel_date], ["?? Apr 2026"])
+m4_define([v_rel_date], ["?? Oct 2026"])
 m4_define([v_version],
 	  m4_if(v_suffix_ver, [],
 		[v_major_ver.v_minor_ver.v_micro_ver],
@@ -1569,6 +1569,25 @@ AC_MSG_RESULT([no])
 
 AM_CONDITIONAL([HAVE_AT_FDCWD], [test x$ac_have_at_fdcwd = xyes])
 
+
+# Check for MADV_GUARD_INSTALL
+
+AC_MSG_CHECKING([for MADV_GUARD_INSTALL])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/mman.h>
+]], [[
+  int a = MADV_GUARD_INSTALL;
+]])], [
+ac_have_madv_guard_install=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_madv_guard_install=no
+AC_MSG_RESULT([no])
+])
+
+AM_CONDITIONAL([HAVE_MADV_GUARD_INSTALL], [test x$ac_have_madv_guard_install = xyes])
+
+
 # Check for stpncpy function definition in string.h
 # This explicitly checks with _GNU_SOURCE defined since that is also
 # used in the test case (some systems might define it without anyway
@@ -2134,8 +2153,14 @@ AC_MSG_RESULT([no])
 # clang 3.3 cannot process <thread> from e.g.
 # gcc (Ubuntu/Linaro 4.6.3-1ubuntu5) 4.6.3
 
+#----------------------------------------------------------------------------
+# C++ checks
+#----------------------------------------------------------------------------
+
+
+AC_LANG_PUSH(C++)
+
 AC_MSG_CHECKING([that C++ compiler can compile C++17 code])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS=-std=c++17
 
@@ -2150,14 +2175,12 @@ ac_have_cxx_17=no
 AC_MSG_RESULT([no])
 ])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(HAVE_CXX17, test x$ac_have_cxx_17 = xyes)
 
 # Compiler may announce C++17 support as above but may lack
 # some features
 AC_MSG_CHECKING([that C++ compiler supports constexpr if])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS=-std=c++17
 
@@ -2176,12 +2199,10 @@ ac_have_constexpr_if=no
 AC_MSG_RESULT([no])
 			])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(HAVE_CONSTEXPR_IF, test x$ac_have_constexpr_if = xyes)
 
 AC_MSG_CHECKING([that C++ compiler supports std::align_val_t])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS=-std=c++17
 
@@ -2197,13 +2218,11 @@ ac_have_align_val_t=no
 AC_MSG_RESULT([no])
 			])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(HAVE_ALIGN_VAL_T, test x$ac_have_align_val_t = xyes)
 
 
 AC_MSG_CHECKING([that C++ compiler can include <thread> header file])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS=-std=c++0x
 
@@ -2218,14 +2237,12 @@ ac_cxx_can_include_thread_header=no
 AC_MSG_RESULT([no])
 ])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(CXX_CAN_INCLUDE_THREAD_HEADER, test x$ac_cxx_can_include_thread_header = xyes)
 
 # Check whether compiler can process #include <condition_variable> without errors
 
 AC_MSG_CHECKING([that C++ compiler can include <condition_variable> header file])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS=-std=c++0x
 
@@ -2240,14 +2257,12 @@ ac_cxx_can_include_condition_variable_header=no
 AC_MSG_RESULT([no])
 ])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(CXX_CAN_INCLUDE_CONDITION_VARIABLE_HEADER, test x$ac_cxx_can_include_condition_variable_header = xyes)
 
 # check for std::shared_timed_mutex, this is a C++ 14 feature
 
 AC_MSG_CHECKING([that C++ compiler can use std::shared_timed_mutex])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS="-std=c++1y -pthread"
 
@@ -2263,14 +2278,12 @@ ac_cxx_can_use_shared_timed_mutex=no
 AC_MSG_RESULT([no])
 ])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(CXX_CAN_USE_SHARED_TIMED_MUTEX, test x$ac_cxx_can_use_shared_timed_mutex = xyes)
 
 # check for std::shared_mutex, this is a C++ 11 feature
 
 AC_MSG_CHECKING([that C++ compiler can use std::timed_mutex])
-AC_LANG(C++)
 safe_CXXFLAGS=$CXXFLAGS
 CXXFLAGS="-std=c++0x -pthread"
 
@@ -2286,9 +2299,145 @@ ac_cxx_can_use_timed_mutex=no
 AC_MSG_RESULT([no])
 ])
 CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
 
 AM_CONDITIONAL(CXX_CAN_USE_TIMED_MUTEX, test x$ac_cxx_can_use_timed_mutex = xyes)
+
+# does this compiler support -faligned-new ?
+AC_MSG_CHECKING([if g++ accepts -faligned-new])
+
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS="-faligned-new -Werror"
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+  return 0;
+]])], [
+FLAG_FALIGNED_NEW="-faligned-new"
+AC_MSG_RESULT([yes])
+], [
+FLAG_FALIGNED_NEW=""
+AC_MSG_RESULT([no])
+])
+CXXFLAGS=$safe_CXXFLAGS
+
+AC_SUBST(FLAG_FALIGNED_NEW)
+
+# does this compiler support -fsized-deallocation ?
+AC_MSG_CHECKING([if g++ accepts -fsized-deallocation])
+
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS="-fsized-deallocation -Werror"
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+  return 0;
+]])], [
+FLAG_FSIZED_DEALLOCATION="-fsized-deallocation"
+ac_have_sized_deallocation=yes
+AC_MSG_RESULT([yes])
+], [
+FLAG_FSIZED_DEALLOCATION=""
+ac_have_sized_deallocation=no
+AC_MSG_RESULT([no])
+])
+CXXFLAGS=$safe_CXXFLAGS
+
+AC_SUBST(FLAG_FSIZED_DEALLOCATION)
+AM_CONDITIONAL([HAVE_FSIZED_DEALLOCATION], [test x$ac_have_sized_deallocation = xyes])
+
+# does this compiler support C++17 aligned new/delete?
+AC_MSG_CHECKING([if g++ supports aligned new and delete])
+
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS="-std=c++17"
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <cstdlib>
+#include <new>
+]], [[
+  operator delete(nullptr, std::align_val_t(64U));
+]])], [
+ac_have_aligned_cxx_alloc=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_aligned_cxx_alloc=no
+AC_MSG_RESULT([no])
+])
+CXXFLAGS=$safe_CXXFLAGS
+
+AM_CONDITIONAL([HAVE_ALIGNED_CXX_ALLOC], [test x$ac_have_aligned_cxx_alloc = xyes])
+
+# does g++ have built-in functions for atomic memory access ?
+AC_MSG_CHECKING([if g++ supports __sync_add_and_fetch])
+
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS="$mflag_primary"
+
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
+  int variable = 1;
+  return (__sync_bool_compare_and_swap(&variable, 1, 2)
+          && __sync_add_and_fetch(&variable, 1) ? 1 : 0)
+]])], [
+  ac_have_builtin_atomic_cxx=yes
+  AC_MSG_RESULT([yes])
+  AC_DEFINE(HAVE_BUILTIN_ATOMIC_CXX, 1, [Define to 1 if g++ supports __sync_bool_compare_and_swap() and __sync_add_and_fetch()])
+], [
+  ac_have_builtin_atomic_cxx=no
+  AC_MSG_RESULT([no])
+])
+
+CXXFLAGS=$safe_CXXFLAGS
+
+AM_CONDITIONAL([HAVE_BUILTIN_ATOMIC_CXX], [test x$ac_have_builtin_atomic_cxx = xyes])
+
+
+# does libstdc++ support annotating shared pointers ?
+AC_MSG_CHECKING([if libstdc++ supports annotating shared pointers])
+
+safe_CXXFLAGS=$CXXFLAGS
+CXXFLAGS="-std=c++0x"
+
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+  #include <memory>
+]], [[
+  std::shared_ptr<int> p
+]])], [
+  ac_have_shared_ptr=yes
+], [
+  ac_have_shared_ptr=no
+])
+if test x$ac_have_shared_ptr = xyes; then
+  # If compilation of the program below fails because of a syntax error
+  # triggered by substituting one of the annotation macros then that
+  # means that libstdc++ supports these macros.
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+    #define _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(a) (a)----
+    #define _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(a) (a)----
+    #include <memory>
+  ]], [[
+    std::shared_ptr<int> p
+  ]])], [
+    ac_have_shared_pointer_annotation=no
+    AC_MSG_RESULT([no])
+  ], [
+    ac_have_shared_pointer_annotation=yes
+    AC_MSG_RESULT([yes])
+    AC_DEFINE(HAVE_SHARED_POINTER_ANNOTATION, 1,
+              [Define to 1 if libstd++ supports annotating shared pointers])
+  ])
+else
+  ac_have_shared_pointer_annotation=no
+  AC_MSG_RESULT([no])
+fi
+
+CXXFLAGS=$safe_CXXFLAGS
+
+AM_CONDITIONAL([HAVE_SHARED_POINTER_ANNOTATION],
+               [test x$ac_have_shared_pointer_annotation = xyes])
+
+AC_LANG_POP()
+
+#----------------------------------------------------------------------------
+# End of C++ checks
+#----------------------------------------------------------------------------
 
 # On aarch64 before glibc 2.20 we would get the kernel user_pt_regs instead
 # of the user_regs_struct from sys/user.h. They are structurally the same
@@ -2790,18 +2939,18 @@ AC_DEFUN([AC_GXX_WARNING_SUBST_NO],[
   AC_MSG_CHECKING([if g++ accepts -W$1])
   safe_CXXFLAGS=$CXXFLAGS
   CXXFLAGS="-W$1 -Werror"
-  AC_LANG_PUSH(C++)
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[;]])], [
                     AC_SUBST([$2], [-Wno-$1])
-  AC_LANG_POP()
   AC_MSG_RESULT([yes])], [
                 AC_SUBST([$2], [])
                 AC_MSG_RESULT([no])])
   CXXFLAGS=$safe_CXXFLAGS
 ])
 
+AC_LANG_PUSH(C++)
 AC_GXX_WARNING_SUBST_NO([missing-exception-spec], [FLAG_W_NO_MISSING_EXCEPTION_SPEC])
 AC_GXX_WARNING_SUBST_NO([implicit-exception-spec-mismatch], [FLAG_W_NO_IMPLICIT_EXCEPTION_SPEC_MISMATCH])
+AC_LANG_POP()
 
 # Does this compiler support -Wformat-security ?
 # Special handling is needed, because certain GCC versions require -Wformat
@@ -2853,75 +3002,6 @@ if test "X$VGCONF_ARCH_PRI" = "Xarm"; then
 else
   AC_SUBST([FLAG_W_CAST_ALIGN], [-Wcast-align])
 fi
-
-# does this compiler support -faligned-new ?
-AC_MSG_CHECKING([if g++ accepts -faligned-new])
-
-safe_CXXFLAGS=$CXXFLAGS
-CXXFLAGS="-faligned-new -Werror"
-
-AC_LANG(C++)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
-  return 0;
-]])], [
-FLAG_FALIGNED_NEW="-faligned-new"
-AC_MSG_RESULT([yes])
-], [
-FLAG_FALIGNED_NEW=""
-AC_MSG_RESULT([no])
-])
-CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
-
-AC_SUBST(FLAG_FALIGNED_NEW)
-
-# does this compiler support -fsized-deallocation ?
-AC_MSG_CHECKING([if g++ accepts -fsized-deallocation])
-
-safe_CXXFLAGS=$CXXFLAGS
-CXXFLAGS="-fsized-deallocation -Werror"
-
-AC_LANG(C++)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
-  return 0;
-]])], [
-FLAG_FSIZED_DEALLOCATION="-fsized-deallocation"
-ac_have_sized_deallocation=yes
-AC_MSG_RESULT([yes])
-], [
-FLAG_FSIZED_DEALLOCATION=""
-ac_have_sized_deallocation=no
-AC_MSG_RESULT([no])
-])
-CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
-
-AC_SUBST(FLAG_FSIZED_DEALLOCATION)
-AM_CONDITIONAL([HAVE_FSIZED_DEALLOCATION], [test x$ac_have_sized_deallocation = xyes])
-
-# does this compiler support C++17 aligned new/delete?
-AC_MSG_CHECKING([if g++ supports aligned new and delete])
-
-safe_CXXFLAGS=$CXXFLAGS
-CXXFLAGS="-std=c++17"
-
-AC_LANG(C++)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <cstdlib>
-#include <new>
-]], [[
-  operator delete(nullptr, std::align_val_t(64U));
-]])], [
-ac_have_aligned_cxx_alloc=yes
-AC_MSG_RESULT([yes])
-], [
-ac_have_aligned_cxx_alloc=no
-AC_MSG_RESULT([no])
-])
-CXXFLAGS=$safe_CXXFLAGS
-AC_LANG(C)
-
-AM_CONDITIONAL([HAVE_ALIGNED_CXX_ALLOC], [test x$ac_have_aligned_cxx_alloc = xyes])
 
 # does this compiler support -fno-stack-protector ?
 AC_MSG_CHECKING([if gcc accepts -fno-stack-protector])
@@ -5178,6 +5258,21 @@ AC_MSG_RESULT([no])
 ])
 CFLAGS="$save_CFLAGS"
 
+if test x$ac_have_usable_linux_futex_h = xyes \
+        -a x$ac_have_builtin_atomic_primary = xyes; then
+  ac_enable_linux_ticket_lock_primary=yes
+fi
+AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_PRIMARY],
+               [test x$ac_enable_linux_ticket_lock_primary = xyes])
+
+if test x$VGCONF_PLATFORM_SEC_CAPS != x \
+        -a x$ac_have_usable_linux_futex_h = xyes \
+        -a x$ac_have_builtin_atomic_secondary = xyes; then
+  ac_enable_linux_ticket_lock_secondary=yes
+fi
+AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_SECONDARY],
+               [test x$ac_enable_linux_ticket_lock_secondary = xyes])
+
 
 #----------------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
@@ -5833,94 +5928,6 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 AM_CONDITIONAL([HAVE_AIO_READV],
                [test x$ac_have_aio_readv = xyes])
 
-# does g++ have built-in functions for atomic memory access ?
-AC_MSG_CHECKING([if g++ supports __sync_add_and_fetch])
-
-safe_CXXFLAGS=$CXXFLAGS
-CXXFLAGS="$mflag_primary"
-
-AC_LANG_PUSH(C++)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
-  int variable = 1;
-  return (__sync_bool_compare_and_swap(&variable, 1, 2)
-          && __sync_add_and_fetch(&variable, 1) ? 1 : 0)
-]])], [
-  ac_have_builtin_atomic_cxx=yes
-  AC_MSG_RESULT([yes])
-  AC_DEFINE(HAVE_BUILTIN_ATOMIC_CXX, 1, [Define to 1 if g++ supports __sync_bool_compare_and_swap() and __sync_add_and_fetch()])
-], [
-  ac_have_builtin_atomic_cxx=no
-  AC_MSG_RESULT([no])
-])
-AC_LANG_POP(C++)
-
-CXXFLAGS=$safe_CXXFLAGS
-
-AM_CONDITIONAL([HAVE_BUILTIN_ATOMIC_CXX], [test x$ac_have_builtin_atomic_cxx = xyes])
-
-
-if test x$ac_have_usable_linux_futex_h = xyes \
-        -a x$ac_have_builtin_atomic_primary = xyes; then
-  ac_enable_linux_ticket_lock_primary=yes
-fi
-AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_PRIMARY],
-               [test x$ac_enable_linux_ticket_lock_primary = xyes])
-
-if test x$VGCONF_PLATFORM_SEC_CAPS != x \
-        -a x$ac_have_usable_linux_futex_h = xyes \
-        -a x$ac_have_builtin_atomic_secondary = xyes; then
-  ac_enable_linux_ticket_lock_secondary=yes
-fi
-AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_SECONDARY],
-               [test x$ac_enable_linux_ticket_lock_secondary = xyes])
-
-
-# does libstdc++ support annotating shared pointers ?
-AC_MSG_CHECKING([if libstdc++ supports annotating shared pointers])
-
-safe_CXXFLAGS=$CXXFLAGS
-CXXFLAGS="-std=c++0x"
-
-AC_LANG_PUSH(C++)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-  #include <memory>
-]], [[
-  std::shared_ptr<int> p
-]])], [
-  ac_have_shared_ptr=yes
-], [
-  ac_have_shared_ptr=no
-])
-if test x$ac_have_shared_ptr = xyes; then
-  # If compilation of the program below fails because of a syntax error
-  # triggered by substituting one of the annotation macros then that
-  # means that libstdc++ supports these macros.
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-    #define _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(a) (a)----
-    #define _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(a) (a)----
-    #include <memory>
-  ]], [[
-    std::shared_ptr<int> p
-  ]])], [
-    ac_have_shared_pointer_annotation=no
-    AC_MSG_RESULT([no])
-  ], [
-    ac_have_shared_pointer_annotation=yes
-    AC_MSG_RESULT([yes])
-    AC_DEFINE(HAVE_SHARED_POINTER_ANNOTATION, 1,
-              [Define to 1 if libstd++ supports annotating shared pointers])
-  ])
-else
-  ac_have_shared_pointer_annotation=no
-  AC_MSG_RESULT([no])
-fi
-AC_LANG_POP(C++)
-
-CXXFLAGS=$safe_CXXFLAGS
-
-AM_CONDITIONAL([HAVE_SHARED_POINTER_ANNOTATION],
-               [test x$ac_have_shared_pointer_annotation = xyes])
-
 # checking for GNU libc C17 aligned_alloc
 # just check glibc version rather than trying to muck around
 # checking the runtime behaviour or seeing if it is a weak alias
@@ -5947,14 +5954,14 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 int thrd_entry(void *arg) { return 0; }
 ], [[thrd_t thr; return thrd_create(&thr, thrd_entry, NULL);]])],
 [
-ac_cxx_have_thrd_create=yes
+ac_have_thrd_create=yes
 AC_MSG_RESULT([yes])
 ], [
-ac_cxx_have_thrd_create=no
+ac_have_thrd_create=no
 AC_MSG_RESULT([no])
 ])
 
-AM_CONDITIONAL(HAVE_THRD_CREATE, test x$ac_cxx_have_thrd_create = xyes)
+AM_CONDITIONAL(HAVE_THRD_CREATE, test x$ac_have_thrd_create = xyes)
 
 
 # Check arm64 sha3

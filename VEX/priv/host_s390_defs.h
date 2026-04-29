@@ -8,7 +8,7 @@
    This file is part of Valgrind, a dynamic binary instrumentation
    framework.
 
-   Copyright IBM Corp. 2010-2020
+   Copyright IBM Corp. 2010-2026
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -122,7 +122,8 @@ typedef enum {
    S390_INSN_MEMCPY, /* from memory to memory */
    S390_INSN_COND_MOVE, /* conditonal "move" to register */
    S390_INSN_LOAD_IMMEDIATE,
-   S390_INSN_ALU,
+   S390_INSN_ALU,    /* a = a <op> b */
+   S390_INSN_ALU3,   /* a = b <op> c -- distinct operands */
    S390_INSN_SMUL,   /*   signed multiply; n-bit operands; 2n-bit result */
    S390_INSN_UMUL,   /* unsigned multiply; n-bit operands; 2n-bit result */
    S390_INSN_SDIV,   /*   signed division; 2n-bit / n-bit -> n-bit quot/rem */
@@ -184,6 +185,14 @@ typedef enum {
 } s390_alu_t;
 
 
+/* The kind of ALU3 instructions */
+typedef enum {
+   S390_ALU3_ANDC, /* and with complement */
+   S390_ALU3_ORC,  /* or with complement */
+   S390_ALU3_NAND,
+   S390_ALU3_NOR,
+} s390_alu3_t;
+
 /* The kind of unary integer operations */
 typedef enum {
    S390_ZERO_EXTEND_8,
@@ -192,6 +201,7 @@ typedef enum {
    S390_SIGN_EXTEND_8,
    S390_SIGN_EXTEND_16,
    S390_SIGN_EXTEND_32,
+   S390_LOAD_ADDRESS,
    S390_NEGATE,
    S390_POPCNT,
    S390_VEC_FILL,
@@ -512,6 +522,12 @@ typedef struct {
          s390_opnd_RMI op2;
       } alu;
       struct {
+         s390_alu3_t   tag;
+         HReg          dst;
+         HReg          op1;
+         HReg          op2;
+      } alu3;
+      struct {
          HReg          dst_hi;  /*           r10 */
          HReg          dst_lo;  /* also op1  r11 */
          s390_opnd_RMI op2;
@@ -770,6 +786,8 @@ s390_insn *s390_insn_cond_move(UChar size, s390_cc_t cond, HReg dst,
 s390_insn *s390_insn_load_immediate(UChar size, HReg dst, ULong val);
 s390_insn *s390_insn_alu(UChar size, s390_alu_t, HReg dst,
                          s390_opnd_RMI op2);
+s390_insn *s390_insn_alu3(UChar size, s390_alu3_t tag, HReg dst, HReg op1,
+                          HReg op2);
 s390_insn *s390_insn_mul(UChar size, HReg dst_hi, HReg dst_lo,
                          s390_opnd_RMI op2, Bool signed_multiply);
 s390_insn *s390_insn_div(UChar size, HReg op1_hi, HReg op1_lo,

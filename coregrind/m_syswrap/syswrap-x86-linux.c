@@ -1422,7 +1422,7 @@ static SyscallTableEntry syscall_table[] = {
    LINX_(__NR_setfsgid32,        sys_setfsgid),       // 216
    LINX_(__NR_pivot_root,        sys_pivot_root),     // 217
    GENXY(__NR_mincore,           sys_mincore),        // 218
-   GENX_(__NR_madvise,           sys_madvise),        // 219
+   GENXY(__NR_madvise,           sys_madvise),        // 219
 
    GENXY(__NR_getdents64,        sys_getdents64),     // 220
    LINXY(__NR_fcntl64,           sys_fcntl64),        // 221

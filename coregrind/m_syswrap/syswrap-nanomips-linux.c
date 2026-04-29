@@ -760,7 +760,7 @@ static SyscallTableEntry syscall_main_table[] = {
    GENX_ (__NR_mlockall,               sys_mlockall),
    LINX_ (__NR_munlockall,             sys_munlockall),
    GENXY (__NR_mincore,                sys_mincore),
-   GENX_ (__NR_madvise,                sys_madvise),
+   GENXY (__NR_madvise,                sys_madvise),
    LINX_ (__NR_mbind,                  sys_mbind),
    LINXY (__NR_get_mempolicy,          sys_get_mempolicy),
    LINX_ (__NR_set_mempolicy,          sys_set_mempolicy),
