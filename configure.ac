@@ -451,9 +451,6 @@ case "${host_os}" in
         AC_DEFINE_UNQUOTED([$1], [$$1], [DARWIN_VERS value for $3])
         AC_SUBST($1)
       ])
-      AC_ADD_DARWIN_VERS([DARWIN_10_5], 100500, [DARWIN_VERS value for Mac OS X 10.5])
-      AC_ADD_DARWIN_VERS([DARWIN_10_6], 100600, [DARWIN_VERS value for Mac OS X 10.6 / iOS 4])
-      AC_ADD_DARWIN_VERS([DARWIN_10_7], 100700, [DARWIN_VERS value for Mac OS X 10.7 / iOS 5])
       AC_ADD_DARWIN_VERS([DARWIN_10_8], 100800, [DARWIN_VERS value for Mac OS X 10.8 / iOS 6])
       AC_ADD_DARWIN_VERS([DARWIN_10_9], 100900, [DARWIN_VERS value for Mac OS X 10.9 / iOS 7])
       AC_ADD_DARWIN_VERS([DARWIN_10_10], 101000, [DARWIN_VERS value for Mac OS X 10.10 / iOS 8])
@@ -5258,21 +5255,6 @@ AC_MSG_RESULT([no])
 ])
 CFLAGS="$save_CFLAGS"
 
-if test x$ac_have_usable_linux_futex_h = xyes \
-        -a x$ac_have_builtin_atomic_primary = xyes; then
-  ac_enable_linux_ticket_lock_primary=yes
-fi
-AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_PRIMARY],
-               [test x$ac_enable_linux_ticket_lock_primary = xyes])
-
-if test x$VGCONF_PLATFORM_SEC_CAPS != x \
-        -a x$ac_have_usable_linux_futex_h = xyes \
-        -a x$ac_have_builtin_atomic_secondary = xyes; then
-  ac_enable_linux_ticket_lock_secondary=yes
-fi
-AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_SECONDARY],
-               [test x$ac_enable_linux_ticket_lock_secondary = xyes])
-
 
 #----------------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.
@@ -5866,7 +5848,21 @@ fi
 AM_CONDITIONAL([HAVE_BUILTIN_ATOMIC64],
                [test x$ac_have_builtin_atomic64 = xyes])
 
-               
+if test x$ac_have_usable_linux_futex_h = xyes \
+        -a x$ac_have_builtin_atomic_primary = xyes; then
+  ac_enable_linux_ticket_lock_primary=yes
+fi
+AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_PRIMARY],
+               [test x$ac_enable_linux_ticket_lock_primary = xyes])
+
+if test x$VGCONF_PLATFORM_SEC_CAPS != x \
+        -a x$ac_have_usable_linux_futex_h = xyes \
+        -a x$ac_have_builtin_atomic_secondary = xyes; then
+  ac_enable_linux_ticket_lock_secondary=yes
+fi
+AM_CONDITIONAL([ENABLE_LINUX_TICKET_LOCK_SECONDARY],
+               [test x$ac_enable_linux_ticket_lock_secondary = xyes])
+
 AC_MSG_CHECKING([if platform has openat2 syscall])
 
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[

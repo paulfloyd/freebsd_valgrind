@@ -373,7 +373,15 @@ typedef uint32_t vki_u32;
 #define	VKI_O_EXCL	O_EXCL
 #define	VKI_O_EVTONLY	O_EVTONLY
 
+/* OSX 10.6 was the first to get any *at functions like openat
+ * but it wasn't until OSX 10.10 that a definition for AT_FDCWD
+ * was added. We dont claim to support anything older than 10.8
+ * any more, so no need to worry about versions older than that. */
+#if DARWIN_VERS >= DARWIN_10_10
 #define VKI_AT_FDCWD AT_FDCWD
+#else
+#define VKI_AT_FDCWD -2
+#endif
 
 #define	VKI_F_DUPFD	F_DUPFD
 #define	VKI_F_GETFD	F_GETFD

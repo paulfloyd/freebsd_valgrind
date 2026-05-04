@@ -8873,6 +8873,17 @@ PRE(mach_msg_thread)
    }
 }
 
+// MACH 72
+// kern_return_t mach_voucher_extract_attr_recipe(ipc_voucher_t                           voucher,
+//                                                mach_voucher_attr_key_t                 key,
+//                                                mach_voucher_attr_raw_recipe_t          raw_recipe,
+//                                                mach_voucher_attr_raw_recipe_size_t     *in_out_size)
+PRE(mach_voucher_extract_attr_recipe_trap)
+{
+    PRINT("mach_voucher_extract_attr_recipe(voucher:%#lx, key:%lu, raw_recipe:%#lx, in_out_size:%#lx)", ARG1, ARG2, ARG3, ARG4);
+    // FIXME PJF add MEM READ/WRITE and POST as needed
+}
+
 
 static int is_thread_port(mach_port_t port)
 {
@@ -10841,6 +10852,7 @@ PRE(pselect)
 
 #endif /* DARWIN_VERS >= DARWIN_10_11 */
 
+#if defined(SYS_persona)
 // SYS_persona 494
 // __persona(uint32_t operation, uint32_t flags, struct kpersona_info *info, uid_t *id,
 // i          size_t *idlen, char *path);
@@ -10932,6 +10944,7 @@ POST(persona)
       break;
    }
 }
+#endif /* defined(SYS_persona) */
 
 
 /* ---------------------------------------------------------------------
@@ -11188,17 +11201,6 @@ POST(host_create_mach_voucher_trap)
 {
   vg_assert(SUCCESS);
   POST_MEM_WRITE( ARG4, sizeof(mach_port_name_t) );
-}
-
-// MACH 72
-// kern_return_t mach_voucher_extract_attr_recipe(ipc_voucher_t                           voucher,
-//                                                mach_voucher_attr_key_t                 key,
-//                                                mach_voucher_attr_raw_recipe_t          raw_recipe,
-//                                                mach_voucher_attr_raw_recipe_size_t     *in_out_size)
-PRE(mach_voucher_extract_attr_recipe_trap)
-{
-    PRINT("mach_voucher_extract_attr_recipe(voucher:%#lx, key:%lu, raw_recipe:%#lx, in_out_size:%#lx)", ARG1, ARG2, ARG3, ARG4);
-    // FIXME PJF add MEM READ/WRITE and POST as needed
 }
 
 PRE(task_register_dyld_image_infos)
@@ -12230,7 +12232,11 @@ const SyscallTableEntry ML_(syscall_table)[] = {
 // _____(__NR_stack_snapshot_with_config),              // 491
 // _____(__NR_microstackshot),                          // 492
 // _____(__NR_grab_pgo_data),                           // 493
+#endif
+#if defined(SYS_persona)
    MACXY(__NR_persona, persona),                        // 494
+#endif
+#if DARWIN_VERS >= DARWIN_10_11
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(495)),        // ???
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(496)),        // ???
    _____(VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(497)),        // ???

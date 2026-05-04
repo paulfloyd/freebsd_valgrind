@@ -32,6 +32,7 @@
 
 // need DARWIN_10_x definitions
 #include "config.h"
+#include <sys/syscall.h>
 
 // osfmk/mach/i386/syscall_sw.h
 
@@ -819,11 +820,15 @@
 #define	__NR_stack_snapshot_with_config       VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(491)
 #define	__NR_microstackshot         VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(492)
 #define	__NR_grab_pgo_data          VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(493)
-#define	__NR_persona                VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(494)
+#endif /* DARWIN_VERS >= DARWIN_10_11 */
+#if defined(SYS_persona)
+#define	__NR_persona                VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(SYS_persona) // 494
+#endif
 			/* 495  */
 			/* 496  */
 			/* 497  */
 			/* 498  */
+#if DARWIN_VERS >= DARWIN_10_11
 #define	__NR_work_interval_ctl      VG_DARWIN_SYSCALL_CONSTRUCT_UNIX(499)
 #endif /* DARWIN_VERS >= DARWIN_10_11 */
 

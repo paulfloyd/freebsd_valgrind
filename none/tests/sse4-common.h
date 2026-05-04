@@ -159,9 +159,10 @@ static inline double mkNegNan ( void ) { return -mkPosNan(); }
 
 /* Macros for testing XMM register to register and memory to register operations */
 
-/* Use xmm7 for both 32-bit x86 and amd64 (xmm8-15 don't exist in 32-bit mode) */
+/* Use xmm7 for 32-bit x86 and xxm11 for amd64
+   (xmm8-15 don't exist in 32-bit mode) */
 #ifdef __x86_64__
-#define XMMREG_DST "xmm7"
+#define XMMREG_DST "xmm11"
 #else
 #define XMMREG_DST "xmm7"
 #endif

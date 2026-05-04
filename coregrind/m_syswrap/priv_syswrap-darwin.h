@@ -31,6 +31,7 @@
 
 #include "pub_core_basics.h"         // ThreadId
 #include "priv_types_n_macros.h"     // DECL_TEMPLATE
+#include <sys/syscall.h>
 
 // syswrap-darwin.c
 Addr allocstack ( ThreadId tid );
