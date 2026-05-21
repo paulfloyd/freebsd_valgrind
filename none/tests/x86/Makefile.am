@@ -3,6 +3,11 @@ include $(top_srcdir)/Makefile.tool-tests.am
 
 dist_noinst_SCRIPTS = filter_cpuid filter_inf_nan filter_stderr gen_insn_test.pl
 
+# Used by fb_test_i386.c
+noinst_HEADERS = fb_test_i386.h \
+		 fb_test_i386_muldiv.h \
+		 fb_test_i386_shift.h
+
 CLEANFILES = $(addsuffix .c,$(INSN_TESTS))
 
 INSN_TESTS = insn_basic insn_cmov insn_mmx insn_mmxext insn_sse insn_sse2
@@ -46,6 +51,7 @@ EXTRA_DIST = \
 	cpuid.stderr.exp cpuid.stdout.exp cpuid.vgtest \
 	cse_fail.stdout.exp cse_fail.vgtest \
 	faultstatus.disabled faultstatus.stderr.exp \
+	fb_test_i386.vgtest fb_test_i386.stderr.exp fb_test_i386.stdout.exp \
 	fcmovnu.vgtest fcmovnu.stderr.exp fcmovnu.stdout.exp \
 	fpu_lazy_eflags.stderr.exp fpu_lazy_eflags.stdout.exp \
 	fpu_lazy_eflags.vgtest \
@@ -73,6 +79,7 @@ EXTRA_DIST = \
 	ssse3_misaligned.stderr.exp \
 	ssse3_misaligned.vgtest ssse3_misaligned.c \
 	sse4-x86.stdout.exp sse4-x86.vgtest \
+	sse4-x86.stdout.exp-freebsd \
 	x86locked.vgtest x86locked.stdout.exp x86locked.stderr.exp \
 	x87trigOOR.vgtest x87trigOOR.stdout.exp x87trigOOR.stderr.exp \
 	yield.stderr.exp yield.stdout.exp yield.disabled \
@@ -95,6 +102,7 @@ check_PROGRAMS = \
 	cmpxchg8b \
 	cpuid \
 	cse_fail \
+	fb_test_i386 \
 	fcmovnu \
 	fpu_lazy_eflags \
 	fxtract \
@@ -158,6 +166,7 @@ AM_CFLAGS += -mdynamic-no-pic
 endif
 
 cpuid_SOURCES 		= cpuid_c.c cpuid_s.S
+fb_test_i386_LDADD	= -lm
 # fpu_lazy_eflags must use these flags -- the bug only occurred with them.
 fpu_lazy_eflags_CFLAGS	= $(AM_CFLAGS) -O2 -march=pentiumpro
 fxtract_CFLAGS		= $(AM_CFLAGS) @FLAG_W_NO_OVERFLOW@

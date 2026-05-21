@@ -23,6 +23,9 @@ bugzilla (https://bugs.kde.org/enter_bug.cgi?product=valgrind) rather
 than mailing the developers (or mailing lists) directly -- bugs that
 are not entered into bugzilla tend to get forgotten about or ignored.
 
+271615  Unhandled instruction "popcnt" on x86
+295974  Add SSE4.1 PEXTRD instruction for x86 32 bit
+391311  [Patch] Fix arm64 valgrind tests compilation with clang
 519223  Recognize ioctl(UFFDIO_*) operations
 519539  Darwin shm_open mode is optional and depends on oflag
 519574  valgrind 3.27 "--fair-sched=yes" does not work
@@ -196,6 +199,7 @@ are not entered into bugzilla tend to get forgotten about or ignored.
 516289  illumos lsframe2 regtest fails
 516748  Incorrect use of SET_STATUS_Failure for syscall wrappers that return
         error codes rather than -1 on error
+517144  Add PACKUSDW SSE4.1 support for x86
 517455  Add PCMPEQQ SSE4.1 support for x86
 517697  Implement CLRSSONSTACK and SETUJMPBUF handling on Solaris.
 517748  Add ability to redirect global functions to Darwin

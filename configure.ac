@@ -4074,15 +4074,15 @@ CFLAGS="$save_CFLAGS"
 AM_CONDITIONAL(BUILD_ARMV82_TESTS, test x$ac_have_armv82_feature = xyes)
 
 
-# Does the C compiler support the armv82-a+dotprod flag and assembler dotprod instructions
+# Does the compiler and CPU support the armv82-a+dotprod flag and assembler dotprod instructions
 # Note, this doesn't generate a C-level symbol.  It generates a
 # automake-level symbol (BUILD_ARMV82_DOTPROD_TESTS), used in test Makefile.am's
-AC_MSG_CHECKING([if gcc supports the armv82-a+dotprod feature flag and assembler supports dotprod instructions])
+AC_MSG_CHECKING([if armv82-a+dotprod is supported for tests])
 
 save_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -march=armv8.2-a+dotprod -Werror"
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-int main()
+CFLAGS="$CFLAGS -march=armv8.2-a+dotprod"
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+int main(void)
 {
     __asm__ __volatile__("sdot v1.4s, v2.16b, v3.16b");
     return 0;
@@ -4097,6 +4097,26 @@ AC_MSG_RESULT([no])
 CFLAGS="$save_CFLAGS"
 
 AM_CONDITIONAL(BUILD_ARMV82_DOTPROD_TESTS, test x$ac_have_armv82_dotprod_feature = xyes)
+
+# check if crypto is supported
+save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -march=armv8-a+crypto"
+AC_MSG_CHECKING([if armv8-a+crypto is supported for tests])
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+int main(void) {
+   __asm__ __volatile__("aesd v6.16b, v27.16b" ::: "v6");
+   return 0;
+}
+]])], [
+ac_have_armv8_crypto=yes
+AC_MSG_RESULT([yes])
+], [
+ac_have_armv8_crypto=no
+AC_MSG_RESULT([no])
+])
+CFLAGS="$save_CFLAGS"
+
+AM_CONDITIONAL(BUILD_ARMV8_CRYPTO_TESTS, test x$ac_have_armv8_crypto = xyes)
 
 
 # XXX JRS 2010 Oct 13: what is this for?  For sure, we don't need this
@@ -5344,6 +5364,7 @@ AC_CHECK_FUNCS([     \
         strndup      \
         close_range  \
         wcsncpy      \
+        free_sized   \
         free_aligned_sized \
         sbrk         \
         wcpncpy      \
@@ -5398,6 +5419,8 @@ AM_CONDITIONAL([HAVE_STRLCAT],
                [test x$ac_cv_func_strlcat = xyes])
 AM_CONDITIONAL([HAVE_STRLCPY],
                [test x$ac_cv_func_strlcpy = xyes])
+AM_CONDITIONAL([HAVE_FREE_SIZED],
+               [test x$ac_cv_func_free_sized = xyes])
 AM_CONDITIONAL([HAVE_FREE_ALIGNED_SIZED],
                [test x$ac_cv_func_free_aligned_sized = xyes])
 AM_CONDITIONAL([HAVE_SBRK],
@@ -5982,10 +6005,9 @@ CFLAGS=$safe_CFLAGS
 # Ok.  We're done checking.
 #----------------------------------------------------------------------------
 
-# Nb: VEX/Makefile is generated from Makefile.vex.in.
 AC_CONFIG_FILES([
    Makefile 
-   VEX/Makefile:Makefile.vex.in
+   VEX/Makefile
    valgrind.spec
    valgrind.pc
    glibc-2.X.supp

@@ -3399,6 +3399,72 @@ UInt dis_imul_I_E_G ( UChar       sorb,
    return delta;
 }
 
+/* Generate an IR sequence to do a popcount operation on the supplied
+   IRTemp, and return a new IRTemp holding the result.  'ty' may be
+   Ity_I16 or Ity_I32 only. */
+static IRTemp gen_POPCOUNT ( IRType ty, IRTemp src )
+{
+   Int i;
+   vassert(ty == Ity_I16 || ty == Ity_I32);
+
+   if (ty == Ity_I16) {
+      IRTemp old = IRTemp_INVALID;
+      IRTemp nyu = IRTemp_INVALID;
+      IRTemp mask[4], shift[4];
+      for (i = 0; i < 4; i++) {
+         mask[i]  = newTemp(ty);
+         shift[i] = 1 << i;
+      }
+      assign(mask[0], mkU16(0x5555));
+      assign(mask[1], mkU16(0x3333));
+      assign(mask[2], mkU16(0x0F0F));
+      assign(mask[3], mkU16(0x00FF));
+      old = src;
+      for (i = 0; i < 4; i++) {
+         nyu = newTemp(ty);
+         assign(nyu,
+                binop(Iop_Add16,
+                      binop(Iop_And16,
+                            mkexpr(old),
+                            mkexpr(mask[i])),
+                      binop(Iop_And16,
+                            binop(Iop_Shr16, mkexpr(old), mkU8(shift[i])),
+                            mkexpr(mask[i]))));
+         old = nyu;
+      }
+      return nyu;
+   }
+   if (ty == Ity_I32) {
+      IRTemp old = IRTemp_INVALID;
+      IRTemp nyu = IRTemp_INVALID;
+      IRTemp mask[5], shift[5];
+      for (i = 0; i < 5; i++) {
+         mask[i]  = newTemp(ty);
+         shift[i] = 1 << i;
+      }
+      assign(mask[0], mkU32(0x55555555));
+      assign(mask[1], mkU32(0x33333333));
+      assign(mask[2], mkU32(0x0F0F0F0F));
+      assign(mask[3], mkU32(0x00FF00FF));
+      assign(mask[4], mkU32(0x0000FFFF));
+      old = src;
+      for (i = 0; i < 5; i++) {
+         nyu = newTemp(ty);
+         assign(nyu,
+                binop(Iop_Add32,
+                      binop(Iop_And32,
+                            mkexpr(old),
+                            mkexpr(mask[i])),
+                      binop(Iop_And32,
+                            binop(Iop_Shr32, mkexpr(old), mkU8(shift[i])),
+                            mkexpr(mask[i]))));
+         old = nyu;
+      }
+      return nyu;
+   }
+   /*NOTREACHED*/
+   vassert(0);
+}
 
 /* Generate an IR sequence to do a count-leading-zeroes operation on
    the supplied IRTemp, and return a new IRTemp holding the result.
@@ -13167,6 +13233,37 @@ DisResult disInstr_X86_WRK (
       }
    }
 
+   /* 66 0F 3A 16 /r ib = PEXTRD reg/mem32, xmm2, imm8
+      Extract Doubleword int from xmm reg and store in gen.reg or mem. */
+   if ( sz == 2
+       && insn[0] == 0x0F && insn[1] == 0x3A && insn[2] == 0x16 ) {
+     Int    imm8_10;
+     modrm = insn[3];
+
+     if ( epartIsReg( modrm ) ) {
+       imm8_10 = (Int)(insn[3+1] & 3);
+     } else {
+       addr = disAMode( &alen, sorb, delta+3, dis_buf );
+       imm8_10 = (Int)((insn[3+alen]) & 3);
+     }
+
+     if ( epartIsReg( modrm ) ) {
+       putIReg( 4, eregOfRM(modrm), getXMMRegLane32(gregOfRM(modrm), imm8_10) );
+       delta += 1+1+3;
+       DIP( "pextrd $%d, %s,%s\n", imm8_10,
+           nameXMMReg( gregOfRM(modrm) ),
+           nameIReg( 4, eregOfRM(modrm) ) );
+     } else {
+       storeLE( mkexpr(addr), getXMMRegLane32(gregOfRM(modrm), imm8_10) );
+       delta += alen+1+3;
+       DIP( "pextrd $%d, %s,%s\n",
+           imm8_10, nameXMMReg( gregOfRM(modrm) ), dis_buf );
+     }
+
+     goto decode_success;
+   }
+
+
    /* 66 0F 3A 22 /r ib = PINSRD xmm1, r/m32, imm8
       Extract Doubleword int from gen.reg/mem32 and insert into xmm1 */
    if ( sz == 2
@@ -13301,6 +13398,39 @@ DisResult disInstr_X86_WRK (
       goto decode_success;
    }
 
+   /* 66 0F 38 2B /r  - PACKUSDW xmm1, xmm2/m128
+      2x 32x4 S->U saturating narrow from xmm2/m128 to xmm1 */
+   if ( sz == 2
+        && insn[0] == 0x0f && insn[1] == 0x38 && insn[2] == 0x2b ) {
+      modrm = insn[3];
+
+      IRTemp argL = newTemp(Ity_V128);
+      IRTemp argR = newTemp(Ity_V128);
+
+      if ( epartIsReg(modrm) ) {
+         assign( argL, getXMMReg( eregOfRM(modrm) ) );
+         delta += 3 + 1;
+         DIP( "packusdw %s,%s\n",
+              nameXMMReg( eregOfRM(modrm) ),
+              nameXMMReg( gregOfRM(modrm) ) );
+      } else {
+         addr = disAMode( &alen, sorb, delta+3, dis_buf );
+         gen_SEGV_if_not_16_aligned( addr );
+         assign( argL, loadLE( Ity_V128, mkexpr(addr) ));
+         delta += 3 + alen;
+         DIP( "packusdw %s,%s\n",
+              dis_buf, nameXMMReg( gregOfRM(modrm) ) );
+      }
+
+      assign(argR, getXMMReg( gregOfRM(modrm) ));
+
+      putXMMReg( gregOfRM(modrm),
+                 binop( Iop_QNarrowBin32Sto16Ux8,
+                        mkexpr(argL), mkexpr(argR)) );
+
+      goto decode_success;
+   }
+
    /* 66 0F 38 38 /r  - PMINSB xmm1, xmm2/m128
       66 0F 38 3C /r  - PMAXSB xmm1, xmm2/m128
       Minimum/Maximum of Packed Signed Byte Integers (XMM)
@@ -13408,10 +13538,7 @@ DisResult disInstr_X86_WRK (
    }
 
    /* 66 0F 3A 0B /r ib = ROUNDSD imm8, xmm2/m64, xmm1
-      (Partial implementation only -- only deal with cases where
-      the rounding mode is specified directly by the immediate byte.)
       66 0F 3A 0A /r ib = ROUNDSS imm8, xmm2/m32, xmm1
-      (Limitations ditto)
    */
    if (sz == 2 
        && insn[0] == 0x0F && insn[1] == 0x3A
@@ -13429,7 +13556,7 @@ DisResult disInstr_X86_WRK (
                  isD ? getXMMRegLane64F( eregOfRM(modrm), 0 )
                      : getXMMRegLane32F( eregOfRM(modrm), 0 ) );
          imm = insn[3+1];
-         if (imm & ~3) goto decode_failure;
+         if (imm & ~15) goto decode_failure;
          delta += 3+1+1;
          DIP( "rounds%c $%d,%s,%s\n",
               isD ? 'd' : 's',
@@ -13439,7 +13566,7 @@ DisResult disInstr_X86_WRK (
          addr = disAMode( &alen, sorb, delta+3, dis_buf );
          assign( src, loadLE( isD ? Ity_F64 : Ity_F32, mkexpr(addr) ));
          imm = insn[3+alen];
-         if (imm & ~3) goto decode_failure;
+         if (imm & ~15) goto decode_failure;
          delta += 3+alen+1;
          DIP( "roundsd $%d,%s,%s\n",
               imm, dis_buf, nameXMMReg( gregOfRM(modrm) ) );
@@ -13450,12 +13577,56 @@ DisResult disInstr_X86_WRK (
          we can use that value directly in the IR as a rounding
          mode. */
       assign(res, binop(isD ? Iop_RoundF64toInt : Iop_RoundF32toInt,
-                  mkU32(imm & 3), mkexpr(src)) );
+                        (imm & 4) ? get_sse_roundingmode()
+                                  : mkU32(imm & 3),
+                        mkexpr(src)) );
 
       if (isD)
          putXMMRegLane64F( gregOfRM(modrm), 0, mkexpr(res) );
       else
          putXMMRegLane32F( gregOfRM(modrm), 0, mkexpr(res) );
+
+      goto decode_success;
+   }
+
+   /* F3 0F B8  = POPCNT{W,L}
+      Count the number of 1 bits in a register
+   */
+   if (insn[0] == 0xF3 && insn[1] == 0x0F && insn[2] == 0xB8
+       && (sz == 2 || sz == 4)) {
+      /*IRType*/ ty  = szToITy(sz);
+      IRTemp     src = newTemp(ty);
+      modrm = insn[3];
+      if (epartIsReg(modrm)) {
+         assign(src, getIReg(sz, eregOfRM(modrm)));
+         delta += 3+1;
+         DIP("popcnt%c %s, %s\n", nameISize(sz),
+             nameIReg(sz, eregOfRM(modrm)),
+             nameIReg(sz, gregOfRM(modrm)));
+      } else {
+         addr = disAMode( &alen, sorb, delta+3, dis_buf );
+         assign(src, loadLE(ty, mkexpr(addr)));
+         delta += 3+alen;
+         DIP("popcnt%c %s, %s\n", nameISize(sz), dis_buf,
+             nameIReg(sz, gregOfRM(modrm)));
+      }
+
+      IRTemp result = gen_POPCOUNT(ty, src);
+      putIReg(sz, gregOfRM(modrm), mkexpr(result));
+
+      // Update flags.  This is pretty lame .. perhaps can do better
+      // if this turns out to be performance critical.
+      // O S A C P are cleared.  Z is set if SRC == 0.
+      stmt( IRStmt_Put( OFFB_CC_OP,   mkU32(X86G_CC_OP_COPY) ));
+      stmt( IRStmt_Put( OFFB_CC_DEP2, mkU32(0) ));
+      stmt( IRStmt_Put( OFFB_CC_NDEP, mkU32(0) ));
+      stmt( IRStmt_Put( OFFB_CC_DEP1,
+            binop(Iop_Shl32,
+                  unop(Iop_1Uto32,
+                       binop(Iop_CmpEQ32,
+                             widenUto32(mkexpr(src)),
+                             mkU32(0))),
+                  mkU8(X86G_CC_SHIFT_Z))));
 
       goto decode_success;
    }

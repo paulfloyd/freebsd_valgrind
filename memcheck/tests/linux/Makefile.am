@@ -45,6 +45,7 @@ EXTRA_DIST = \
 	sys-preadv_pwritev.vgtest sys-preadv_pwritev.stderr.exp \
 	sys-preadv2_pwritev2.vgtest sys-preadv2_pwritev2.stderr.exp \
 	sys-execveat.vgtest sys-execveat.stderr.exp sys-execveat.stdout.exp \
+		sys-execveat.stderr.exp-ppc64le \
 	enomem.vgtest enomem.stdout.exp \
 	memalign.vgtest memalign.stderr.exp \
 		memalign.stderr.exp-musl
